@@ -1,0 +1,123 @@
+﻿/*
+ * 描 述：Ahoitdate 时间段选择器 @YY@-当年 @MM@-当月 @DD@-当天 @JJ@-当季度
+ */
+.luckyu-search-date {
+    position: relative;
+    float: left;
+    width: 200px;
+    height: 32px;
+}
+
+.luckyu-search-date-text {
+    font-size: 12px;
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 100%;
+    line-height: 32px;
+    cursor: pointer;
+    border: 1px solid;
+    border-radius: 4px;
+    padding-left: 25px;
+    background: url(/image/datepicker_icon.png) left 0 no-repeat #FFF;
+    border-color: rgb(230, 230, 230);
+}
+
+    /*.luckyu-search-date-text:hover {
+        color: #3498DB;
+        border: 1px solid #3498DB;
+    }*/
+
+.luckyu-search-date-container {
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    z-index: 10;
+    padding: 15px;
+    background: #fff;
+    box-shadow: 0 0 2px 2px rgba(0,0,0,.15);
+    border-radius: 3px;
+}
+
+    .luckyu-search-date-container.width {
+        width: 610px;
+    }
+
+.luckyu-search-date-arrow {
+    position: absolute;
+    top: -16px;
+    left: 53px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent #d6e1ee;
+}
+
+.luckyu-search-date-inside {
+    position: absolute;
+    top: -6px;
+    left: -7px;
+    border-width: 7px;
+    border-style: solid;
+    border-color: transparent transparent #fff;
+}
+
+.luckyu-search-date-content-btns {
+    position: relative;
+    float: left;
+}
+
+.luckyu-search-date-btn-block {
+    margin-bottom: 6px;
+}
+
+    .luckyu-search-date-btn-block > a {
+        display: block;
+        width: 140px;
+        line-height: 28px;
+        height: 28px;
+        text-align: center;
+        color: #fff;
+        background: #9da6bd;
+        text-decoration:none;
+        border-bottom: 1px solid #afb8cc;
+    }
+
+        .luckyu-search-date-btn-block > a:hover {
+            background: var(--tn-nav-color);
+        }
+
+        .luckyu-search-date-btn-block > a.active {
+            background: var(--tn-nav-color);
+        }
+
+.luckyu-search-date-datepicker-content {
+    position: relative;
+    width: 420px;
+    float: left;
+    margin-left: 20px;
+    display: none;
+}
+
+.luckyu-search-date-datepicker-container {
+    position: relative;
+    float: left;
+    z-index: 1;
+    width: 202px;
+    height: 203px;
+}
+
+    .luckyu-search-date-datepicker-container iframe {
+        width: 202px;
+        height: 203px;
+    }
+
+    .luckyu-search-date-datepicker-container.first {
+        margin-right: 15px;
+    }
+
+.luckyu-search-date-datepicker-btn {
+    position: relative;
+    width: 100%;
+    text-align: right;
+}

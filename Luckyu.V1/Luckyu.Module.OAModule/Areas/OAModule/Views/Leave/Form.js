@@ -1,0 +1,77 @@
+﻿/*
+ * 请假编辑/查看
+ */
+var saveClick, acceptClick;
+var bootstrap = function (layui) {
+    "use strict";
+
+    var keyValue = request("keyValue");
+    var page = {
+        init: function () {
+            page.bind();
+            page.initData();
+        },
+        bind: function () {
+            var loading = luckyu.layer.loading();
+
+            layui.layer.close(loading);
+        },
+        initData: function () {
+            if (!!keyValue) {
+                luckyu.ajax.getv2(luckyu.rootUrl + "/OAModule/Leave/GetFormData", { keyValue: keyValue }
+                    , function (data) {
+                        $('[lay-filter="Leave"]').setFormValue(data.Leave);
+                        $("#statename").val(luckyu.clientdata.getDataitemName(data.Leave.state, "state"));
+                        $("#username").val(luckyu.clientdata.getUserName(data.Leave.user_id));
+                        $("#deptname").val(luckyu.clientdata.getDepartmentName(data.Leave.department_id));
+                        $("#companyname").val(luckyu.clientdata.getCompanyName(data.Leave.company_id));
+                    })
+            }
+            else {
+                $("#statename").val("起草");
+                var loginInfo = luckyu.clientdata.get(['userinfo']);
+                $("#username").val(luckyu.clientdata.getUserName(loginInfo.user_id));
+                $("#deptname").val(luckyu.clientdata.getDepartmentName(loginInfo.department_id));
+                $("#companyname").val(luckyu.clientdata.getCompanyName(loginInfo.company_id));
+            }
+        },
+    };
+    page.init();
+
+    saveClick = function (layerIndex, callback) {
+        if (!$(".layui-form").verifyForm()) {
+            return false;
+        }
+        var formData = $('[lay-filter="Leave"]').getFormValue();
+        luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
+            keyValue: keyValue,
+            strEntity: JSON.stringify(formData),
+            isSubmit: false
+        }, function (data) {
+            keyValue = data.id;
+            if (!!callback) {
+                callback();
+            }
+            parent.layui.layer.close(layerIndex);
+        });
+    };
+
+    acceptClick = function (layerIndex, callBack) {
+        if (!$(".layui-form").verifyForm()) {
+            return false;
+        }
+        var formData = $('[lay-filter="Leave"]').getFormValue();
+        luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
+            keyValue: keyValue,
+            strEntity: JSON.stringify(formData),
+            isSubmit: true
+        }, function (data) {
+            keyValue = data.id;
+            if (!!callback) {
+                callback();
+            }
+            parent.layui.layer.close(layerIndex);
+        });
+    };
+
+};

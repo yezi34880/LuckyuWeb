@@ -1,0 +1,201 @@
+﻿@using Luckyu.App.Organization;
+@using System.Text;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Header{
+    <link href="~/lib/pace/pace.loadingbar.css" rel="stylesheet" />
+    <link href="~/lib/layuiadmin/style/admin.css" rel="stylesheet" />
+    <style>
+        .accountcompany {
+            margin-top: 3px;
+            font-size: 10px;
+            display: block;
+            line-height: 20px;
+            text-align: right;
+        }
+
+        .accountuser {
+            line-height: 20px;
+            display: block;
+            text-align: right;
+            vertical-align: top;
+        }
+
+        .firstloading {
+            position: absolute;
+            background-color: #fff;
+            z-index: 1999;
+        }
+    </style>
+}
+<div id="firstloading" class="firstloading" style="overflow:hidden;">
+</div>
+<script>
+    paceOptions = {
+        restartOnPushState: false,
+        restartOnRequestAfter: false
+    };
+    $("#firstloading").height(window.innerHeight - 1).width(window.innerWidth - 1);
+    window.onresize = function () {
+        var firstloading = $("#firstloading");
+        if (!!firstloading && firstloading.length > 0) {
+            firstloading.height(window.innerHeight - 1).width(window.innerWidth - 1);
+        }
+    };
+</script>
+<div class="layui-layout-body">
+    <div id="Luckyu_app">
+        <div class="layui-layout layui-layout-admin">
+            <div class="layui-header">
+                <!-- 头部区域 -->
+                <ul class="layui-nav layui-layout-left">
+                    <li class="layui-nav-item layadmin-flexible" lay-unselect>
+                        <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                            <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item" lay-unselect>
+                        <a href="javascript:;" layadmin-event="refresh" title="刷新">
+                            <i class="layui-icon layui-icon-refresh-3"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <input type="text" id="searchKeyword" placeholder="搜索..." autocomplete="off" class="layui-input layui-input-search" layadmin-event="serach" />
+                    </li>
+                </ul>
+                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                    <li class="layui-nav-item" lay-unselect>
+                        <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
+                            <i class="layui-icon layui-icon-notice"></i>
+                            <span class="layui-badge-dot"></span>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="javascript:;" layadmin-event="note">
+                            <i class="layui-icon layui-icon-note"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item" lay-unselect>
+                        <a href="javascript:;">
+                            <cite>
+                                <div class="accountcompany">@ViewBag.CompanyName</div>
+                                <div class="accountuser">@((string.IsNullOrEmpty(ViewBag.DepartmentName) ? "" : ViewBag.DepartmentName + "-") + ViewBag.UserName)</div>
+                            </cite>
+                        </a>
+                        <dl class="layui-nav-child">
+                            <dd style="text-align: center;"><a href="javascript:;" id="switchUser">切换用户</a></dd>
+                            <dd style="text-align: center;"><a href="javascript:;" id="modifypwd">修改密码</a></dd>
+                            <dd style="text-align: center;"><a href="javascript:;" id="clearCache">清除缓存</a></dd>
+                            <hr />
+                            <dd style="text-align: center;"><a href="javascript:;" id="logout">退出</a></dd>
+                        </dl>
+                    </li>
+
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="javascript:;" title="主题" layadmin-event="theme">
+                            <i class="layui-icon layui-icon-theme"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="javascript:;" title="全屏" layadmin-event="fullscreen">
+                            <i class="layui-icon layui-icon-screen-full"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 侧边菜单 -->
+            <div class="layui-side layui-side-menu">
+                <div class="layui-side-scroll">
+                    <div class="layui-logo">
+                        <span>@AppSettingsHelper.GetAppSetting("SoftName")  @AppSettingsHelper.GetAppSetting("SoftVersion")</span>
+                    </div>
+
+                    <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+                        @{
+                            StringBuilder strHtml = new StringBuilder();
+                            if (ViewBag.Modules != null)
+                            {
+                                foreach (var module in ViewBag.Modules as List<CommonTree<sys_moduleEntity>>)
+                                {
+                                    strHtml.Append($"<li data-name=\"{module.Main.modulecode}\" class=\"layui-nav-item\">");
+                                    strHtml.AppendFormat("<a {0} lay-direction=\"2\">",
+                                        string.IsNullOrEmpty(module.Main.moduleurl) ?
+                                        "href=\"javascript:;\"" :
+                                        $"lay-href=\"{module.Main.moduleurl}\"");
+                                    strHtml.Append($"<i class=\"{module.Main.moduleicon}\"></i>");
+                                    strHtml.Append($"<cite>{module.Main.modulename}</cite>");
+                                    strHtml.Append("</a>");
+                                    if (!module.Children.IsEmpty())
+                                    {
+                                        Html.RecursiveRender(module.Children, (funcRender, children) =>
+                                        {
+                                            strHtml.Append("<dl class=\"layui-nav-child\">");
+                                            foreach (var child in children)
+                                            {
+                                                strHtml.Append($"<dd data-name=\"{child.Main.modulecode}\">");
+                                                strHtml.Append($"<i class=\"{child.Main.moduleicon}\"></i>");
+                                                strHtml.AppendFormat("<a {0}>",
+                                                    string.IsNullOrEmpty(child.Main.moduleurl) ?
+                                                    "href=\"javascript:;\"" :
+                                                    $"lay-href=\"{child.Main.moduleurl}\"");
+                                                strHtml.Append(child.Main.modulename);
+                                                strHtml.Append("</a>");
+                                                if (!child.Children.IsEmpty())
+                                                {
+                                                    funcRender(funcRender, child.Children);
+                                                }
+                                                strHtml.Append("</dd>");
+                                            }
+                                            strHtml.Append("</dl>");
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                        @Html.Raw(strHtml.ToString())
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 页面标签 -->
+            <div class="layadmin-pagetabs" id="LAY_app_tabs">
+                <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+                <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+                <div class="layui-icon layadmin-tabs-control layui-icon-down">
+                    <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+                        <li class="layui-nav-item" lay-unselect>
+                            <a href="javascript:;"></a>
+                            <dl class="layui-nav-child layui-anim-fadein">
+                                <dd layadmin-event="closeThisTabs"><a href="javascript:;">关闭当前标签页</a></dd>
+                                <dd layadmin-event="closeOtherTabs"><a href="javascript:;">关闭其它标签页</a></dd>
+                                <dd layadmin-event="closeAllTabs"><a href="javascript:;">关闭全部标签页</a></dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+                    <ul class="layui-tab-title" id="LAY_app_tabsheader">
+                        <li lay-id="home" lay-attr="home" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 主体内容 -->
+            <div class="layui-body" id="LAY_app_body">
+                <div class="layadmin-tabsbody-item layui-show">
+                    <iframe src="/Home/Home" frameborder="0" class="layadmin-iframe"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    <script src="~/lib/autocomplete/bootstrap-typeahead.js"></script>
+    <script src="~/lib/jquery/jquery.md5.min.js"></script>
+    @Html.AppendJs("~/js/luckyu-clientdata.js")
+    @Html.AppendJs("~/Views/Home/Index.js")
+}

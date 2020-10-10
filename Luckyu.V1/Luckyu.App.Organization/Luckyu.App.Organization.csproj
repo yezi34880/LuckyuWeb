@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Luckyu.DataAccess\Luckyu.DataAccess.csproj" />
+    <ProjectReference Include="..\Luckyu.Cache\Luckyu.Cache.csproj" />
+    <ProjectReference Include="..\Luckyu.Log\Luckyu.Log.csproj" />
+    <ProjectReference Include="..\Luckyu.Utility.Refy\Luckyu.Utility.Refy.csproj" />
+    <ProjectReference Include="..\Luckyu.Utility\Luckyu.Utility.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,59 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+
+@section Header{
+
+}
+<div class="layui-row layui-col-space10">
+    <div class="layui-col-xs2">
+        <div class="layui-card">
+            <div class="layui-card-header" style="height:auto;">
+                字典分类
+                <input type="text" class="layui-input" id="keyword" placeholder="请输入编码/名称" />
+            </div>
+            <div class="layui-card-body">
+                <div id="treeDataitem" lay-filter="treeDataitem" style="width:100%;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs10">
+        <div class="layui-card">
+            <div class="layui-card-header">字典数据<span id="show"> - 全部</span></div>
+            <div class="layui-card-body">
+                <div class="layui-row index-header">
+                    <div class="pull-left">
+                        <div class="layui-btn-group">
+                            <button type="button" id="searchfilter" class="layui-btn layui-btn-sm">
+                                <i class="fa fa-filter"></i>
+                                筛选
+                            </button>
+                            <button type="button" id="reset" class="layui-btn layui-btn-sm">
+                                <i class="layui-icon layui-icon-refresh-1"></i>
+                                重置
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pull-right">
+                        <div class="layui-btn-group">
+                            <button type="button" id="add" class="layui-btn layui-btn-sm"><i class="fa fa-plus"></i>&nbsp;新增</button>
+                            <button type="button" id="edit" class="layui-btn layui-btn-sm"><i class="fa fa-pencil"></i>&nbsp;编辑</button>
+                            <button type="button" id="delete" class="layui-btn layui-btn-sm"><i class="fa fa-trash-o"></i>&nbsp;删除</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <table id="grid"></table>
+                    <div id="gridPager"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/Dataitem/SystemIndex.js")
+}
+

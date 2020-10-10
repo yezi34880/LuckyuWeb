@@ -1,0 +1,43 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div lay-filter="Role">
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">角色编码</label>
+        <div class="layui-input-block">
+            <input id="rolecode" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">角色名称</label>
+        <div class="layui-input-block">
+            <input id="rolename" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input id="remark" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+            <input id="sort" type="text" class="layui-input" lay-verify="number" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_enable" lay-skin="switch" lay-text="有效|无效" checked />
+        </div>
+    </div>
+
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/Role/Form.js")
+}

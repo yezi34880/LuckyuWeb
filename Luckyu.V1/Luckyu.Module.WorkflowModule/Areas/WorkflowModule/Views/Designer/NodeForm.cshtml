@@ -1,0 +1,122 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+    <style>
+        textarea {
+            font-size: 15px;
+        }
+    </style>
+}
+
+<div class="layui-tab layui-tab-brief" style="margin: 0;" id="NodeForm">
+    <ul class="layui-tab-title">
+        <li class="layui-this">基本信息</li>
+        <li id="tabUser" style="display:none;">审批人</li>
+        <li id="tabForm" style="display:none;">表单</li>
+        <li id="tabSQLSuccess" style="display:none;">通过后SQL</li>
+        <li id="tabSQLFail" style="display:none;">驳回后SQL</li>
+        <li id="tabProgram" style="display:none;">执行程序</li>
+        <li id="tabSQLCondition"  style="display:none;">SQL条件</li>
+    </ul>
+    <div class="layui-tab-content">
+        <!--基本信息-->
+        <div class="layui-tab-item layui-show">
+            @*<div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">节点名称</label>
+                <div class="layui-input-block">
+                    <input id="node_id" type="text" class="layui-input" />
+                </div>
+            </div>*@
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">节点名称</label>
+                <div class="layui-input-block">
+                    <input id="name" type="text" class="layui-input" />
+                </div>
+            </div>
+            <div id="divConfluence" style="display:none;">
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">会签类型</label>
+                    <div class="layui-input-block">
+                        <div id="confluence_type" class="xm-select"></div>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">会签比例(%)</label>
+                    <div class="layui-input-block">
+                        <input id="confluence_rate" type="text" class="layui-input" lay-verify="number" readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--审批人-->
+        <div class="layui-tab-item">
+            <div class="layui-col-xs12">
+                <div class="layui-btn-group">
+                    <button type="button" id="addRow" class="layui-btn layui-btn-sm layui-btn-normal">
+                        新增行
+                    </button>
+                    <button type="button" id="deleteRow" class="layui-btn layui-btn-sm layui-btn-normal">
+                        删除行
+                    </button>
+                </div>
+            </div>
+            <div class="layui-col-xs12">
+                <table id="gridUser"></table>
+            </div>
+        </div>
+        <!--表单-->
+        <div class="layui-tab-item">
+            <div class="layui-col-xs12">
+                <div class="layui-btn-group">
+                    <button type="button" id="addRowf" class="layui-btn layui-btn-sm layui-btn-normal">
+                        新增行
+                    </button>
+                    <button type="button" id="deleteRowf" class="layui-btn layui-btn-sm layui-btn-normal">
+                        删除行
+                    </button>
+                </div>
+            </div>
+            <div class="layui-col-xs12">
+                <table id="gridForm"></table>
+            </div>
+        </div>
+        <!--通过SQL-->
+        <div class="layui-tab-item">
+            <blockquote class="layui-elem-quote">单据ID请用 @@processId 替代 </blockquote>
+            <textarea id="sqlsuccess" class="layui-textarea" rows="14"></textarea>
+        </div>
+        <!--驳回SQL-->
+        <div class="layui-tab-item">
+            <blockquote class="layui-elem-quote">单据ID请用 @@processId 替代</blockquote>
+            <textarea id="sqlfail" class="layui-textarea" rows="14"></textarea>
+        </div>
+        <!--执行程序-->
+        <div class="layui-tab-item">
+            <blockquote class="layui-elem-quote">依赖注入程序模块 </blockquote>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">程序集</label>
+                <div class="layui-input-block">
+                    <input id="injectassembly" type="text" class="layui-input" />
+                </div>
+            </div>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">类名</label>
+                <div class="layui-input-block">
+                    <input id="injectclass" type="text" class="layui-input" />
+                </div>
+            </div>
+        </div>
+        <!--SQL条件-->
+        <div class="layui-tab-item">
+            <blockquote class="layui-elem-quote">单据ID请用 @@processI 替代 </blockquote>
+            <textarea id="sqlcondition" class="layui-textarea" rows="14"></textarea>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/WorkflowModule/Views/Designer/NodeForm.js")
+}

@@ -1,0 +1,53 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div lay-filter="DataitemClassify">
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">分类编码</label>
+        <div class="layui-input-block">
+            <input id="itemcode" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">分类名称</label>
+        <div class="layui-input-block">
+            <input id="itemname" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">上级</label>
+        <div class="layui-input-block">
+            <div id="parent_id" class="xm-select"></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input id="remark" type="text" class="layui-input" lay-verify="number" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+            <input id="sort" type="text" class="layui-input" lay-verify="number" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_system" title="仅管理员编辑" lay-skin="primary" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_enable" lay-skin="switch" lay-text="有效|无效" checked />
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/Dataitem/ClassifyForm.js")
+}

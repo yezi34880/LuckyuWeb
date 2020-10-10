@@ -1,0 +1,21 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+<div class="layui-col-space10" lay-filter="User">
+    <div class="layui-col-xs12">
+        <label>新密码<i class="redstart">*</i></label>
+        <input id="Password" type="password" class="layui-input" lay-verify="required" />
+    </div>
+    <div class="layui-col-xs12">
+        <label>重复密码<i class="redstart">*</i></label>
+        <input id="Password1" type="password" class="layui-input" lay-verify="required" />
+    </div>
+</div>
+
+@section Footer{
+    <script src="~/lib/jquery/jquery.md5.min.js"></script>
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/User/ModifyPwd.js")
+}
+

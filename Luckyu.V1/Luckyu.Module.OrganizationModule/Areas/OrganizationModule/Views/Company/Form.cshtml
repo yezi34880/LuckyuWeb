@@ -1,0 +1,117 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div lay-filter="Company">
+    <div class="form-item layui-col-xs3">
+        <label class="layui-form-label">公司编码</label>
+        <div class="layui-input-block">
+            <input id="companycode" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">公司名称</label>
+        <div class="layui-input-block">
+            <input id="fullname" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3">
+        <label class="layui-form-label">公司简称</label>
+        <div class="layui-input-block">
+            <input id="shortname" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6 ">
+        <label class="layui-form-label">上级公司</label>
+        <div class="layui-input-block">
+            <div id="parent_id" class="xm-select"></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3">
+        <label class="layui-form-label">成立时间</label>
+        <div class="layui-input-block">
+            <input id="foundeddate" type="datetime" class="layui-input Wdate" onclick="WdatePicker()"  />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3">
+        <label class="layui-form-label">法人/负责人</label>
+        <div class="layui-input-block">
+            <input id="legalperson" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3">
+        <label class="layui-form-label">联系电话</label>
+        <div class="layui-input-block">
+            <input id="phone" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3">
+        <label class="layui-form-label">电子邮箱</label>
+        <div class="layui-input-block">
+            <input id="email" type="text" class="layui-input" lay-verify="email" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+
+    </div>
+    <div class="form-item layui-col-xs3 ">
+        <label class="layui-form-label">国家</label>
+        <div class="layui-input-block">
+            <input id="country" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3 ">
+        <label class="layui-form-label">省/州</label>
+        <div class="layui-input-block">
+            <input id="province" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3 ">
+        <label class="layui-form-label">城市</label>
+        <div class="layui-input-block">
+            <input id="city" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3 ">
+        <label class="layui-form-label">县/区</label>
+        <div class="layui-input-block">
+            <input id="counties" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">详细地址</label>
+        <div class="layui-input-block">
+            <input id="address" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">公司主页</label>
+        <div class="layui-input-block">
+            <input id="website" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input id="remark" type="text" class="layui-input" lay-verify="number" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs3">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+            <input id="sort" type="text" class="layui-input" lay-verify="number" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_enable" lay-skin="switch" lay-text="有效|无效" checked />
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/Company/Form.js")
+}

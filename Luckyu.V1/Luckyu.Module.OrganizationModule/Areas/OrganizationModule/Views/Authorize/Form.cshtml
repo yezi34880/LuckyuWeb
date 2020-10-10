@@ -1,0 +1,13 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+<div>
+    <div id="treeModule" lay-filter="treeModule" style="width:100%;"></div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/Authorize/Form.js")
+}
+

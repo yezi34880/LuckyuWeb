@@ -1,0 +1,26 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div lay-filter="Dataitem">
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">审批结果</label>
+        <div class="layui-input-block">
+            <input name="result" type="radio" class="layui-input" title="通过" checked />
+            <input name="result" type="radio" class="layui-input" title="驳回" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">审批意见</label>
+        <div class="layui-input-block">
+            <textarea id="opinion" class="layui-textarea" rows="6"></textarea>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/WorkflowModule/Views/Task/ApproveForm.js")
+}

@@ -1,0 +1,67 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div lay-filter="DataAuthorize">
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">模块</label>
+        <div class="layui-input-block">
+            <div id="modulename" class="xm-select" lay-verify="required" luckyu-type="dataitem" luckyu-code="modulename" luckyu-multiple="true"></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">查看者类型</label>
+        <div class="layui-input-block">
+            <div id="objecttype" class="xm-select" lay-verify="required" luckyu-type="dataitem" luckyu-code='objecttype'></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">查看者</label>
+        <div class="layui-input-block inputselect">
+            <input id="objectname" type="text" class="layui-input" readonly />
+            <input id="object_id" type="hidden" />
+            <span id="objectnameSelect" class="luckyu-input-button" title="选取">...</span>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">查看范围</label>
+        <div class="layui-input-block">
+            <div id="objectrange" class="xm-select" lay-verify="required" luckyu-type="dataitem" luckyu-code='objectrange'></div>
+        </div>
+    </div>
+
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">被查看者类型</label>
+        <div class="layui-input-block">
+            <div id="seeobjecttype" class="xm-select" luckyu-type="datalocal" luckyu-data='[{"name":"用户","value":0},{"name":"部门","value":1},{"name":"公司","value":2}]'></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">被查看者</label>
+        <div class="layui-input-block inputselect">
+            <input id="seeobjectnames" type="text" class="layui-input" readonly />
+            <input id="seeobject_ids" type="hidden" />
+            <span id="seeobjectnamesSelect" class="luckyu-input-button" title="选取">...</span>
+        </div>
+    </div>
+
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input id="remark" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_enable" lay-skin="switch" lay-text="有效|无效" checked />
+        </div>
+    </div>
+
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/DataAuthorize/Form.js")
+}

@@ -1,0 +1,14 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<div class="formbackgroud">
+    <div class="layui-row">
+        <table id="grid"></table>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/Role/RoleSelectForm.js")
+}
+

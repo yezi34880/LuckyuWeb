@@ -1,0 +1,25 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div id="LineForm">
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">连线名称</label>
+        <div class="layui-input-block">
+            <input id="name" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">跳转条件</label>
+        <div class="layui-input-block">
+            <div id="linecondition" class="xm-select" lay-verify="required"></div>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/WorkflowModule/Views/Designer/LineForm.js")
+}

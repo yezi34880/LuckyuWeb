@@ -1,0 +1,141 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <link href="~/lib/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/jqGrid/css/ui.jqgrid-bootstrap.css" rel="stylesheet" />
+    <link href="~/lib/layuiadmin/modules/css/eleTree.css" rel="stylesheet" />
+    <link href="~/lib/layuiadmin/style/admin.css" rel="stylesheet" />
+    @RenderSection("Header", false)
+    <style type="text/css">
+        .layui-form {
+            padding: 5px;
+            background-color: #f2f2f2;
+        }
+
+        .layui-textarea {
+            min-height: 60px;
+        }
+
+        input[disabled], select[disabled], textarea[disabled], button[disabled] {
+            cursor: not-allowed !important;
+            background-color: #e6e6e6 !important;
+        }
+
+        input[readonly], textarea[readonly] {
+            cursor: not-allowed !important;
+            background-color: #e6e6e6 !important;
+        }
+
+        .luckyu-input-button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 16px;
+            height: 100%;
+            line-height: 28px;
+            cursor: pointer;
+            overflow: hidden;
+            z-index: 10;
+            font-weight: bold;
+        }
+
+        .ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td {
+            overflow: inherit;
+        }
+
+        .ui-jqgrid tr.footrow td {
+            text-align: right;
+        }
+    </style>
+}
+
+<form id="formBase" class="layui-form" lay-filter="formBase" autocomplete="off">
+    @RenderBody()
+</form>
+
+<script id="tempExt" type="text/html">
+    <div class="luckyu-formext">
+        <% for(var index = 0; index < details.length; index++) { var item = details[index]; %>
+        <div class="layui-col-xs<%=  item.formdetail.Width  %> form-item">
+            <label class="layui-form-label"><%= item.formdetail.ShowName %></label>
+            <div class="layui-input-block">
+                <% if (item.formdetail.FormType === "text") { %>
+                <input id="<%= item.formdetail.FieldName %>" type="text" class="layui-input" />
+                <% } else if (item.formdetail.FormType === "textarea") { %>
+                <textarea id="<%= item.formdetail.FieldName %>" class="layui-textarea"></textarea>
+                <% } else if (item.formdetail.FormType === "number") { %>
+                <input id="<%= item.formdetail.FieldName %>" type="text" class="layui-input" lay-verify="number" />
+                <% } else if (item.formdetail.FormType === "date") { %>
+                <input id="<%= item.formdetail.CoFieldNamede %>" type="datetime" class="layui-input Wdate" onfocus="WdatePicker()"  />
+                <% } else if (item.formdetail.FormType === "dataitem") {   %>
+                <% var format = $imports.JSON.parse(item.formdetail.Format); %>
+                <div id="<%= item.formdetail.FieldName %>" class="xm-select" ext-type="dataitem" ext-code="<%= format.Code %>" ext-multiple="<%= format.Multiple %>"></div>
+                <% } else if (item.formdetail.FormType === "datasource") { %>
+                <% var format = $imports.JSON.parse(item.formdetail.Format); %>
+                <div id="<%= item.formdetail.FieldName %>" class="xm-select" ext-type="datasource" ext-sourceurl="<%= format.SourceUrl %>" ext-name="<%= format.NameField %>" ext-value="<%= format.ValueField %>" ext-multiple="<%= format.Multiple %>"></div>
+                <% } else if (item.formdetail.FormType === "datalocal") { %>
+                <% var format = $imports.JSON.parse(item.formdetail.Format); %>
+                <div id="<%= item.formdetail.FieldName %>" class="xm-select" ext-localdata="<%= format.LocalData %>" ext-multiple="<%= format.Multiple %>"></div>
+                <% } %>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</script>
+
+@section Footer{
+    <script src="~/lib/art-template/template-web.js"></script>
+    <script src="~/lib/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="~/lib/layuiadmin/modules/xm-select.js"></script>
+    <script src="~/lib/jqGrid/js/jquery.jqGrid.js?v=20200901"></script>
+    <script src="~/lib/jqGrid/js/i18n/grid.locale-cn.js"></script>
+    <script src="~/lib/datepicker/WdatePicker.js"></script>
+    <script src="~/lib/ueditor/ueditor.config.js"></script>
+    <script src="~/lib/ueditor/ueditor.all.js"></script>
+    <script src="~/lib/jquery.numeric/jquery.numeric.js"></script>
+    @Html.AppendJs("~/js/luckyu-grid.js")
+    @Html.AppendJs("~/js/luckyu-select.js")
+    @Html.AppendJs("~/js/luckyu-form.js")
+    @Html.AppendJs("~/js/workflow/workflow-api.js")
+    @RenderSection("Footer", false)
+    <script>
+        $.validateToken = $('@Html.AntiForgeryToken()').val();
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+        template.defaults.imports.log = console.log;
+        template.defaults.imports.JSON = JSON;
+        $(function () {
+            layui.config({
+                version: 20200911, //一般用于更新组件缓存，默认不开启。设为true即让浏览器不缓存。也可以设为一个固定的值，如：201610
+                base: '/lib/layuiadmin/modules/'
+            }).use(['carousel', 'code', 'colorpicker', 'element', 'flow', 'form', 'jquery', 'laydate', 'layedit', 'layer', 'layim', 'laypage', 'laytpl', 'mobile', 'rate', 'slider', 'table', 'transfer', 'tree', 'upload', 'util', 'notice', 'eleTree','loading'], function () {
+                luckyu.notice.init();
+
+                // 绘制扩展元素 并 初始化
+                //luckyu.ajax.getSync("/BaseModule/ExtForm/GetExtGroups", {}, function (res) {
+                //    if (!res.data || res.data.length<1) {
+                //        return;
+                //    }
+                //    for (var i = 0; i < res.data.length; i++) {
+                //        var g = res.data[i];
+                //        var html = template("tempExt", g);
+                //        var behindField = g.group.BehindField;
+                //        var formitem = $("#" + behindField).parent().parent();
+                //        if (formitem.hasClass("form-item")) {
+                //            formitem.after(html);
+                //        }
+                //    }
+                //    $(".luckyu-formext").initExt();
+                //});
+
+                $(".layui-form").initControl();
+                if (!!window.bootstrap) {
+                    bootstrap(layui);
+                }
+            });
+        });
+
+    </script>
+}
+

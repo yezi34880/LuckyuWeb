@@ -1,0 +1,91 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+    @Html.AppendCss("~/js/workflow/scroll.css")
+    @Html.AppendCss("~/js/workflow/workflow.css")
+    <style type="text/css">
+        .scroll-wrap {
+            height: 680px;
+            overflow: scroll;
+        }
+    </style>
+}
+
+<div class="layui-tab layui-tab-brief" style="margin: 0;">
+    <ul class="layui-tab-title">
+        <li class="layui-this">基本信息</li>
+        <li>权限</li>
+        <li>设计</li>
+    </ul>
+    <div class="layui-tab-content">
+        <!--基本信息-->
+        <div class="layui-tab-item layui-show" id="Workflow">
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">流程编码</label>
+                <div class="layui-input-block">
+                    <input id="flowcode" type="text" class="layui-input" lay-verify="required" />
+                </div>
+            </div>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">流程名称</label>
+                <div class="layui-input-block">
+                    <input id="flowname" type="text" class="layui-input" lay-verify="required" />
+                </div>
+            </div>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">流程类别</label>
+                <div class="layui-input-block">
+                    <div id="flowtype" class="xm-select"></div>
+                </div>
+            </div>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <input id="remark" type="text" class="layui-input" />
+                </div>
+            </div>
+            <div class="form-item layui-col-xs12">
+                <div class="layui-input-block">
+                    <input type="checkbox" id="is_enable" lay-skin="switch" lay-text="有效|无效" checked />
+                </div>
+            </div>
+
+        </div>
+        <!--权限-->
+        <div class="layui-tab-item">
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">流程范围</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="flowrange" value="0" title="全部" checked />
+                    <input type="radio" name="flowrange" value="1" title="指定范围" />
+                </div>
+            </div>
+            <div class="layui-col-xs12">
+                <div class="layui-btn-group">
+                    <button type="button" id="addRow" class="layui-btn layui-btn-sm layui-btn-normal">
+                        新增行
+                    </button>
+                    <button type="button" id="deleteRow" class="layui-btn layui-btn-sm layui-btn-normal">
+                        删除行
+                    </button>
+                </div>
+            </div>
+            <div class="layui-col-xs12">
+                <table id="gridAuthorize"></table>
+            </div>
+        </div>
+        <!--设计-->
+        <div class="layui-tab-item ">
+            <div class="step-pane" id="Designer"></div>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/js/workflow/mousewheel.js")
+    @Html.AppendJs("~/js/workflow/scroll.js")
+    @Html.AppendJs("~/js/workflow/workflow.js")
+    @Html.AppendJs("~/Areas/WorkflowModule/Views/Designer/Form.js")
+}

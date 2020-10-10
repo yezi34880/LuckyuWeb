@@ -1,0 +1,11 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+<div class="layui-col-xs12">
+    <div id="treeTree" lay-filter="treeTree"></div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/Company/CompanySelectForm.js")
+}

@@ -1,0 +1,75 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <link href="~/lib/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/jqGrid/css/ui.jqgrid-bootstrap.css" rel="stylesheet" />
+    <link href="~/lib/layuiadmin/modules/css/eleTree.css" rel="stylesheet" />
+    <link href="~/lib/layuiadmin/style/admin.css" rel="stylesheet" />
+    @Html.AppendCss("~/js/datepicker/luckyu-datepicker.css")
+    @Html.AppendCss("~/js/numberrange/luckyu-numberrange.css")
+    <style>
+        .dropdown-menu {
+            top: auto;
+        }
+
+        .index-header {
+            padding: 5px 5px 5px 5px;
+        }
+
+        .index-background {
+            padding: 5px;
+            background-color: #f2f2f2;
+        }
+
+        .ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td {
+            overflow: hidden !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .layui-card-body {
+            padding: 0;
+        }
+    </style>
+    @RenderSection("Header", false)
+}
+<div class="index-background layui-form">
+    @RenderBody()
+</div>
+
+@section Footer{
+    <script src="~/lib/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="~/lib/layuiadmin/modules/xm-select.js"></script>
+    <script src="~/lib/jqGrid/js/jquery.jqGrid.js"></script>
+    <script src="~/lib/jqGrid/js/i18n/grid.locale-cn.js"></script>
+    <script src="~/lib/jqGrid/js/grid.treegrid.js"></script>
+    <script src="~/lib/datepicker/WdatePicker.js"></script>
+    <script src="~/lib/jquery.numeric/jquery.numeric.js"></script>
+    @Html.AppendJs("~/js/datepicker/luckyu-datepicker.js")
+    @Html.AppendJs("~/js/numberrange/luckyu-numberrange.js")
+    @Html.AppendJs("~/js/luckyu-grid.js")
+    @Html.AppendJs("~/js/luckyu-select.js")
+    @Html.AppendJs("~/js/luckyu-form.js")
+    @Html.AppendJs("~/js/workflow/workflow-api.js")
+    @RenderSection("Footer", false)
+    <script>
+        $.validateToken = $('@Html.AntiForgeryToken()').val();
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+        $(function () {
+            layui.config({
+                version: 20200911, //一般用于更新组件缓存，默认不开启。设为true即让浏览器不缓存。也可以设为一个固定的值，如：201610
+                base: '/lib/layuiadmin/modules/'
+            }).use(['carousel', 'code', 'colorpicker', 'element', 'flow', 'form', 'jquery', 'laydate', 'layedit', 'layer', 'layim', 'laypage', 'laytpl', 'mobile', 'rate', 'slider', 'table', 'transfer', 'tree', 'upload', 'util', 'notice','loading', 'eleTree'], function () {
+                luckyu.notice.init();
+
+                if (!!window.bootstrap) {
+                    bootstrap(layui);
+                }
+
+            });
+        })
+
+    </script>
+}

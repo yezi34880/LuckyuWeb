@@ -1,0 +1,74 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+
+}
+
+<div lay-filter="Leave">
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <input id="statename" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">用户</label>
+        <div class="layui-input-block">
+            <input id="username" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">部门</label>
+        <div class="layui-input-block">
+            <input id="deptname" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">公司</label>
+        <div class="layui-input-block">
+            <input id="companyname" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+
+    <div class="form-item layui-col-xs6 ">
+        <label class="layui-form-label">假期类型</label>
+        <div class="layui-input-block">
+            <div id="leavetype" class="xm-select" lay-verify="required" luckyu-type="dataitem" luckyu-code="leavetype"></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">时长(小时)</label>
+        <div class="layui-input-block">
+            <input id="spantime" type="text" class="layui-input" lay-verify="required|number" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">开始时间</label>
+        <div class="layui-input-block">
+            <input id="begintime" type="text" class="layui-input Wdate" lay-verify="required" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">结束时间</label>
+        <div class="layui-input-block">
+            <input id="endtime" type="text" class="layui-input Wdate" lay-verify="required" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" />
+        </div>
+    </div>
+
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">事由</label>
+        <div class="layui-input-block">
+            <input id="reason" type="text" class="layui-input" />
+        </div>
+    </div>
+</div>
+
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OAModule/Views/Leave/Form.js")
+}
+
+

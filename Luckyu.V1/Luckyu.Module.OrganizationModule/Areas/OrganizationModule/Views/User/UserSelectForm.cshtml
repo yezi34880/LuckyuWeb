@@ -1,0 +1,34 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+    @Html.AppendCss("~/Areas/OrganizationModule/Views/User/UserSelectForm.css")
+
+}
+
+<div class="layui-col-space10">
+    <div class="layui-col-xs3" style="background-color:white;">
+        <div id="treeDepartment" lay-filter="treeDepartment"></div>
+    </div>
+    <div class="layui-col-xs9">
+        <div class="user-search">
+            <input id="keyword" type="text" class="layui-input" placeholder="请输入要关键字，回车键查询">
+            <span class="input-query" title="查询" id="search"><i class="fa fa-search"></i></span>
+            <div class="user-selected-btn" id="user_selected_btn">已选人员</div>
+        </div>
+        <div class="user-list" id="user_list_warp"><div id="user_list"></div></div>
+
+    </div>
+    <div class="form-warp-right" id="form_warp_right">
+        <div class="form-warp-right-title">已选人员<span class="form-warp-right-close" id="user_selected_btn_close" title="关闭">×</span></div>
+        <div class="selected-user-list-warp" id="selected_user_list_warp" >
+            <div id="selected_user_list" ></div>
+        </div>
+    </div>
+
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/User/UserSelectForm.js")
+}

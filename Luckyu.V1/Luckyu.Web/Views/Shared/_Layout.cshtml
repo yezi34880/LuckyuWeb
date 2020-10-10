@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.HTMLTitle = ViewBag.HTMLTitle ?? AppSettingsHelper.GetAppSetting("SoftName");
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.HTMLTitle</title>
+    <meta name="keywords" content="@AppSettingsHelper.GetAppSetting("KeyWords")">
+    <meta name="description" content="@AppSettingsHelper.GetAppSetting("Description")" />
+    <meta name="author" content="@AppSettingsHelper.GetAppSetting("Author")">
+
+    <link rel="icon" href="~/image/favicon.ico">
+    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/lib/layuiadmin/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/lib/pace/pace.minimal.css" rel="stylesheet" />
+    @Html.AppendCss("~/css/luckyu.css")
+    <script src="~/lib/pace/pace.min.js"></script>
+    <script src="~/lib/jquery/jquery-3.3.1.min.js"></script>
+    <script src="~/lib/layuiadmin/layui/layui.js"></script>
+    <script>
+        // 按钮主题颜色
+        var theme = layui.data("LuckyuAdminTheme");
+        if (!!theme.color) {
+            var root = document.querySelector(':root');
+            root.style.setProperty('--tn-nav-color', theme.color);
+        }
+
+        window.onerror = function (message, url, lineNo, columnNo, error) {
+            this.console.log('============= 全局捕获Js异常 start ===========');
+            this.console.log(message);
+            this.console.log(url);
+            this.console.log("行号  " + lineNo);
+            this.console.log("列号  " + columnNo);
+            this.console.log(error);
+            this.console.log('============= 全局捕获Js异常 end ============');
+        }
+    </script>
+    @RenderSection("Header", false)
+</head>
+<body>
+    @RenderBody()
+    @Html.AppendJs("~/js/luckyu.js")
+    @Html.AppendJs("~/js/luckyu-notice.js")
+    @Html.AppendJs("~/js/luckyu-layer.js")
+    <script>
+        function request(name) {
+            return luckyu.utility.getUrlParam(name);
+        }
+    </script>
+    @RenderSection("Footer", false)
+</body>
+</html>
