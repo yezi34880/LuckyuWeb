@@ -5,8 +5,9 @@
 ![主页 换肤](https://images.gitee.com/uploads/images/2020/1010/113254_d1f46c89_543243.gif "b.gif")
 ![标题栏搜索](https://images.gitee.com/uploads/images/2020/1010/114008_76676dd0_543243.gif "c.gif")
 
-## 基于以下包
-SqlsugarCore  LayUI  
+## 说明
+基于 Layui 后台框架, 整合了许多第三方插件如 jqgrid eletree xmselect等
+仅作为学习尝试, 如有侵权, 可联系删除
 
 ## 分模块开发
 采取分项目,分模块开发
