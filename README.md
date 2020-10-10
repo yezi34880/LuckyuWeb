@@ -5,7 +5,8 @@
 
 ## 分模块开发
 采取分项目,分模块开发
-Luckyu.Web为主启动项目 各功能模块以 Luckyu.Module 开头
+Luckyu.Web为主启动项目
+各功能模块以 Luckyu.Module 开头
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1010/110915_53b08b55_543243.jpeg "1.jpg")
 
 ★★★重点★★★
@@ -32,5 +33,7 @@ Luckyu.Web为主启动项目 各功能模块以 Luckyu.Module 开头
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 </None>
 </ItemGroup>
+
 ```
 
+☆☆☆有关发布的说明☆☆☆
