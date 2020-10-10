@@ -2,8 +2,11 @@
 
 ## 介绍
 后台管理框架
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1010/113254_d1f46c89_543243.gif "b.gif")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1010/114008_76676dd0_543243.gif "c.gif")
+![主页 换肤](https://images.gitee.com/uploads/images/2020/1010/113254_d1f46c89_543243.gif "b.gif")
+![标题栏搜索](https://images.gitee.com/uploads/images/2020/1010/114008_76676dd0_543243.gif "c.gif")
+
+## 基于以下包
+SqlsugarCore  LayUI  
 
 ## 分模块开发
 采取分项目,分模块开发
