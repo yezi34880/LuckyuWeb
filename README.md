@@ -2,6 +2,8 @@
 
 ## 介绍
 后台管理框架
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1010/113254_d1f46c89_543243.gif "b.gif")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1010/114008_76676dd0_543243.gif "c.gif")
 
 ## 分模块开发
 采取分项目,分模块开发
@@ -37,3 +39,4 @@ Luckyu.Web为主启动项目
 ```
 
 ☆☆☆有关发布的说明☆☆☆
+发布时请务必设置 VS 编译模式为 Release , 发布 Web 项目, 并且在 Release 模式下生成所有Module ,复制web/bin/release目录下所有dll覆盖发布文件dll,代码中目前有需要方便调试的判断都是根据 vs debug  release 模式写的,后期考虑做成动态配置文件
