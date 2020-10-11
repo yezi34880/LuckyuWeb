@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Luckyu.App.System\Luckyu.App.System.csproj" />
+    <ProjectReference Include="..\Luckyu.App.Workflow\Luckyu.App.Workflow.csproj" />
     <ProjectReference Include="..\Luckyu.DataAccess\Luckyu.DataAccess.csproj" />
     <ProjectReference Include="..\Luckyu.App.Organization\Luckyu.App.Organization.csproj" />
     <ProjectReference Include="..\Luckyu.Cache\Luckyu.Cache.csproj" />

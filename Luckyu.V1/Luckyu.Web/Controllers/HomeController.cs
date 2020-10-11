@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DeviceDetectorNET;
 using Luckyu.App.Organization;
 using Luckyu.App.System;
+using Luckyu.App.Workflow;
 using Luckyu.Cache;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -17,6 +18,7 @@ namespace Luckyu.Web.Controllers
         #region Var
         private ModuleBLL moduleBLL = new ModuleBLL();
         private UserBLL userBLL = new UserBLL();
+        private WFTaskBLL taskBLL = new WFTaskBLL();
 
         #endregion
 
@@ -124,31 +126,21 @@ namespace Luckyu.Web.Controllers
         /// <summary>
         /// 首页统计
         /// </summary>
-        public IActionResult Statistics()
+        public IActionResult Refrash()
         {
-            //var salecontract = new Erp_ContractBLL().HomePageStatistics();
-            //var carrybill = new ErpCarryBillBLL().HomePageStatistics();
-            //var purchasecontract = new Erp_PurchaseContractBLL().HomePageStatistics();
-            //var costpay = new Erp_CostPaymentBLL().HomePageStatistics();
+            var jqPage = new JqgridPageRequest
+            {
+                page = 1,
+                rows = 5,
+                sidx = "createtime",
+                sord = "DESC"
+            };
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var page = taskBLL.Page(jqPage, 1, loginInfo);
+            var dic = new Dictionary<string, object>();
+            dic.Add("Task", page.rows);
 
-            //var news = newsBLL.GetListTop(5, r => r.F_DeleteMark == 0 && r.F_EnabledMark == 1, "F_ReleaseTime DESC");
-            //var userInfo = LoginUserInfo.Get();
-            //var task = new WfTaskBLL().GetActiveList(userInfo, new JqgridPageRequest { rows = 5, sidx = "F_CreateDate", sord = "DESC", page = 1 }, "{\"StartTime\":\"" + DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd HH:mm:ss") + "\",\"EndTime\":\"" + DateTime.Today.ToString("yyyy-MM-dd 23:59:59") + "\"}");
-
-            //var exrates = exrateBLL.GetAllExchange();
-
-            //var data = new
-            //{
-            //    salecontract,
-            //    carrybill,
-            //    purchasecontract,
-            //    costpay,
-            //    news,
-            //    task = task.rows,
-            //    exrates
-            //};
-            //return ToJsonResult(data);
-            return Success();
+            return Success(dic);
         }
         #endregion
     }

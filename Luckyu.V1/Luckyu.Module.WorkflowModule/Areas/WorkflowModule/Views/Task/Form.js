@@ -52,7 +52,7 @@ var bootstrap = function (layui) {
                     },
                     { label: "操作用户", name: "create_username", width: 80, },
                     {
-                        label: "操作时间", name: "createtime", width: 120, align: "right",
+                        label: "操作时间", name: "createtime", width: 100, align: "right",
                         formatter: "date",
                         formatoptions: { newformat: 'Y-m-d H:i:s' },
                     },

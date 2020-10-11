@@ -305,7 +305,7 @@ namespace Luckyu.DataAccess
         }
         public int Delete<T>(T entity) where T : class, new()
         {
-            var result = 0; 
+            var result = 0;
             try
             {
                 result = db.Deleteable(entity).ExecuteCommand();
@@ -952,12 +952,12 @@ namespace Luckyu.DataAccess
         }
 
         #region GetEntity
-            /// <summary>
-            /// 查找一个实体根据主键
-            /// </summary>
-            /// <typeparam name="T">类型</typeparam>
-            /// <param name="KeyValue">主键</param>
-            /// <returns></returns>
+        /// <summary>
+        /// 查找一个实体根据主键
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="KeyValue">主键</param>
+        /// <returns></returns>
         public T GetEntity<T>(string keyValue) where T : class, new()
         {
             var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
@@ -1512,7 +1512,13 @@ namespace Luckyu.DataAccess
                         var comdition = dicModels[rule.field](rule.field, rule.data);
                         if (comdition != null)
                         {
-                            modelCondition.AddRange(comdition);
+                            foreach (var con in comdition)
+                            {
+                                if (con != null)
+                                {
+                                    modelCondition.Add(con);
+                                }
+                            }
                         }
                     }
                     else

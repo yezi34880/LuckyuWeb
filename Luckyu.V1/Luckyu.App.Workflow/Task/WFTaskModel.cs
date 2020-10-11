@@ -14,6 +14,7 @@ namespace Luckyu.App.Workflow
         public string instance_id { get; set; }
         public string process_id { get; set; }
         public string flowname { get; set; }
+        public string nodetype { get; set; }
         public string processname { get; set; }
         public int is_finished { get; set; }
         public string submit_user_id { get; set; }

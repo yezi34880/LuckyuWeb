@@ -432,7 +432,7 @@
                                 value: function () {
                                     var selectoption = { "-1": "全部" };
                                     luckyu.clientdata.getAllAsync('dataItem', {
-                                        code: col.dataitemcode,
+                                        code: this.name,
                                         callback: function (_datas) {
                                             for (var key in _datas) {
                                                 selectoption[_datas[key].value] = _datas[key].name;

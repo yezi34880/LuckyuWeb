@@ -1,1 +1,64 @@
-﻿首页
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <style>
+        .ahoit-msg-line {
+            position: relative;
+            width: 100%;
+            line-height: 39px;
+            border-bottom: 1px solid #ccc;
+        }
+
+            .ahoit-msg-line > a {
+                cursor: pointer;
+                font-size: 12px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                display: block;
+                width: 85%;
+            }
+
+            .ahoit-msg-line > label {
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin-bottom: 0;
+                color: #333;
+                font-size: 12px;
+                font-weight: 400;
+            }
+
+    </style>
+}
+
+<div class="layui-row" style="margin:5px;">
+    <div class="layui-col-xs6" style="padding-bottom: 10px;">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <i class="fa fa-coffee"></i>&nbsp;&nbsp;待办任务
+                <span class="pull-right"><a id="moretask" style="cursor:pointer;">更多&nbsp;>>&nbsp;</a></span>
+            </div>
+            <div class="layui-card-body" id="task" style="min-height:200px;">
+
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs6" style="padding-bottom: 10px;">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <i class="fa fa-bullhorn"></i>&nbsp;&nbsp;公告通知
+                <span class="pull-right"><a id="newsMore" style="cursor:pointer;">更多&nbsp;>>&nbsp;</a></span>
+            </div>
+            <div class="layui-card-body" id="news" style="min-height:200px;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Views/Home/Home.js")
+}
