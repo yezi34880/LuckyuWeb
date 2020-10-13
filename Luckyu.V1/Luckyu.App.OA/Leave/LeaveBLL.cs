@@ -1,4 +1,5 @@
 ﻿using Luckyu.App.Organization;
+using Luckyu.App.Workflow;
 using Luckyu.Utility;
 using SqlSugar;
 using System;
@@ -14,6 +15,7 @@ namespace Luckyu.App.OA
     {
         #region Var
         private oa_leaveService leaveService = new oa_leaveService();
+        private WFTaskBLL taskBLL = new WFTaskBLL();
         #endregion
 
         #region Get
@@ -29,18 +31,62 @@ namespace Luckyu.App.OA
             return entity;
         }
 
+        public ResponseResult<Dictionary<string, object>> GetFormData(string keyValue)
+        {
+            var entity = GetEntity(r => r.id == keyValue);
+            if (entity == null)
+            {
+                return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+            }
+            var dic = new Dictionary<string, object>
+            {
+                {"Leave",entity }
+            };
+            return ResponseResult.Success(dic);
+        }
+
         #endregion
 
         #region Set
 
-        public void DeleteForm(oa_leaveEntity entity, UserModel loginInfo)
+        public ResponseResult DeleteForm(string keyValue, UserModel loginInfo)
         {
+            var entity = GetEntity(r => r.id == keyValue);
+            if (entity == null)
+            {
+                return ResponseResult.Fail("该数据不存在");
+            }
+            if (entity.state != (int)StateEnum.Draft)
+            {
+                return ResponseResult.Fail("只有起草状态才能删除");
+            }
             leaveService.DeleteForm(entity, loginInfo);
+            return ResponseResult.Success();
         }
 
-        public void SaveForm(string keyValue, oa_leaveEntity entity, string strEntity, UserModel loginInfo)
+        public ResponseResult<oa_leaveEntity> SaveForm(string keyValue, string strEntity, bool isSubmit, UserModel loginInfo)
         {
+            var entity = strEntity.ToObject<oa_leaveEntity>();
+            if (!keyValue.IsEmpty())
+            {
+                var old = GetEntity(r => r.id == keyValue);
+                if (old == null)
+                {
+                    return ResponseResult.Fail<oa_leaveEntity>("该数据不存在");
+                }
+                if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                {
+                    return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能编辑");
+                }
+            }
+
             leaveService.SaveForm(keyValue, entity, strEntity, loginInfo);
+            if (isSubmit)
+            {
+                taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", loginInfo);
+            }
+            return ResponseResult.Success(entity);
+
         }
         #endregion
 

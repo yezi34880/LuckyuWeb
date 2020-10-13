@@ -15,7 +15,6 @@ namespace Luckyu.Utility
 
     public class ResponseResult : ResponseResultBase
     {
-
         public static ResponseResult Success(string info, object data = null)
         {
             var res = new ResponseResult

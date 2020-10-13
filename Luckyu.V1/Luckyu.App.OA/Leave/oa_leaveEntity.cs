@@ -10,7 +10,7 @@ namespace Luckyu.App.OA
     ///  oa_leave   
     /// </summary>
     [SugarTable("OA_LEAVE", "")]
-    public class oa_leaveEntity
+    public class oa_leaveEntity : ExtensionEntityBase
     {
         #region 属性
         /// <summary>

@@ -19,7 +19,6 @@ namespace Luckyu.Module.OAModule.Controllers
     {
         #region Var
         private LeaveBLL leaveBLL = new LeaveBLL();
-        private WFTaskBLL taskBLL = new WFTaskBLL();
 
         #endregion
 
@@ -39,19 +38,9 @@ namespace Luckyu.Module.OAModule.Controllers
         [HttpPost, AjaxOnly]
         public IActionResult DeleteForm(string keyValue)
         {
-            var entity = leaveBLL.GetEntity(r => r.id == keyValue);
-            if (entity == null)
-            {
-                return Fail("该数据不存在");
-            }
-            if (entity.state != (int)StateEnum.Draft)
-            {
-                return Fail("只有起草状态才能删除");
-            }
-
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            leaveBLL.DeleteForm(entity, loginInfo);
-            return Success();
+            var res = leaveBLL.DeleteForm(keyValue, loginInfo);
+            return Json(res);
         }
 
         #endregion
@@ -64,43 +53,17 @@ namespace Luckyu.Module.OAModule.Controllers
         [HttpGet]
         public IActionResult GetFormData(string keyValue)
         {
-            var entity = leaveBLL.GetEntity(r => r.id == keyValue);
-            if (entity == null)
-            {
-                return Fail("该数据不存在");
-            }
-            var dic = new Dictionary<string, object>
-            {
-                {"Leave",entity }
-            };
-            return Success(dic);
+            var res = leaveBLL.GetFormData(keyValue);
+            return Json(res);
         }
 
         [HttpPost, AjaxOnly]
         [ValidateAntiForgeryToken]
         public IActionResult SaveForm(string keyValue, string strEntity, bool isSubmit)
         {
-            var entity = strEntity.ToObject<oa_leaveEntity>();
-            if (!keyValue.IsEmpty())
-            {
-                var old = leaveBLL.GetEntity(r => r.id == keyValue);
-                if (old == null)
-                {
-                    return Fail("该数据不存在");
-                }
-                if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
-                {
-                    return Fail("只有起草状态才能编辑");
-                }
-            }
-
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            leaveBLL.SaveForm(keyValue, entity, strEntity, loginInfo);
-            if (isSubmit)
-            {
-                taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", loginInfo);
-            }
-            return Success(entity);
+            var res = leaveBLL.SaveForm(keyValue, strEntity, isSubmit, loginInfo);
+            return Json(res);
         }
 
         #endregion

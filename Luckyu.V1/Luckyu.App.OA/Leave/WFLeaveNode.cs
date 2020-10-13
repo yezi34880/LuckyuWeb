@@ -8,6 +8,9 @@ using Luckyu.Utility;
 
 namespace Luckyu.App.OA
 {
+    /// <summary>
+    /// 测试流程
+    /// </summary>
     public class WFLeaveNode : IWFNodeProcess
     {
         public void Approve(int result, string opinion)
