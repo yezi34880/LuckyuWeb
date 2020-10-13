@@ -17,7 +17,8 @@ namespace Luckyu.App.Workflow
         {
             var db = BaseRepository().db;
             var query = db.Queryable<wf_taskEntity, wf_task_authorizeEntity, wf_flow_instanceEntity>((t, ta, fi) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
-                .Where((t, ta, fi) => ta.user_id == loginInfo.user_id  // 用户
+                .Where((t, ta, fi) => t.is_done == 0 && t.is_finished == 0 &&
+                ta.user_id == loginInfo.user_id  // 用户
                 || loginInfo.group_ids.Contains(ta.group_id)   // 小组
                 || (SqlFunc.IsNullOrEmpty(ta.post_id) && SqlFunc.IsNullOrEmpty(ta.role_id) && ta.department_id == loginInfo.department_id)    // 按部门审批
                 || (SqlFunc.IsNullOrEmpty(ta.post_id) && SqlFunc.IsNullOrEmpty(ta.role_id) && ta.company_id == loginInfo.company_id)  // 按公司审批
@@ -115,7 +116,6 @@ namespace Luckyu.App.Workflow
                             trans.db.Ado.ExecuteCommand(sql, new { processId = instance.process_id });
                         }
                     }
-                    trans.Insert(listHistory);
                 }
 
                 trans.Commit();

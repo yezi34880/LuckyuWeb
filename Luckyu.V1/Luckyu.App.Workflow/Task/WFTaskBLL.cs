@@ -52,6 +52,11 @@ namespace Luckyu.App.Workflow
             var entity = taskService.GetEntity(condition);
             return entity;
         }
+        public wf_taskhistoryEntity GetHistoryEnttity(Expression<Func<wf_taskhistoryEntity, bool>> condition)
+        {
+            var entity = taskhistoryService.GetEntity(condition);
+            return entity;
+        }
         public wf_flow_instanceEntity GetInstanceEnttity(Expression<Func<wf_flow_instanceEntity, bool>> condition)
         {
             var entity = instanceService.GetEntity(condition);
@@ -365,7 +370,7 @@ namespace Luckyu.App.Workflow
                 var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
                 if (result == 1)
                 {
-                    lines = lines.Where(r => r.linecondition == "1" || r.linecondition == "0").ToList();
+                    lines = lines.Where(r => r.wftype == 1 || r.wftype == 0).ToList();
                     if (!nodeCurrent.sqlsuccess.IsEmpty())
                     {
                         listSql.Add(nodeCurrent.sqlsuccess);
@@ -373,7 +378,7 @@ namespace Luckyu.App.Workflow
                 }
                 else if (result == 2)
                 {
-                    lines = lines.Where(r => r.linecondition == "2" || r.linecondition == "0").ToList();
+                    lines = lines.Where(r => r.wftype == 2 || r.wftype == 0).ToList();
                     if (!nodeCurrent.sqlfail.IsEmpty())
                     {
                         listSql.Add(nodeCurrent.sqlfail);
@@ -557,12 +562,12 @@ namespace Luckyu.App.Workflow
                         if (resultCondition > 0)
                         {
                             historyCondition.opinion = "判断结果为【是】";
-                            currentLine = alllines.Where(r => r.from == nodeNext.id && r.linecondition == "1").FirstOrDefault();
+                            currentLine = alllines.Where(r => r.from == nodeNext.id && r.wftype == 1).FirstOrDefault();
                         }
                         else
                         {
                             historyCondition.opinion = "判断结果为【否】";
-                            currentLine = alllines.Where(r => r.from == nodeNext.id && r.linecondition == "2").FirstOrDefault();
+                            currentLine = alllines.Where(r => r.from == nodeNext.id && r.wftype == 2).FirstOrDefault();
                         }
                         listHistory.Add(historyCondition);
                     }

@@ -83,10 +83,13 @@ namespace Luckyu.App.OA
             leaveService.SaveForm(keyValue, entity, strEntity, loginInfo);
             if (isSubmit)
             {
-                taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", loginInfo);
+                var res = taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", loginInfo);
+                if (res.code != 200)
+                {
+                    return ResponseResult.Fail<oa_leaveEntity>(res.info);
+                }
             }
             return ResponseResult.Success(entity);
-
         }
         #endregion
 

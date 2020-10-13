@@ -17,7 +17,6 @@ var bootstrap = function (layui) {
                 altRows: true,//隔行换色
                 postData: { tasktype: $("input[name=tasktype]:checked").val() },
                 colModel: [
-                    //{ name: 'id', hidden: true, key: true },
                     { name: 'history_id', hidden: true },
                     { name: 'task_id', hidden: true },
                     { name: 'flow_id', hidden: true },
@@ -87,7 +86,7 @@ var bootstrap = function (layui) {
                 }
                 var row = grid.getRowData(rowid);
                 var btns = [];
-                if (!row.history_id) {
+                if (!!row.task_id && !row.history_id) {
                     if (row.nodetype === "auditornode") {
                         btns.push({
                             name: "已阅",
@@ -126,7 +125,7 @@ var bootstrap = function (layui) {
                     title: "审核/查看",
                     width: 1300,
                     height: 850,
-                    url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id,
+                    url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id + "&historyId=" + row.history_id,
                     btn: btns
                 });
             });

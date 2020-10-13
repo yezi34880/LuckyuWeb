@@ -37,7 +37,7 @@ namespace Luckyu.DataAccess
                 //用来打印Sql方便你调式    
                 db.Aop.OnLogExecuting = (sql, pars) =>
                 {
-                    var keywords = new string[] { "insert", "update", "delete", "alter", "drop" };
+                    var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
                     foreach (var keyword in keywords)
                     {
                         if (sql.ToLower().Contains(keyword))

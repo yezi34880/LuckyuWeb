@@ -12,7 +12,7 @@ namespace Luckyu.App.Workflow
 
         public string name { get; set; }
 
-        public string linecondition { get; set; }
+        public int wftype { get; set; }
 
         public string from { get; set; }
 

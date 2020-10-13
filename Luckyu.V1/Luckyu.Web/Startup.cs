@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +15,6 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Reflection;
 using UEditor.Core;
 
@@ -40,6 +37,8 @@ namespace Luckyu.Web
 
             services.AddDistributedMemoryCache();
             services.AddSession();
+            services.AddSignalR();
+            services.AddScoped<SignalRHelper>();
 
             // ¸½¼þÎÄ¼þ¼Ð
             var baseFilePath = AppSettingsHelper.GetAppSetting("AnnexPath");
@@ -172,6 +171,9 @@ namespace Luckyu.Web
                 endpoints.MapControllerRoute(
                     name: "areas",
                     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapHub<MessageHub>("/messagehub");
+
             });
         }
     }

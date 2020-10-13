@@ -39,32 +39,70 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         {
             return View();
         }
+
         [HttpGet]
-        public IActionResult GetFormData(string taskId)
+        public IActionResult GetFormData(string instanceId, string taskId, string historyId)
         {
-            var task = taskBLL.GetTaskEnttity(r => r.task_id == taskId);
-            if (task == null)
-            {
-                return Fail("该数据不存在");
-            }
-            var instance = taskBLL.GetInstanceEnttity(r => r.instance_id == task.instance_id);
+            var instance = taskBLL.GetInstanceEnttity(r => r.instance_id == instanceId);
             if (instance == null)
             {
                 return Fail("该数据不存在");
             }
             var scheme = instance.schemejson.ToObject<WFSchemeModel>();
-            var node = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+            // 展示节点 如 自己提交 就是startround 已办历史 就是自己批的那个
+            WFSchemeNodeModel showNode = new WFSchemeNodeModel();
+            // 当前待批节点
+            WFSchemeNodeModel currentNode = new WFSchemeNodeModel();
+            if (!historyId.IsEmpty())
+            {
+                // 已办历史
+                var history = taskBLL.GetHistoryEnttity(r => r.history_id == historyId);
+                if (history == null)
+                {
+                    return Fail("该数据不存在");
+                }
+                showNode = scheme.nodes.Where(r => r.id == history.node_id).FirstOrDefault();
 
-            var historys = taskBLL.GetHistoryTaskList(task.process_id, task.instance_id);
+                var task = taskBLL.GetTaskEnttity(r => r.instance_id == instance.instance_id && r.is_done == 0);
+                if (task != null)
+                {
+                    currentNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                }
+            }
+            else if (!taskId.IsEmpty())
+            {
+                // 待办
+                var task = taskBLL.GetTaskEnttity(r => r.task_id == taskId);
+                if (task == null)
+                {
+                    return Fail("该数据不存在");
+                }
+                showNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                currentNode = showNode;
+            }
+            else
+            {
+                // 自己发起的
+                showNode = scheme.nodes.Where(r => r.type == "startround").FirstOrDefault();
+                var task = taskBLL.GetTaskEnttity(r => r.instance_id == instance.instance_id && r.is_done == 0);
+                if (task != null)
+                {
+                    currentNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                }
+
+            }
+            var historys = taskBLL.GetHistoryTaskList(instance.process_id, instance.instance_id);
             var dic = new Dictionary<string, object>
             {
-                {"Task",task },
-                {"Node",node },
+                {"Instance",instance },
+                {"ShowNode",showNode },
+                {"CurrentNode",currentNode },
                 {"Scheme",  instance.schemejson },
                 { "History",historys}
             };
             return Success(dic);
         }
+
         [HttpGet]
         public IActionResult GetTaskLog(string processId, string instanceId)
         {

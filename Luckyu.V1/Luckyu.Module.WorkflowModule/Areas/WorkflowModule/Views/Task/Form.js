@@ -6,6 +6,7 @@ var bootstrap = function (layui) {
 
     var taskId = request("taskId");
     var instanceId = request("instanceId");
+    var historyId = request("historyId");
     var processId = request("processId");
 
     var page = {
@@ -86,7 +87,7 @@ var bootstrap = function (layui) {
     <div class="layui-timeline-content layui-text">\
         <h3 class="layui-timeline-title">'+ (row.nodename + ' ' + new Date(row.createtime).format("yyyy-MM-dd HH:mm:ss")) + '</h3>\
         <p>\
-         '+ (result +' ' + row.create_username )+ '<br />\
+         '+ (result + ' ' + row.create_username) + '<br />\
         '+ row.opinion + '\
         </p>\
     </div>\
@@ -104,17 +105,17 @@ var bootstrap = function (layui) {
             };
         },
         initData: function () {
-            luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { taskId: taskId }, function (data) {
+            luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId, taskId: taskId, historyId: historyId }, function (data) {
                 var htmlTab = '';
                 var htmlIframe = '';
-                for (var i = 0; i < data.Node.forms.length; i++) {
-                    var form = data.Node.forms[i];
+                for (var i = 0; i < data.ShowNode.forms.length; i++) {
+                    var form = data.ShowNode.forms[i];
                     var formurl = form.formurl;
                     if (formurl.indexOf("?") < 0) {
-                        formurl += '?keyValue=' + data.Task.process_id;
+                        formurl += '?keyValue=' + data.Instance.process_id;
                     }
                     else {
-                        formurl += '&keyValue=' + data.Task.process_id;
+                        formurl += '&keyValue=' + data.Instance.process_id;
                     }
                     if (i === 0) {
                         htmlTab += '<li class="layui-this">' + form.formname + '</li>';
@@ -161,30 +162,36 @@ var bootstrap = function (layui) {
                             node.state = '2';
                         }
                     }
-                    if (data.Node.id == node.id) {
+                    if (data.CurrentNode.id == node.id) {
                         node.state = '0';
                     }
                 }
                 $('#flow').dfworkflowSet('set', { data: shceme });
             });
+
         }
     };
     page.init();
 
     approveClick = function (layerIndex, callBack) {
         luckyu.layer.layerFormTop({
-            id: "Form",
-            title: "审核/查看",
-            width: 1300,
-            height: 850,
+            id: "FormApp",
+            title: "审核",
+            width: 600,
+            height: 400,
             url: luckyu.rootUrl + "/WorkflowModule/Task/ApproveForm",
             btn: [{
-                name: "加签",
+                name: "确定",
                 callback: function (index, layero) {
-                    var res = layero.find("iframe")[0].contentWindow.adduserClick(index);
+                    var res = layero.find("iframe")[0].contentWindow.saveClick(index);
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: res.result, opinion: res.opinion }, function (data) {
-                        parent.layui.layer.close(index);
+                        parent.layui.layer.close(layerIndex);
                     });
+                }
+            }, {
+                name: "取消",
+                callback: function (index, layero) {
+
                 }
             }]
         });

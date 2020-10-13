@@ -12,8 +12,8 @@ var bootstrap = function () {
             page.initData();
         },
         bind: function () {
-            $("#linecondition").initLocal({
-                initValue: "normal",
+            $("#wftype").initLocal({
+                initValue: "0",
                 data: [
                     { name: '正常流转', value: '0' },
                     { name: '是', value: '1' },

@@ -38,7 +38,7 @@ var bootstrap = function (layui) {
     };
     page.init();
 
-    saveClick = function (layerIndex, callback) {
+    saveClick = function (layerIndex, callBack) {
         if (!$(".layui-form").verifyForm()) {
             return false;
         }
@@ -49,8 +49,8 @@ var bootstrap = function (layui) {
             isSubmit: false
         }, function (data) {
             keyValue = data.id;
-            if (!!callback) {
-                callback();
+            if (!!callBack) {
+                callBack();
             }
             parent.layui.layer.close(layerIndex);
         });
@@ -60,17 +60,19 @@ var bootstrap = function (layui) {
         if (!$(".layui-form").verifyForm()) {
             return false;
         }
-        var formData = $('[lay-filter="Leave"]').getFormValue();
-        luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
-            keyValue: keyValue,
-            strEntity: JSON.stringify(formData),
-            isSubmit: true
-        }, function (data) {
-            keyValue = data.id;
-            if (!!callback) {
-                callback();
-            }
-            parent.layui.layer.close(layerIndex);
+        luckyu.layer.layerConfirm('确定要删除该数据吗？', function () {
+            var formData = $('[lay-filter="Leave"]').getFormValue();
+            luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
+                keyValue: keyValue,
+                strEntity: JSON.stringify(formData),
+                isSubmit: true
+            }, function (data) {
+                keyValue = data.id;
+                if (!!callBack) {
+                    callBack();
+                }
+                parent.layui.layer.close(layerIndex);
+            });
         });
     };
 

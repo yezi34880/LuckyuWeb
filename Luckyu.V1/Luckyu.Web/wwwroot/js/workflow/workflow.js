@@ -242,7 +242,7 @@
 
 
                     if (!lineData.marked) {
-                        if (lineData.linecondition == '2') {
+                        if (lineData.wftype == '2') {
                             $item[0].childNodes[1].setAttribute("stroke", "#ff3300");
                             $item[0].childNodes[1].setAttribute("marker-end", "url(#arrow2)");
                         }
@@ -773,7 +773,7 @@
             return [X, Y];
         },
         // 绘制一条箭头线，并返回线的DOM
-        drawLine: function (linecondition, id, sp, ep, mark, dash, cursor) {
+        drawLine: function (wftype, id, sp, ep, mark, dash, cursor) {
             var line;
             line = document.createElementNS("http://www.w3.org/2000/svg", "g");
             var hi = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -798,7 +798,7 @@
                 path.setAttribute("stroke", "#3498DB");//ff3300
                 path.setAttribute("marker-end", "url(#arrow3)");
             }
-            else if (linecondition == '2') {
+            else if (wftype == '2') {
                 path.setAttribute("stroke", "#ff0000");//ff3300
                 path.setAttribute("marker-end", "url(#arrow2)");
             }
@@ -806,7 +806,7 @@
                 path.setAttribute("stroke", "gray");
                 path.setAttribute("marker-end", "url(#arrow1)");
             }
-            ///console.log(linecondition);
+            ///console.log(wftype);
 
             line.appendChild(hi);
             line.appendChild(path);
@@ -826,7 +826,7 @@
             return line;
         },
         //画一条只有两个中点的折线
-        drawPoly: function (linecondition, id, sp, m1, m2, ep, mark) {
+        drawPoly: function (wftype, id, sp, m1, m2, ep, mark) {
             var poly, strPath;
             poly = document.createElementNS("http://www.w3.org/2000/svg", "g");
             var hi = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -855,7 +855,7 @@
                 path.setAttribute("stroke", "#3498DB");//ff3300
                 path.setAttribute("marker-end", "url(#arrow3)");
             }
-            else if (linecondition == '2') {
+            else if (wftype == '2') {
                 path.setAttribute("stroke", "#ff0000");//ff3300
                 path.setAttribute("marker-end", "url(#arrow2)");
             }
@@ -909,16 +909,16 @@
             var sxy = $.dfworkflow.getLineSpotXY(line.from, DefaultOption, line.sp);
             var exy = $.dfworkflow.getLineSpotXY(line.to, DefaultOption, line.ep);
             line.name = line.name || '';
-            line.linecondition = line.linecondition || '1';
+            line.wftype = line.wftype || '1';
             DefaultOption.line.push(line);
 
             if (line.type && line.type != "sl") {
                 var res = $.dfworkflow.calcPolyPoints(sxy, exy, line.type, line.M);
-                $line = $.dfworkflow.drawPoly(line.linecondition, line.id, res.start, res.m1, res.m2, res.end, line.mark);
+                $line = $.dfworkflow.drawPoly(line.wftype, line.id, res.start, res.m1, res.m2, res.end, line.mark);
             }
             else {
                 line.type = "sl";//默认为直线
-                $line = $.dfworkflow.drawLine(line.linecondition, line.id, sxy, exy, line.mark);
+                $line = $.dfworkflow.drawLine(line.wftype, line.id, sxy, exy, line.mark);
             }
             var $draw = $('#' + DefaultOption.id).find('svg');
 
@@ -943,11 +943,11 @@
                     $('#' + line.id).remove();
 
                     if (line.type == "sl") {
-                        $line = $.dfworkflow.drawLine(line.linecondition, line.id, sxy, exy, line.mark);
+                        $line = $.dfworkflow.drawLine(line.wftype, line.id, sxy, exy, line.mark);
                     }
                     else {
                         var res = $.dfworkflow.calcPolyPoints(sxy, exy, line.type, line.M);
-                        $line = $.dfworkflow.drawPoly(line.linecondition, line.id, res.start, res.m1, res.m2, res.end, line.mark);
+                        $line = $.dfworkflow.drawPoly(line.wftype, line.id, res.start, res.m1, res.m2, res.end, line.mark);
                     }
                     var $draw = $('#' + DefaultOption.id).find('svg');
                     $($line)[0].DefaultOption = DefaultOption;
@@ -987,7 +987,7 @@
                 $lineMove.hide().removeData("type").removeData("tid");
 
                 $line.remove();
-                $line = $.dfworkflow.drawLine(lineData.linecondition, lineData.id, sxy, exy, lineData.mark);
+                $line = $.dfworkflow.drawLine(lineData.wftype, lineData.id, sxy, exy, lineData.mark);
                 var $draw = $('#' + DefaultOption.id).find('svg');
                 $($line)[0].DefaultOption = DefaultOption;
                 $draw.append($line);
@@ -1019,7 +1019,7 @@
 
             $('#' + id).remove();
             console.log(lineData);
-            var $line = $.dfworkflow.drawPoly(lineData.linecondition, id, ps.start, ps.m1, ps.m2, ps.end, lineData.marked || DefaultOption.focusId == id);
+            var $line = $.dfworkflow.drawPoly(lineData.wftype, id, ps.start, ps.m1, ps.m2, ps.end, lineData.marked || DefaultOption.focusId == id);
             var $draw = $('#' + DefaultOption.id).find('svg');
 
             $($line)[0].DefaultOption = DefaultOption;
@@ -1053,7 +1053,7 @@
             var DefaultOption = $workArea[0].DefaultOption;
             var lineData = $.dfworkflow.getLine(DefaultOption, lineId);
             $line.find('text').html(lineData.name);
-            if (lineData.linecondition == '2') {
+            if (lineData.wftype == '2') {
                 $line[0].childNodes[1].setAttribute("stroke", "#ff3300");
                 $line[0].childNodes[1].setAttribute("marker-end", "url(#arrow2)");
             }
