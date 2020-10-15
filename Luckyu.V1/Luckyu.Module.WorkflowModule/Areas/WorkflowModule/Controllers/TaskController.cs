@@ -142,14 +142,6 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             var res = taskBLL.AddUser(taskId, userId, loginInfo);
             return Json(res);
         }
-
-        [AjaxOnly, HttpPost]
-        public IActionResult Finish(string instanceId)
-        {
-            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = taskBLL.Finish(instanceId, loginInfo);
-            return Json(res);
-        }
         #endregion
 
     }

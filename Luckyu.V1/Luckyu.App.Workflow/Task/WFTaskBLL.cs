@@ -93,6 +93,13 @@ namespace Luckyu.App.Workflow
             return list;
         }
 
+        public JqgridPageResponse<WFTaskModel> MonitorPage(JqgridPageRequest jqPage)
+        {
+            var page = taskService.MonitorPage(jqPage);
+            var page1 = page.Adapt<JqgridPageResponse<WFTaskModel>>();
+            return page1;
+        }
+
         #endregion
 
         /// <summary>
@@ -454,6 +461,10 @@ namespace Luckyu.App.Workflow
         /// <returns></returns>
         public ResponseResult Finish(string instanceId, UserModel loginInfo)
         {
+            //if (loginInfo.modules.IsEmpty() || !loginInfo.modules.Exists(r => r.moduleurl.Contains("/WorkflowModule/Monitor/Index")))
+            //{
+            //    return ResponseResult.Fail("当前账户没有终止流程的权限");
+            //}
             var instance = instanceService.GetEntity(r => r.instance_id == instanceId);
             if (instance == null)
             {

@@ -1,0 +1,35 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<div class="formbackgroud">
+    <div class="layui-row index-header">
+        <div class="pull-left">
+            <div class="layui-btn-group">
+                <button type="button" id="searchfilter" class="layui-btn layui-btn-sm">
+                    <i class="fa fa-filter"></i>
+                    筛选
+                </button>
+                <button type="button" id="reset" class="layui-btn layui-btn-sm">
+                    <i class="layui-icon layui-icon-refresh-1"></i>
+                    重置
+                </button>
+            </div>
+        </div>
+
+        <div class="pull-right">
+            <div class="layui-btn-group">
+                <button type="button" id="finish" class="layui-btn layui-btn-sm"><i class="fa fa-stop-circle"></i>&nbsp;终止/查看</button>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row">
+        <table id="grid"></table>
+        <div id="gridPager"></div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/WorkflowModule/Views/Monitor/Index.js")
+}
+

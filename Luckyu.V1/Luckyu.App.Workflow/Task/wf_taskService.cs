@@ -37,6 +37,13 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
+        public JqgridPageResponse<wf_taskEntity> MonitorPage(JqgridPageRequest jqPage)
+        {
+            Expression<Func<wf_taskEntity, bool>> exp = r => r.is_done == 0;
+            var page = BaseRepository().GetPage(jqPage, exp);
+            return page;
+        }
+
         public void Create(wf_flow_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
         {
             var trans = BaseRepository().BeginTrans();

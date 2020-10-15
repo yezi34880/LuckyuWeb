@@ -1,5 +1,5 @@
 ﻿/*
- *  我的任务
+ *  流程监控
  */
 var bootstrap = function (layui) {
     "use strict";
@@ -12,12 +12,11 @@ var bootstrap = function (layui) {
         },
         initGrid: function () {
             grid = grid.LuckyuGrid({
-                url: luckyu.rootUrl + "/WorkflowModule/Task/Page",
+                url: luckyu.rootUrl + "/WorkflowModule/Monitor/Page",
                 datatype: "json",
                 altRows: true,//隔行换色
                 postData: { tasktype: $("input[name=tasktype]:checked").val() },
                 colModel: [
-                    { name: 'history_id', hidden: true },
                     { name: 'task_id', hidden: true },
                     { name: 'flow_id', hidden: true },
                     { name: 'instance_id', hidden: true },
@@ -25,17 +24,6 @@ var bootstrap = function (layui) {
                     { name: 'nodetype', hidden: true },
                     { name: 'flowname', label: "流程名称", width: 120 },
                     { name: 'processname', label: "实例信息", width: 150 },
-                    {
-                        name: 'is_finished', label: "是否完结", width: 60, search: false, align: "center",
-                        formatter: function (cellvalue, options, row) {
-                            if (cellvalue === 1) {
-                                return '<span class="label label-success">完成</span>';
-                            }
-                            else {
-                                return '<span class="label label-primary">运行中</span>';
-                            }
-                        }
-                    },
                     {
                         name: 'submit_username', label: "提交人", width: 80,
                     },
@@ -78,55 +66,28 @@ var bootstrap = function (layui) {
                 grid.clearSearchBar();
             });
 
-            $("#aduit").click(function () {
+            $("#button").click(function () {
                 var rowid = grid.getGridParam("selrow");
                 if (!rowid) {
                     layui.notice.error("没有选中任何行数据");
                     return;
                 }
                 var row = grid.getRowData(rowid);
-                var btns = [];
-                if (!!row.task_id && !row.history_id) {
-                    if (row.nodetype === "auditornode") {
-                        btns.push({
-                            name: "已阅",
-                            callback: function (index, layero) {
-                                layero.find("iframe")[0].contentWindow.readClick(index, function () {
-                                    page.searchInCurrentPage();
-                                });
-                                return false;
-                            }
-                        });
-                    }
-                    else {
-                        btns.push({
-                            name: "审核",
-                            callback: function (index, layero) {
-                                layero.find("iframe")[0].contentWindow.approveClick(index, function () {
-                                    page.searchInCurrentPage();
-                                });
-                                return false;
-                            }
-                        });
-                        btns.push({
-                            name: "加签",
-                            callback: function (index, layero) {
-                                layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
-                                    page.searchInCurrentPage();
-                                });
-                                return false;
-                            }
-                        });
-
-                    }
-                }
                 luckyu.layer.layerFormTop({
                     id: "Form",
                     title: "审核/查看",
                     width: 1300,
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id + "&historyId=" + row.history_id,
-                    btn: btns
+                    btn: [{
+                        name: "终止",
+                        callback: function (index, layero) {
+                            layero.find("iframe")[0].contentWindow.finishClick(index, function () {
+                                page.searchInCurrentPage();
+                            });
+                            return false;
+                        }
+                    }]
                 });
             });
 

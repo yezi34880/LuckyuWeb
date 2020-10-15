@@ -1,7 +1,7 @@
 ﻿/**
  * 审批
  */
-var approveClick, adduserClick, readClick;
+var approveClick, adduserClick, readClick, finishClick;
 var bootstrap = function (layui) {
 
     var taskId = request("taskId");
@@ -185,6 +185,9 @@ var bootstrap = function (layui) {
                 callback: function (index, layero) {
                     var res = layero.find("iframe")[0].contentWindow.saveClick(index);
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: res.result, opinion: res.opinion }, function (data) {
+                        if (!!callBack) {
+                            callBack();
+                        }
                         parent.layui.layer.close(layerIndex);
                     });
                 }
@@ -204,6 +207,9 @@ var bootstrap = function (layui) {
                 var username = luckyu.clientdata.getUserName(userId);
                 luckyu.layer.layerConfirm("确定邀请 " + username + " 加签审批？", function () {
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userId: userId }, function (data) {
+                        if (!!callBack) {
+                            callBack();
+                        }
                         parent.layui.layer.close(layerIndex);
                     });
                 });
@@ -213,8 +219,22 @@ var bootstrap = function (layui) {
     readClick = function (layerIndex, callBack) {
         luckyu.layer.layerConfirm("确定已阅？", function () {
             luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: 0, opinion: '' }, function (data) {
+                if (!!callBack) {
+                    callBack();
+                }
                 parent.layui.layer.close(layerIndex);
             });
         });
+    };
+    finishClick = function (layerIndex, callBack) {
+        luckyu.layer.layerConfirm("确定终止该流程？", function () {
+            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Finish', { instanceId: instanceId }, function (data) {
+                if (!!callBack) {
+                    callBack();
+                }
+                parent.layui.layer.close(layerIndex);
+            });
+        });
+
     };
 };
