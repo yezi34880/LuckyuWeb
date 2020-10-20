@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DeviceDetectorNET;
+using Luckyu.App.OA;
 using Luckyu.App.Organization;
 using Luckyu.App.System;
 using Luckyu.App.Workflow;
@@ -19,6 +20,7 @@ namespace Luckyu.Web.Controllers
         private ModuleBLL moduleBLL = new ModuleBLL();
         private UserBLL userBLL = new UserBLL();
         private WFTaskBLL taskBLL = new WFTaskBLL();
+        private NewsBLL newsBLL = new NewsBLL();
 
         #endregion
 
@@ -137,9 +139,12 @@ namespace Luckyu.Web.Controllers
             };
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             var page = taskBLL.Page(jqPage, 1, loginInfo);
+
+            var pageNews = newsBLL.ShowPage(jqPage, loginInfo);
+
             var dic = new Dictionary<string, object>();
             dic.Add("Task", page.rows);
-
+            dic.Add("News", pageNews.rows);
             return Success(dic);
         }
         #endregion

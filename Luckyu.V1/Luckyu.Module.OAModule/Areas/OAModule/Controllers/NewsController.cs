@@ -80,5 +80,22 @@ namespace Luckyu.Module.OAModule.Controllers
 
         #endregion
 
+        #region Show
+        public IActionResult ShowIndex()
+        {
+            return View();
+        }
+        public IActionResult ShowPage(JqgridPageRequest jqPage)
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var page = newsBLL.ShowPage(jqPage, loginInfo);
+            return Json(page);
+        }
+        public IActionResult Show(string keyValue)
+        {
+            var news = newsBLL.GetEntity(r => r.id == keyValue) ?? new oa_newsEntity();
+            return View(news);
+        }
+        #endregion
     }
 }

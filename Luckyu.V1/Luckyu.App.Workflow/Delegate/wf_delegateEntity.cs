@@ -32,12 +32,6 @@ namespace Luckyu.App.Workflow
         public string username { get; set; }
 
         /// <summary>
-        ///  user_id   
-        /// </summary>
-        [SugarColumn(ColumnName = "USER_ID", ColumnDescription = "")]
-        public string user_id { get; set; }
-
-        /// <summary>
         ///  department_id   
         /// </summary>
         [SugarColumn(ColumnName = "DEPARTMENT_ID", ColumnDescription = "")]

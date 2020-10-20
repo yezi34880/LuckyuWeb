@@ -35,8 +35,4 @@
     <ProjectReference Include="..\Luckyu.App.System\Luckyu.App.System.csproj" />
     <ProjectReference Include="..\Luckyu.App.Workflow\Luckyu.App.Workflow.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\WorkflowModule\Views\Delegate\" />
-  </ItemGroup>
 </Project>

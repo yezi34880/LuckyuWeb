@@ -23,6 +23,11 @@ namespace Luckyu.App.OA
             var page = newsService.Page(jqpage, loginInfo);
             return page;
         }
+        public JqgridPageResponse<oa_newsEntity> ShowPage(JqgridPageRequest jqpage, UserModel loginInfo)
+        {
+            var page = newsService.ShowPage(jqpage, loginInfo);
+            return page;
+        }
 
         public oa_newsEntity GetEntity(Expression<Func<oa_newsEntity, bool>> condition, Expression<Func<oa_newsEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
         {

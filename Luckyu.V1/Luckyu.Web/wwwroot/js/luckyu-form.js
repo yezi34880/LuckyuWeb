@@ -37,13 +37,23 @@
                             multiple = multiple === "true" ? true : false;
                             self.initDataItem({ code: code, multiple: multiple });
                         }
-                        else if (type ==="datalocal") {
+                        else if (type === "datalocal") {
                             var data = self.attr("luckyu-data");
                             var jsonData = JSON.parse(data);
                             var multiple = self.attr("luckyu-multiple");
                             multiple = multiple === "true" ? true : false;
                             self.initLocal({ data: jsonData, multiple: multiple });
                         }
+                    });
+                    $(this).find(".luckyu-editor").each(function () {
+                        var self = $(this);
+                        var id = self.attr("id");
+                        var height = self.height();
+                        debugger;
+                        UE.getEditor(id, {
+                            initialFrameHeight: !height ? 400 : height,
+                            autoHeight: true
+                        });
                     });
                 },
                 /**
@@ -153,7 +163,7 @@
                                     break;
                                 case "checkbox":
                                     if (self.is(":checked")) {
-                                        objData[name] = 1;
+                                        objData[name] = !!self.val() ? self.val() : 0;
                                     } else {
                                         objData[name] = 0;
                                     }
@@ -213,14 +223,13 @@
                                     layui.form.render("radio");
                                     break;
                                 case "checkbox":
-                                    $obj.prop("checked", value === 1);
+                                    $obj.prop("checked", !(value === 0));
                                     layui.form.render("checkbox");
                                     break;
                                 case "datetime":
                                     if (!!value) {
-                                        debugger;
                                         var format = 'yyyy-MM-dd';;
-                                        if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt ) {
+                                        if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
                                             format = $obj[0].initcfg.dateFmt;
                                         }
                                         var val = (new Date(value)).format(format);

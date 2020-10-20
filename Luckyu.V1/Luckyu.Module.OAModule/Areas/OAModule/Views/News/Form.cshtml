@@ -1,1 +1,58 @@
 ﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+
+}
+
+<div lay-filter="News">
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">分类</label>
+        <div class="layui-input-block">
+            <div id="catetory" class="xm-select" lay-verify="required" luckyu-type="dataitem" luckyu-code="newscatetory"></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-block">
+            <input id="publishtime" type="text" class="layui-input Wdate" lay-verify="required" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
+            <input id="title" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">来源</label>
+        <div class="layui-input-block">
+            <input id="source" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">关键词</label>
+        <div class="layui-input-block">
+            <input id="keywords" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_publish" title="是否直接发布" lay-skin="primary" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">内容</label>
+        <div class="layui-input-block">
+            <script id="contents"type="text/plain" class="luckyu-editor"></script>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OAModule/Views/News/Form.js")
+}
+
+

@@ -32,6 +32,25 @@ namespace Luckyu.App.OA
             var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
             return page;
         }
+        public JqgridPageResponse<oa_newsEntity> ShowPage(JqgridPageRequest jqPage, UserModel loginInfo)
+        {
+            Expression<Func<oa_newsEntity, bool>> exp = r => r.is_delete == 0 && r.is_publish == 1;
+
+            #region 查询条件
+            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            dicCondition.Add("catetory",
+                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                );
+            dicCondition.Add("publishtime",
+                (field, data) => SearchConditionHelper.GetDateCondition(field, data)
+                );
+            #endregion
+
+            jqPage.sord = "";
+            jqPage.sidx = "sort DESC,publishtime DESC";
+            var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
+            return page;
+        }
 
         public void DeleteForm(oa_newsEntity entity, UserModel loginInfo)
         {

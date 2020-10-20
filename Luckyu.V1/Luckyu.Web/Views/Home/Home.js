@@ -14,6 +14,9 @@
             $("#moretask").click(function () {
                 top.layui.index.openTabsPage('/WorkflowModule/Task/Index', '我的任务');
             });
+            $("#newsMore").click(function () {
+                top.layui.index.openTabsPage('/NewsModule/News/ShowIndex', '我的消息');
+            });
         },
         refrash: function () {
             luckyu.ajax.getNoloading('/Home/Refrash', {}, function (res) {
@@ -24,7 +27,7 @@
                         html += '\
 <div class="ahoit-msg-line">\
     <a style="text-decoration: none;" luckyu-nodetype="'+ row.nodetype + '" luckyu-taskId="' + row.task_id + '" luckyu-instanceId="' + row.instance_id + '" luckyu-processId="' + row.process_id + '" title="' + row.processname + '">●&nbsp;&nbsp;【' + row.flowname + '】' + row.processname + ' </a>\
-    <label>'+ row.createtime + '</label>\
+    <label>'+ new Date(row.createtime).format("yy-MM-dd") + '</label>\
 </div>';
                     }
                     $("#task").html(html);
@@ -76,6 +79,29 @@
                             btn: btns
                         });
                     });
+
+                    for (var i = 0; i < res.data.News.length; i++) {
+                        var row = res.data.News[i];
+                        html += '\
+<div class="ahoit-msg-line">\
+    <a style="text-decoration: none;" luckyu-id="' + row.id + '"  title="' + row.title + '">●&nbsp;&nbsp;【' + row.catetory + '】' + row.title + ' </a>\
+    <label>'+ new Date(row.publishtime).format("yyyy-MM-dd") + '</label>\
+</div>';
+                    }
+                    $("#news").html(html);
+                    $("#news div.ahoit-msg-line a").click(function () {
+                        var self = $(this);
+                        var id = self.attr("id");
+                        var title = self.attr("title");
+                        luckyu.layer.layerFormTop({
+                            id: "Form",
+                            title: title,
+                            width: 1300,
+                            height: 850,
+                            url: luckyu.rootUrl + "/OAModule/News/ShowForm?keyValue=" + id,
+                        });
+                    });
+
                 }
             });
         }

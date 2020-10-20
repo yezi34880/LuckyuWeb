@@ -52,7 +52,6 @@ var bootstrap = function (layui) {
             if (!!callBack) {
                 callBack();
             }
-            parent.layui.layer.close(layerIndex);
         });
     };
 
