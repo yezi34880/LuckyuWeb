@@ -48,12 +48,7 @@ namespace Luckyu.Web
             }
 
             // UEditor
-            var uploadPath = FileHelper.Combine(baseFilePath, "UEditor");
-            if (!Directory.Exists(uploadPath))
-            {
-                Directory.CreateDirectory(uploadPath);
-            }
-            services.AddUEditorService(@"lib\ueditor\config\config.json", true, uploadPath);
+            services.AddUEditorService();
 
             var builder = services.AddControllersWithViews(options =>
            {
@@ -155,6 +150,21 @@ namespace Luckyu.Web
                             { ".js", "application/javascript" },
                             { ".css", "text/css" },
                         })
+            });
+            // UEditor ÉÏ´«
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "UEUpload");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(path),
+                RequestPath = "/UEUpload",
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=36000");
+                }
             });
 
             app.UseSession();

@@ -49,9 +49,9 @@
                         var self = $(this);
                         var id = self.attr("id");
                         var height = self.height();
-                        debugger;
+                        height = !height ? 500 : height;
                         UE.getEditor(id, {
-                            initialFrameHeight: !height ? 400 : height,
+                            initialFrameHeight: height,
                             autoHeight: true
                         });
                     });
@@ -163,7 +163,8 @@
                                     break;
                                 case "checkbox":
                                     if (self.is(":checked")) {
-                                        objData[name] = !!self.val() ? self.val() : 0;
+                                        var val = self.val();
+                                        objData[name] = !val || val === "on" ? 1 : self.val();
                                     } else {
                                         objData[name] = 0;
                                     }
@@ -308,7 +309,6 @@
                                 case "datetime":
                                     if (!!value) {
                                         var format = 'yyyy-MM-dd';;
-                                        debugger;
                                         if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
                                             format = $obj[0].initcfg.dateFmt;
                                         }

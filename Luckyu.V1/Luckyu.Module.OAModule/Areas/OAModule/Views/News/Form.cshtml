@@ -40,13 +40,19 @@
     </div>
     <div class="form-item layui-col-xs6">
         <div class="layui-input-block">
-            <input type="checkbox" id="is_publish" title="是否直接发布" lay-skin="primary" />
+            <input type="checkbox" id="is_publish" title="是否直接发布" lay-skin="primary" checked />
         </div>
     </div>
     <div class="form-item layui-col-xs6">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_top" title="是否置顶" lay-skin="primary" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-            <script id="contents"type="text/plain" class="luckyu-editor"></script>
+            <script id="contents" type="text/plain" style="height:350px;" class="luckyu-editor">
+            </script>
         </div>
     </div>
 </div>

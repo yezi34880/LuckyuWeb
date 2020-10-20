@@ -86,8 +86,8 @@ var bootstrap = function (layui) {
                 luckyu.layer.layerFormTop({
                     id: "Form",
                     title: "新增",
-                    width: 800,
-                    height: 650,
+                    width: 1100,
+                    height: 750,
                     url: luckyu.rootUrl + "/OAModule/News/Form",
                     btn: [{
                         name: "保存",
@@ -108,9 +108,9 @@ var bootstrap = function (layui) {
                 }
                 luckyu.layer.layerFormTop({
                     id: "Form",
-                    title: "修改/查看-" + rowid,
-                    width: 800,
-                    height: 650,
+                    title: "修改/查看" ,
+                    width: 1100,
+                    height: 750,
                     url: luckyu.rootUrl + "/OAModule/News/Form?keyValue=" + rowid,
                     btn: [{
                         name: "保存",

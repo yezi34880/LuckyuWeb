@@ -15,7 +15,7 @@ var bootstrap = function (layui) {
             var loading = luckyu.layer.loading();
 
             $("#parent_id").initSelectTree({
-                url: luckyu.rootUrl + "/OrganizationModule/Module/GetSelectTree"
+                url: luckyu.rootUrl + "/OrganizationModule/Module/GetSelectTree",
             });
 
             layui.layer.close(loading);

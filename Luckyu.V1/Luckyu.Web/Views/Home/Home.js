@@ -15,7 +15,7 @@
                 top.layui.index.openTabsPage('/WorkflowModule/Task/Index', '我的任务');
             });
             $("#newsMore").click(function () {
-                top.layui.index.openTabsPage('/NewsModule/News/ShowIndex', '我的消息');
+                top.layui.index.openTabsPage('/OAModule/News/ShowIndex', '消息中心');
             });
         },
         refrash: function () {
