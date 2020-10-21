@@ -20,14 +20,14 @@ var bootstrap = function (layui) {
                     { name: 'id', hidden: true, key: true },
                     { name: 'catetory', label: "分类", width: 80, search: false },
                     { name: 'title', label: "标题", width: 200, search: false },
-                    { name: 'source', label: "来源", width: 100, search: false  },
-                    { name: 'keywords', label: "关键词", width: 100, search: false  },
+                    { name: 'source', label: "来源", width: 100, search: false },
+                    { name: 'keywords', label: "关键词", width: 100, search: false },
                     {
-                        name: 'publishtime', label: "发布时间", width: 100, align: "right", search: false ,
+                        name: 'publishtime', label: "发布时间", width: 100, align: "right", search: false,
                         formatter: "date", formatoptions: { newformat: 'Y-m-d' },
                         stype: "daterange"
                     },
-                    { name: 'remark', label: "备注", width: 100, search: false }
+                    { name: 'remark', label: "备注", width: 100, search: false },
                 ],
                 rownumbers: true,
                 viewrecords: true,
@@ -45,6 +45,14 @@ var bootstrap = function (layui) {
                     if (!!slectRowId) {
                         $(this).jqGrid('setSelection', slectRowId);
                     }
+
+                    var rows = $(this).getRawRowData();
+                    for (var i = 0; i < rows.length; i++) {
+                        if (rows[i].sort > 0) {
+                            $(this).find("#" + rows[i].id).css("font-weight", "bold");
+                        }
+                    }
+
                 },
             });
             grid.filterToolbar();
@@ -68,11 +76,12 @@ var bootstrap = function (layui) {
                     layui.notice.error("没有选中任何行数据");
                     return;
                 }
+                var row = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
                     id: "Form",
-                    title: "查看-" + rowid,
-                    width: 800,
-                    height: 650,
+                    title: row.title,
+                    width: 1300,
+                    height: 850,
                     url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + rowid,
                 });
             });

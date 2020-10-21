@@ -61,7 +61,6 @@ namespace Luckyu.Web
                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";   // 设置时间格式
            });
 
-
             // 动态加载 模块程序集
             var fileNames = Directory.GetFiles(AppContext.BaseDirectory, "Luckyu.Module.*.dll");
             foreach (var name in fileNames)
@@ -152,7 +151,7 @@ namespace Luckyu.Web
                         })
             });
             // UEditor 上传
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "UEUpload");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "upload");
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -160,7 +159,7 @@ namespace Luckyu.Web
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(path),
-                RequestPath = "/UEUpload",
+                RequestPath = "/upload",
                 OnPrepareResponse = ctx =>
                 {
                     ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=36000");

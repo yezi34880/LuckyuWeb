@@ -4,15 +4,41 @@
 }
 
 @section Header{
+    <style>
+        .header {
+            font: 25px 黑体;
+            text-align: center;
+            margin-bottom: 10px;
+        }
 
+        .source {
+            font: 16px 黑体;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .contents {
+            margin-bottom: 10px;
+        }
+    </style>
 }
+<div class="layui-card">
+    <div class="layui-card-body">
+        <div class="layui-col-xs12">
+            <div class="header">
+                @Model.title
+            </div>
+        </div>
+        <div class="layui-col-xs12">
+            <div class="source">
+                @Model.source &nbsp;&nbsp;&nbsp;&nbsp; @Model.publishtime.ToString("yyyy-MM-dd")
+            </div>
+        </div>
+        <div class="layui-col-xs12">
+            <div class="contents">
+                @Html.Raw(Model.contents)
+            </div>
+        </div>
+    </div>
+</div>
 
-<div class="layui-col-xs12">
-    <h4>@Model.title</h4>
-</div>
-<div class="layui-col-xs12">
-    <div>@Model.source  @Model.publishtime.ToString("yyyy-MM-dd")</div>
-</div>
-<div class="layui-col-xs12">
-    @Html.Raw(Model.contents)
-</div>

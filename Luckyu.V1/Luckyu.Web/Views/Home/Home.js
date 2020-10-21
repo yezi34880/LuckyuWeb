@@ -11,6 +11,15 @@
             page.refrash();
         },
         bind: function () {
+            if (!!top.layui.element) {
+                top.layui.element.on('tab(layadmin-layout-tabs)', function (data) {
+                    var id = $(this).attr("lay-id");
+                    if (!!id && id === "home") {
+                        page.refrash();
+                    }
+                });
+            }
+
             $("#moretask").click(function () {
                 top.layui.index.openTabsPage('/WorkflowModule/Task/Index', '我的任务');
             });
@@ -83,22 +92,22 @@
                     for (var i = 0; i < res.data.News.length; i++) {
                         var row = res.data.News[i];
                         html += '\
-<div class="ahoit-msg-line">\
-    <a style="text-decoration: none;" luckyu-id="' + row.id + '"  title="' + row.title + '">●&nbsp;&nbsp;【' + row.catetory + '】' + row.title + ' </a>\
+<div class="ahoit-msg-line ' + (row.sort > 0 ? 'istop' : '') + '" >\
+    <a style="text-decoration: none;" luckyu-id="' + row.id + '"  title="' + row.title + '">●&nbsp;&nbsp;【' + row.catetory + '】' + row.title + '</a>\
     <label>'+ new Date(row.publishtime).format("yyyy-MM-dd") + '</label>\
 </div>';
                     }
                     $("#news").html(html);
                     $("#news div.ahoit-msg-line a").click(function () {
                         var self = $(this);
-                        var id = self.attr("id");
+                        var id = self.attr("luckyu-id");
                         var title = self.attr("title");
                         luckyu.layer.layerFormTop({
                             id: "Form",
                             title: title,
                             width: 1300,
                             height: 850,
-                            url: luckyu.rootUrl + "/OAModule/News/ShowForm?keyValue=" + id,
+                            url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + id,
                         });
                     });
 
