@@ -48,7 +48,7 @@ namespace Luckyu.Web
             }
 
             // UEditor
-            services.AddUEditorService();
+            services.AddUEditorService("wwwroot/lib/ueditor/config/config.json");
 
             var builder = services.AddControllersWithViews(options =>
            {
@@ -151,15 +151,15 @@ namespace Luckyu.Web
                         })
             });
             // UEditor ÉÏ´«
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "upload");
-            if (!Directory.Exists(path))
+            var uePath = AppSettingsHelper.GetAppSetting("UEPath");
+            if (!Directory.Exists(uePath))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(uePath);
             }
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(path),
-                RequestPath = "/upload",
+                FileProvider = new PhysicalFileProvider(uePath),
+                RequestPath = "/ueupload",
                 OnPrepareResponse = ctx =>
                 {
                     ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=36000");
