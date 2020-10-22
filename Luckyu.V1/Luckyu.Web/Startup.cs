@@ -48,7 +48,9 @@ namespace Luckyu.Web
             }
 
             // UEditor
-            services.AddUEditorService("wwwroot/lib/ueditor/config/config.json");
+            var configPath = FileHelper.Combine(Environment.CurrentDirectory, "wwwroot/lib/ueditor/config/config.json");
+            var uePath = AppSettingsHelper.GetAppSetting("UEPath");
+            services.AddUEditorService(configPath, true, uePath);
 
             var builder = services.AddControllersWithViews(options =>
            {
