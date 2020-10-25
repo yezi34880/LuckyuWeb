@@ -6,10 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="DeviceDetector.NET.NetCore" Version="3.9.2.2" />
+    <PackageReference Include="FreeSql.Provider.MySql" Version="1.10.1" />
     <PackageReference Include="IPTools.International" Version="1.5.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.4" />
     <PackageReference Include="Snowflake.Core" Version="2.0.0" />
-    <PackageReference Include="sqlSugarCore" Version="5.0.0.15" />
   </ItemGroup>
 
   <ItemGroup>

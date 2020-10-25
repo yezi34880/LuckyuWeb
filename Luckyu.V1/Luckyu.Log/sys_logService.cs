@@ -1,5 +1,4 @@
-﻿using SqlSugar;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,13 +6,11 @@ namespace Luckyu.Log
 {
     public class sys_logService
     {
-        LogDBConnection connection = new LogDBConnection();
-
         public void Insert(sys_logEntity entity)
         {
-            var db = connection.dbClient;
+            var db = LogDBConnection.InitDatabase();
             entity.Create();
-            db.Insertable(entity).ExecuteCommand();
+            db.Insert(entity).ExecuteAffrows();
         }
     }
 }

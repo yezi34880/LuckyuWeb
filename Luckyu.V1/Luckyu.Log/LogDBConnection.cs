@@ -1,4 +1,4 @@
-﻿using SqlSugar;
+﻿using FreeSql;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,32 +8,10 @@ namespace Luckyu.Log
     public class LogDBConnection
     {
         private static string connectionString = "";
-        private static DbType dbType = DbType.MySql;
+        private static DataType dbType;
+        private static IFreeSql db;
 
-        public SqlSugarClient dbClient
-        {
-            get
-            {
-                connectionString = GetConnectionString();
-                dbType = GetDbType();
-                var db = new SqlSugarClient(
-                new ConnectionConfig()
-                {
-                    ConnectionString = connectionString,
-                    DbType = DbType.MySql,//设置数据库类型
-                    IsAutoCloseConnection = true,//自动释放数据务，如果存在事务，在事务结束后释放
-                    InitKeyType = InitKeyType.Attribute //从实体特性中读取主键自增列信息
-                });
-                return db;
-            }
-        }
-
-        public static void SetConnectString(string conString)
-        {
-            connectionString = conString;
-        }
-
-        private string GetConnectionString()
+        private static string GetConnectionString()
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -43,9 +21,27 @@ namespace Luckyu.Log
             return connectionString;
         }
 
-        private DbType GetDbType()
+        private static DataType GetDbType()
         {
-            return dbType;
+            return DataType.MySql;
         }
+        public static IFreeSql InitDatabase()
+        {
+            if (db == null)
+            {
+                db = new FreeSqlBuilder()
+                          .UseConnectionString(GetDbType(), GetConnectionString())
+                          .UseNameConvert(FreeSql.Internal.NameConvertType.ToUpper)
+                          .UseAutoSyncStructure(false) //自动同步实体结构到数据库
+                          .Build(); //请务必定义成 Singleton 单例模式
+            }
+            return db;
+        }
+
+        public static void SetConnectString(string conString)
+        {
+            connectionString = conString;
+        }
+
     }
 }
