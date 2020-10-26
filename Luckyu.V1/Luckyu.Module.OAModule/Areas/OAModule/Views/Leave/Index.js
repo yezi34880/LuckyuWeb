@@ -162,6 +162,39 @@ var bootstrap = function (layui) {
                     });
                 });
             });
+            $("#revoke").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                var rowData = grid.GetRawRowData(rowid);
+                if (rowData.state !== 1) {
+                    layui.notice.error("只有生效单据才能请求撤回");
+                    return;
+                }
+                luckyu.layer.layerConfirm('确定要请求撤回吗？', function (con) {
+                    luckyu.workflowapi.create({
+                        processId: rowid,
+                        flowCode: "Leave_Revoke",
+                        processName: "请假申请-撤回 " + rowid
+                    });
+                });
+            });
+            $("#seeapproval").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                luckyu.layer.layerFormTop({
+                    id: "Form",
+                    title: "审批查看",
+                    width: 1300,
+                    height: 850,
+                    url: luckyu.rootUrl + "/WorkflowModule/Task/LogFormByProcessId?processId=" + rowid,
+                });
+            });
         },
         search: function () {
             slectRowId = '';

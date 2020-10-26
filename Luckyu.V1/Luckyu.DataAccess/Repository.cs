@@ -57,53 +57,13 @@ namespace Luckyu.DataAccess
         /// 执行sql语句
         /// </summary>
         /// <param name="strSql">sql语句</param>
-        /// <param name="dbParameter">参数</param>
+        /// <param name="param">参数</param>
         /// <returns></returns>
-        public int ExecuteBySql(string strSql, object dbParameter = null)
+        public int ExecuteBySql(string strSql, object param = null)
         {
-            return db.Ado.ExecuteCommand(strSql, dbParameter);
-        }
-        public int ExecuteBySql(string strSql, JObject dbParameter)
-        {
-            List<SugarParameter> parameters = new List<SugarParameter>();
-            foreach (var item in dbParameter)
-            {
-                parameters.Add(new SugarParameter(item.Key, item.Value));
-            }
-            return db.Ado.ExecuteCommand(strSql, parameters);
+            return db.Ado.ExecuteCommand(strSql, param);
         }
 
-        /// <summary>
-        /// 执行存储过程
-        /// </summary>
-        /// <param name="procName">存储过程名称</param>
-        /// <param name="dbParameter">参数</param>
-        /// <returns></returns>
-        public int ExecuteByProc(string procName, object dbParameter = null)
-        {
-            return db.Ado.ExecuteCommand(procName, dbParameter);
-        }
-        /// <summary>
-        /// 执行存储过程
-        /// </summary>
-        /// <param name="procName">存储过程名称</param>
-        /// <param name="dbParameter">参数</param>
-        /// <returns></returns>
-        public T ExecuteByProc<T>(string procName, object dbParameter = null) where T : class
-        {
-            var entity = db.Ado.SqlQuerySingle<T>(procName, dbParameter);
-            return entity;
-        }
-        /// <summary>
-        /// 执行存储过程
-        /// </summary>
-        /// <param name="procName">存储过程名称</param>
-        /// <returns></returns>
-        public List<T> QueryByProc<T>(string procName, object dbParameter = null) where T : class
-        {
-            var list = db.Ado.SqlQuery<T>(procName, dbParameter);
-            return list;
-        }
         #endregion
 
         #region 增删改
@@ -178,55 +138,6 @@ namespace Luckyu.DataAccess
             return entity;
         }
 
-        #region 写操作日志
-        private void WriteLog<T>(T entity, string type, string name) where T : class, new()
-        {
-            //var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
-            //if (entityInfo == null || entityInfo.Columns.IsEmpty())
-            //{
-            //    return;
-            //}
-            //var log = new Base_LogEntity();
-            //log.Create();
-            //log.F_SourceContentJson = JsonConvert.SerializeObject(entity);
-            //log.F_OPERATETYPEID = type;
-            //log.F_OPERATETYPE = name;
-            //log.F_EXECUTERESULT = 1;
-            //log.F_MODULE = entityInfo.DbTableName;
-            //if (entityInfo.DbTableName == "BASE_BILLLOG" || entityInfo.DbTableName == "BASE_LOG")
-            //{
-            //    return;
-            //}
-            //var mainKey = entityInfo.Columns.Where(r => r.IsPrimarykey).Select(r => r.PropertyInfo).FirstOrDefault();
-            //if (mainKey != null)
-            //{
-            //    var keyValue = mainKey.GetValue(entity).ToString();
-            //    log.F_SourceObjectId = keyValue;
-            //}
-            //db.Insertable(log).ExecuteCommand();
-        }
-        private void WriteLog<T>(List<T> list, string type, string name) where T : class, new()
-        {
-            //var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
-            //if (entityInfo == null || entityInfo.Columns.IsEmpty())
-            //{
-            //    return;
-            //}
-            //var log = new Base_LogEntity();
-            //log.Create();
-            //log.F_SourceContentJson = JsonConvert.SerializeObject(list);
-            //log.F_OPERATETYPEID = type;
-            //log.F_OPERATETYPE = name;
-            //log.F_EXECUTERESULT = 1;
-            //log.F_MODULE = entityInfo.DbTableName;
-            //if (entityInfo.DbTableName == "BASE_BILLLOG" || entityInfo.DbTableName == "BASE_LOG")
-            //{
-            //    return;
-            //}
-            //db.Insertable(log).ExecuteCommand();
-        }
-        #endregion
-
         /// <summary>
         /// 插入实体数据
         /// </summary>
@@ -241,7 +152,6 @@ namespace Luckyu.DataAccess
             {
                 result = db.Insertable(entity).ExecuteCommand();
                 InsertExtensionTable<T>(entity);
-                WriteLog(entity, "5", "新增");
             }
             catch (Exception ex)
             {
@@ -261,8 +171,6 @@ namespace Luckyu.DataAccess
             {
                 result = db.Insertable(list).ExecuteCommand();
                 InsertExtensionTableList<T>(list);
-
-                WriteLog(list, "5", "新增");
             }
             catch (Exception ex)
             {
@@ -310,8 +218,6 @@ namespace Luckyu.DataAccess
             {
                 result = db.Deleteable(entity).ExecuteCommand();
                 DeleteExtensionTable<T>(entity);
-
-                WriteLog(entity, "6", "删除");
             }
             catch (Exception ex)
             {
@@ -327,8 +233,6 @@ namespace Luckyu.DataAccess
             {
                 result = db.Deleteable(list).ExecuteCommand();
                 DeleteExtensionTableList<T>(list);
-
-                WriteLog(list, "6", "删除");
             }
             catch (Exception ex)
             {
@@ -344,8 +248,6 @@ namespace Luckyu.DataAccess
                 var list = db.Queryable<T>().Where(condition).ToList();
                 result = db.Deleteable(list).ExecuteCommand();
                 DeleteExtensionTableList<T>(list);
-
-                WriteLog(list, "6", "删除");
             }
             catch (Exception ex)
             {
@@ -368,8 +270,6 @@ namespace Luckyu.DataAccess
             {
                 var query = db.Updateable(entity).UpdateColumns(onlyUpdateColumns);
                 result = query.ExecuteCommand();
-
-                WriteLog(entity, "7", "修改");
             }
             catch (Exception ex)
             {
@@ -398,8 +298,6 @@ namespace Luckyu.DataAccess
                 }
                 result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
-
-                WriteLog(entity, "7", "修改");
             }
             catch (Exception ex)
             {
@@ -436,8 +334,6 @@ namespace Luckyu.DataAccess
 
                 result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
-
-                WriteLog(entity, "7", "修改");
             }
             catch (Exception ex)
             {
@@ -478,8 +374,6 @@ namespace Luckyu.DataAccess
 
                 result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
-
-                WriteLog(entity, "7", "修改");
             }
             catch (Exception ex)
             {
@@ -526,8 +420,6 @@ namespace Luckyu.DataAccess
 
                 result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
-
-                WriteLog(entity, "7", "修改");
             }
             catch (Exception ex)
             {
@@ -582,8 +474,6 @@ namespace Luckyu.DataAccess
 
                 result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
-
-                WriteLog(entity, "7", "修改");
             }
             catch (Exception ex)
             {
@@ -928,7 +818,7 @@ namespace Luckyu.DataAccess
 
         #endregion
 
-        #region 对象实体 查询
+        #region Entity 查询
         public bool Exist<T>(T entity) where T : class, new()
         {
             var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
@@ -1626,13 +1516,13 @@ namespace Luckyu.DataAccess
 
         #endregion
 
-        #region 数据源 查询
+        #region DataTable 查询
         /// <summary>
         /// 查询数据
         /// </summary>
         /// <param name="strSql">sql语句</param>
         /// <returns></returns>
-        public DataTable GetTable(string strSql)
+        public DataTable GetDataTable(string strSql)
         {
             return db.Ado.GetDataTable(strSql);
         }
@@ -1642,7 +1532,7 @@ namespace Luckyu.DataAccess
         /// <param name="strSql">sql语句</param>
         /// <param name="dbParameter">参数</param>
         /// <returns></returns>
-        public DataTable GetTable(string strSql, object dbParameter)
+        public DataTable GetDataTable(string strSql, object dbParameter)
         {
             return db.Ado.GetDataTable(strSql, dbParameter);
         }
@@ -1652,7 +1542,7 @@ namespace Luckyu.DataAccess
         /// <param name="strSql">sql语句</param>
         /// <param name="jqPage">分页数据</param>
         /// <returns></returns>
-        public JqgridDatatablePageResponse GetTable(string strSql, JqgridPageRequest jqPage)
+        public JqgridDatatablePageResponse GetDataTable(string strSql, JqgridPageRequest jqPage)
         {
             return this.GetDataTable(jqPage, strSql, null);
 

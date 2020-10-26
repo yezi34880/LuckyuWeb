@@ -1,13 +1,11 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.App.Workflow;
 using Luckyu.Utility;
+using Newtonsoft.Json;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Luckyu.App.OA
 {
@@ -83,7 +81,8 @@ namespace Luckyu.App.OA
             leaveService.SaveForm(keyValue, entity, strEntity, loginInfo);
             if (isSubmit)
             {
-                var res = taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", loginInfo);
+                var json = JsonConvert.SerializeObject(entity);
+                var res = taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", json, loginInfo);
                 if (res.code != 200)
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(res.info);

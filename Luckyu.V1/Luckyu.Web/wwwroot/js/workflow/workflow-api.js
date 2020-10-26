@@ -13,7 +13,6 @@
         finish: luckyu.rootUrl + '/WorkFlowModule/Task/Finish',
     };
 
-
     luckyu.workflowapi = {
         /**
          * 创建流程

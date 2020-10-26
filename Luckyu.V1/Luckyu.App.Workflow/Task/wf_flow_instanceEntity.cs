@@ -52,6 +52,12 @@ namespace Luckyu.App.Workflow
         public string processname { get; set; }
 
         /// <summary>
+        ///  processcontent   表单数据
+        /// </summary>
+        [SugarColumn(ColumnName = "PROCESSCONTENT", ColumnDescription = "")]
+        public string processcontent { get; set; }
+
+       /// <summary>
         ///  submit_user_id    单据提交人 后期 同公司 同部门 根据这个值计算
         /// </summary>
         [SugarColumn(ColumnName = "SUBMIT_USER_ID", ColumnDescription = "")]

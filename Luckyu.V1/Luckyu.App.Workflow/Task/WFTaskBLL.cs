@@ -62,6 +62,11 @@ namespace Luckyu.App.Workflow
             var entity = instanceService.GetEntity(condition);
             return entity;
         }
+        public List<wf_flow_instanceEntity> GetInstanceList(Expression<Func<wf_flow_instanceEntity, bool>> condition)
+        {
+            var list = instanceService.GetList(condition, r => r.createtime);
+            return list;
+        }
 
         public List<wf_taskhistoryEntity> GetHistoryTaskList(string processId, string instanceId = "")
         {
@@ -100,8 +105,78 @@ namespace Luckyu.App.Workflow
             return page1;
         }
 
+        /// <summary>
+        /// 获取流程信息
+        /// </summary>
+        /// <param name="instanceId">自己发起的,只有instanceId</param>
+        /// <param name="taskId">如果taskId不为空, 在表示待审批</param>
+        /// <param name="historyId">如果historyId不为空, 则表示已审批</param>
+        /// <returns></returns>
+        public ResponseResult<Dictionary<string, object>> GetFormData(string instanceId, string taskId, string historyId)
+        {
+            var instance = GetInstanceEnttity(r => r.instance_id == instanceId);
+            if (instance == null)
+            {
+                return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+            }
+            var scheme = instance.schemejson.ToObject<WFSchemeModel>();
+            // 展示节点 如 自己提交 就是startround 已办历史 就是自己批的那个
+            WFSchemeNodeModel showNode = new WFSchemeNodeModel();
+            // 当前待批节点
+            WFSchemeNodeModel currentNode = new WFSchemeNodeModel();
+            if (!historyId.IsEmpty())
+            {
+                // 已办历史
+                var history = GetHistoryEnttity(r => r.history_id == historyId);
+                if (history == null)
+                {
+                    return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+                }
+                showNode = scheme.nodes.Where(r => r.id == history.node_id).FirstOrDefault();
+
+                var task = GetTaskEnttity(r => r.instance_id == instance.instance_id && r.is_done == 0);
+                if (task != null)
+                {
+                    currentNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                }
+            }
+            else if (!taskId.IsEmpty())
+            {
+                // 待办
+                var task = GetTaskEnttity(r => r.task_id == taskId);
+                if (task == null)
+                {
+                    return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+                }
+                showNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                currentNode = showNode;
+            }
+            else
+            {
+                // 自己发起的
+                showNode = scheme.nodes.Where(r => r.type == "startround").FirstOrDefault();
+                var task = GetTaskEnttity(r => r.instance_id == instance.instance_id && r.is_done == 0);
+                if (task != null)
+                {
+                    currentNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                }
+
+            }
+            var historys = GetHistoryTaskList(instance.process_id, instance.instance_id);
+            var dic = new Dictionary<string, object>
+            {
+                {"Instance",instance },
+                {"ShowNode",showNode },
+                {"CurrentNode",currentNode },
+                {"Scheme",  instance.schemejson },
+                { "History",historys}
+            };
+            return ResponseResult.Success(dic);
+
+        }
         #endregion
 
+        #region Set
         /// <summary>
         /// 创建流程
         /// </summary>
@@ -110,7 +185,7 @@ namespace Luckyu.App.Workflow
         /// <param name="processName">流程名</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
-        public ResponseResult Create(string flowCode, string processId, string processName, UserModel loginInfo)
+        public ResponseResult Create(string flowCode, string processId, string processName, string processContent, UserModel loginInfo)
         {
             if (flowCode.IsEmpty())
             {
@@ -206,6 +281,7 @@ namespace Luckyu.App.Workflow
 
             instanceEntity.process_id = processId;
             instanceEntity.processname = processName;
+            instanceEntity.processcontent = processContent;
 
             // 单据提交人 后期 同公司 同部门 根据这个值计算 后期考虑作为入参 代为提交别人单据的情况 先不管
             instanceEntity.submit_user_id = loginInfo.user_id;
@@ -489,6 +565,8 @@ namespace Luckyu.App.Workflow
             taskService.Finish(instance, tasks, history, firstnode.sqlfail);
             return ResponseResult.Success();
         }
+
+        #endregion
 
         #region Private
         /// <summary>

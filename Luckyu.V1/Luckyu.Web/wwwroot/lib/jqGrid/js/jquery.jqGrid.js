@@ -4595,7 +4595,7 @@
             $(grid.bDiv)
                 .append($('<div style="position:relative;"></div>').append('<div></div>').append(this))
                 .addClass("ui-jqgrid-bdiv")
-                .css({ height: ts.p.height + (isNaN(ts.p.height) ? "" : "px"), width: (grid.width - bstw + 2) + "px" })
+                .css({ height: ts.p.height + (isNaN(ts.p.height) ? "" : "px"), width: (grid.width - bstw + 3) + "px" })
                 .scroll(grid.scrollGrid);
             $("table:first", grid.bDiv).css({ width: ts.p.tblwidth + "px" });
             if (!$.support.tbody) { //IE
