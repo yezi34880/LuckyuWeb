@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Luckyu.App.System\Luckyu.App.System.csproj" />
     <ProjectReference Include="..\Luckyu.DataAccess\Luckyu.DataAccess.csproj" />
     <ProjectReference Include="..\Luckyu.Utility\Luckyu.Utility.csproj" />
   </ItemGroup>

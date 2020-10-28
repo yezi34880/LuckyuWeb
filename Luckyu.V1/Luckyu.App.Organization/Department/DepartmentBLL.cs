@@ -1,6 +1,5 @@
 ﻿using Luckyu.Cache;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,14 +28,14 @@ namespace Luckyu.App.Organization
             var page = deptService.Page(companyId, jqpage);
             return page;
         }
-        public sys_departmentEntity GetEntity(Expression<Func<sys_departmentEntity, bool>> condition, Expression<Func<sys_departmentEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public sys_departmentEntity GetEntity(Expression<Func<sys_departmentEntity, bool>> condition)
         {
-            var entity = deptService.GetEntity(condition, orderExp, orderType);
+            var entity = deptService.GetEntity(condition);
             return entity;
         }
-        public List<sys_departmentEntity> GetList(Expression<Func<sys_departmentEntity, bool>> condition, Expression<Func<sys_departmentEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<sys_departmentEntity> GetList(Expression<Func<sys_departmentEntity, bool>> condition, Expression<Func<sys_departmentEntity, object>> orderby = null, bool isDesc = false)
         {
-            var list = deptService.GetList(condition, orderExp, orderType);
+            var list = deptService.GetList(condition, orderby, isDesc);
             return list;
         }
         public List<sys_departmentEntity> GetAllByCache(string companyId = "")

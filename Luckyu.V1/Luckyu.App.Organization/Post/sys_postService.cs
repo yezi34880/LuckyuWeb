@@ -1,6 +1,6 @@
-﻿using Luckyu.DataAccess;
+﻿using FreeSql.Internal.Model;
+using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +15,9 @@ namespace Luckyu.App.Organization
         public JqgridPageResponse<sys_postEntity> Page(JqgridPageRequest jqpage)
         {
             Expression<Func<sys_postEntity, bool>> expCondition = r => r.is_delete == 0;
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("is_enable",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
 
             var page = BaseRepository().GetPage(jqpage, expCondition, dicCondition);
@@ -26,20 +26,7 @@ namespace Luckyu.App.Organization
         public List<sys_postEntity> GetSelect(JqgridPageRequest jqpage)
         {
             Expression<Func<sys_postEntity, bool>> expCondition = r => r.is_delete == 0 && r.is_enable == 1;
-            var modelCondition = new List<IConditionalModel>();
-            if (jqpage.isSearch)
-            {
-                foreach (var rule in jqpage.fitersObj.rules)
-                {
-                    switch (rule.field)
-                    {
-                        default:
-                            modelCondition.AddStringLikeCondition(rule.field, rule.data);
-                            break;
-                    }
-                }
-            }
-            var list = BaseRepository().GetList(jqpage, expCondition, modelCondition);
+            var list = BaseRepository().GetList(jqpage, expCondition);
             return list;
         }
 

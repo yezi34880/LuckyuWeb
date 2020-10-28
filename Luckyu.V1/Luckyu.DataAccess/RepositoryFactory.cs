@@ -1,5 +1,4 @@
-﻿using SqlSugar;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -24,9 +23,9 @@ namespace Luckyu.DataAccess
             return entity;
         }
 
-        public T GetEntity(Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderExp, OrderByType orderType = OrderByType.Asc)
+        public T GetEntity(Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderby, bool isDesc = false)
         {
-            var entity = BaseRepository().GetEntity<T>(condition, orderExp, orderType);
+            var entity = BaseRepository().GetEntity<T>(condition, orderby, isDesc);
             return entity;
         }
 
@@ -40,9 +39,9 @@ namespace Luckyu.DataAccess
             var entity = BaseRepository().GetList<T>(condition, orderby);
             return entity;
         }
-        public List<T> GetList(Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderExp, OrderByType orderType = OrderByType.Asc)
+        public List<T> GetList(Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderby, bool isDesc = false)
         {
-            var entity = BaseRepository().GetList<T>(condition, orderExp, orderType);
+            var entity = BaseRepository().GetList<T>(condition, orderby, isDesc);
             return entity;
         }
 
@@ -51,9 +50,9 @@ namespace Luckyu.DataAccess
             var entity = BaseRepository().GetListTop<T>(top, condition, orderby);
             return entity;
         }
-        public List<T> GetListTop(int top, Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderExp, OrderByType orderType = OrderByType.Asc)
+        public List<T> GetListTop(int top, Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderby, bool isDesc = false)
         {
-            var entity = BaseRepository().GetListTop<T>(top, condition, orderExp, orderType);
+            var entity = BaseRepository().GetListTop<T>(top, condition, orderby, isDesc);
             return entity;
         }
 

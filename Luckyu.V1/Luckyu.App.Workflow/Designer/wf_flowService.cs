@@ -1,7 +1,7 @@
-﻿using Luckyu.App.Organization;
+﻿using FreeSql.Internal.Model;
+using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +16,12 @@ namespace Luckyu.App.Workflow
         public JqgridPageResponse<wf_flowEntity> Page(JqgridPageRequest jqPage)
         {
             Expression<Func<wf_flowEntity, bool>> exp = r => r.is_delete == 0;
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("flowtype",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             dicCondition.Add("is_enable",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
 
             var page = BaseRepository().GetPage(jqPage, exp, dicCondition);

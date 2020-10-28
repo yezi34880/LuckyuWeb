@@ -1,7 +1,7 @@
-﻿using Luckyu.App.Organization;
+﻿using FreeSql.Internal.Model;
+using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,22 +44,22 @@ namespace Luckyu.App.OA
             #endregion
 
             #region 查询条件
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
 
             dicCondition.Add("user_id",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringContainCondition(field, data) }
+                (field, data) => SearchConditionHelper.GetStringContainCondition(field, data)
                 );
             dicCondition.Add("department_id",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringContainCondition(field, data) }
+                (field, data) => SearchConditionHelper.GetStringContainCondition(field, data)
                 );
             dicCondition.Add("company_id",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringContainCondition(field, data) }
+                (field, data) => SearchConditionHelper.GetStringContainCondition(field, data)
                 );
             dicCondition.Add("state",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             dicCondition.Add("leavetype",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             dicCondition.Add("begintime",
                 (field, data) => SearchConditionHelper.GetDateCondition(field, data)

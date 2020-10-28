@@ -1,7 +1,7 @@
-﻿using Luckyu.App.Organization;
+﻿using FreeSql.Internal.Model;
+using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +20,9 @@ namespace Luckyu.App.OA
             Expression<Func<oa_newsEntity, bool>> exp = r => r.is_delete == 0;
 
             #region 查询条件
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("catetory",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             dicCondition.Add("publishtime",
                 (field, data) => SearchConditionHelper.GetDateCondition(field, data)
@@ -37,9 +37,9 @@ namespace Luckyu.App.OA
             Expression<Func<oa_newsEntity, bool>> exp = r => r.is_delete == 0 && r.is_publish == 1;
 
             #region 查询条件
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("catetory",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             dicCondition.Add("publishtime",
                 (field, data) => SearchConditionHelper.GetDateCondition(field, data)

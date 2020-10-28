@@ -1,6 +1,5 @@
 ﻿using Luckyu.Cache;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,14 +35,19 @@ namespace Luckyu.App.Organization
             return list;
         }
 
-        public sys_roleEntity GetEntity(Expression<Func<sys_roleEntity, bool>> condition, Expression<Func<sys_roleEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public sys_roleEntity GetEntity(Expression<Func<sys_roleEntity, bool>> condition)
         {
-            var entity = roleService.GetEntity(condition, orderExp, orderType);
+            var entity = roleService.GetEntity(condition);
             return entity;
         }
-        public List<sys_roleEntity> GetList(Expression<Func<sys_roleEntity, bool>> condition, Expression<Func<sys_roleEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<sys_roleEntity> GetList(Expression<Func<sys_roleEntity, bool>> condition)
         {
-            var list = roleService.GetList(condition, orderExp, orderType);
+            var list = roleService.GetList(condition);
+            return list;
+        }
+        public List<sys_roleEntity> GetList(Expression<Func<sys_roleEntity, bool>> condition, Expression<Func<sys_roleEntity, object>> orderby = null, bool isDesc = false)
+        {
+            var list = roleService.GetList(condition, orderby, isDesc);
             return list;
         }
         public List<sys_roleEntity> GetAllByCache()

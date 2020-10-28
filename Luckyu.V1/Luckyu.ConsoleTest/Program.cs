@@ -1,4 +1,5 @@
-﻿using Luckyu.DataAccess;
+﻿using Luckyu.App.System;
+using Luckyu.DataAccess;
 using Luckyu.Log;
 using Luckyu.Utility;
 using System;
@@ -43,56 +44,19 @@ namespace Luckyu.ConsoleTest
         static void TestDbTrans()
         {
             LogDBConnection.SetConnectString("server=127.0.0.1;port=3306;user id=root;password=admin_root;database=lucky_log;");
-            var db = new LogDBConnection().dbClient;
-            db.BeginTran();
+            BaseConnection.SetConnectString("server=127.0.0.1;port=3306;user id=root;password=admin_root;database=lucky_core;");
+            var trans = new Repository();
+            trans.BeginTrans();
             try
             {
-                db.Insertable(new sys_logEntity
-                {
-                    log_id = SnowflakeHelper.NewCode(),
-                    log_type = 4,
-                    log_content = "一开始",
-                    log_time = DateTime.Now
-                }).ExecuteCommand();
-
-                db.UseTran(() =>
-                {
-                    db.Insertable(new sys_logEntity
-                    {
-                        log_id = SnowflakeHelper.NewCode(),
-                        log_type = 4,
-                        log_content = "内部事务当中",
-                        log_time = DateTime.Now
-                    }).ExecuteCommand();
-
-
-                    db.Insertable(new sys_logEntity
-                    {
-                        log_id = SnowflakeHelper.NewCode(),
-                        log_type = 4,
-                        log_content = "内部事务当异常后",
-                        log_time = DateTime.Now
-                    }).ExecuteCommand();
-
-                }, (ex) =>
-                {
-                    throw ex;
-                });
-                    int.Parse("");
-
-                db.Insertable(new sys_logEntity
-                {
-                    log_id = SnowflakeHelper.NewCode(),
-                    log_type = 4,
-                    log_content = "最后",
-                    log_time = DateTime.Now
-                }).ExecuteCommand();
-
-                db.CommitTran();
+                trans.Insert<sys_configEntity>(new sys_configEntity { id = "111" });
+                int.Parse("");
+                trans.Delete(new sys_configEntity { id = "111" });
+                trans.Commit();
             }
             catch (Exception)
             {
-                db.RollbackTran();
+                trans.Rollback();
                 throw;
             }
         }

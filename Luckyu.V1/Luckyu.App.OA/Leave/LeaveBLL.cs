@@ -2,7 +2,6 @@
 using Luckyu.App.Workflow;
 using Luckyu.Utility;
 using Newtonsoft.Json;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -23,9 +22,9 @@ namespace Luckyu.App.OA
             return page;
         }
 
-        public oa_leaveEntity GetEntity(Expression<Func<oa_leaveEntity, bool>> condition, Expression<Func<oa_leaveEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public oa_leaveEntity GetEntity(Expression<Func<oa_leaveEntity, bool>> condition)
         {
-            var entity = leaveService.GetEntity(condition, orderExp, orderType);
+            var entity = leaveService.GetEntity(condition);
             return entity;
         }
 

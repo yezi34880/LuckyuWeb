@@ -1,7 +1,6 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.Cache;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,15 +34,15 @@ namespace Luckyu.App.System
             return page;
         }
 
-        public sys_dataitemEntity GetClassifyEntity(Expression<Func<sys_dataitemEntity, bool>> condition, Expression<Func<sys_dataitemEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public sys_dataitemEntity GetClassifyEntity(Expression<Func<sys_dataitemEntity, bool>> condition)
         {
-            var entity = dataitemService.GetEntity(condition, orderExp, orderType);
+            var entity = dataitemService.GetEntity(condition);
             return entity;
         }
 
-        public List<sys_dataitemEntity> GetClassifyList(Expression<Func<sys_dataitemEntity, bool>> condition, Expression<Func<sys_dataitemEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<sys_dataitemEntity> GetClassifyList(Expression<Func<sys_dataitemEntity, bool>> condition, Expression<Func<sys_dataitemEntity, object>> orderExp = null, bool isDesc = false)
         {
-            var list = dataitemService.GetList(condition, orderExp, orderType);
+            var list = dataitemService.GetList(condition, orderExp, isDesc);
             return list;
         }
 
@@ -135,15 +134,15 @@ namespace Luckyu.App.System
             return page;
         }
 
-        public sys_dataitem_detailEntity GetDetailEntity(Expression<Func<sys_dataitem_detailEntity, bool>> condition, Expression<Func<sys_dataitem_detailEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public sys_dataitem_detailEntity GetDetailEntity(Expression<Func<sys_dataitem_detailEntity, bool>> condition )
         {
-            var entity = dataitemdetailService.GetEntity(condition, orderExp, orderType);
+            var entity = dataitemdetailService.GetEntity(condition);
             return entity;
         }
 
-        public List<sys_dataitem_detailEntity> GetDetailList(Expression<Func<sys_dataitem_detailEntity, bool>> condition, Expression<Func<sys_dataitem_detailEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<sys_dataitem_detailEntity> GetDetailList(Expression<Func<sys_dataitem_detailEntity, bool>> condition, Expression<Func<sys_dataitem_detailEntity, object>> orderExp = null, bool isDesc = false)
         {
-            var list = dataitemdetailService.GetList(condition, orderExp, orderType);
+            var list = dataitemdetailService.GetList(condition, orderExp, isDesc);
             return list;
         }
 

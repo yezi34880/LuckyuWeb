@@ -1,6 +1,6 @@
-﻿using Luckyu.DataAccess;
+﻿using FreeSql.Internal.Model;
+using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -12,9 +12,9 @@ namespace Luckyu.App.Organization
         public JqgridPageResponse<sys_companyEntity> Page(JqgridPageRequest jqpage)
         {
             Expression<Func<sys_companyEntity, bool>> expCondition = r => r.is_delete == 0;
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("is_enable",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             dicCondition.Add("foundeddate",
                 (field, data) => SearchConditionHelper.GetDateCondition(field, data)

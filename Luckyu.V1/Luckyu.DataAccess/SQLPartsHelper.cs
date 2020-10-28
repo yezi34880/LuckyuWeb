@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FreeSql;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -76,10 +77,10 @@ namespace Luckyu.DataAccess
             return countSql;
         }
 
-        public static string GetPageSql(SQLParts parts, int pageIndex, int pageSize, SqlSugar.DbType dbType)
+        public static string GetPageSql(SQLParts parts, int pageIndex, int pageSize, DataType dbType)
         {
-            var pageSql = "";
-            if (dbType == SqlSugar.DbType.SqlServer)
+            string pageSql;
+            if (dbType == DataType.SqlServer)
             {
                 pageSql = $@"
 SELECT * FROM 
@@ -87,17 +88,16 @@ SELECT * FROM
 WHERE peta_rn > {((pageIndex - 1) * pageSize).ToString()} 
     AND peta_rn <= {(pageIndex * pageSize).ToString()} ";
             }
-            else if (dbType == SqlSugar.DbType.MySql)
+            else if (dbType == DataType.MySql)
             {
                 var start = (pageIndex - 1) * pageSize;
-                pageSql = $@"SELECT * FROM ({parts.Sql}) temp_table LIMIT {start.ToString()},{pageSize.ToString()}";
+                pageSql = $@"SELECT * FROM ({parts.Sql}) temp_table LIMIT {start},{pageSize}";
             }
             else
             {
                 throw new Exception("暂未适配该类型数据库分页方法");
             }
             return pageSql;
-
         }
 
     }

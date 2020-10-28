@@ -1,7 +1,6 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,24 +15,34 @@ namespace Luckyu.App.Workflow
         public JqgridPageResponse<wf_taskEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             var db = BaseRepository().db;
-            var query = db.Queryable<wf_taskEntity, wf_task_authorizeEntity, wf_flow_instanceEntity>((t, ta, fi) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
+            var query = db.Select<wf_taskEntity, wf_task_authorizeEntity, wf_flow_instanceEntity>().InnerJoin((t, ta, fi) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
                 .Where((t, ta, fi) => t.is_done == 0 && t.is_finished == 0 &&
                 ta.user_id == loginInfo.user_id  // 用户
                 || loginInfo.group_ids.Contains(ta.group_id)   // 小组
-                || (SqlFunc.IsNullOrEmpty(ta.post_id) && SqlFunc.IsNullOrEmpty(ta.role_id) && ta.department_id == loginInfo.department_id)    // 按部门审批
-                || (SqlFunc.IsNullOrEmpty(ta.post_id) && SqlFunc.IsNullOrEmpty(ta.role_id) && ta.company_id == loginInfo.company_id)  // 按公司审批
-                || (loginInfo.post_ids.Contains(ta.post_id) && SqlFunc.IsNullOrEmpty(ta.department_id) && SqlFunc.IsNullOrEmpty(ta.company_id) && SqlFunc.IsNullOrEmpty(ta.manage_dept_id))   // 岗位   不仅判断 下面的人员 还需要判断 同公司 同部门 分管
-                || (loginInfo.post_ids.Contains(ta.post_id) && !SqlFunc.IsNullOrEmpty(ta.department_id) && ta.department_id == loginInfo.department_id)
-                || (loginInfo.post_ids.Contains(ta.post_id) && !SqlFunc.IsNullOrEmpty(ta.company_id) && ta.company_id == loginInfo.company_id)
-                || (loginInfo.post_ids.Contains(ta.post_id) && !SqlFunc.IsNullOrEmpty(ta.manage_dept_id) && loginInfo.manage_dept_ids.Contains(ta.manage_dept_id))
-                || (loginInfo.post_ids.Contains(ta.role_id) && SqlFunc.IsNullOrEmpty(ta.department_id) && SqlFunc.IsNullOrEmpty(ta.company_id) && SqlFunc.IsNullOrEmpty(ta.manage_dept_id))   //   角色 不仅判断 下面的人员 还需要判断 同公司 同部门 分管
-                || (loginInfo.post_ids.Contains(ta.role_id) && !SqlFunc.IsNullOrEmpty(ta.department_id) && ta.department_id == loginInfo.department_id)
-                || (loginInfo.post_ids.Contains(ta.role_id) && !SqlFunc.IsNullOrEmpty(ta.company_id) && ta.company_id == loginInfo.company_id)
-                || (loginInfo.post_ids.Contains(ta.role_id) && !SqlFunc.IsNullOrEmpty(ta.manage_dept_id) && loginInfo.manage_dept_ids.Contains(ta.manage_dept_id))
+                || (string.IsNullOrEmpty(ta.post_id) && string.IsNullOrEmpty(ta.role_id) && ta.department_id == loginInfo.department_id)    // 按部门审批
+                || (string.IsNullOrEmpty(ta.post_id) && string.IsNullOrEmpty(ta.role_id) && ta.company_id == loginInfo.company_id)  // 按公司审批
+                || (loginInfo.post_ids.Contains(ta.post_id) && string.IsNullOrEmpty(ta.department_id) && string.IsNullOrEmpty(ta.company_id) && string.IsNullOrEmpty(ta.manage_dept_id))   // 岗位   不仅判断 下面的人员 还需要判断 同公司 同部门 分管
+                || (loginInfo.post_ids.Contains(ta.post_id) && !string.IsNullOrEmpty(ta.department_id) && ta.department_id == loginInfo.department_id)
+                || (loginInfo.post_ids.Contains(ta.post_id) && !string.IsNullOrEmpty(ta.company_id) && ta.company_id == loginInfo.company_id)
+                || (loginInfo.post_ids.Contains(ta.post_id) && !string.IsNullOrEmpty(ta.manage_dept_id) && loginInfo.manage_dept_ids.Contains(ta.manage_dept_id))
+                || (loginInfo.post_ids.Contains(ta.role_id) && string.IsNullOrEmpty(ta.department_id) && string.IsNullOrEmpty(ta.company_id) && string.IsNullOrEmpty(ta.manage_dept_id))   //   角色 不仅判断 下面的人员 还需要判断 同公司 同部门 分管
+                || (loginInfo.post_ids.Contains(ta.role_id) && !string.IsNullOrEmpty(ta.department_id) && ta.department_id == loginInfo.department_id)
+                || (loginInfo.post_ids.Contains(ta.role_id) && !string.IsNullOrEmpty(ta.company_id) && ta.company_id == loginInfo.company_id)
+                || (loginInfo.post_ids.Contains(ta.role_id) && !string.IsNullOrEmpty(ta.manage_dept_id) && loginInfo.manage_dept_ids.Contains(ta.manage_dept_id))
             );
 
-            var querySelect = query.Select<wf_taskEntity>();
-            var page = BaseRepository().GetPage(jqPage, querySelect);
+            if (!string.IsNullOrEmpty(jqPage.sidx))
+            {
+                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
+            }
+            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var page = new JqgridPageResponse<wf_taskEntity>
+            {
+                count = jqPage.rows,
+                page = jqPage.page,
+                records = (int)total,
+                rows = list,
+            };
             return page;
         }
 
@@ -72,7 +81,8 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            trans.db.Ado.ExecuteCommand(sql, new { processId = instance.process_id });
+                            var sql1 = sql.Replace("@processId", $"{BaseConnection.ParaPre}processId");
+                            trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
                         }
                     }
                 }
@@ -120,7 +130,8 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            trans.db.Ado.ExecuteCommand(sql, new { processId = instance.process_id });
+                            var sql1 = sql.Replace("@processId", $"{BaseConnection.ParaPre}processId");
+                            trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
                         }
                     }
                 }
@@ -167,7 +178,8 @@ namespace Luckyu.App.Workflow
                 trans.Insert(history);
                 if (!sql.IsEmpty())
                 {
-                    trans.db.Ado.ExecuteCommand(sql, new { processId = instance.process_id });
+                    var sql1 = sql.Replace("@processId", $"{BaseConnection.ParaPre}processId");
+                    trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
                 }
 
                 trans.Commit();

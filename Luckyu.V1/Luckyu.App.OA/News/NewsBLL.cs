@@ -1,6 +1,5 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +28,9 @@ namespace Luckyu.App.OA
             return page;
         }
 
-        public oa_newsEntity GetEntity(Expression<Func<oa_newsEntity, bool>> condition, Expression<Func<oa_newsEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public oa_newsEntity GetEntity(Expression<Func<oa_newsEntity, bool>> condition)
         {
-            var entity = newsService.GetEntity(condition, orderExp, orderType);
+            var entity = newsService.GetEntity(condition);
             return entity;
         }
         public ResponseResult<Dictionary<string, object>> GetFormData(string keyValue)

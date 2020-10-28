@@ -1,7 +1,7 @@
-﻿using Luckyu.App.Organization;
+﻿using FreeSql.Internal.Model;
+using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +16,9 @@ namespace Luckyu.App.System
         public JqgridPageResponse<sys_dataitemEntity> Page(JqgridPageRequest jqpage)
         {
             Expression<Func<sys_dataitemEntity, bool>> exp = r => r.is_delete == 0;
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("is_enable",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             var page = BaseRepository().GetPage(jqpage, exp, dicCondition);
             return page;
@@ -44,7 +44,7 @@ namespace Luckyu.App.System
                 else
                 {
                     entity.Modify(keyValue, loginInfo);
-                    db.Updateable<sys_dataitem_detailEntity>().Where(r => r.itemcode == entity.itemcode).SetColumns(r => r.itemcode == entity.itemcode).ExecuteCommand();
+                    db.Update<sys_dataitem_detailEntity>().Where(r => r.itemcode == entity.itemcode).Set(r => r.itemcode == entity.itemcode).ExecuteAffrows();
                     trans.UpdateAppendColumns(entity, strEntity, r => new { r.edittime, r.edit_userid, r.edit_username });
                 }
                 trans.Commit();

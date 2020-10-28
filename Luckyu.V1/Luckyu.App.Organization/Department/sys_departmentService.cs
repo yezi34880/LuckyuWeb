@@ -1,6 +1,6 @@
-﻿using Luckyu.DataAccess;
+﻿using FreeSql.Internal.Model;
+using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -16,9 +16,9 @@ namespace Luckyu.App.Organization
             {
                 expCondition = expCondition.LinqAnd(r => r.company_id == companyId);
             }
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("is_enable",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             var page = BaseRepository().GetPage(jqpage, expCondition, dicCondition);
             return page;

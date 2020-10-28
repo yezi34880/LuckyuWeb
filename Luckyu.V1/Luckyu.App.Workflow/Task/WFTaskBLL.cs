@@ -647,7 +647,8 @@ namespace Luckyu.App.Workflow
                         historyCondition.Create(loginInfo);
 
                         var db = new DataAccess.Repository().db;
-                        var resultCondition = db.Ado.ExecuteCommand(nodeNext.sqlcondition, new { processId = instanceEntity.process_id });
+                        var sql = nodeNext.sqlcondition.Replace("@processId", $"{DataAccess.BaseConnection.ParaPre}processId");
+                        var resultCondition = db.Ado.ExecuteNonQuery(sql, new { processId = instanceEntity.process_id });
                         if (resultCondition > 0)
                         {
                             historyCondition.opinion = "判断结果为【是】";

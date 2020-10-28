@@ -1,67 +1,22 @@
 ﻿using Luckyu.Log;
-using SqlSugar;
+using FreeSql;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+using System.Collections.Generic;
+using System.Data.Common;
+using Newtonsoft.Json;
+using Luckyu.Utility;
 
 namespace Luckyu.DataAccess
 {
     public class BaseConnection
     {
         private static string connectionString = "";
-        private static DbType dbType = DbType.MySql;
-        private sys_logService logService = new sys_logService();
+        private static DataType dbType;
+        private static sys_logService logService = new sys_logService();
 
-        public SqlSugarClient Instance
-        {
-            get
-            {
-                var db = new SqlSugarClient(
-                   new ConnectionConfig()
-                   {
-                       ConnectionString = GetConnectionString(),
-                       DbType = GetDbType(),
-                       IsAutoCloseConnection = true,//自动释放数据务，如果存在事务，在事务结束后释放
-                       ConfigureExternalServices = new ConfigureExternalServices()
-                       {
-                           EntityService = (property, column) =>
-                           {
-                               var attributes = property.GetCustomAttributes(true);//get all attributes     
-                               if (attributes.Any(it => it is NotMappedAttribute))//根据自定义属性    
-                               {
-                                   column.IsIgnore = true;
-                               }
-                           }
-                       }
-                   });
-                //用来打印Sql方便你调式    
-                db.Aop.OnLogExecuting = (sql, pars) =>
-                {
-                    var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
-                    foreach (var keyword in keywords)
-                    {
-                        if (sql.ToLower().Contains(keyword))
-                        {
-                            var log = new sys_logEntity();
-                            log.log_type = (int)LogType.Sql;
-                            log.log_content = sql;
-                            log.log_json = db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value));
-                            log.log_time = DateTime.Now;
-                            logService.Insert(log);
-                            break;
-                        }
-                    }
-                };
-                return db;
-            }
-        }
+        private static IFreeSql db;
 
-        public static void SetConnectString(string conString)
-        {
-            connectionString = conString;
-        }
-
-        private string GetConnectionString()
+        private static string GetConnectionString()
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -71,10 +26,71 @@ namespace Luckyu.DataAccess
             return connectionString;
         }
 
-        private DbType GetDbType()
+        private static DataType GetDbType()
         {
+            dbType = DataType.MySql;
             return dbType;
         }
+
+        public static void SetConnectString(string conString)
+        {
+            connectionString = conString;
+        }
+        public static IFreeSql InitDatabase()
+        {
+            if (db == null)
+            {
+                db = new FreeSqlBuilder()
+                          .UseConnectionString(GetDbType(), GetConnectionString())
+                          .UseNameConvert(FreeSql.Internal.NameConvertType.ToLower)
+                          .UseAutoSyncStructure(false) //自动同步实体结构到数据库
+                          .UseGenerateCommandParameterWithLambda(LuckyuHelper.IsDebug() ? false : true)
+                          .UseNoneCommandParameter(LuckyuHelper.IsDebug() ? true : false)
+                          .UseMonitorCommand((command) =>
+                          {
+
+                          }, (command, result) =>
+                          {
+                              var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
+                              var sql = command.CommandText;
+                              foreach (var keyword in keywords)
+                              {
+                                  if (sql.ToLower().Trim().StartsWith(keyword))
+                                  {
+                                      var dic = new Dictionary<string, string>();
+                                      foreach (DbParameter para in command.Parameters)
+                                      {
+                                          dic.Add(para.ParameterName, para.Value.ToString());
+                                      }
+                                      var log = new sys_logEntity();
+                                      log.log_type = (int)LogType.Sql;
+                                      log.log_content = result;
+                                      log.log_json = JsonConvert.SerializeObject(dic);
+                                      log.log_time = DateTime.Now;
+                                      logService.Insert(log);
+                                      break;
+                                  }
+                              }
+                          })
+                          .Build(); //请务必定义成 Singleton 单例模式
+            }
+            return db;
+        }
+
+        public static string ParaPre
+        {
+            get
+            {
+                switch (GetDbType())
+                {
+                    case DataType.MySql:
+                        return "?";
+                    default:
+                        return "@";
+                }
+            }
+        }
+
     }
 
 }

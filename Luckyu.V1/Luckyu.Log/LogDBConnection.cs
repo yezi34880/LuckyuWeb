@@ -23,6 +23,7 @@ namespace Luckyu.Log
 
         private static DataType GetDbType()
         {
+            dbType = DataType.MySql;
             return DataType.MySql;
         }
         public static IFreeSql InitDatabase()
@@ -31,7 +32,7 @@ namespace Luckyu.Log
             {
                 db = new FreeSqlBuilder()
                           .UseConnectionString(GetDbType(), GetConnectionString())
-                          .UseNameConvert(FreeSql.Internal.NameConvertType.ToUpper)
+                          .UseNameConvert(FreeSql.Internal.NameConvertType.ToLower)
                           .UseAutoSyncStructure(false) //自动同步实体结构到数据库
                           .Build(); //请务必定义成 Singleton 单例模式
             }

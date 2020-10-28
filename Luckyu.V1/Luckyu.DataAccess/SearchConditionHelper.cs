@@ -1,5 +1,5 @@
-﻿using Luckyu.Utility;
-using SqlSugar;
+﻿using FreeSql.Internal.Model;
+using Luckyu.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +20,11 @@ namespace Luckyu.DataAccess
         /// <param name="field">字段名</param>
         /// <param name="data">值 格式为 2019-1-1 - 2020-1-1，必须是以【 - 】空格-空格作为分隔符</param>
         /// <param name="data">分隔符 默认分隔符为【 - 】空格-空格</param>
-        public static List<IConditionalModel> GetDateCondition(string field, string data, string split = " - ")
+        public static DynamicFilterInfo GetDateCondition(string field, string data, string split = " - ")
         {
-            var modelCondition = new List<IConditionalModel>();
+            var filter = new DynamicFilterInfo();
+            filter.Logic = DynamicFilterLogic.And;
+            filter.Filters = new List<DynamicFilterInfo>();
             if (data.IsEmpty())
             {
                 return null;
@@ -30,23 +32,14 @@ namespace Luckyu.DataAccess
             var timespans = data.SplitWithoutEmpty(split);
             if (timespans.Length > 1)
             {
-                modelCondition.Add(new ConditionalModel
+                filter.Filters.Add(new DynamicFilterInfo
                 {
-                    FieldName = field,
-                    FieldValue = timespans[0],
-                    ConditionalType = ConditionalType.GreaterThanOrEqual,
-                    FieldValueConvertFunc = (val) => { return timespans[0].ToDate(); }
-                });
-                var nextDay = timespans[1].ToDate().AddDays(1);
-                modelCondition.Add(new ConditionalModel
-                {
-                    FieldName = field,
-                    FieldValue = nextDay.ToString("yyyy-MM-dd"),
-                    ConditionalType = ConditionalType.LessThan,
-                    FieldValueConvertFunc = val => nextDay
+                    Field = field,
+                    Value = timespans,
+                    Operator = DynamicFilterOperator.DateRange,
                 });
             }
-            return modelCondition;
+            return filter;
         }
 
         /// <summary>
@@ -56,40 +49,40 @@ namespace Luckyu.DataAccess
         /// <param name="data">值 格式为空 或 1 - 999，必须是以【 - 】空格-空格作为分隔符</param>
         /// <param name="split"></param>
         /// <returns></returns>
-        public static List<IConditionalModel> GetNumberCondition(string field, string data, string split = " - ")
+        public static DynamicFilterInfo GetNumberCondition(string field, string data, string split = " - ")
         {
-            var modelCondition = new List<IConditionalModel>();
             if (data.IsEmpty())
             {
                 return null;
             }
+            var filter = new DynamicFilterInfo();
+            filter.Logic = DynamicFilterLogic.And;
+            filter.Filters = new List<DynamicFilterInfo>();
             var nums = data.SplitWithoutEmpty(split);
             if (nums.Length > 1)
             {
                 var num1 = nums[0].ToDecimalOrNull();
                 if (num1.HasValue)
                 {
-                    modelCondition.Add(new ConditionalModel
+                    filter.Filters.Add(new DynamicFilterInfo
                     {
-                        FieldName = field,
-                        FieldValue = num1.Value.ToString(),
-                        ConditionalType = ConditionalType.GreaterThanOrEqual,
-                        FieldValueConvertFunc = val => num1.Value
+                        Field = field,
+                        Value = num1.Value,
+                        Operator = DynamicFilterOperator.GreaterThanOrEqual,
                     });
                 }
                 var num2 = nums[1].ToDecimalOrNull();
                 if (num2.HasValue)
                 {
-                    modelCondition.Add(new ConditionalModel
+                    filter.Filters.Add(new DynamicFilterInfo
                     {
-                        FieldName = field,
-                        FieldValue = num2.Value.ToString(),
-                        ConditionalType = ConditionalType.LessThanOrEqual,
-                        FieldValueConvertFunc = val => num2.Value
+                        Field = field,
+                        Value = num2.Value,
+                        Operator = DynamicFilterOperator.LessThan,
                     });
                 }
             }
-            return modelCondition;
+            return filter;
         }
 
         /// <summary>
@@ -98,15 +91,18 @@ namespace Luckyu.DataAccess
         /// <param name="field"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static IConditionalModel GetStringLikeCondition(string field, string data)
+        public static DynamicFilterInfo GetStringLikeCondition(string field, string data)
         {
-            var modelCondition = new ConditionalModel
+            if (data.IsEmpty())
             {
-                FieldName = field,
-                FieldValue = $"%{data}%",
-                ConditionalType = ConditionalType.Like
-            };
-            return modelCondition;
+                return null;
+            }
+            var filter = new DynamicFilterInfo();
+            filter.Logic = DynamicFilterLogic.And;
+            filter.Field = field;
+            filter.Value = data;
+            filter.Operator = DynamicFilterOperator.Contains;
+            return filter;
         }
 
         /// <summary>
@@ -115,77 +111,38 @@ namespace Luckyu.DataAccess
         /// <param name="field"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static IConditionalModel GetStringEqualCondition(string field, string data, string notSearch = "")
+        public static DynamicFilterInfo GetStringEqualCondition(string field, string data, string notSearch = "")
         {
+            if (data.IsEmpty())
+            {
+                return null;
+            }
             if (data == notSearch)
             {
                 return null;
             }
-            var modelCondition = new ConditionalModel
-            {
-                FieldName = field,
-                FieldValue = data,
-                ConditionalType = ConditionalType.Equal
-            };
-            return modelCondition;
+            var filter = new DynamicFilterInfo();
+            filter.Logic = DynamicFilterLogic.And;
+            filter.Field = field;
+            filter.Value = data;
+            filter.Operator = DynamicFilterOperator.Equal;
+            return filter;
         }
 
-        public static IConditionalModel GetStringContainCondition(string field, string data, string split = ",")
+        public static DynamicFilterInfo GetStringContainCondition(string field, string data, string split = ",")
         {
-            var modelCondition = new ConditionalModel
+            if (data.IsEmpty())
             {
-                FieldName = field,
-                FieldValue = data,
-                ConditionalType = ConditionalType.In,
-                FieldValueConvertFunc = (val) => { return data.SplitWithoutEmpty(split); }
-            };
-            return modelCondition;
-        }
-        #endregion
-
-        #region 直接在当前条件上扩展
-        public static void AddDateCondition(this List<IConditionalModel> condition, string field, string data, string split = " ~ ")
-        {
-            var newCondition = SearchConditionHelper.GetDateCondition(field, data, split);
-            if (!newCondition.IsEmpty())
-            {
-                condition.AddRange(newCondition);
+                return null;
             }
+            var datas = data.SplitWithoutEmpty(split);
+            var filter = new DynamicFilterInfo();
+            filter.Logic = DynamicFilterLogic.And;
+            filter.Field = field;
+            filter.Value = datas;
+            filter.Operator = DynamicFilterOperator.Any;
+            return filter;
         }
-
-        public static void AddStringLikeCondition(this List<IConditionalModel> condition, string field, string data)
-        {
-            var newCondition = SearchConditionHelper.GetStringLikeCondition(field, data);
-            if (!newCondition.IsEmpty())
-            {
-                condition.Add(newCondition);
-            }
-        }
-
-        /// <summary>
-        /// 字符 = 条件
-        /// </summary>
-        /// <param name="field"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static void AddStringEqualCondition(this List<IConditionalModel> condition, string field, string data, string notSearch = "")
-        {
-            var newCondition = SearchConditionHelper.GetStringEqualCondition(field, data, notSearch);
-            if (!newCondition.IsEmpty())
-            {
-                condition.Add(newCondition);
-            }
-        }
-
-        public static void AddStringContainCondition(this List<IConditionalModel> condition, string field, string data, string split = ",")
-        {
-            var newCondition = SearchConditionHelper.GetStringContainCondition(field, data, split);
-            if (!newCondition.IsEmpty())
-            {
-                condition.Add(newCondition);
-            }
-        }
-
         #endregion
     }
 }

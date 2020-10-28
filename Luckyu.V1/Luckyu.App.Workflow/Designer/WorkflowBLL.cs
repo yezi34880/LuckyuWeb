@@ -1,6 +1,5 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,21 +25,21 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
-        public wf_flowEntity GetEntity(Expression<Func<wf_flowEntity, bool>> condition, Expression<Func<wf_flowEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public wf_flowEntity GetEntity(Expression<Func<wf_flowEntity, bool>> condition, Expression<Func<wf_flowEntity, object>> orderExp = null, bool isDesc = false)
         {
-            var entity = flowService.GetEntity(condition, orderExp, orderType);
+            var entity = flowService.GetEntity(condition, orderExp, isDesc);
             return entity;
         }
 
-        public List<wf_flow_authorizeEntity> GetAuthorizeList(Expression<Func<wf_flow_authorizeEntity, bool>> condition, Expression<Func<wf_flow_authorizeEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<wf_flow_authorizeEntity> GetAuthorizeList(Expression<Func<wf_flow_authorizeEntity, bool>> condition, Expression<Func<wf_flow_authorizeEntity, object>> orderExp = null, bool isDesc = false)
         {
-            var list = flowauthService.GetList(condition, orderExp, orderType);
+            var list = flowauthService.GetList(condition, orderExp, isDesc);
             return list;
         }
 
-        public wf_flow_schemeEntity GetSchemeEntity(Expression<Func<wf_flow_schemeEntity, bool>> condition, Expression<Func<wf_flow_schemeEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public wf_flow_schemeEntity GetSchemeEntity(Expression<Func<wf_flow_schemeEntity, bool>> condition, Expression<Func<wf_flow_schemeEntity, object>> orderExp = null, bool isDesc = false)
         {
-            var entity = flowshemeService.GetEntity(condition, orderExp, orderType);
+            var entity = flowshemeService.GetEntity(condition, orderExp, isDesc);
             return entity;
         }
 

@@ -1,7 +1,7 @@
-﻿using Luckyu.App.Organization;
+﻿using FreeSql.Internal.Model;
+using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +22,9 @@ namespace Luckyu.App.System
             {
                 exp = exp.LinqAnd(r => r.dataitem_id == classifyId);
             }
-            var dicCondition = new Dictionary<string, Func<string, string, List<IConditionalModel>>>();
+            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             dicCondition.Add("is_enable",
-                (field, data) => new List<IConditionalModel> { SearchConditionHelper.GetStringEqualCondition(field, data, "-1") }
+                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
                 );
             var page = BaseRepository().GetPage(jqpage, exp, dicCondition);
             return page;

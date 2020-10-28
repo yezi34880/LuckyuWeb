@@ -1,6 +1,5 @@
 ﻿using Luckyu.Cache;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,15 +35,15 @@ namespace Luckyu.App.Organization
             return list;
         }
 
-        public sys_postEntity GetEntity(Expression<Func<sys_postEntity, bool>> condition, Expression<Func<sys_postEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public sys_postEntity GetEntity(Expression<Func<sys_postEntity, bool>> condition, Expression<Func<sys_postEntity, object>> orderExp = null, bool isDesc = false)
         {
-            var entity = postService.GetEntity(condition, orderExp, orderType);
+            var entity = postService.GetEntity(condition, orderExp, isDesc);
             return entity;
         }
 
-        public List<sys_postEntity> GetList(Expression<Func<sys_postEntity, bool>> condition, Expression<Func<sys_postEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<sys_postEntity> GetList(Expression<Func<sys_postEntity, bool>> condition, Expression<Func<sys_postEntity, object>> orderExp = null, bool isDesc = false)
         {
-            var list = postService.GetList(condition, orderExp, orderType);
+            var list = postService.GetList(condition, orderExp, isDesc);
             return list;
         }
 

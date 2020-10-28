@@ -1,6 +1,5 @@
 ﻿using Luckyu.Cache;
 using Luckyu.Utility;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,19 +29,24 @@ namespace Luckyu.App.Organization
             var page = dataService.Page(jqPage);
             return page;
         }
-        public sys_dataauthorizeEntity GetEntity(Expression<Func<sys_dataauthorizeEntity, bool>> condition, Expression<Func<sys_dataauthorizeEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public sys_dataauthorizeEntity GetEntity(Expression<Func<sys_dataauthorizeEntity, bool>> condition)
         {
-            var entity = dataService.GetEntity(condition, orderExp, orderType);
+            var entity = dataService.GetEntity(condition);
             return entity;
         }
-        public List<sys_dataauthorizeEntity> GetList(Expression<Func<sys_dataauthorizeEntity, bool>> condition, Expression<Func<sys_dataauthorizeEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<sys_dataauthorizeEntity> GetList(Expression<Func<sys_dataauthorizeEntity, bool>> condition, Expression<Func<sys_dataauthorizeEntity, object>> orderby = null, bool isDesc = false)
         {
-            var list = dataService.GetList(condition, orderExp, orderType);
+            var list = dataService.GetList(condition, orderby, isDesc);
             return list;
         }
-        public List<sys_dataauthorize_detailEntity> GetDetailList(Expression<Func<sys_dataauthorize_detailEntity, bool>> condition, Expression<Func<sys_dataauthorize_detailEntity, object>> orderExp = null, OrderByType orderType = OrderByType.Asc)
+        public List<sys_dataauthorizeEntity> GetList(Expression<Func<sys_dataauthorizeEntity, bool>> condition)
         {
-            var list = datadetailService.GetList(condition, orderExp, orderType);
+            var list = dataService.GetList(condition);
+            return list;
+        }
+        public List<sys_dataauthorize_detailEntity> GetDetailList(Expression<Func<sys_dataauthorize_detailEntity, bool>> condition)
+        {
+            var list = datadetailService.GetList(condition);
             return list;
         }
 
