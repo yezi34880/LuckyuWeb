@@ -2,7 +2,7 @@
 
 ## 介绍
 .Net Core 3.1 后台管理框架
-![主页 换肤](https://images.gitee.com/uploads/images/2020/1010/113254_d1f46c89_543243.gif "b.gif")
+![搜索菜单与主题](https://images.gitee.com/uploads/images/2020/1029/162201_f93bf5e4_543243.gif "搜索与主题.gif")
 ![标题栏搜索](https://images.gitee.com/uploads/images/2020/1010/114008_76676dd0_543243.gif "c.gif")
 
 ## 说明
