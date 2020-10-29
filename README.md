@@ -3,6 +3,7 @@
 ## 介绍
 .Net Core 3.1 后台管理框架
 ![首页与主题切换](https://images.gitee.com/uploads/images/2020/1029/163742_c4643d98_543243.gif "search.gif")
+<br/>
 ![列表标题栏搜索](https://images.gitee.com/uploads/images/2020/1029/163810_55ecdce6_543243.gif "search2.gif")
 
 ## 说明
@@ -62,8 +63,8 @@ Luckyu.Web为主启动项目
 数据字典编辑-用户<br/>
 
  **流程管理** <br/>
-流程设计<br/>
-我的任务<br/>
+流程设计 <br/>
+我的任务 - 发起的任务 待办任务 已办任务<br/>
 流程监控 - 强制结束运行中的流程<br/>
 
  **办公管理** <br/>
