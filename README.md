@@ -1,14 +1,26 @@
 # Luckyu.V1
 
 ## 介绍
-.Net Core 3.1 后台管理框架
-![首页与主题切换](https://images.gitee.com/uploads/images/2020/1029/163742_c4643d98_543243.gif "search.gif")
-<br/>
+.Net Core 3.1 后台管理框架 <br/>
+企业内部权限管理系统基本框架
+支持多公司 多部门 多岗位 划分,数据权限灵活配置, 项目分模块开发
+支持动态工作流设计, 工作流分版本
+支持动态数据权限配置
+
+![菜单搜索与主题切换](https://images.gitee.com/uploads/images/2020/1029/170446_5bd05331_543243.gif "theme.gif")
+
 ![列表标题栏搜索](https://images.gitee.com/uploads/images/2020/1029/163810_55ecdce6_543243.gif "search2.gif")
+
+![流程图设计](https://images.gitee.com/uploads/images/2020/1029/170356_f351c4ef_543243.jpeg "workflow.jpg")
 
 ## 说明
 基于 Layui 后台框架, 整合了许多第三方插件如 jqgrid eletree xmselect等
 仅作为学习尝试, 如有侵权, 可联系删除
+
+### 数据库 MySql  日志库与业务主库分离, 日志库自动分表
+### ORM框架 FreeSql
+### 前台框架 Layui 
+### 缓存 Redis 与 MemoryCache 可切换
 
 ## 分模块开发
 采取分项目,分模块开发
