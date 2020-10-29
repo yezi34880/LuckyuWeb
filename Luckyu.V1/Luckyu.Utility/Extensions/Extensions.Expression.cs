@@ -24,7 +24,7 @@ namespace Luckyu.Utility
             var rightVisitor = new ReplaceExpressionVisitor(expr2.Parameters[0], parameter);
             var right = rightVisitor.Visit(expr2.Body);
 
-            return Expression.Lambda<Func<T, bool>>(Expression.Or(left, right), parameter);
+            return Expression.Lambda<Func<T, bool>>(Expression.OrElse(left, right), parameter);
         }
         public static Expression<Func<T, bool>> LinqAnd<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
         {
@@ -36,7 +36,7 @@ namespace Luckyu.Utility
             var rightVisitor = new ReplaceExpressionVisitor(expr2.Parameters[0], parameter);
             var right = rightVisitor.Visit(expr2.Body);
 
-            return Expression.Lambda<Func<T, bool>>(Expression.And(left, right), parameter);
+            return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(left, right), parameter);
         }
 
 
