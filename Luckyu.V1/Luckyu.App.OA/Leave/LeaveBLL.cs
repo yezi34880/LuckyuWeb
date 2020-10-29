@@ -33,7 +33,7 @@ namespace Luckyu.App.OA
             var entity = GetEntity(r => r.id == keyValue);
             if (entity == null)
             {
-                return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+                return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
             }
             var dic = new Dictionary<string, object>
             {
@@ -51,7 +51,7 @@ namespace Luckyu.App.OA
             var entity = GetEntity(r => r.id == keyValue);
             if (entity == null)
             {
-                return ResponseResult.Fail("该数据不存在");
+                return ResponseResult.Fail(MessageString.NoData);
             }
             if (entity.state != (int)StateEnum.Draft)
             {
@@ -69,7 +69,7 @@ namespace Luckyu.App.OA
                 var old = GetEntity(r => r.id == keyValue);
                 if (old == null)
                 {
-                    return ResponseResult.Fail<oa_leaveEntity>("该数据不存在");
+                    return ResponseResult.Fail<oa_leaveEntity>(MessageString.NoData);
                 }
                 if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
                 {

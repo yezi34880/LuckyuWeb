@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DeviceDetectorNET;
-using Luckyu.App.OA;
 using Luckyu.App.Organization;
-using Luckyu.App.System;
-using Luckyu.App.Workflow;
 using Luckyu.Cache;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -19,8 +14,6 @@ namespace Luckyu.Web.Controllers
         #region Var
         private ModuleBLL moduleBLL = new ModuleBLL();
         private UserBLL userBLL = new UserBLL();
-        private WFTaskBLL taskBLL = new WFTaskBLL();
-        private NewsBLL newsBLL = new NewsBLL();
 
         #endregion
 
@@ -80,7 +73,7 @@ namespace Luckyu.Web.Controllers
             var entity = userBLL.GetEntity(r => r.user_id == loginInfo.user_id);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             if (entity.loginpassword != userBLL.EncrypPassword(oldPassword, entity.loginsecret))
             {
@@ -124,28 +117,6 @@ namespace Luckyu.Web.Controllers
         public IActionResult Home()
         {
             return View();
-        }
-        /// <summary>
-        /// 首页统计
-        /// </summary>
-        public IActionResult Refrash()
-        {
-            var jqPage = new JqgridPageRequest
-            {
-                page = 1,
-                rows = 5,
-                sidx = "createtime",
-                sord = "DESC"
-            };
-            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var page = taskBLL.Page(jqPage, 1, loginInfo);
-
-            var pageNews = newsBLL.ShowPage(jqPage, loginInfo);
-
-            var dic = new Dictionary<string, object>();
-            dic.Add("Task", page.rows);
-            dic.Add("News", pageNews.rows);
-            return Success(dic);
         }
         #endregion
     }

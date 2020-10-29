@@ -37,7 +37,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = userBLL.GetEntity(r => r.user_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             userBLL.DeleteForm(entity, loginInfo);
@@ -50,7 +50,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = userBLL.GetEntity(r => r.user_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             userBLL.SetOnOff(entity, loginInfo);
@@ -104,7 +104,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = userBLL.GetEntity(r => r.user_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             entity.loginpassword = password;
             userBLL.ModifyPassword(entity);

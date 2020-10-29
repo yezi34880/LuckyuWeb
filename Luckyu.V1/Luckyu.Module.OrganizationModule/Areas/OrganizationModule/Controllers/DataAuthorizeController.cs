@@ -36,7 +36,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = dataBLL.GetEntity(r => r.auth_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             dataBLL.DeleteForm(entity, loginInfo);

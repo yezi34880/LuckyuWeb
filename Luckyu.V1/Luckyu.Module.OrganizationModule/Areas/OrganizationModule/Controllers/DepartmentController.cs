@@ -38,7 +38,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = deptBLL.GetEntity(r => r.department_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             var user = userBLL.GetEntity(r => r.department_id == entity.department_id && r.is_delete == 0 && r.is_enable == 1);
             if (!user.IsEmpty())

@@ -97,5 +97,23 @@ namespace Luckyu.Module.OAModule.Controllers
             return View(news);
         }
         #endregion
+
+        #region Home 展示
+        public IActionResult HomeShow()
+        {
+            var jqPage = new JqgridPageRequest
+            {
+                page = 1,
+                rows = 5,
+                sidx = "createtime",
+                sord = "DESC"
+            };
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var page = newsBLL.ShowPage(jqPage, loginInfo);
+            var dic = new Dictionary<string, object>();
+            dic.Add("News", page.rows);
+            return Success(dic);
+        }
+        #endregion
     }
 }

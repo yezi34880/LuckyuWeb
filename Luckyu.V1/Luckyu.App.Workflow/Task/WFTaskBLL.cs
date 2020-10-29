@@ -23,6 +23,7 @@ namespace Luckyu.App.Workflow
         private wf_task_authorizeService taskauthService = new wf_task_authorizeService();
         private UserBLL userBLL = new UserBLL();
         private UserRelationBLL userrelationBLL = new UserRelationBLL();
+        private WFDelegateBLL delegateBLL = new WFDelegateBLL();
         #endregion
 
         #region Get
@@ -117,7 +118,7 @@ namespace Luckyu.App.Workflow
             var instance = GetInstanceEnttity(r => r.instance_id == instanceId);
             if (instance == null)
             {
-                return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+                return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
             }
             var scheme = instance.schemejson.ToObject<WFSchemeModel>();
             // 展示节点 如 自己提交 就是startround 已办历史 就是自己批的那个
@@ -130,7 +131,7 @@ namespace Luckyu.App.Workflow
                 var history = GetHistoryEnttity(r => r.history_id == historyId);
                 if (history == null)
                 {
-                    return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+                    return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
                 }
                 showNode = scheme.nodes.Where(r => r.id == history.node_id).FirstOrDefault();
 
@@ -146,7 +147,7 @@ namespace Luckyu.App.Workflow
                 var task = GetTaskEnttity(r => r.task_id == taskId);
                 if (task == null)
                 {
-                    return ResponseResult.Fail<Dictionary<string, object>>("该数据不存在");
+                    return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
                 }
                 showNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
                 currentNode = showNode;
@@ -390,17 +391,28 @@ namespace Luckyu.App.Workflow
             historyCurrent = task.Adapt<wf_taskhistoryEntity>();
             historyCurrent.result = result;
             historyCurrent.nodetype = nodeCurrent.type;
+
+            var currentAuth = auths.Where(r => r.user_id == loginInfo.user_id).FirstOrDefault();
+            if (currentAuth != null && currentAuth.is_add == 1)
+            {
+                historyCurrent.opinion = "【加签】 ";
+            }
+            else if (currentAuth != null && currentAuth.is_add == 2)
+            {
+                historyCurrent.opinion = "【任务委托】 ";
+            }
+
             if (nodeCurrent.type == "confluencenode")
             {
-                historyCurrent.opinion = "【会签】 " + opinion;
+                historyCurrent.opinion += "【会签】 " + opinion;
             }
             else if (nodeCurrent.type == "auditornode")
             {
-                historyCurrent.opinion = "【传阅】 " + opinion;
+                historyCurrent.opinion += "【传阅】 " + opinion;
             }
             else
             {
-                historyCurrent.opinion = "【审批】" + opinion;
+                historyCurrent.opinion += "【审批】" + opinion;
             }
             historyCurrent.authorize_user_id = loginInfo.user_id;
             historyCurrent.authorizen_userame = loginInfo.realname;
@@ -515,7 +527,7 @@ namespace Luckyu.App.Workflow
             var auth = new wf_task_authorizeEntity();
             auth.task_id = task.task_id;
             auth.user_id = userId;
-            auth.is_add = 1;
+            auth.is_add = 1;  // 加签审批
             auth.Create(loginInfo);
 
             var user = userBLL.GetEntityByCache(r => r.user_id == userId);
@@ -835,6 +847,30 @@ namespace Luckyu.App.Workflow
                     listAuth.Add(auth);
                 }
             }
+
+            // 添加 委托任务
+            var allAuthUsers = GetUserByAuth(listAuth);
+            var dateNow = DateTime.Now;
+            foreach (var user in allAuthUsers)
+            {
+                var delegates = delegateBLL.GetList(r => r.user_id == loginInfo.user_id && r.starttime >= dateNow && r.endtime < dateNow);
+                foreach (var dele in delegates)
+                {
+                    if (dele.flowcode == "ALL" && dele.flowcode.SplitWithoutEmpty(",").Contains(instanceEntity.flowcode))
+                    {
+                        listAuth.Add(new wf_task_authorizeEntity
+                        {
+                            user_id = dele.to_user_id,
+                            is_add = 2,  // 委托任务
+                        });
+                        if (dele.to_user_id == loginInfo.user_id)
+                        {
+                            isContainSelf = true;
+                        }
+                    }
+                }
+            }
+
             return new Tuple<List<wf_task_authorizeEntity>, bool>(listAuth, isContainSelf);
         }
 

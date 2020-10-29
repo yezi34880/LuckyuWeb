@@ -98,5 +98,23 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
         #endregion
 
+        #region Home 展示
+        public IActionResult HomeShow()
+        {
+            var jqPage = new JqgridPageRequest
+            {
+                page = 1,
+                rows = 5,
+                sidx = "createtime",
+                sord = "DESC"
+            };
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var page = taskBLL.Page(jqPage, 1, loginInfo);
+            var dic = new Dictionary<string, object>();
+            dic.Add("Task", page.rows);
+            return Success(dic);
+        }
+        #endregion
+
     }
 }

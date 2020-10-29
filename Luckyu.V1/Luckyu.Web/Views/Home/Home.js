@@ -28,7 +28,7 @@
             });
         },
         refrash: function () {
-            luckyu.ajax.getNoloading('/Home/Refrash', {}, function (res) {
+            luckyu.ajax.getNoloading('/WorkflowModule/Task/HomeShow', {}, function (res) {
                 if (res.code === 200) {
                     var html = '';
                     for (var i = 0; i < res.data.Task.length; i++) {
@@ -88,7 +88,11 @@
                             btn: btns
                         });
                     });
-
+                }
+            });
+            luckyu.ajax.getNoloading('/OAModule/News/HomeShow', {}, function (res) {
+                if (res.code === 200) {
+                    var html = '';
                     for (var i = 0; i < res.data.News.length; i++) {
                         var row = res.data.News[i];
                         html += '\
@@ -110,7 +114,6 @@
                             url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + id,
                         });
                     });
-
                 }
             });
         }

@@ -43,7 +43,7 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             var entity = flowBLL.GetEntity(r => r.flow_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             flowBLL.DeleteForm(entity, loginInfo);

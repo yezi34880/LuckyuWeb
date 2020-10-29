@@ -40,7 +40,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = moduleBLL.GetEntity(r => r.module_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
 
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);

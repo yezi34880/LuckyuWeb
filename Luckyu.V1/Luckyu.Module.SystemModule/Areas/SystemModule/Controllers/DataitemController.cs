@@ -39,7 +39,7 @@ namespace Luckyu.Module.SystemModule.Controllers
             var entity = dataitemBLL.GetDetailEntity(r => r.detail_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             dataitemBLL.DeleteDetailForm(entity, loginInfo);
@@ -74,7 +74,7 @@ namespace Luckyu.Module.SystemModule.Controllers
             var entity = dataitemBLL.GetDetailEntity(r => r.detail_id == keyValue);
             if (entity == null)
             {
-                return Fail("没有该数据");
+                return Fail(MessageString.NoData);
             }
             var data = new
             {
@@ -113,7 +113,7 @@ namespace Luckyu.Module.SystemModule.Controllers
             var entity = dataitemBLL.GetClassifyEntity(r => r.dataitem_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             dataitemBLL.DeleteClassifyForm(entity, loginInfo);
@@ -135,7 +135,7 @@ namespace Luckyu.Module.SystemModule.Controllers
             var entity = dataitemBLL.GetClassifyEntity(r => r.dataitem_id == keyValue);
             if (entity == null)
             {
-                return Fail("没有该数据");
+                return Fail(MessageString.NoData);
             }
             var data = new
             {

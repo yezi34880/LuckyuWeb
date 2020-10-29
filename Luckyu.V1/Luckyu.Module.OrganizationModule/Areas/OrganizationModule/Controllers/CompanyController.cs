@@ -52,7 +52,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = companyBLL.GetEntity(r => r.company_id == keyValue);
             if (entity == null)
             {
-                return Fail("没有该数据");
+                return Fail(MessageString.NoData);
             }
             var data = new
             {

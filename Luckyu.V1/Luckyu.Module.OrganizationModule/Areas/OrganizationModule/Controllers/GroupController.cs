@@ -40,7 +40,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var entity = groupBLL.GetEntity(r => r.group_id == keyValue);
             if (entity == null)
             {
-                return Fail("该数据不存在");
+                return Fail(MessageString.NoData);
             }
             //var user = userBLL.GetEntity(r => r.group_id == entity.group_id && r.is_delete == 0 && r.is_enable == 1);
             //if (!user.IsEmpty())

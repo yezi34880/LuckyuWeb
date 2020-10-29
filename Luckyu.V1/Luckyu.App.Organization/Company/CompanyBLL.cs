@@ -106,7 +106,7 @@ namespace Luckyu.App.Organization
             var entity = GetEntity(r => r.company_id == keyValue);
             if (entity == null)
             {
-                return ResponseResult.Fail("该数据不存在");
+                return ResponseResult.Fail(MessageString.NoData);
             }
             //var user = userBLL.GetEntity(r => r.F_CompanyId == entity.F_CompanyId && r.F_DeleteMark == 0 && r.F_EnabledMark == 1);
             //if (!user.IsEmpty())

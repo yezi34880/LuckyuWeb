@@ -1,4 +1,6 @@
 ﻿using FreeSql.DataAnnotations;
+using Luckyu.App.Organization;
+using Luckyu.Log;
 using System;
 
 namespace Luckyu.App.Workflow
@@ -45,6 +47,21 @@ namespace Luckyu.App.Workflow
         ///  endtime   
         /// </summary>
         public DateTime endtime { get; set; }
+
+        /// <summary>
+        ///  flowcode   
+        /// </summary>
+        public string flowcode { get; set; }
+
+        /// <summary>
+        ///  to_user_id   
+        /// </summary>
+        public string to_user_id { get; set; }
+
+        /// <summary>
+        ///  to_username   
+        /// </summary>
+        public string to_username { get; set; }
 
         /// <summary>
         ///  remark   
@@ -108,7 +125,32 @@ namespace Luckyu.App.Workflow
         #endregion
 
         #region 方法
+        public void Create(UserModel loginInfo)
+        {
+            this.delegate_id = SnowflakeHelper.NewCode();
+            this.createtime = DateTime.Now;
+            this.create_userid = loginInfo.user_id;
+            this.create_username = loginInfo.realname;
 
+            this.user_id = loginInfo.user_id;
+            this.department_id = loginInfo.department_id;
+            this.company_id = loginInfo.company_id;
+        }
+        public void Modify(string keyValue, UserModel loginInfo)
+        {
+            this.delegate_id = keyValue;
+            this.edittime = DateTime.Now;
+            this.edit_userid = loginInfo.user_id;
+            this.edit_username = loginInfo.realname;
+        }
+        public void Remove(UserModel loginInfo)
+        {
+            this.is_delete = 1;
+            this.deletetime = DateTime.Now;
+            this.delete_userid = loginInfo.user_id;
+            this.delete_username = loginInfo.realname;
+        }
         #endregion
+
     }
 }

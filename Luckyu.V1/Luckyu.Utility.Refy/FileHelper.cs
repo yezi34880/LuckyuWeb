@@ -115,8 +115,8 @@ namespace Luckyu.Utility
 
         public static string MapPath(string relativePath)
         {
-            var logger = NLog.LogManager.GetCurrentClassLogger();
-            logger.Info(relativePath);
+            //var logger = NLog.LogManager.GetCurrentClassLogger();
+            //logger.Info(relativePath);
 
             relativePath = relativePath.TrimStart('\\').TrimStart('/');
             if (!relativePath.Contains("Views"))
@@ -140,7 +140,6 @@ namespace Luckyu.Utility
                     }
                 }
             }
-            logger.Info(serverPath);
             return serverPath;
         }
         #endregion
