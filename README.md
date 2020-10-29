@@ -6,13 +6,11 @@
 支持多公司 多部门 多岗位 划分,数据权限灵活配置, 项目分模块开发 <br/>
 支持动态工作流设计, 工作流分版本 <br/>
 支持动态数据权限配置 <br/>
-![菜单搜索与换肤](https://images.gitee.com/uploads/images/2020/1029/171347_5fb58988_543243.gif "theme.gif")
+![菜单搜索与换肤](https://images.gitee.com/uploads/images/2020/1029/171631_29728759_543243.gif "theme.gif")
 
 ![列表标题栏搜索](https://images.gitee.com/uploads/images/2020/1029/163810_55ecdce6_543243.gif "search2.gif")
 
 ![流程图设计](https://images.gitee.com/uploads/images/2020/1029/170356_f351c4ef_543243.jpeg "workflow.jpg")
-
-![菜单搜索与换肤](https://images.gitee.com/uploads/images/2020/1029/171423_7421a36a_543243.gif "theme.gif")
 
 ## 说明
 基于 Layui 后台框架, 整合了许多第三方插件如 jqgrid eletree xmselect等
