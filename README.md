@@ -12,6 +12,8 @@
 
 ![流程图设计](https://images.gitee.com/uploads/images/2020/1029/170356_f351c4ef_543243.jpeg "workflow.jpg")
 
+![菜单搜索与换肤](https://images.gitee.com/uploads/images/2020/1029/171423_7421a36a_543243.gif "theme.gif")
+
 ## 说明
 基于 Layui 后台框架, 整合了许多第三方插件如 jqgrid eletree xmselect等
 仅作为学习尝试, 如有侵权, 可联系删除
