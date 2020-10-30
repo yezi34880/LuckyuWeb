@@ -37,6 +37,14 @@
                             multiple = multiple === "true" ? true : false;
                             self.initDataItem({ code: code, multiple: multiple });
                         }
+                        else if (type === "datasource") {
+                            var url = self.attr("luckyu-url");
+                            var name = self.attr("luckyu-name");
+                            var value = self.attr("luckyu-value");
+                            var multiple = self.attr("luckyu-multiple");
+                            multiple = multiple === "true" ? true : false;
+                            self.initDataSource({ url: url, nameField: name, valueField: value, multiple: multiple });
+                        }
                         else if (type === "datalocal") {
                             var data = self.attr("luckyu-data");
                             var jsonData = JSON.parse(data);

@@ -18,7 +18,7 @@ namespace Luckyu.Module.WorkflowModule.Controllers
     {
         #region Var
         private WFDelegateBLL delegateBLL = new WFDelegateBLL();
-
+        private WorkflowBLL flowBLL = new WorkflowBLL();
         #endregion
 
         #region Index
@@ -64,6 +64,20 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             return Json(res);
         }
 
+        #endregion
+
+        #region Interface
+        public IActionResult GetFlow()
+        {
+            var allflow = flowBLL.GetList(r => r.is_delete == 0 && r.is_enable == 1);
+            var select = allflow.Select(r => new
+            {
+                name = r.flowname,
+                value = r.flowcode
+            }).ToList();
+            //select.Insert(0, new { name = "全部", value = "ALL" });
+            return Success(select);
+        }
         #endregion
 
     }

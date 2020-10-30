@@ -128,6 +128,7 @@
                         initValue: null,// 默认选中
                         direction: "auto", //方向 auto / up / down
                         nameField: "name", //返回数据显示字段名
+                        toolbar: {}, // 工具条
                         valueField: "value",//返回数据值字段名
                         filterable: true, //开启搜索
                         multiple: false, // 是否多选
@@ -187,6 +188,9 @@
                         if (xmOption.multiple === false) {
                             op.radio = true;
                             op.clickClose = true;
+                        }
+                        else {
+                            op.toolbar = xmOption.toolbar;
                         }
                         if (xmdata.length > 50) {
                             op.paging = true;

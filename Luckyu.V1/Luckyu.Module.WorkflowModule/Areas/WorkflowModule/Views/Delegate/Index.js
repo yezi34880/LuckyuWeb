@@ -18,30 +18,24 @@ var bootstrap = function (layui) {
                 postData: {},
                 colModel: [
                     { name: 'id', hidden: true, key: true },
-                    { name: 'catetory', label: "分类", width: 80, },
-                    { name: 'title', label: "标题", width: 200, },
-                    { name: 'source', label: "来源", width: 100, },
-                    { name: 'keywords', label: "关键词", width: 100, },
+                    { name: 'username', label: "委托人", width: 80, },
+                    { name: 'to_username', label: "被委托人", width: 100, },
                     {
-                        name: 'publishtime', label: "发布时间", width: 100, align: "right",
+                        name: 'starttime', label: "开始时间", width: 100, align: "right",
                         formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
                         stype: "daterange"
                     },
                     {
-                        name: 'is_publish', label: '是否发布', width: 40, search: false,
+                        name: 'endtime', label: "结束时间", width: 100, align: "right",
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        stype: "daterange"
+                    },
+                    { name: 'flowcode', label: "委托流程", width: 300, },
+                    {
+                        name: 'is_enable', label: '是否有效', width: 40, search: false,
                         formatter: function (cellvalue, options, rowObject) {
                             switch (cellvalue) {
                                 case 1: return '<i class="fa fa-toggle-on"></i>';
-                                case 0: return '<i class="fa fa-toggle-off"></i>';
-                                default: return '';
-                            }
-                        }
-                    },
-                    {
-                        name: 'sort', label: '是否置顶', width: 40, search: false,
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 99: return '<i class="fa fa-toggle-on"></i>';
                                 case 0: return '<i class="fa fa-toggle-off"></i>';
                                 default: return '';
                             }
@@ -54,7 +48,7 @@ var bootstrap = function (layui) {
                 rowNum: 30,
                 rowList: [30, 50, 100],
                 pager: "#gridPager",
-                sortname: "publishtime",
+                sortname: "starttime",
                 sortorder: "DESC",
                 onSelectRow: function (rowid, status) {
                     if (status) {
@@ -86,8 +80,8 @@ var bootstrap = function (layui) {
                 luckyu.layer.layerFormTop({
                     id: "Form",
                     title: "新增",
-                    width: 1100,
-                    height: 750,
+                    width: 800,
+                    height: 400,
                     url: luckyu.rootUrl + "/WorkflowModule/Delegate/Form",
                     btn: [{
                         name: "保存",
@@ -109,8 +103,8 @@ var bootstrap = function (layui) {
                 luckyu.layer.layerFormTop({
                     id: "Form",
                     title: "修改/查看",
-                    width: 1100,
-                    height: 750,
+                    width: 800,
+                    height: 400,
                     url: luckyu.rootUrl + "/WorkflowModule/Delegate/Form?keyValue=" + rowid,
                     btn: [{
                         name: "保存",
@@ -137,28 +131,6 @@ var bootstrap = function (layui) {
                 });
             });
 
-            $("#publish").click(function () {
-                var rowid = grid.getGridParam("selrow");
-                if (!rowid) {
-                    layui.notice.error("没有选中任何行数据");
-                    return;
-                }
-                luckyu.ajax.postv2(luckyu.rootUrl + "/WorkflowModule/Delegate/Publish", { keyValue: rowid }, function (data, info) {
-                    layui.notice.success(info);
-                    page.searchInCurrentPage();
-                });
-            });
-            $("#settop").click(function () {
-                var rowid = grid.getGridParam("selrow");
-                if (!rowid) {
-                    layui.notice.error("没有选中任何行数据");
-                    return;
-                }
-                luckyu.ajax.postv2(luckyu.rootUrl + "/WorkflowModule/Delegate/SetTop", { keyValue: rowid }, function (data, info) {
-                    layui.notice.success(info);
-                    page.searchInCurrentPage();
-                });
-            });
         },
         search: function () {
             slectRowId = '';

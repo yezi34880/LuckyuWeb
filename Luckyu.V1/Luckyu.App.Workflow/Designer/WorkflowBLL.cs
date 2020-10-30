@@ -30,6 +30,11 @@ namespace Luckyu.App.Workflow
             var entity = flowService.GetEntity(condition, orderExp, isDesc);
             return entity;
         }
+        public List<wf_flowEntity> GetList(Expression<Func<wf_flowEntity, bool>> condition, Expression<Func<wf_flowEntity, object>> orderExp = null, bool isDesc = false)
+        {
+            var list = flowService.GetList(condition, orderExp, isDesc);
+            return list;
+        }
 
         public List<wf_flow_authorizeEntity> GetAuthorizeList(Expression<Func<wf_flow_authorizeEntity, bool>> condition, Expression<Func<wf_flow_authorizeEntity, object>> orderExp = null, bool isDesc = false)
         {

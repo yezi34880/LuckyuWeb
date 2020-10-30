@@ -133,6 +133,7 @@ namespace Luckyu.App.Workflow
             this.create_username = loginInfo.realname;
 
             this.user_id = loginInfo.user_id;
+            this.username = loginInfo.realname;
             this.department_id = loginInfo.department_id;
             this.company_id = loginInfo.company_id;
         }
