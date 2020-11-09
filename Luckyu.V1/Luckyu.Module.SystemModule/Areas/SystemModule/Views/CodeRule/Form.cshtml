@@ -1,0 +1,52 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+
+}
+
+<div lay-filter="CodeRule">
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">编码</label>
+        <div class="layui-input-block">
+            <input id="rulecode" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-block">
+            <input id="rulename" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input id="remark" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="layui-col-xs12">
+        <div class="layui-btn-group">
+            <button type="button" id="addRow" class="layui-btn layui-btn-sm layui-btn-normal">新增行</button>
+            <button type="button" id="editRow" class="layui-btn layui-btn-sm layui-btn-normal">修改行</button>
+            <button type="button" id="deleteRow" class="layui-btn layui-btn-sm layui-btn-normal">删除行</button>
+        </div>
+        <div class="layui-btn-group">
+            <button type="button" id="moveUp" class="layui-btn layui-btn-sm layui-btn-normal">上移</button>
+            <button type="button" id="moveDown" class="layui-btn layui-btn-sm layui-btn-normal">下移</button>
+        </div>
+        <div class="layui-input-block pull-right">
+            <input type="checkbox" id="F_EnabledMark" lay-skin="switch" lay-text="有效|无效" checked />
+        </div>
+    </div>
+    <div class="layui-col-xs12">
+        <table id="grid"></table>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/CodeRule/Form.js")
+}
+
+

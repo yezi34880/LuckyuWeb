@@ -131,7 +131,8 @@ var bootstrap = function (layui) {
                 $("#tabForms>.layui-tab-content iframe").each(function () {
                     var iframeWindow = this.contentWindow;
                     this.onload = !!iframeWindow.load ? iframeWindow.load() : function () {
-                        $("input,textarea", iframeWindow.document).attr("disabled", "disabled");
+                        $("input[type!='file'],textarea", iframeWindow.document).attr("disabled", "disabled");
+                        $("button[title=删除文件]").attr("disabled", "disabled");
                         setTimeout(function () {
                             $(".xm-select", iframeWindow.document).each(function () {
                                 var id = $(this).attr("id");

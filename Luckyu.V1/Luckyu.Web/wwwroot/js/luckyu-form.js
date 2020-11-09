@@ -350,7 +350,7 @@
                             }
                             xmselect.setValue(xmValue, null, true);
                         }
-                        else if ($obj.hasClass("edui-default")) {
+                        else if ($obj.hasClass("edui-default") || $obj.hasClass("luckyu-editor")) {
                             var ue = UE.getEditor(id);
                             var ueValue = value;
                             if (ue) {

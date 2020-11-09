@@ -28,10 +28,10 @@
   
   <!--复制Areas下的资源文件-->
   <ItemGroup>
-    <None  Include="Areas\**\*.js">
+    <None Include="Areas\**\*.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None  Include="Areas\**\*.css">
+    <None Include="Areas\**\*.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

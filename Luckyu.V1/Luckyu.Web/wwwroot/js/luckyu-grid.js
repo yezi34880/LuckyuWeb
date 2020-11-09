@@ -178,8 +178,11 @@
         /**
          * 行下移
          */
-        moveRowDown: function (rowId, rowcount) {
+        moveRowDown: function (rowId) {
             var $tr = $("#" + rowId);
+            var grid = $tr.parents("table");
+            var rowcount = grid.getGridParam("reccount");
+
             if ($tr.index() < rowcount) {
                 var tr1 = $tr.next();
                 var num = $tr.find("td.jqgrid-rownum");

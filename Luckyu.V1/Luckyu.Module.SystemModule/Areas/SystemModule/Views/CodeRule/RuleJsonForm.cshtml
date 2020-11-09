@@ -1,0 +1,44 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+<div lay-filter="RuleItemModel">
+    <div class="layui-col-xs12 form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+            <div class="xm-select" id="Type" lay-verify="required"></div>
+            <input type="hidden" id="TypeName" />
+            <input type="hidden" id="ItemId" />
+        </div>
+    </div>
+    <div class="layui-col-xs12 form-item">
+        <label class="layui-form-label">格式</label>
+        <div class="layui-input-block">
+            <input type="text" id="Format" class="layui-input" />
+        </div>
+    </div>
+    <div class="layui-col-xs12 form-item">
+        <label class="layui-form-label">参与流水号</label>
+        <div class="layui-input-block">
+            <input type="checkbox" id="BeNumber" lay-skin="switch" lay-text="是|否" />
+        </div>
+    </div>
+    <div class="layui-col-xs12 form-item" style="color:red;">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            类型为【动态传入字符】时，需要在程序中指定字符<br />
+            类型为【固定字符】时，格式里填写固定字符<br />
+            类型为【公司】时，系统取值公司编码，格式填写规则，“R（L）|数字”，RL表示从左还是从右开始截取公司编码，竖线后的数字代表截取位数，不填或者位数超过公司编码位数的显示全部公司编码<br />
+            类型为【部门】时，系统取值部门编码，具体格式规则同公司<br />
+            类型为【人员】时，系统取值人员工号，具体格式规则同公司<br />
+            类型为【日期时间】时，系统取值当前日期时间，格式填写格式化字符，如“yyyyMMddHHmmss”<br />
+            类型为【流水号】时，系统生成从1开始流水号，流水号具体生成规则根据前面字段“参与流水号”选项，格式填写任意个数的0，表示流水号的位数<br />
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/CodeRule/RuleJsonForm.js")
+}
+
