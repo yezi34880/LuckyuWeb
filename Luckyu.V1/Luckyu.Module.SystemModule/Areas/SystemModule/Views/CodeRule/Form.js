@@ -16,11 +16,11 @@ var bootstrap = function (layui) {
                 datatype: "local",
                 colModel: [
                     { name: 'ItemId', hidden: true, key: true },
-                    { name: 'Type', label: "类型", hidden: true, },
-                    { name: 'TypeName', label: "类型", width: 100 },
-                    { name: 'Format', label: "格式", width: 100 },
+                    { name: 'Type', label: "类型", hidden: true, sortable: false },
+                    { name: 'TypeName', label: "类型", width: 100, sortable: false },
+                    { name: 'Format', label: "格式", width: 100, sortable: false },
                     {
-                        name: 'BeNumber', label: "参与流水号", width: 50,
+                        name: 'BeNumber', label: "参与流水号", width: 50, sortable: false,
                         formatter: function (cellvalue, options, rowObject) {
                             switch (cellvalue) {
                                 case 1: return '<i class="fa fa-toggle-on"></i>';
@@ -54,14 +54,10 @@ var bootstrap = function (layui) {
                     title: "新增规则",
                     width: 400,
                     height: 500,
-                    url: luckyu.rootUrl + "/BaseModule/CodeRule/RuleJsonForm",
+                    url: luckyu.rootUrl + "/SystemModule/CodeRule/RuleJsonForm",
                     btn: [{
                         name: "确定",
-                        filter: "layer-iframesubmit",
                         callback: function (index, layero) {
-                            if (layui.form.layerverify(layero) === false) {
-                                return;
-                            }
                             var data = layero.find("iframe")[0].contentWindow.saveClick(index);
                             if (!!data) {
                                 var rowId = luckyu.utility.newGuid();
@@ -85,14 +81,10 @@ var bootstrap = function (layui) {
                     title: "修改规则",
                     width: 400,
                     height: 500,
-                    url: luckyu.rootUrl + "/BaseModule/CodeRule/RuleJsonForm",
+                    url: luckyu.rootUrl + "/SystemModule/CodeRule/RuleJsonForm",
                     btn: [{
                         name: "确定",
-                        filter: "layer-iframesubmit",
                         callback: function (index, layero) {
-                            if (layui.form.layerverify(layero) === false) {
-                                return;
-                            }
                             var data = layero.find("iframe")[0].contentWindow.saveClick(index);
                             if (!!data) {
                                 grid.setRowData(rowid, data);
@@ -120,10 +112,10 @@ var bootstrap = function (layui) {
         },
         initData: function () {
             if (!!keyValue) {
-                luckyu.ajax.getv2(luckyu.rootUrl + "/BaseModule/CodeRule/GetFormData", { keyValue: keyValue }
+                luckyu.ajax.getv2(luckyu.rootUrl + "/SystemModule/CodeRule/GetFormData", { keyValue: keyValue }
                     , function (data) {
-                        $('[lay-filter="CodeRule"]').setFormValue(data);
-                        var json = JSON.parse(data.contentjson);
+                        $('[lay-filter="CodeRule"]').setFormValue(data.CodeRule);
+                        var json = JSON.parse(data.CodeRule.contentjson);
                         if (!!json) {
                             $("#grid").setGridParam({ data: json }).trigger('reloadGrid');
                         }
@@ -138,6 +130,9 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex, callback) {
+        if (!$(".layui-form").verifyForm()) {
+            return false;
+        }
         var formData = $('[lay-filter="CodeRule"]').getFormValue();
         var ruledatail = grid.getRowData();
         if (!!ruledatail && ruledatail.length > 0) {
@@ -149,7 +144,7 @@ var bootstrap = function (layui) {
         }
         formData.contentjson = JSON.stringify(ruledatail);
         var loading = layui.layer.load();
-        luckyu.ajax.post(luckyu.rootUrl + "/BaseModule/CodeRule/SaveForm", {
+        luckyu.ajax.post(luckyu.rootUrl + "/SystemModule/CodeRule/SaveForm", {
             keyValue: keyValue,
             strEntity: JSON.stringify(formData),
         }, function (res) {

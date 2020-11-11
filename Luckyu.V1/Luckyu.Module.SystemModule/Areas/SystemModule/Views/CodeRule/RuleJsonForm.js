@@ -58,6 +58,9 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex, callback) {
+        if (!$(".layui-form").verifyForm()) {
+            return false;
+        }
         var data = $('div[lay-filter="RuleItemModel"]').getFormValue();
         parent.layui.layer.close(layerIndex);
         return data;

@@ -119,7 +119,6 @@ var bootstrap = function (layui) {
                     });
                 });
             });
-
         },
         search: function () {
             slectRowId = '';

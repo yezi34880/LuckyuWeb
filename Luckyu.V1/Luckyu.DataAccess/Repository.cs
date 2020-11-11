@@ -94,6 +94,7 @@ namespace Luckyu.DataAccess
                 throw new Exception("实体没有对应的数据表");
             }
             var tableName = entityInfo.DbName;
+            var dbTable = db.DbFirst.GetTableByName(tableName);
             var ignoreColumnName = new List<string>();
             if (ignoreColumns1 != null)
             {
@@ -113,7 +114,12 @@ namespace Luckyu.DataAccess
                 {
                     continue;
                 }
-                if (col.Value.CsType != typeof(string))
+                var dbCol = dbTable.Columns.Where(r => r.Name == col.Value.Attribute.Name).FirstOrDefault();
+                if (dbCol == null)
+                {
+                    continue;
+                }
+                if (col.Value.CsType != typeof(string) || dbCol.CsType != typeof(string))
                 {
                     continue;
                 }
@@ -131,7 +137,7 @@ namespace Luckyu.DataAccess
                 // 经测试数据库类型为text时,dbCol.Length有一个迷之长度16,实际数据库并没有长度限制,导致异常,不确定其他类型有没有,故先不做判断
                 var strValue = (value ?? "").ToString();
                 var valueLength = 0;
-                switch (col.Value.DbTypeText.ToLower())
+                switch (dbCol.DbTypeText.ToLower())
                 {
                     case "varchar": valueLength = strValue.GetASCIILength(); break;
                     case "nvarchar": valueLength = strValue.Length; break;
@@ -275,7 +281,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>(entity).UpdateColumns(onlyUpdateColumns);
+                var query = db.Update<T>().SetSource(entity).UpdateColumns(onlyUpdateColumns);
                 result = query.ExecuteAffrows();
             }
             catch (Exception ex)
@@ -298,7 +304,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>(entity);
+                var query = db.Update<T>().SetSource(entity);
                 if (ignoreColumns != null)
                 {
                     query = query.IgnoreColumns(ignoreColumns);
@@ -325,7 +331,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>(entity);
+                var query = db.Update<T>().SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
@@ -362,7 +368,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>(entity);
+                var query = db.Update<T>().SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
@@ -404,7 +410,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>(entity);
+                var query = db.Update<T>().SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
@@ -452,7 +458,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>(entity);
+                var query = db.Update<T>().SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)

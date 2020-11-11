@@ -69,8 +69,5 @@ namespace Luckyu.Module.SystemModule.Controllers
             return Json(res);
         }
         #endregion
-
-        
-
     }
 }

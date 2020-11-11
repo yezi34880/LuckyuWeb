@@ -20,8 +20,8 @@
                         var verify = self.attr("lay-verify");
                         if (verify.indexOf("required") > -1) {
                             var label = self.parent().prev();
-                            if (label.find("i.redstart").length < 1) {
-                                label.prepend('<i class="redstart">*</i>');
+                            if (label.find("i.redstar").length < 1) {
+                                label.prepend('<i class="redstar">*</i>');
                             }
                         }
                         if (verify.indexOf("number") > -1 && !self.hasClass("numeric")) {
@@ -123,8 +123,8 @@
                                     if (!!item.LayVerify) {
                                         ele.attr("lay-verify", item.LayVerify);
                                         if (item.LayVerify.indexOf("required") > -1) {
-                                            if (label.is("label") && label.hasClass("layui-form-label") && label.find("i.redstart").length < 1) {
-                                                label.prepend('<i class="redstart">*</i>');
+                                            if (label.is("label") && label.hasClass("layui-form-label") && label.find("i.redstar").length < 1) {
+                                                label.prepend('<i class="redstar">*</i>');
                                             }
                                         }
                                         if (item.LayVerify.indexOf("number") > -1 && !ele.hasClass("numeric")) {

@@ -357,7 +357,7 @@
                         var col = colModel[i];
                         if (!!col.editoptions) {
                             if (col.editoptions["lay-verify"] === "required") {
-                                $("#jqgh_" + id + "_" + col.name).prepend('<i class="redstart">*</i>');
+                                $("#jqgh_" + id + "_" + col.name).prepend('<i class="redstar">*</i>');
                             }
 
                         }
