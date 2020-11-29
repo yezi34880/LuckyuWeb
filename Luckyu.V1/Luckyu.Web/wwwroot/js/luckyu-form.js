@@ -194,7 +194,14 @@
                                     }
                                 }
                             }
-                            xmselect.setValue(xmValue, null, true);
+                            var select = $("#" + id);
+                            var ignore = select.attr("ahoit-loadignore");
+                            if (!ignore || ignore === "0" || ignore === "false") {
+                                xmselect.setValue(xmValue, null, true);
+                            }
+                            else {
+                                xmselect.setValue(xmValue, null, false);
+                            }
                         }
                         else if ($obj.hasClass("edui-default") || $obj.hasClass("luckyu-editor")) {
                             var ue = UE.getEditor(id);
@@ -273,7 +280,14 @@
                                     }
                                 }
                             }
-                            xmselect.setValue(xmValue, null, true);
+                            var select = $("#" + id);
+                            var ignore = select.attr("ahoit-loadignore");
+                            if (!ignore || ignore === "0" || ignore === "false") {
+                                xmselect.setValue(xmValue, null, true);
+                            }
+                            else {
+                                xmselect.setValue(xmValue, null, false);
+                            }
                         }
                         else if ($obj.hasClass("edui-default") || $obj.hasClass("luckyu-editor")) {
                             var ue = UE.getEditor(id);

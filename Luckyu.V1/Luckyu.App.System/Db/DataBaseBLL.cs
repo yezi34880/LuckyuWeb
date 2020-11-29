@@ -40,7 +40,7 @@ namespace Luckyu.App.System
                 return;
             }
             var log = new sys_logEntity();
-            log.log_type = (int)LogType.Operation;
+            log.log_type = (int)LogType.Business;
             log.module = $"{ tableInfo.showname} {tableInfo.dbname}";
             log.op_type = "新增";
 

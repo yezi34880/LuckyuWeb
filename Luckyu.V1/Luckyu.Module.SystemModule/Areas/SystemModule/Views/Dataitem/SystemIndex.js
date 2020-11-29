@@ -40,7 +40,6 @@ var bootstrap = function (layui) {
                     else {
                         return false;
                     }
-                    return data.label.indexOf(value) > -1;
                 }
             });
             $("#keyword").on("input", function (e) {

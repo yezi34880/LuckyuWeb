@@ -1,0 +1,44 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<div class="formbackgroud">
+    <div class="layui-row index-header">
+        <div class="pull-left">
+            <div class="layui-btn-group">
+                <button type="button" id="searchfilter" class="layui-btn layui-btn-sm">
+                    <i class="fa fa-filter"></i>
+                    筛选
+                </button>
+                <button type="button" id="reset" class="layui-btn layui-btn-sm">
+                    <i class="layui-icon layui-icon-refresh-1"></i>
+                    重置
+                </button>
+            </div>
+            <span>
+                <input type="radio" name="log_type" lay-filter="log_type" value="7" title="业务日志" checked />
+                <input type="radio" name="log_type" lay-filter="log_type" value="1" title="登录日志" />
+                <input type="radio" name="log_type" lay-filter="log_type" value="2" title="操作日志" />
+                <input type="radio" name="log_type" lay-filter="log_type" value="3" title="异常日志" />
+                @*<input type="radio" name="log_type" lay-filter="log_type" value="4" title="调制日志" />*@
+                <input type="radio" name="log_type" lay-filter="log_type" value="5" title="接口调用日志" />
+                @*<input type="radio" name="log_type" lay-filter="log_type" value="6" title="SQL日志" />*@
+            </span>
+        </div>
+
+        <div class="pull-right">
+            <div class="layui-btn-group">
+                <button type="button" id="show" class="layui-btn layui-btn-sm"><i class="fa fa-eye"></i>&nbsp;查看</button>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row">
+        <table id="grid"></table>
+        <div id="gridPager"></div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/Log/Index.js")
+}
+

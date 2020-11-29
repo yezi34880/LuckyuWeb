@@ -1,0 +1,55 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div lay-filter="Log">
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">模块</label>
+        <div class="layui-input-block">
+            <input id="module" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">设备</label>
+        <div class="layui-input-block">
+            <input id="device" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">IP</label>
+        <div class="layui-input-block">
+            <input id="ip" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs4">
+        <label class="layui-form-label">用户</label>
+        <div class="layui-input-block">
+            <input id="user_name" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs4">
+        <label class="layui-form-label">时间</label>
+        <div class="layui-input-block">
+            <input id="log_time" type="text" class="layui-input" style="text-align:right;" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs4">
+        <label class="layui-form-label">操作</label>
+        <div class="layui-input-block">
+            <input id="op_type" type="text" class="layui-input" readonly />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">内容</label>
+        <div class="layui-input-block">
+            <textarea id="log_content" class="layui-textarea" rows="20" readonly></textarea>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/Log/Show.js")
+}

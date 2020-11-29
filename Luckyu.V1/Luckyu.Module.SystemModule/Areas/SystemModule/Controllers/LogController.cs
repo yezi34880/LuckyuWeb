@@ -1,4 +1,5 @@
-﻿using Luckyu.Log;
+﻿using Luckyu.App.System;
+using Luckyu.Log;
 using Luckyu.Utility;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,10 +13,11 @@ namespace Luckyu.Module.SystemModule.Controllers
     /// <summary>
     /// 日志  /SystemModule/Log
     /// </summary>
+    [Area("SystemModule")]
     public class LogController : MvcControllerBase
     {
         #region Var
-        private LogBLL logBLL = new LogBLL();
+        private SysLogBLL logBLL = new SysLogBLL();
 
         #endregion
 
@@ -25,17 +27,28 @@ namespace Luckyu.Module.SystemModule.Controllers
             return View();
         }
 
-        //public IActionResult Page(JqgridPageRequest jqpage)
-        //{
-        //    var page = logBLL.Page(jqpage);
-        //    return Json(page);
-        //}
-        #endregion
+        public IActionResult Page(JqgridPageRequest jqpage, int logtype)
+        {
+            var page = logBLL.Page(jqpage, logtype);
+            return Json(page);
+        }
 
         public IActionResult Show()
         {
             return View();
         }
+
+        public IActionResult GetFormData(string keyValue)
+        {
+            var log = LogBLL.GetLog(keyValue);
+            var data = new
+            {
+                Log = log
+            };
+            return Success(data);
+        }
+        #endregion
+
 
     }
 }
