@@ -115,7 +115,7 @@ namespace Luckyu.App.System
                             var str = companyCode;
                             if (!item.Format.IsEmpty())
                             {
-                                var formats = item.Format.SplitWithoutEmpty('|');
+                                var formats = item.Format.SplitNoEmpty('|');
                                 if (formats.Length > 1)
                                 {
                                     var f0 = formats[0]; // 从左往右还是从右往左
@@ -148,7 +148,7 @@ namespace Luckyu.App.System
                             var str = deptCode;
                             if (!item.Format.IsEmpty())
                             {
-                                var formats = item.Format.SplitWithoutEmpty('|');
+                                var formats = item.Format.SplitNoEmpty('|');
                                 if (formats.Length > 1)
                                 {
                                     var f0 = formats[0]; // 从左往右还是从右往左
@@ -181,7 +181,7 @@ namespace Luckyu.App.System
                             var str = userCode;
                             if (!item.Format.IsEmpty())
                             {
-                                var formats = item.Format.SplitWithoutEmpty('|');
+                                var formats = item.Format.SplitNoEmpty('|');
                                 if (formats.Length > 1)
                                 {
                                     var f0 = formats[0]; // 从左往右还是从右往左
@@ -283,7 +283,7 @@ namespace Luckyu.App.System
                             var str = companyCode;
                             if (!item.Format.IsEmpty())
                             {
-                                var formats = item.Format.SplitWithoutEmpty('|');
+                                var formats = item.Format.SplitNoEmpty('|');
                                 if (formats.Length > 1)
                                 {
                                     var f0 = formats[0]; // 从左往右还是从右往左
@@ -316,7 +316,7 @@ namespace Luckyu.App.System
                             var str = deptCode;
                             if (!item.Format.IsEmpty())
                             {
-                                var formats = item.Format.SplitWithoutEmpty('|');
+                                var formats = item.Format.SplitNoEmpty('|');
                                 if (formats.Length > 1)
                                 {
                                     var f0 = formats[0]; // 从左往右还是从右往左
@@ -349,7 +349,7 @@ namespace Luckyu.App.System
                             var str = userCode;
                             if (!item.Format.IsEmpty())
                             {
-                                var formats = item.Format.SplitWithoutEmpty('|');
+                                var formats = item.Format.SplitNoEmpty('|');
                                 if (formats.Length > 1)
                                 {
                                     var f0 = formats[0]; // 从左往右还是从右往左

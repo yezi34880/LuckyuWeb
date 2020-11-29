@@ -62,7 +62,7 @@ namespace Luckyu.App.Workflow
             {
                 foreach (var model in listAuthModel)
                 {
-                    var objectids = model.objectids.SplitWithoutEmpty(',');
+                    var objectids = model.objectids.SplitNoEmpty(',');
                     foreach (var objectid in objectids)
                     {
                         var auth = new wf_flow_authorizeEntity

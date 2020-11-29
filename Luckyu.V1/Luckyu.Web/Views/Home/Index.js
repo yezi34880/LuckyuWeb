@@ -14,14 +14,14 @@
                 window.location.href = luckyu.rootUrl + "/Login/Index";
             });
         },
-        init: function () {
-            top.luckyu.clientdata.init(function () { });
-            Pace.on('done', function () {
-                $("#firstloading").fadeOut(function () {
-                    $(this).remove();
-                });
+        singalir: function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/messagehub").build();
+            connection.on("ReceiveMessage", function (message) {
+                console.log("message", message);
+                layui.notice.info(message);
             });
-
+        },
+        bind: function () {
             var searchSource = [];
             $("#LAY-system-side-menu a[lay-href]").each(function () {
                 var that = $(this);
@@ -84,6 +84,16 @@
             $("#logout").click(function () {
                 page.logout();
             });
+        },
+        init: function () {
+            top.luckyu.clientdata.init(function () { });
+            Pace.on('done', function () {
+                $("#firstloading").fadeOut(function () {
+                    $(this).remove();
+                });
+            });
+            page.bind();
+            page.singalir();
         },
     };
     page.init();

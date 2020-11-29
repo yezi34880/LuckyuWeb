@@ -9,6 +9,7 @@ var bootstrap = function (layui) {
     multiple = multiple === "true" || multiple === "1" ? true : false;
     var alreadys = top.alreadyselect;
     top.alreadyselect = null;
+    var companyId = request("companyId");
 
     var treeDepartment;
     var page = {
@@ -16,12 +17,12 @@ var bootstrap = function (layui) {
             treeDepartment = layui.eleTree.render({
                 elem: '#treeDepartment',
                 defaultExpandAll: true,
-                url: luckyu.rootUrl + "/OrganizationModule/Department/GetAllDepartmentTree",
+                url: luckyu.rootUrl + "/OrganizationModule/Department/GetTree?companyId=" + companyId + "&multiple=" + multiple,
                 expandOnClickNode: false,
                 showCheckbox: true,
                 showLine: true,
                 highlightCurrent: true,
-                checkStrictly: true,
+                checkStrictly: multiple ? false : true,
                 done: function () {
                     if (!!alreadys && alreadys.length > 0) {
                         treeDepartment.setChecked(alreadys, true)

@@ -119,5 +119,11 @@ namespace Luckyu.Web.Controllers
             return View();
         }
         #endregion
+
+        public IActionResult Try()
+        {
+            //var singal = new SignalRHelper();
+            return Success();
+        }
     }
 }

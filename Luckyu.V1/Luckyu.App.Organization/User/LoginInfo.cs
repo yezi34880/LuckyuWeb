@@ -31,6 +31,10 @@ namespace Luckyu.App.Organization
         /// </summary>
         public string device { get; set; }
         /// <summary>
+        /// singalir的 connectionid
+        /// </summary>
+        public string connection_id { get; set; }
+        /// <summary>
         /// 票据信息
         /// </summary>
         public string token { get; set; }

@@ -66,6 +66,19 @@ namespace Luckyu.Utility
             return str;
         }
 
+        /// <summary>
+        /// 字符串分割
+        /// </summary>
+        /// <param name="split">分隔符</param>
+        /// <returns></returns>
+        public static string[] SplitNoEmpty(this string str, char split)
+        {
+            return str.IsEmpty() ? null : str.Split(new char[] { split }, StringSplitOptions.RemoveEmptyEntries);
+        }
+        public static string[] SplitNoEmpty(this string str, string split)
+        {
+            return str.IsEmpty() ? null : str.Split(new string[] { split }, StringSplitOptions.RemoveEmptyEntries);
+        }
 
     }
 }

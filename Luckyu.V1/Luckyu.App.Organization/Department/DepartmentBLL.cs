@@ -87,7 +87,7 @@ namespace Luckyu.App.Organization
             return dic;
         }
 
-        public List<eleTree> GetAllTree(string companyId)
+        public List<eleTree> GetAllTree(string companyId, bool multiple)
         {
             var tree = new List<eleTree>();
             var allcompany = companyBLL.GetAllByCache();
@@ -99,6 +99,7 @@ namespace Luckyu.App.Organization
                     {
                         id = r.company_id,
                         label = r.fullname,
+                        disabled = multiple ? false : true,
                         ext = new Dictionary<string, string> { { "tag", "company" } }
                     }));
                 }
@@ -109,34 +110,10 @@ namespace Luckyu.App.Organization
                         {
                             id = r.company_id,
                             label = r.fullname,
+                            disabled = multiple ? false : true,
                             ext = new Dictionary<string, string> { { "tag", "company" } }
                         }));
                 }
-            }
-            else
-            {
-                return tree;
-            }
-            foreach (var item in tree)
-            {
-                item.children = GetTree(item.id);
-            }
-            return tree;
-        }
-
-        public List<eleTree> GetAllDepartmentTree()
-        {
-            var tree = new List<eleTree>();
-            var allcompany = companyBLL.GetAllByCache();
-            if (!allcompany.IsEmpty())
-            {
-                tree.AddRange(allcompany.Select(r => new eleTree
-                {
-                    id = r.company_id,
-                    label = r.fullname,
-                    disabled = true,
-                    ext = new Dictionary<string, string> { { "tag", "company" } }
-                }));
             }
             else
             {

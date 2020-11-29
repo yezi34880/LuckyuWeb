@@ -51,6 +51,7 @@ namespace Luckyu.DataAccess
 
                           }, (command, result) =>
                           {
+                              // result 包含 执行 sql语句 和返回结果 执行时间
                               var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
                               var sql = command.CommandText;
                               foreach (var keyword in keywords)
@@ -66,7 +67,6 @@ namespace Luckyu.DataAccess
                                       log.log_type = (int)LogType.Sql;
                                       log.log_content = result;
                                       log.log_json = JsonConvert.SerializeObject(dic);
-                                      log.log_time = DateTime.Now;
                                       logService.Insert(log);
                                       break;
                                   }

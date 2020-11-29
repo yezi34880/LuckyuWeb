@@ -22,7 +22,19 @@
             <ul id="messagesList"></ul>
         </div>
     </div>
+
+    <div>
+        <input type="button" id="sendBack" value="后台发送消息" />
+    </div>
 </div>
 
 <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
 <script src="~/js/messagehub.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $("#sendBack").click(function () {
+        $.post("/Home/Send", {}, function () {
+
+        });
+    });
+</script>

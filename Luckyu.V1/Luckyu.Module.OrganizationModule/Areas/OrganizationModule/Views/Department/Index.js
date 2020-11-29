@@ -8,6 +8,8 @@ var bootstrap = function (layui) {
     var slectRowId = '';
     var page = {
         init: function () {
+            $('div.split-pane').splitPane();
+
             page.initTree();
             page.initBtn();
             page.initGrid();
@@ -83,17 +85,20 @@ var bootstrap = function (layui) {
                 treeReader: {
                     parent_id_field: "parent_id",
                 },
-
             });
 
             grid.filterToolbar();
             grid.toggleSearchBar();
             grid.resizeGrid();
             $("#treeCompany").resizeEleTree();
-            window.onresize = function () {
+            $(window).resize(function () {
                 grid.resizeGrid();
                 $("#treeCompany").resizeEleTree();
-            };
+            });
+            $('div.split-pane').on("dividerdragend", function () {
+                grid.resizeGrid();
+            });
+
         },
         initBtn: function () {
 

@@ -26,6 +26,12 @@
             $("#newsMore").click(function () {
                 top.layui.index.openTabsPage('/OAModule/News/ShowIndex', '消息中心');
             });
+
+            $("#trySingal").click(function () {
+                luckyu.ajax.postv2("/Home/Try", {}, function (res) {
+
+                });
+            });
         },
         refrash: function () {
             luckyu.ajax.getNoloading('/WorkflowModule/Task/HomeShow', {}, function (res) {

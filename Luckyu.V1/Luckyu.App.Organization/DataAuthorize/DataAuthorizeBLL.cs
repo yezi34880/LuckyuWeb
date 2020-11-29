@@ -182,8 +182,8 @@ namespace Luckyu.App.Organization
             var list = new List<sys_dataauthorize_detailEntity>();
             if (!entity.seeobject_ids.IsEmpty())
             {
-                var ids = entity.seeobject_ids.SplitWithoutEmpty(',');
-                var names = entity.seeobjectnames.SplitWithoutEmpty(',');
+                var ids = entity.seeobject_ids.SplitNoEmpty(',');
+                var names = entity.seeobjectnames.SplitNoEmpty(',');
                 for (int i = 0; i < ids.Length; i++)
                 {
                     var id = ids[i];

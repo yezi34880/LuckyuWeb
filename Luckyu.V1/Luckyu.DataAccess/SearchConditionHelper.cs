@@ -29,7 +29,7 @@ namespace Luckyu.DataAccess
             {
                 return null;
             }
-            var timespans = data.SplitWithoutEmpty(split);
+            var timespans = data.SplitNoEmpty(split);
             if (timespans.Length > 1)
             {
                 filter.Filters.Add(new DynamicFilterInfo
@@ -58,7 +58,7 @@ namespace Luckyu.DataAccess
             var filter = new DynamicFilterInfo();
             filter.Logic = DynamicFilterLogic.And;
             filter.Filters = new List<DynamicFilterInfo>();
-            var nums = data.SplitWithoutEmpty(split);
+            var nums = data.SplitNoEmpty(split);
             if (nums.Length > 1)
             {
                 var num1 = nums[0].ToDecimalOrNull();
@@ -135,7 +135,7 @@ namespace Luckyu.DataAccess
             {
                 return null;
             }
-            var datas = data.SplitWithoutEmpty(split);
+            var datas = data.SplitNoEmpty(split);
             var filter = new DynamicFilterInfo();
             filter.Logic = DynamicFilterLogic.And;
             filter.Field = field;

@@ -25,7 +25,7 @@
                 pagerHeight = pagerHeight + $('#gbox_' + gridid + ' div.ui-jqgrid-sdiv').height();
             }
             var height = window.innerHeight - top - pagerHeight;
-            var width = $grid.parents(".ui-jqgrid").parent().width();
+            var width = $grid.parents(".ui-jqgrid").parent().width() - 10;
             $grid.setGridHeight(height).setGridWidth(width);
         },
         /**

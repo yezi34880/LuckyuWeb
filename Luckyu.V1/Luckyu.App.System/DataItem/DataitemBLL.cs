@@ -146,7 +146,7 @@ namespace Luckyu.App.System
             return list;
         }
 
-        public List<sys_dataitem_detailEntity> GetAllDetailByCache(string itemCode = "")
+        public List<sys_dataitem_detailEntity> GetDetailByCache(string itemCode = "")
         {
             var list = cache.Read<List<sys_dataitem_detailEntity>>(cacheKeyDetail + itemCode);
             if (list.IsEmpty())
@@ -173,7 +173,7 @@ namespace Luckyu.App.System
                 var list = GetClassifyList(r => r.is_delete == 0 && r.is_enable == 1);
                 foreach (var item in list)
                 {
-                    var detailList = GetAllDetailByCache(item.itemcode);
+                    var detailList = GetDetailByCache(item.itemcode);
                     if (!dic.ContainsKey(item.itemcode))
                     {
                         dic.Add(item.itemcode, new Dictionary<string, ClientDataMapModel>());

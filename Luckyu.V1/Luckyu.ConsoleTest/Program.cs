@@ -12,7 +12,15 @@ namespace Luckyu.ConsoleTest
     {
         static void Main(string[] args)
         {
-            TestDbTrans();
+            //TestDbTrans();
+
+            decimal num = 9988.4560M;
+            Console.WriteLine(num);
+            var a = Money.GetCnString(num.ToString());
+            Console.WriteLine(a);
+            var b = Money.GetEnString(num.ToString());
+            Console.WriteLine(b);
+
             Console.ReadLine();
         }
 

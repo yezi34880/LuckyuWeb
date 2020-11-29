@@ -1,4 +1,5 @@
-﻿using Luckyu.Cache;
+﻿using DeviceDetectorNET;
+using Luckyu.Cache;
 using Luckyu.Utility;
 using Mapster;
 using Microsoft.AspNetCore.Http;
@@ -44,8 +45,13 @@ namespace Luckyu.App.Organization
                 loginname = loginname,
                 loginTime = DateTime.Now,
                 ip = httpContext.GetRequestIp(),
-                browser = httpContext.Request.Headers["User-Agent"].ToString(),
             };
+            var info = DeviceDetector.GetInfoFromUserAgent(httpContext.Request.Headers["User-Agent"].ToString());
+            if (info != null)
+            {
+                loginInfo.browser = (info.Match.Client == null ? "" : $"{info.Match.Client.Type}: {info.Match.Client.Name} {info.Match.Client.Version} ");
+                loginInfo.device = (info.Match.Os == null ? "" : $" os: {info.Match.Os.Name} {info.Match.Os.Version} {info.Match.Os.Platform}");
+            }
 
             // 写入 Cookie
             string cookie = httpContext.GetCookie(cookieKeyToken);
@@ -63,10 +69,7 @@ namespace Luckyu.App.Organization
             var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginname);
             if (loginList == null)// 此账号第一次登录
             {
-                loginList = new List<LoginInfo>()
-                {
-                loginInfo
-                };
+                loginList = new List<LoginInfo>() { loginInfo };
             }
             else // 不是第一次登录 ,记录多台设备
             {
@@ -88,7 +91,6 @@ namespace Luckyu.App.Organization
             {
                 cache.Write(cacheKeyToken + loginInfo.token, loginInfo.loginname);
             }
-
         }
 
         public bool IsOnLine(HttpContext httpContext)
@@ -215,6 +217,29 @@ namespace Luckyu.App.Organization
                 var loginInfo = updateLoginInfo.Adapt<UserModel>();
                 httpContext.Items["LoginUserInfo"] = loginInfo;
                 return true;
+            }
+        }
+
+        public void AddSingalIRConnection(HttpContext httpContext, string connectionId)
+        {
+            var loginInfo = GetLoginUser(httpContext);
+            var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginInfo.loginname);
+            if (!loginList.Exists(r => r.connection_id == connectionId))
+            {
+
+            }
+        }
+
+        public void RemoveSingalIRConnection(HttpContext httpContext, string connectionId)
+        {
+            var loginInfo = GetLoginUser(httpContext);
+            var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginInfo.loginname);
+            var that = loginList.Where(r => r.connection_id == connectionId).FirstOrDefault();
+            if (that != null)
+            {
+                that.connection_id = "";
+                cache.Remove(cacheKeyToken + loginInfo.loginname);
+                cache.Write(cacheKeyToken + loginInfo.loginname, loginList);
             }
         }
 

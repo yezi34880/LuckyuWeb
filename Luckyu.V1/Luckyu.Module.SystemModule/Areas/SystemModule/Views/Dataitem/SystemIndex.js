@@ -8,6 +8,7 @@ var bootstrap = function (layui) {
     var slectRowId = '';
     var page = {
         init: function () {
+            $('div.split-pane').splitPane();
             page.initTree();
             page.initBtn();
             page.initGrid();
@@ -24,8 +25,20 @@ var bootstrap = function (layui) {
                     if (!value) {
                         return true;
                     }
-                    if (data.ext.code.indexOf(value) > -1) {
+                    else if (data.ext.code.indexOf(value) > -1) {
                         return true;
+                    }
+                    else if (data.ext.code.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+                        return true;
+                    }
+                    else if (data.label.indexOf(value) > -1) {
+                        return true;
+                    }
+                    else if (data.label.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+                        return true;
+                    }
+                    else {
+                        return false;
                     }
                     return data.label.indexOf(value) > -1;
                 }
@@ -93,10 +106,13 @@ var bootstrap = function (layui) {
             grid.toggleSearchBar();
             grid.resizeGrid();
             $("#treeDataitem").resizeEleTree();
-            window.onresize = function () {
+            $(window).resize(function () {
                 grid.resizeGrid();
                 $("#treeDataitem").resizeEleTree();
-            };
+            });
+            $('div.split-pane').on("dividerdragend", function () {
+                grid.resizeGrid();
+            });
         },
         initBtn: function () {
 

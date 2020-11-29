@@ -1,5 +1,5 @@
 ﻿/*
- *  新闻通知
+ *  单据编码
  */
 var bootstrap = function (layui) {
     "use strict";

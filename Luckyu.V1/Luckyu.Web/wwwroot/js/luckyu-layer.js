@@ -260,6 +260,7 @@
             var defaultOption = {
                 multiple: true, //多选 
                 initValue: [], // 初始选中数据
+                companyId: "",  //公司id
                 callback: null // 返回值
             };
             $.extend(defaultOption, option);
@@ -269,7 +270,7 @@
                 title: "部门选择",
                 width: 450,
                 height: 660,
-                url: luckyu.rootUrl + "/OrganizationModule/Department/DepartmentSelectForm?multiple=" + defaultOption.multiple,
+                url: luckyu.rootUrl + "/OrganizationModule/Department/DepartmentSelectForm?multiple=" + defaultOption.multiple + "$companyId=" + companyId,
                 btn: [{
                     name: "确定",
                     callback: function (index, layero) {

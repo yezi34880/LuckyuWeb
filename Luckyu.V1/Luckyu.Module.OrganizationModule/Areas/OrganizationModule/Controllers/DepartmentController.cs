@@ -169,25 +169,18 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             }
         }
 
-        public IActionResult GetTree(string companyId)
+        public IActionResult GetTree(string companyId, bool multiple = false)
         {
-            var treeData = deptBLL.GetAllTree(companyId);
-            treeData.Insert(0, new eleTree
+            var treeData = deptBLL.GetAllTree(companyId, multiple);
+            if (multiple)
             {
-                id = "-1",
-                label = "全部",
-                ext = new Dictionary<string, string> { { "tag", "" } }
-            });
-            var data = new
-            {
-                code = 0,
-                data = treeData,
-            };
-            return Json(data);
-        }
-        public IActionResult GetAllDepartmentTree()
-        {
-            var treeData = deptBLL.GetAllDepartmentTree();
+                treeData.Insert(0, new eleTree
+                {
+                    id = "-1",
+                    label = "全部",
+                    ext = new Dictionary<string, string> { { "tag", "" } }
+                });
+            }
             var data = new
             {
                 code = 0,

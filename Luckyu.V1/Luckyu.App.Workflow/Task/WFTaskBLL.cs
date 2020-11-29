@@ -751,7 +751,7 @@ namespace Luckyu.App.Workflow
             var listAuth = new List<wf_task_authorizeEntity>();
             foreach (var nodeAuth in nodeNext.authusers)
             {
-                var objects = nodeAuth.objectids.SplitWithoutEmpty(',');
+                var objects = nodeAuth.objectids.SplitNoEmpty(',');
                 foreach (var objectId in objects)
                 {
                     var auth = new wf_task_authorizeEntity();
@@ -856,7 +856,7 @@ namespace Luckyu.App.Workflow
                 var delegates = delegateBLL.GetList(r => r.user_id == loginInfo.user_id && r.starttime >= dateNow && r.endtime < dateNow);
                 foreach (var dele in delegates)
                 {
-                    if (dele.flowcode == "ALL" && dele.flowcode.SplitWithoutEmpty(",").Contains(instanceEntity.flowcode))
+                    if (dele.flowcode == "ALL" && dele.flowcode.SplitNoEmpty(",").Contains(instanceEntity.flowcode))
                     {
                         listAuth.Add(new wf_task_authorizeEntity
                         {

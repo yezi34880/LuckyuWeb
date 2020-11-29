@@ -240,19 +240,7 @@ namespace Luckyu.Utility
         {
             return data == null ? string.Empty : data.ToString().Trim();
         }
-        /// <summary>
-        /// 字符串分割
-        /// </summary>
-        /// <param name="split">分隔符</param>
-        /// <returns></returns>
-        public static string[] SplitWithoutEmpty(this string data, char split)
-        {
-            return data == null ? null : data.Split(new char[] { split }, StringSplitOptions.RemoveEmptyEntries);
-        }
-        public static string[] SplitWithoutEmpty(this string data, string split)
-        {
-            return data == null ? null : data.Split(new string[] { split }, StringSplitOptions.RemoveEmptyEntries);
-        }
+
         #endregion
     }
 }

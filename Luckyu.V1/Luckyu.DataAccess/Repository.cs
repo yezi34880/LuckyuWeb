@@ -229,7 +229,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Delete<T>(entity).ExecuteAffrows();
+                result = db.Delete<T>().Where(entity).ExecuteAffrows();
                 DeleteExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -244,7 +244,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Delete<T>(list).ExecuteAffrows();
+                result = db.Delete<T>().Where(list).ExecuteAffrows();
                 DeleteExtensionTableList<T>(list);
             }
             catch (Exception ex)
@@ -259,7 +259,7 @@ namespace Luckyu.DataAccess
             try
             {
                 var list = db.Select<T>().Where(condition).ToList();
-                result = db.Delete<T>(list).ExecuteAffrows();
+                result = db.Delete<T>().Where(list).ExecuteAffrows();
                 DeleteExtensionTableList<T>(list);
             }
             catch (Exception ex)
