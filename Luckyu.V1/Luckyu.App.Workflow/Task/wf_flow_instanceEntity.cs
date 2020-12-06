@@ -103,6 +103,26 @@ namespace Luckyu.App.Workflow
 
         #endregion
 
+        #region 扩展
+        /// <summary>
+        /// 如果是待办任务 ,则记录task_id
+        /// </summary>
+        [Column(IsIgnore = true)]
+        public string task_id { get; set; }
+
+        /// <summary>
+        /// 当前待办节点类型
+        /// </summary>
+        [Column(IsIgnore = true)]
+        public string nodetype { get; set; }
+
+        /// <summary>
+        /// 已办任务 ,则记录task_id
+        /// </summary>
+        [Column(IsIgnore = true)]
+        public string history_id { get; set; }
+        #endregion
+
         #region 方法
         public void Create(UserModel loginInfo)
         {

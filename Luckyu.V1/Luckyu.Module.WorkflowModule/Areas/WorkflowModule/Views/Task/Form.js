@@ -1,7 +1,7 @@
 ﻿/**
  * 审批
  */
-var approveClick, adduserClick, readClick, finishClick;
+var approveClick, adduserClick, readClick;
 var bootstrap = function (layui) {
 
     var taskId = request("taskId");
@@ -65,7 +65,7 @@ var bootstrap = function (layui) {
                 gridComplete: function () {
                     var rows = this.p.rawData;
                     var html = '';
-                    for (var i = rows.length - 1; i > -1; i--) {
+                    for (var i = 0; i < rows.length; i++) {
                         var row = rows[i];
                         var style = luckyu.utility.toEnum(row.result,
                             [
@@ -87,7 +87,7 @@ var bootstrap = function (layui) {
     <div class="layui-timeline-content layui-text">\
         <h3 class="layui-timeline-title">'+ (row.nodename + ' ' + new Date(row.createtime).format("yyyy-MM-dd HH:mm:ss")) + '</h3>\
         <p>\
-         '+ (result + ' ' + row.create_username) + '<br />\
+         '+ (row.create_username + ' ' + result) + '<br />\
         '+ row.opinion + '\
         </p>\
     </div>\
@@ -99,10 +99,12 @@ var bootstrap = function (layui) {
 
             gridLog.setGridHeight(window.innerHeight - 120);
             gridLog.setGridWidth(window.innerWidth / 12 * 9 - 40);
-            window.onresize = function () {
+            $("#divLine").height(window.innerHeight - 80);
+            $(window).resize(function () {
                 gridLog.setGridHeight(window.innerHeight - 120);
                 gridLog.setGridWidth(window.innerWidth / 12 * 9 - 40);
-            };
+                $("#divLine").height(window.innerHeight - 80);
+            });
         },
         initData: function () {
             luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId, taskId: taskId, historyId: historyId }, function (data) {
@@ -146,8 +148,8 @@ var bootstrap = function (layui) {
                 });
 
                 page.initLogGrid(data.History);
-                var shceme = JSON.parse(data.Scheme);
 
+                var shceme = JSON.parse(data.Instance.schemejson);
                 for (var i = 0, l = shceme.nodes.length; i < l; i++) {
                     var node = shceme.nodes[i];
                     if (node.type === "startround" || node.type === "endround") {
@@ -204,9 +206,8 @@ var bootstrap = function (layui) {
         luckyu.layer.userSelectForm({
             multiple: false,
             callback: function (userlist) {
-                var userId = userlist[0];
-                var username = luckyu.clientdata.getUserName(userId);
-                luckyu.layer.layerConfirm("确定邀请 " + username + " 加签审批？", function () {
+                var user = userlist[0];
+                luckyu.layer.layerConfirm("确定邀请 " + user.realname + " 加签审批？", function () {
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userId: userId }, function (data) {
                         if (!!callBack) {
                             callBack();
@@ -218,24 +219,29 @@ var bootstrap = function (layui) {
         });
     };
     readClick = function (layerIndex, callBack) {
-        luckyu.layer.layerConfirm("确定已阅？", function () {
-            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: 0, opinion: '' }, function (data) {
-                if (!!callBack) {
-                    callBack();
+        luckyu.layer.layerFormTop({
+            id: "FormRead",
+            title: "已阅",
+            width: 600,
+            height: 400,
+            url: luckyu.rootUrl + "/WorkflowModule/Task/ReadForm",
+            btn: [{
+                name: "确定",
+                callback: function (index, layero) {
+                    var res = layero.find("iframe")[0].contentWindow.saveClick(index);
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: 0, opinion: res.opinion }, function (data) {
+                        if (!!callBack) {
+                            callBack();
+                        }
+                        parent.layui.layer.close(layerIndex);
+                    });
                 }
-                parent.layui.layer.close(layerIndex);
-            });
-        });
-    };
-    finishClick = function (layerIndex, callBack) {
-        luckyu.layer.layerConfirm("确定终止该流程？", function () {
-            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Finish', { instanceId: instanceId }, function (data) {
-                if (!!callBack) {
-                    callBack();
-                }
-                parent.layui.layer.close(layerIndex);
-            });
-        });
+            }, {
+                name: "取消",
+                callback: function (index, layero) {
 
+                }
+            }]
+        });
     };
 };

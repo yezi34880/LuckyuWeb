@@ -132,24 +132,16 @@ var bootstrap = function () {
                                         luckyu.layer.userSelectForm({
                                             multiple: true,
                                             callback: function (userlist) {
-                                                top.luckyu.clientdata.getAsync('user', {
-                                                    key: userlist[0],
-                                                    callback: function (item) {
-                                                        var gpnames = "";
-                                                        var gpids = "";
-                                                        for (var i = 0; i < userlist.length; i++) {
-                                                            gpids += userlist[i] + ",";
-                                                            top.luckyu.clientdata.getAsync('user', {
-                                                                key: userlist[i],
-                                                                callback: function (item) {
-                                                                    gpnames += item.name + ",";
-                                                                }
-                                                            });
-                                                        }
-                                                        $("#objectnames_" + rowid).val(gpnames.substring(0, gpnames.length - 1));
-                                                        $("#objectids_" + rowid).val(gpids.substring(0, gpids.length - 1));
-                                                    }
-                                                });
+                                                if (!!userlist && userlist.length > 0) {
+                                                    var ids = userlist.map(r => r.userId).join(',');
+                                                    var names = userlist.map(r => r.realname).join(',');
+                                                    $("#objectids_" + rowid).val(ids);
+                                                    $("#objectnames_" + rowid).val(names);
+                                                }
+                                                else {
+                                                    $("#objectids_" + rowid).val('');
+                                                    $("#objectnames_" + rowid).val('');
+                                                }
                                             }
                                         });
                                     } else if (str === "2") {  // 部门

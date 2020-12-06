@@ -12,11 +12,11 @@ namespace Luckyu.App.Workflow
 {
     public class wf_taskService : RepositoryFactory<wf_taskEntity>
     {
-        public JqgridPageResponse<wf_taskEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
+        public JqgridPageResponse<WFTaskModel> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             var db = BaseRepository().db;
-            var query = db.Select<wf_taskEntity, wf_task_authorizeEntity, wf_flow_instanceEntity>().InnerJoin((t, ta, fi) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
-                .Where((t, ta, fi) => t.is_done == 0 && t.is_finished == 0 &&
+            var query = db.Select<wf_flow_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
+                .Where((fi, t, ta) => t.is_done == 0 &&
                 ta.user_id == loginInfo.user_id  // 用户
                 || loginInfo.group_ids.Contains(ta.group_id)   // 小组
                 || (string.IsNullOrEmpty(ta.post_id) && string.IsNullOrEmpty(ta.role_id) && ta.department_id == loginInfo.department_id)    // 按部门审批
@@ -33,10 +33,16 @@ namespace Luckyu.App.Workflow
 
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
+                switch (jqPage.sidx)
+                {
+                    case "createtime":
+                        jqPage.sidx = "a.createtime";
+                        break;
+                }
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
-            var page = new JqgridPageResponse<wf_taskEntity>
+            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
+            var page = new JqgridPageResponse<WFTaskModel>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
@@ -46,10 +52,35 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
-        public JqgridPageResponse<wf_taskEntity> MonitorPage(JqgridPageRequest jqPage)
+        public JqgridPageResponse<WFTaskModel> MonitorPage(JqgridPageRequest jqPage, int is_finished)
         {
-            Expression<Func<wf_taskEntity, bool>> exp = r => r.is_done == 0;
-            var page = BaseRepository().GetPage(jqPage, exp);
+            //Expression<Func<wf_flow_instanceEntity, bool>> exp = r => r.is_finished == is_finished;
+            //var page = BaseRepository().GetPage(jqPage, exp);
+            //return page;
+
+            var db = BaseRepository().db;
+            var query = db.Select<wf_flow_instanceEntity, wf_taskEntity>()
+                .InnerJoin((fi, t) => t.instance_id == fi.instance_id)
+                .Where((fi, t) => fi.is_finished == is_finished);
+
+            if (!string.IsNullOrEmpty(jqPage.sidx))
+            {
+                switch (jqPage.sidx)
+                {
+                    case "createtime":
+                        jqPage.sidx = "a.createtime";
+                        break;
+                }
+                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
+            }
+            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
+            var page = new JqgridPageResponse<WFTaskModel>
+            {
+                count = jqPage.rows,
+                page = jqPage.page,
+                records = (int)total,
+                rows = list,
+            };
             return page;
         }
 
@@ -102,9 +133,9 @@ namespace Luckyu.App.Workflow
             {
                 if (currentTask.is_done == 1)
                 {
-                    trans.UpdateOnlyColumns(currentTask, r => new { r.is_done, r.is_finished });
+                    trans.UpdateOnlyColumns(currentTask, r => new { r.is_done });
                 }
-                if (currentTask.is_finished == 1)
+                if (instance.is_finished == 1)
                 {
                     trans.UpdateOnlyColumns(instance, r => new { r.is_finished });
                 }
@@ -172,8 +203,7 @@ namespace Luckyu.App.Workflow
                 foreach (var task in listTask)
                 {
                     task.is_done = 1;
-                    task.is_finished = 1;
-                    trans.UpdateOnlyColumns(task, r => new { r.is_done, r.is_finished });
+                    trans.UpdateOnlyColumns(task, r => new { r.is_done });
                 }
                 trans.Insert(history);
                 if (!sql.IsEmpty())
@@ -189,6 +219,36 @@ namespace Luckyu.App.Workflow
                 trans.Rollback();
                 throw ex;
             }
+        }
+
+        public void Modify(wf_flow_instanceEntity instance, List<wf_taskEntity> oldTasks, wf_taskEntity newTask, wf_taskhistoryEntity history)
+        {
+            var trans = BaseRepository().BeginTrans();
+            try
+            {
+                if (instance != null)
+                {
+                    trans.UpdateOnlyColumns(instance, r => r.schemejson);
+                }
+                foreach (var task in oldTasks)
+                {
+                    trans.Delete<wf_task_authorizeEntity>(r => r.task_id == task.task_id);
+                    trans.Delete(task);
+                }
+                trans.Insert(newTask);
+                if (!newTask.authrizes.IsEmpty())
+                {
+                    trans.Insert(newTask.authrizes);
+                }
+                trans.Insert(history);
+                trans.Commit();
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                throw ex;
+            }
+
         }
     }
 }

@@ -3,6 +3,12 @@
  */
 var saveClick;
 var bootstrap = function (layui) {
+    var page = {
+        init: function () {
+
+        }
+    };
+    page.init();
 
     saveClick = function (layerIndex, callBack) {
         var result = $("input[name=result]:checked").val();

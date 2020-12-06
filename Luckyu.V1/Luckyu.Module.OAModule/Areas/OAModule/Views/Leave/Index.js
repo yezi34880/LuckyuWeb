@@ -168,7 +168,7 @@ var bootstrap = function (layui) {
                     layui.notice.error("没有选中任何行数据");
                     return;
                 }
-                var rowData = grid.GetRawRowData(rowid);
+                var rowData = grid.getRawRowData(rowid);
                 if (rowData.state !== 1) {
                     layui.notice.error("只有生效单据才能请求撤回");
                     return;

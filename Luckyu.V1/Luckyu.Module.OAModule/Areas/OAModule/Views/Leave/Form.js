@@ -59,7 +59,7 @@ var bootstrap = function (layui) {
         if (!$(".layui-form").verifyForm()) {
             return false;
         }
-        luckyu.layer.layerConfirm('确定要删除该数据吗？', function () {
+        luckyu.layer.layerConfirm('确定要提交吗？', function () {
             var formData = $('[lay-filter="Leave"]').getFormValue();
             luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
                 keyValue: keyValue,

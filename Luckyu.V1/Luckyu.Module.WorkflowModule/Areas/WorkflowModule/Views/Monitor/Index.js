@@ -15,7 +15,7 @@ var bootstrap = function (layui) {
                 url: luckyu.rootUrl + "/WorkflowModule/Monitor/Page",
                 datatype: "json",
                 altRows: true,//隔行换色
-                postData: { tasktype: $("input[name=tasktype]:checked").val() },
+                postData: { is_finished: $("input[name=is_finished]:checked").val() },
                 colModel: [
                     { name: 'task_id', hidden: true },
                     { name: 'flow_id', hidden: true },
@@ -66,7 +66,17 @@ var bootstrap = function (layui) {
                 grid.clearSearchBar();
             });
 
-            $("#button").click(function () {
+            layui.form.on('radio(is_finished)', function (data) {
+                if (data.value == 0) {
+                    $("#divAction").show();
+                }
+                else {
+                    $("#divAction").hide();
+                }
+                page.search();
+            });
+
+            $("#see").click(function () {
                 var rowid = grid.getGridParam("selrow");
                 if (!rowid) {
                     layui.notice.error("没有选中任何行数据");
@@ -75,41 +85,62 @@ var bootstrap = function (layui) {
                 var row = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
                     id: "Form",
-                    title: "审核/查看",
+                    title: "查看",
                     width: 1300,
                     height: 850,
-                    url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id + "&historyId=" + row.history_id,
-                    btn: [{
-                        name: "终止",
-                        callback: function (index, layero) {
-                            layero.find("iframe")[0].contentWindow.finishClick(index, function () {
-                                page.searchInCurrentPage();
-                            });
-                            return false;
-                        }
-                    }]
+                    url: luckyu.rootUrl + "/WorkflowModule/Task/Form?instanceId=" + row.instance_id + "&processId=" + row.process_id
                 });
             });
 
-            layui.form.on('radio(tasktype)', function (data) {
-                page.search();
+            $("#finish").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                var row = grid.getRowData(rowid);
+                luckyu.layer.layerConfirm("确定终止该流程？", function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Finish', { instanceId: row.instance_id }, function (data) {
+                        layui.notice.success("操作成功");
+                        page.searchInCurrentPage();
+                    });
+                });
             });
+
+            // 调整流程
+            $("#modify").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                var row = grid.getRowData(rowid);
+                luckyu.layer.layerFormTop({
+                    id: "Form",
+                    title: "调整流程-双击选中要调整的节点",
+                    width: 1300,
+                    height: 850,
+                    url: luckyu.rootUrl + "/WorkflowModule/Task/ModifyForm?instanceId=" + row.instance_id + "&processId=" + row.process_id,
+                });
+
+            });
+
         },
         search: function () {
-            var tasktype = $("input[name=tasktype]:checked").val();
+            var is_finished = $("input[name=is_finished]:checked").val();
             slectRowId = '';
             grid.jqGrid('resetSelection');
             grid.jqGrid('setGridParam', {
-                postData: { tasktype: tasktype },
+                postData: { is_finished: is_finished },
             }).trigger('reloadGrid');
         },
         searchInCurrentPage: function () {
-            var tasktype = $("input[name=tasktype]:checked").val();
+            var is_finished = $("input[name=is_finished]:checked").val();
             var pageIndex = grid.getGridParam('page');
             pageIndex = !pageIndex ? 1 : pageIndex;
             grid.jqGrid('resetSelection');
             grid.jqGrid('setGridParam', {
-                postData: { tasktype: tasktype },
+                postData: { is_finished: is_finished },
             }).trigger('reloadGrid', [{ page: pageIndex }]);
         },
     };

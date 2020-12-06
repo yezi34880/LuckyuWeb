@@ -58,7 +58,7 @@
                                 name: "已阅",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.readClick(index, function () {
-                                        page.searchInCurrentPage();
+                                        page.refrash();
                                     });
                                     return false;
                                 }
@@ -69,7 +69,7 @@
                                 name: "审核",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.approveClick(index, function () {
-                                        page.searchInCurrentPage();
+                                        page.refrash();
                                     });
                                     return false;
                                 }
@@ -78,7 +78,7 @@
                                 name: "加签",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
-                                        page.searchInCurrentPage();
+                                        page.refrash();
                                     });
                                     return false;
                                 }

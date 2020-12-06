@@ -32,13 +32,11 @@ namespace Luckyu.App.Workflow
             var page = new JqgridPageResponse<WFTaskModel>();
             if (tasktype == 1)  // 待办
             {
-                var page1 = taskService.Page(jqPage, loginInfo);
-                page = page1.Adapt<JqgridPageResponse<WFTaskModel>>();
+                page = taskService.Page(jqPage, loginInfo);
             }
             else if (tasktype == 2) // 已办
             {
-                var page1 = taskhistoryService.Page(jqPage, loginInfo);
-                page = page1.Adapt<JqgridPageResponse<WFTaskModel>>();
+                page = taskhistoryService.Page(jqPage, loginInfo);
             }
             else if (tasktype == 3)  // 自己发起
             {
@@ -99,11 +97,10 @@ namespace Luckyu.App.Workflow
             return list;
         }
 
-        public JqgridPageResponse<WFTaskModel> MonitorPage(JqgridPageRequest jqPage)
+        public JqgridPageResponse<WFTaskModel> MonitorPage(JqgridPageRequest jqPage, int is_finished)
         {
-            var page = taskService.MonitorPage(jqPage);
-            var page1 = page.Adapt<JqgridPageResponse<WFTaskModel>>();
-            return page1;
+            var page = taskService.MonitorPage(jqPage, is_finished);
+            return page;
         }
 
         /// <summary>
@@ -169,8 +166,37 @@ namespace Luckyu.App.Workflow
                 {"Instance",instance },
                 {"ShowNode",showNode },
                 {"CurrentNode",currentNode },
-                {"Scheme",  instance.schemejson },
                 { "History",historys}
+            };
+            return ResponseResult.Success(dic);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instanceId"></param>
+        /// <returns></returns>
+        public ResponseResult<Dictionary<string, object>> GetTaskScheme(string instanceId)
+        {
+            var instance = GetInstanceEnttity(r => r.instance_id == instanceId);
+            if (instance == null)
+            {
+                return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
+            }
+            var lastScheme = schemeService.GetEntity(r => r.flow_id == instance.flow_id);
+            var scheme = instance.schemejson.ToObject<WFSchemeModel>();
+            // 当前待批节点
+            WFSchemeNodeModel currentNode = new WFSchemeNodeModel();
+            var task = GetTaskEnttity(r => r.instance_id == instance.instance_id && r.is_done == 0);
+            if (task != null)
+            {
+                currentNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+            }
+            var dic = new Dictionary<string, object>
+            {
+                {"Instance",instance },
+                {"CurrentNode",currentNode },
+                {"LastScheme",lastScheme },
             };
             return ResponseResult.Success(dic);
 
@@ -365,7 +391,7 @@ namespace Luckyu.App.Workflow
                 return ResponseResult.Fail("该任务不存在");
             }
             var instance = instanceService.GetEntity(r => r.instance_id == task.instance_id);
-            if (task == null)
+            if (instance == null)
             {
                 return ResponseResult.Fail("该流程实例不存在");
             }
@@ -496,10 +522,6 @@ namespace Luckyu.App.Workflow
                 {
                     listSql.AddRange(turple.Item3);
                 }
-                if (instance.is_finished == 1)
-                {
-                    task.is_finished = 1;
-                }
             }
             taskService.Approve(instance, task, listTask, listHistory, listSql);
             return ResponseResult.Success();
@@ -571,10 +593,67 @@ namespace Luckyu.App.Workflow
             var history = new wf_taskhistoryEntity();
             history = firsttask.Adapt<wf_taskhistoryEntity>();
             history.result = 2;
-            history.opinion = $"{loginInfo.realname} 强制结束流程";
+            history.opinion = $"{loginInfo.realname} 通过流程监控强制结束流程";
             history.Create(loginInfo);
 
             taskService.Finish(instance, tasks, history, firstnode.sqlfail);
+            return ResponseResult.Success();
+        }
+
+        /// <summary>
+        /// 调整流程, 设置运行中流程到任意节点
+        /// </summary>
+        /// <param name="instanceId"></param>
+        /// <param name="nodeId"></param>
+        /// <param name="loginInfo"></param>
+        /// <returns></returns>
+        public ResponseResult Modify(string instanceId, string schemeId, string nodeId, UserModel loginInfo)
+        {
+            var instance = instanceService.GetEntity(r => r.instance_id == instanceId);
+            if (instance == null)
+            {
+                return ResponseResult.Fail("该流程实例不存在");
+            }
+            var oldTasks = taskService.GetList(r => r.instance_id == instanceId && r.is_done == 0);
+            if (oldTasks.IsEmpty())
+            {
+                return ResponseResult.Fail("当前任务不存在");
+            }
+            var isLast = false;
+            if (!schemeId.IsEmpty())
+            {
+                var scheme = schemeService.GetEntity(r => r.scheme_id == schemeId);
+                if (scheme != null)
+                {
+                    instance.schemejson = scheme.schemejson;
+                    isLast = true;
+                }
+            }
+            var nodeModel = instance.schemejson.ToObject<WFSchemeModel>();
+            var nodeNext = nodeModel.nodes.Where(r => r.id == nodeId).FirstOrDefault();
+            if (nodeNext == null)
+            {
+                return ResponseResult.Fail("调整节点不存在");
+            }
+            var newTask = new wf_taskEntity();
+            newTask = instance.Adapt<wf_taskEntity>();
+            newTask.node_id = nodeNext.id;
+            newTask.nodename = nodeNext.name;
+            newTask.previous_id = oldTasks[0].node_id;
+            newTask.nodetype = nodeNext.type;
+            newTask.previousname = oldTasks[0].nodename;
+            newTask.Create(loginInfo);
+
+            var turple = GetNextAuth(nodeNext, instance, newTask.task_id, loginInfo);
+            newTask.authrizes = turple.Item1;
+
+            var history = new wf_taskhistoryEntity();
+            history = oldTasks[0].Adapt<wf_taskhistoryEntity>();
+            history.result = 0;
+            history.opinion = isLast ? $"{loginInfo.realname} 通过流程监控调整该流程至最新版本 调整后为【{nodeNext.name}】" : $"{loginInfo.realname} 通过流程监控调整 当前待办任务为【{ oldTasks[0].nodename}】 调整后为【{nodeNext.name}】";
+            history.Create(loginInfo);
+
+            taskService.Modify((isLast ? instance : null), oldTasks, newTask, history);
             return ResponseResult.Success();
         }
 
@@ -639,7 +718,7 @@ namespace Luckyu.App.Workflow
                         historyEnd.nodetype = nodeNext.type;
                         historyEnd.previous_id = nodeCurrent.id;
                         historyEnd.previousname = nodeCurrent.name;
-                        historyEnd.opinion = "流程结束";
+                        historyEnd.opinion = "【流程结束】";
                         historyEnd.Create(loginInfo);
                         listHistory.Add(historyEnd);
 
@@ -676,9 +755,8 @@ namespace Luckyu.App.Workflow
                     else if (nodeNext.type == "processnode") // 执行
                     {   // 开始之后 为执行节点  task 表不插值  history插入执行  需要递归 , 可能后面都是执行 知道结束    
                         listSql.Add(nodeNext.sqlsuccess);
-                        currentLine = alllines.Where(r => r.from == nodeNext.id).FirstOrDefault();
-
                         ProcessNodeInject(nodeNext, 1, "");
+                        currentLine = alllines.Where(r => r.from == nodeNext.id).FirstOrDefault();
 
                         var historyProcess = new wf_taskhistoryEntity();
                         historyProcess = instanceEntity.Adapt<wf_taskhistoryEntity>();
@@ -710,6 +788,9 @@ namespace Luckyu.App.Workflow
                         taskEntity.authrizes = listAuth;
                         if (isContainSelf)
                         {
+                            listSql.Add(nodeNext.sqlsuccess);
+                            ProcessNodeInject(nodeNext, 1, "");
+
                             var historySelf = new wf_taskhistoryEntity();
                             historySelf = taskEntity.Adapt<wf_taskhistoryEntity>();
                             historySelf.result = 1;

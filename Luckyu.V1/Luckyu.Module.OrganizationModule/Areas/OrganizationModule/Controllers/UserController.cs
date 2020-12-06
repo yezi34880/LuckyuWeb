@@ -125,7 +125,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var list = new List<sys_userEntity>();
             if (!organizationId.IsEmpty() && organizationId != "-1")
             {
-                if (organizationTag.StartsWith("comapny"))
+                if (organizationTag.StartsWith("company"))
                 {
                     var users = userBLL.GetAllByCache(organizationId);
                 }

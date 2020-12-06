@@ -23,9 +23,9 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             return View();
         }
 
-        public IActionResult Page(JqgridPageRequest jqPage)
+        public IActionResult Page(JqgridPageRequest jqPage, int is_finished)
         {
-            var page = taskBLL.MonitorPage(jqPage);
+            var page = taskBLL.MonitorPage(jqPage, is_finished);
             return Json(page);
         }
 
@@ -40,6 +40,13 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             return Json(res);
         }
 
+        [AjaxOnly, HttpPost]
+        public IActionResult Modify(string instanceId, string schemeId, string nodeId)
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var res = taskBLL.Modify(instanceId, schemeId, nodeId, loginInfo);
+            return Json(res);
+        }
         #endregion
 
     }

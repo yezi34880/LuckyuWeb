@@ -60,6 +60,23 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         {
             return View();
         }
+        public IActionResult ReadForm()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 调整流程位置
+        public IActionResult ModifyForm()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult GetTaskScheme(string instanceId)
+        {
+            var res = taskBLL.GetTaskScheme(instanceId);
+            return Json(res);
+        }
         #endregion
 
         #region LogFormByProcessId 单据查看自身审批日志

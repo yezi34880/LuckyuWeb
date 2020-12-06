@@ -16,21 +16,25 @@ namespace Luckyu.App.Workflow
         /// <summary>
         /// 已办
         /// </summary>
-        public JqgridPageResponse<wf_taskhistoryEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
+        public JqgridPageResponse<WFTaskModel> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             var db = BaseRepository().db;
-            var query = db.Select<wf_taskhistoryEntity, wf_flow_instanceEntity>()
-                .InnerJoin((th, fi) => th.instance_id == fi.instance_id)
-                .Where((th, fi) => th.authorize_user_id == loginInfo.user_id);
+            var query = db.Select<wf_flow_instanceEntity, wf_taskhistoryEntity>()
+                .InnerJoin((fi, th) => th.instance_id == fi.instance_id)
+                .Where((fi, th) => th.authorize_user_id == loginInfo.user_id);
 
-            //var querySelect = query.AsType(typeof(wf_taskhistoryEntity));
-            //var page = BaseRepository().GetPage(jqPage, querySelect);
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
+                switch (jqPage.sidx)
+                {
+                    case "createtime":
+                        jqPage.sidx = "a.createtime";
+                        break;
+                }
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
-            var page = new JqgridPageResponse<wf_taskhistoryEntity>
+            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
+            var page = new JqgridPageResponse<WFTaskModel>
             {
                 count = jqPage.rows,
                 page = jqPage.page,

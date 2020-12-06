@@ -81,6 +81,7 @@ namespace Luckyu.App.OA
             if (isSubmit)
             {
                 var json = JsonConvert.SerializeObject(entity);
+                // 0 起草  1 生效  2 审批中  3 驳回
                 var res = taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", json, loginInfo);
                 if (res.code != 200)
                 {

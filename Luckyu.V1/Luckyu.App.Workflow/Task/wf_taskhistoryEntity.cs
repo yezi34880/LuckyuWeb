@@ -57,11 +57,6 @@ namespace Luckyu.App.Workflow
         public string nodetype { get; set; }
 
         /// <summary>
-        ///  is_finished   
-        /// </summary>
-        public int is_finished { get; set; }
-
-        /// <summary>
         ///  previous_id   
         /// </summary>
         public string previous_id { get; set; }

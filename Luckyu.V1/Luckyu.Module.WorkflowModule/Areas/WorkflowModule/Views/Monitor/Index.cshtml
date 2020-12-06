@@ -15,11 +15,20 @@
                     重置
                 </button>
             </div>
+            <span>
+                <input type="radio" name="is_finished" lay-filter="is_finished" value="0" title="未完成" checked />
+                <input type="radio" name="is_finished" lay-filter="is_finished" value="1" title="已完成" />
+            </span>
         </div>
 
         <div class="pull-right">
             <div class="layui-btn-group">
-                <button type="button" id="finish" class="layui-btn layui-btn-sm"><i class="fa fa-stop-circle"></i>&nbsp;终止/查看</button>
+                <button type="button" id="see" class="layui-btn layui-btn-sm"><i class="fa fa-eye"></i>&nbsp;查看</button>
+            </div>
+            <div class="layui-btn-group" id="divAction">
+                <button type="button" id="finish" class="layui-btn layui-btn-sm"><i class="fa fa-stop-circle"></i>&nbsp;终止</button>
+                <button type="button" id="complete" class="layui-btn layui-btn-sm"><i class="fa fa-check-square"></i>&nbsp;通过</button>
+                <button type="button" id="modify" class="layui-btn layui-btn-sm"><i class="fa fa-modx"></i>&nbsp;调整</button>
             </div>
         </div>
     </div>

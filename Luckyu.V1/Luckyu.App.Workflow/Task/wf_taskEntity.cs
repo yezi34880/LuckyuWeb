@@ -57,11 +57,6 @@ namespace Luckyu.App.Workflow
         public string nodetype { get; set; }
 
         /// <summary>
-        ///  is_finished   
-        /// </summary>
-        public int is_finished { get; set; }
-
-        /// <summary>
         ///  authorize_user_id   
         /// </summary>
         public string authorize_user_id { get; set; }
@@ -114,16 +109,6 @@ namespace Luckyu.App.Workflow
         /// </summary>
         [Column(IsIgnore = true)]
         public List<wf_task_authorizeEntity> authrizes { get; set; }
-
-        [Column(IsIgnore = true)]
-        public string submit_user_id { get; set; }
-
-        [Column(IsIgnore = true)]
-        public string submit_username { get; set; }
-
-        [Column(IsIgnore = true)]
-        public string flowname { get; set; }
-
         #endregion
 
         #region 方法

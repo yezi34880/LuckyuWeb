@@ -34,10 +34,18 @@
         #tabInstance > .layui-tab-content {
             float: left;
             padding: 0 5px 0 5px;
+            position: absolute;
+            left: 120px;
         }
 
         .layui-timeline-item {
             padding-bottom: 0;
+        }
+
+        .gridLog tr.jqgrow td {
+            overflow: hidden !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     </style>
 }
@@ -71,12 +79,12 @@
                         <div class="layui-tab-content">
                             <!--审批日志-->
                             <div class="layui-tab-item layui-show">
-                                <div class="layui-col-xs3">
+                                <div class="layui-col-xs3 divline" style="overflow:auto;">
                                     <ul class="layui-timeline" id="timeline_@Model[i].instance_id">
                                     </ul>
                                 </div>
                                 <div class="layui-col-xs9">
-                                    <table id="gridLog_@Model[i].instance_id"></table>
+                                    <table id="gridLog_@Model[i].instance_id" class="gridLog"></table>
                                 </div>
                             </div>
                             <!--流程-->

@@ -50,6 +50,12 @@
         .layui-timeline-item {
             padding-bottom: 0;
         }
+
+        #gridLog tr.jqgrow td {
+            overflow: hidden !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     </style>
 }
 
@@ -82,7 +88,7 @@
         </div>
         <!--审批日志-->
         <div class="layui-tab-item">
-            <div class="layui-col-xs3">
+            <div class="layui-col-xs3" id="divLine" style="overflow:auto;">
                 <ul class="layui-timeline" id="timeline">
                 </ul>
             </div>

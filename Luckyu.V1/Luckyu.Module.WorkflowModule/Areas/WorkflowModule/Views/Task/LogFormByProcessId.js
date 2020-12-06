@@ -43,7 +43,7 @@ var bootstrap = function (layui) {
                 gridComplete: function () {
                     var rows = this.p.rawData;
                     var html = '';
-                    for (var i = rows.length - 1; i > -1; i--) {
+                    for (var i = 0; i < rows.length; i++) {
                         var row = rows[i];
                         var style = luckyu.utility.toEnum(row.result,
                             [
@@ -76,10 +76,12 @@ var bootstrap = function (layui) {
             });
 
             gridLog.setGridHeight(window.innerHeight - 120);
-            gridLog.setGridWidth((window.innerWidth - 70) / 12 * 9 - 50);
+            gridLog.setGridWidth((window.innerWidth - 70) / 12 * 9 - 60);
+            $(".divline").height(window.innerHeight - 80);
             $(window).resize(function () {
                 gridLog.setGridHeight(window.innerHeight - 120);
-                gridLog.setGridWidth((window.innerWidth - 70) / 12 * 9 - 50);
+                gridLog.setGridWidth((window.innerWidth - 70) / 12 * 9 - 60);
+                $(".divline").height(window.innerHeight - 80);
             });
         },
         initData: function () {
@@ -88,7 +90,7 @@ var bootstrap = function (layui) {
                 var instanceId = self.attr("luckyu-id");
                 luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId }, function (data) {
                     page.initLogGrid(instanceId, data.History);
-                    var shceme = JSON.parse(data.Scheme);
+                    var shceme = JSON.parse(data.Instance.schemejson);
 
                     for (var i = 0, l = shceme.nodes.length; i < l; i++) {
                         var node = shceme.nodes[i];
@@ -118,9 +120,9 @@ var bootstrap = function (layui) {
                     });
 
                     $('#flow_' + instanceId).parent().height(window.innerHeight - 120).width(window.innerWidth - 170);
-                    window.onresize = function () {
+                    $(window).resize(function () {
                         $('#flow_' + instanceId).parent().height(window.innerHeight - 120).width(window.innerWidth - 170);
-                    };
+                    });
                     $('#flow_' + instanceId).dfworkflowSet('set', { data: shceme });
                 });
 
