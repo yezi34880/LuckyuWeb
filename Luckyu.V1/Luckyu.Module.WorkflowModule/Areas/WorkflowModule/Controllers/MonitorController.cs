@@ -47,6 +47,14 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             var res = taskBLL.Modify(instanceId, schemeId, nodeId, loginInfo);
             return Json(res);
         }
+
+        [AjaxOnly, HttpPost]
+        public IActionResult Complete(string instanceId)
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var res = taskBLL.Complete(instanceId, loginInfo);
+            return Json(res);
+        }
         #endregion
 
     }

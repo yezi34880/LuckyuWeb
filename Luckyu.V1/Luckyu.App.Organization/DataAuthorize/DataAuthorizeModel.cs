@@ -11,6 +11,8 @@ namespace Luckyu.App.Organization
     {
         public bool IsAll { get; set; }
 
+        public int staterange { get; set; }
+
         public List<string> UserIds { get; set; }
 
         public List<string> CompanyIds { get; set; }

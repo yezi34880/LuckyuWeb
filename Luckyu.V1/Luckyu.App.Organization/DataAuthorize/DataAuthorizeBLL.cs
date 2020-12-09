@@ -66,6 +66,10 @@ namespace Luckyu.App.Organization
             var data = new DataAuthorizeModel();
             foreach (var item in listdata)
             {
+                if (item.staterange == 1)
+                {
+                    data.staterange = 1;
+                }
                 if (item.objectrange == 9)  // 全部
                 {
                     data.IsAll = true;

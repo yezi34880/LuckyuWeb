@@ -99,7 +99,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 var row = grid.getRowData(rowid);
-                luckyu.layer.layerConfirm("确定终止该流程？", function () {
+                luckyu.layer.layerConfirm("确定退回该流程？", function () {
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Finish', { instanceId: row.instance_id }, function (data) {
                         layui.notice.success("操作成功");
                         page.searchInCurrentPage();
@@ -122,7 +122,22 @@ var bootstrap = function (layui) {
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Task/ModifyForm?instanceId=" + row.instance_id + "&processId=" + row.process_id,
                 });
+            });
 
+            // 通过流程
+            $("#complete").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                var row = grid.getRowData(rowid);
+                luckyu.layer.layerConfirm("确定通过该流程？", function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Complete', { instanceId: row.instance_id }, function (data) {
+                        layui.notice.success("操作成功");
+                        page.searchInCurrentPage();
+                    });
+                });
             });
 
         },

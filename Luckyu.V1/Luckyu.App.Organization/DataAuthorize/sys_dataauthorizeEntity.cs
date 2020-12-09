@@ -51,6 +51,11 @@ namespace Luckyu.App.Organization
         public int is_enable { get; set; }
 
         /// <summary>
+        ///  staterange   
+        /// </summary>
+        public int staterange { get; set; }
+
+       /// <summary>
         ///  remark   
         /// </summary>
         public string remark { get; set; }

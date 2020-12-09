@@ -39,9 +39,6 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex, callBack) {
-        if (!$(".layui-form").verifyForm()) {
-            return false;
-        }
         var formData = $('[lay-filter="Leave"]').getFormValue();
         luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
             keyValue: keyValue,

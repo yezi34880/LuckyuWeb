@@ -59,7 +59,7 @@ namespace Luckyu.DataAccess
         /// <returns>h返回受影响行数，select语句无效</returns>
         public T ExecuteScalar<T>(string strSql, object param = null)
         {
-            var obj = db.Ado.ExecuteScalar(strSql, param);
+            var obj = db.Ado.ExecuteScalar(trans, strSql, param);
             var result = (T)obj;
             return result;
         }
@@ -72,7 +72,7 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public int ExecuteBySql(string strSql, object param = null)
         {
-            return db.Ado.ExecuteNonQuery(strSql, param);
+            return db.Ado.ExecuteNonQuery(trans, strSql, param);
         }
 
         #endregion
@@ -163,7 +163,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Insert(entity).ExecuteAffrows();
+                result = db.Insert(entity).WithTransaction(trans).ExecuteAffrows();
                 InsertExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -182,7 +182,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Insert(list).ExecuteAffrows();
+                result = db.Insert(list).WithTransaction(trans).ExecuteAffrows();
                 InsertExtensionTableList<T>(list);
             }
             catch (Exception ex)
@@ -229,7 +229,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Delete<T>().Where(entity).ExecuteAffrows();
+                result = db.Delete<T>().Where(entity).WithTransaction(trans).ExecuteAffrows();
                 DeleteExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -244,7 +244,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Delete<T>().Where(list).ExecuteAffrows();
+                result = db.Delete<T>().WithTransaction(trans).Where(list).ExecuteAffrows();
                 DeleteExtensionTableList<T>(list);
             }
             catch (Exception ex)
@@ -259,7 +259,7 @@ namespace Luckyu.DataAccess
             try
             {
                 var list = db.Select<T>().Where(condition).ToList();
-                result = db.Delete<T>().Where(list).ExecuteAffrows();
+                result = db.Delete<T>().WithTransaction(trans).Where(list).ExecuteAffrows();
                 DeleteExtensionTableList<T>(list);
             }
             catch (Exception ex)
@@ -281,7 +281,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().SetSource(entity).UpdateColumns(onlyUpdateColumns);
+                var query = db.Update<T>().WithTransaction(trans).SetSource(entity).UpdateColumns(onlyUpdateColumns);
                 result = query.ExecuteAffrows();
             }
             catch (Exception ex)
@@ -304,7 +304,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().SetSource(entity);
+                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
                 if (ignoreColumns != null)
                 {
                     query = query.IgnoreColumns(ignoreColumns);
@@ -331,7 +331,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().SetSource(entity);
+                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
@@ -368,7 +368,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().SetSource(entity);
+                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
@@ -410,7 +410,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().SetSource(entity);
+                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
@@ -458,7 +458,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().SetSource(entity);
+                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
@@ -605,7 +605,7 @@ namespace Luckyu.DataAccess
                 }
             }
             var sql = $"INSERT INTO {tableName} ( {strName.ToString().TrimEnd(',')} ) VALUES ( {sqlValue.ToString().TrimEnd(',')} )";
-            return db.Ado.ExecuteNonQuery(sql, dicParam);
+            return db.Ado.ExecuteNonQuery(trans, sql, dicParam);
         }
 
         /// <summary>
@@ -681,7 +681,7 @@ namespace Luckyu.DataAccess
             var strPkName = pk.Name.ToUpper();
             strSql.Append($" WHERE {strPkName} = {BaseConnection.ParaPre}{strPkName} ");
             dicParas.Add(strPkName, formDataJson[strPkName].ToString());
-            return db.Ado.ExecuteNonQuery(strSql.ToString(), dicParas);
+            return db.Ado.ExecuteNonQuery(trans, strSql.ToString(), dicParas);
         }
 
         /// <summary>
@@ -717,7 +717,7 @@ namespace Luckyu.DataAccess
 
             var sql = $"DELETE FROM {tableNameEx} WHERE {pkName} = {BaseConnection.ParaPre}{pkName} ";
             var dicParas = new Dictionary<string, object> { { pkName, keyValue } };
-            return db.Ado.ExecuteNonQuery(sql, dicParas);
+            return db.Ado.ExecuteNonQuery(trans, sql, dicParas);
         }
         private int DeleteExtensionTableList<T>(List<T> list)
         {
@@ -753,7 +753,7 @@ namespace Luckyu.DataAccess
 
                 var sql = $"DELETE FROM {tableNameEx} WHERE {pkName} = {BaseConnection.ParaPre}{pkName} ";
                 var dicParas = new Dictionary<string, object> { { pkName, keyValue } };
-                result += db.Ado.ExecuteNonQuery(sql, dicParas);
+                result += db.Ado.ExecuteNonQuery(trans, sql, dicParas);
             }
             return result;
         }

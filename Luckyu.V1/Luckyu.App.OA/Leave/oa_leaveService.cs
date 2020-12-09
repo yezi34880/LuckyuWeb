@@ -29,11 +29,21 @@ namespace Luckyu.App.OA
                 if (!dataauth.IsAll)
                 {
                     var authusers = dataauth.AllUserIds;
-                    exp = exp.LinqAnd(expSelf.LinqOr(r => r.state == 1 && authusers.Contains(r.user_id)));
+                    Expression<Func<oa_leaveEntity, bool>> exp1 = r => r.state == 1 && authusers.Contains(r.user_id);
+                    if (dataauth.staterange == 1)
+                    {
+                        exp1 = r => authusers.Contains(r.user_id);
+                    }
+                    exp = exp.LinqAnd(expSelf.LinqOr(exp1));
                 }
                 else
                 {
-                    exp = exp.LinqAnd(expSelf.LinqOr(r => r.state == 1));
+                    Expression<Func<oa_leaveEntity, bool>> exp1 = r => r.state == 1;
+                    if (dataauth.staterange == 1)
+                    {
+                        exp1 = r => true;
+                    }
+                    exp = exp.LinqAnd(expSelf.LinqOr(exp1));
                 }
             }
             else
@@ -88,7 +98,6 @@ namespace Luckyu.App.OA
             var trans = BaseRepository().BeginTrans();
             try
             {
-                var db = trans.db;
                 if (keyValue.IsEmpty())
                 {
                     entity.Create(loginInfo);

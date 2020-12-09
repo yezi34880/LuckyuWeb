@@ -40,7 +40,6 @@ namespace Luckyu.App.Organization
             var trans = BaseRepository().BeginTrans();
             try
             {
-                var db = trans.db;
                 if (keyValue.IsEmpty())
                 {
                     entity.Create(loginInfo);

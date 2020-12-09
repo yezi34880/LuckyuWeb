@@ -326,7 +326,7 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("该流程的流程图没有没有连线，请联系管理员");
             }
-            var listTask = new List<wf_taskEntity>();
+            var newTask = new wf_taskEntity();
             var listHistory = new List<wf_taskhistoryEntity>();
             var listSql = new List<string>();
 
@@ -361,7 +361,7 @@ namespace Luckyu.App.Workflow
             var turple = FindNextNode(lines, nodeModel.lines, nodeModel.nodes, instanceEntity, nodeStart, loginInfo);
             if (!turple.Item1.IsEmpty())
             {
-                listTask.AddRange(turple.Item1);
+                newTask = turple.Item1;
             }
             if (!turple.Item2.IsEmpty())
             {
@@ -371,7 +371,7 @@ namespace Luckyu.App.Workflow
             {
                 listSql.AddRange(turple.Item3);
             }
-            taskService.Create(instanceEntity, listTask, listHistory, listSql);
+            taskService.Create(instanceEntity, newTask, listHistory, listSql);
             return ResponseResult.Success();
         }
 
@@ -408,7 +408,7 @@ namespace Luckyu.App.Workflow
 
             var nodeModel = instance.schemejson.ToObject<WFSchemeModel>();
 
-            var listTask = new List<wf_taskEntity>();
+            var newTask = new wf_taskEntity();
             var listHistory = new List<wf_taskhistoryEntity>();
             var listSql = new List<string>();
 
@@ -427,7 +427,6 @@ namespace Luckyu.App.Workflow
             {
                 historyCurrent.opinion = "【任务委托】 ";
             }
-
             if (nodeCurrent.type == "confluencenode")
             {
                 historyCurrent.opinion += "【会签】 " + opinion;
@@ -512,7 +511,7 @@ namespace Luckyu.App.Workflow
                 var turple = FindNextNode(lines, nodeModel.lines, nodeModel.nodes, instance, nodeCurrent, loginInfo);
                 if (!turple.Item1.IsEmpty())
                 {
-                    listTask.AddRange(turple.Item1);
+                    newTask = turple.Item1;
                 }
                 if (!turple.Item2.IsEmpty())
                 {
@@ -523,7 +522,7 @@ namespace Luckyu.App.Workflow
                     listSql.AddRange(turple.Item3);
                 }
             }
-            taskService.Approve(instance, task, listTask, listHistory, listSql);
+            taskService.Approve(instance, task, newTask, listHistory, listSql);
             return ResponseResult.Success();
         }
 
@@ -593,10 +592,74 @@ namespace Luckyu.App.Workflow
             var history = new wf_taskhistoryEntity();
             history = firsttask.Adapt<wf_taskhistoryEntity>();
             history.result = 2;
-            history.opinion = $"{loginInfo.realname} 通过流程监控强制结束流程";
+            history.opinion = $"【流程监控】{loginInfo.realname} 强制结束流程";
             history.Create(loginInfo);
 
             taskService.Finish(instance, tasks, history, firstnode.sqlfail);
+            return ResponseResult.Success();
+        }
+
+        /// <summary>
+        /// 模拟完成审批
+        /// </summary>
+        /// <param name="instanceId"></param>
+        /// <param name="loginInfo"></param>
+        /// <returns></returns>
+        public ResponseResult Complete(string instanceId, UserModel loginInfo)
+        {
+            var instance = instanceService.GetEntity(r => r.instance_id == instanceId);
+            if (instance == null)
+            {
+                return ResponseResult.Fail("该流程实例不存在");
+            }
+            if (instance.is_finished == 1)
+            {
+                return ResponseResult.Fail("该流程已结束");
+            }
+            var task = taskService.GetEntity(r => r.instance_id == instanceId && r.is_done == 0);
+            if (task.IsEmpty())
+            {
+                return ResponseResult.Fail("当前任务不存在");
+            }
+            var listTask = new List<wf_taskEntity>();
+            var listHistory = new List<wf_taskhistoryEntity>();
+            var listSql = new List<string>();
+
+            var nodeModel = instance.schemejson.ToObject<WFSchemeModel>();
+
+            do
+            {
+                var nodeCurrent = nodeModel.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                var historyCurrent = new wf_taskhistoryEntity();
+                historyCurrent = task.Adapt<wf_taskhistoryEntity>();
+                historyCurrent.result = 1;
+                historyCurrent.nodetype = nodeCurrent.type;
+                historyCurrent.opinion = $"【流程监控】{loginInfo.realname} 强制生效流程";
+                historyCurrent.authorize_user_id = loginInfo.user_id;
+                historyCurrent.authorizen_userame = loginInfo.realname;
+                historyCurrent.Create(loginInfo);
+                listHistory.Add(historyCurrent);
+                ProcessNodeInject(nodeCurrent, 1, "");
+
+                task.is_done = 1;
+                var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
+                lines = lines.Where(r => r.wftype == 1 || r.wftype == 0).ToList();
+                if (!nodeCurrent.sqlsuccess.IsEmpty())
+                {
+                    listSql.Add(nodeCurrent.sqlsuccess);
+                }
+                var turple = FindNextNode(lines, nodeModel.lines, nodeModel.nodes, instance, nodeCurrent, loginInfo);
+
+                listTask.Add(turple.Item1);
+                listHistory.AddRange(turple.Item2);
+                listSql.AddRange(turple.Item3);
+                task = turple.Item1;
+            }
+            while (task != null);
+
+            instance.is_finished = 1;
+
+            taskService.Complete(instance,  listTask, listHistory, listSql);
             return ResponseResult.Success();
         }
 
@@ -613,6 +676,10 @@ namespace Luckyu.App.Workflow
             if (instance == null)
             {
                 return ResponseResult.Fail("该流程实例不存在");
+            }
+            if (instance.is_finished == 1)
+            {
+                return ResponseResult.Fail("该流程已结束, 不能调整");
             }
             var oldTasks = taskService.GetList(r => r.instance_id == instanceId && r.is_done == 0);
             if (oldTasks.IsEmpty())
@@ -696,9 +763,9 @@ namespace Luckyu.App.Workflow
         /// <param name="nodeCurrent">当前节点</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
-        private Tuple<List<wf_taskEntity>, List<wf_taskhistoryEntity>, List<string>> FindNextNode(List<WFSchemeLineModel> nextlines, List<WFSchemeLineModel> alllines, List<WFSchemeNodeModel> allnodes, wf_flow_instanceEntity instanceEntity, WFSchemeNodeModel nodeCurrent, UserModel loginInfo)
+        private Tuple<wf_taskEntity, List<wf_taskhistoryEntity>, List<string>> FindNextNode(List<WFSchemeLineModel> nextlines, List<WFSchemeLineModel> alllines, List<WFSchemeNodeModel> allnodes, wf_flow_instanceEntity instanceEntity, WFSchemeNodeModel nodeCurrent, UserModel loginInfo)
         {
-            var listTask = new List<wf_taskEntity>();
+            wf_taskEntity taskEntity = null;
             var listHistory = new List<wf_taskhistoryEntity>();
             var listSql = new List<string>();
             foreach (var line in nextlines)
@@ -772,7 +839,7 @@ namespace Luckyu.App.Workflow
                     }
                     else  // 传阅 会签  一般审批 如果包含自己  自动通过
                     {
-                        var taskEntity = new wf_taskEntity();
+                        taskEntity = new wf_taskEntity();
                         taskEntity = instanceEntity.Adapt<wf_taskEntity>();
                         taskEntity.node_id = nodeNext.id;
                         taskEntity.nodename = nodeNext.name;
@@ -808,13 +875,12 @@ namespace Luckyu.App.Workflow
                         }
                         else
                         {
-                            listTask.Add(taskEntity);
                             break;
                         }
                     }
                 }
             }
-            return new Tuple<List<wf_taskEntity>, List<wf_taskhistoryEntity>, List<string>>(listTask, listHistory, listSql);
+            return new Tuple<wf_taskEntity, List<wf_taskhistoryEntity>, List<string>>(taskEntity, listHistory, listSql);
         }
 
         /// <summary>
