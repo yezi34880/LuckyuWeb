@@ -55,6 +55,7 @@ namespace Luckyu.Utility
                 , new BadDateFixingConverter()
                 , new BadNumberFixingConverter()
                 , new NullStringFixingConverter()
+                , new BadBoolFixingConverter()
                 );
 
             if (ret != null && typeof(T).IsSubclassOf(typeof(ExtensionEntityBase)))
@@ -169,6 +170,7 @@ namespace Luckyu.Utility
             throw new NotImplementedException();
         }
     }
+
     public class NullStringFixingConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
@@ -197,6 +199,31 @@ namespace Luckyu.Utility
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class BadBoolFixingConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(bool);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var rawDate = reader.Value.ToBoolOrNull();
+            return rawDate ?? false;
+        }
+
+        public override bool CanWrite
+        {
+            get { return false; }
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
 }

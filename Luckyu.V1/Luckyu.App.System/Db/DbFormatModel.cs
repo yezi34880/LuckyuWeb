@@ -14,6 +14,10 @@ namespace Luckyu.App.System
 
         public string localdata { get; set; }
 
+        public DbFormatModel()
+        {
+            multiple = false;
+        }
 
 
     }

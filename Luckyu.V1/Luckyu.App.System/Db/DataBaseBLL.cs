@@ -26,7 +26,7 @@ namespace Luckyu.App.System
         private DataitemBLL dataitemBLL = new DataitemBLL();
         #endregion
 
-        public void InsertLog<T>(T entity, UserModel loginInfo) where T : class, new()
+        public void LogInsert<T>(T entity, UserModel loginInfo) where T : class, new()
         {
             var db = BaseConnection.InitDatabase();
             var entityInfo = db.CodeFirst.GetTableByEntity<T>();
@@ -34,6 +34,12 @@ namespace Luckyu.App.System
             {
                 return;
             }
+            if (entityInfo.Primarys.Length < 1)
+            {
+                return;
+            }
+            //var primaryName = entityInfo.Primarys[0].Attribute.Name;
+            var keyValue = entityInfo.Primarys[0].GetValue(entity).ToString();
             var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbName);
             if (tableInfo == null)
             {
@@ -41,8 +47,9 @@ namespace Luckyu.App.System
             }
             var log = new sys_logEntity();
             log.log_type = (int)LogType.Business;
-            log.module = $"{ tableInfo.showname} {tableInfo.dbname}";
+            log.module = $"{ tableInfo.showname}";
             log.op_type = "新增";
+            log.process_id = keyValue;
 
             log.user_id = loginInfo.user_id;
             log.user_name = loginInfo.realname;
@@ -59,14 +66,14 @@ namespace Luckyu.App.System
                 }
                 var value = propety.GetValue(entity).ToString();
                 var realvalue = GetRealValue(col, value);
-                strResult.Append($"{col.dbcolumnname} {realvalue}");
+                strResult.Append($"{col.showcolumnname} {realvalue}\r\n");
             }
 
             log.log_content = strResult.ToString();
             LogBLL.WriteLog(log);
         }
 
-        public void DeleteLog<T>(T entity, UserModel loginInfo) where T : class, new()
+        public void LogDelete<T>(T entity, UserModel loginInfo) where T : class, new()
         {
             var db = BaseConnection.InitDatabase();
             var entityInfo = db.CodeFirst.GetTableByEntity<T>();
@@ -79,10 +86,17 @@ namespace Luckyu.App.System
             {
                 return;
             }
+            if (entityInfo.Primarys.Length < 1)
+            {
+                return;
+            }
+            //var primaryName = entityInfo.Primarys[0].Attribute.Name;
+            var keyValue = entityInfo.Primarys[0].GetValue(entity).ToString();
             var log = new sys_logEntity();
-            log.log_type = (int)LogType.Operation;
-            log.module = $"{ tableInfo.showname} {tableInfo.dbname}";
+            log.log_type = (int)LogType.Business;
+            log.module = $"{ tableInfo.showname}";
             log.op_type = "删除";
+            log.process_id = keyValue;
 
             log.user_id = loginInfo.user_id;
             log.user_name = loginInfo.realname;
@@ -99,14 +113,14 @@ namespace Luckyu.App.System
                 }
                 var value = propety.GetValue(entity).ToString();
                 var realvalue = GetRealValue(col, value);
-                strResult.Append($"{col.dbcolumnname} {realvalue}");
+                strResult.Append($"{col.showcolumnname} {realvalue}\r\n");
             }
 
             log.log_content = strResult.ToString();
             LogBLL.WriteLog(log);
         }
 
-        public void UpdateLog<T>(T from, T to, UserModel loginInfo) where T : class, new()
+        public void LogUpdate<T>(T from, T to, string json, UserModel loginInfo) where T : class, new()
         {
             var db = BaseConnection.InitDatabase();
             var entityInfo = db.CodeFirst.GetTableByEntity<T>();
@@ -119,10 +133,22 @@ namespace Luckyu.App.System
             {
                 return;
             }
+            if (entityInfo.Primarys.Length < 1)
+            {
+                return;
+            }
+            var keyValue = entityInfo.Primarys[0].GetValue(to).ToString();
+            var onlyCols = new List<string>();
+            if (!json.IsEmpty())
+            {
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                onlyCols.AddRange(dict.Keys.ToList());
+            }
             var log = new sys_logEntity();
-            log.log_type = (int)LogType.Operation;
-            log.module = $"{ tableInfo.showname} {tableInfo.dbname}";
+            log.log_type = (int)LogType.Business;
+            log.module = $"{ tableInfo.showname}";
             log.op_type = "修改";
+            log.process_id = keyValue;
 
             log.user_id = loginInfo.user_id;
             log.user_name = loginInfo.realname;
@@ -137,18 +163,51 @@ namespace Luckyu.App.System
                 {
                     continue;
                 }
+                if (!json.IsEmpty() && !onlyCols.IsEmpty())
+                {
+                    if (!onlyCols.Contains(propety.Name))
+                    {
+                        continue;
+                    }
+                }
+
                 var fromValue = propety.GetValue(from).ToString();
                 var toValue = propety.GetValue(to).ToString();
                 if (fromValue != toValue)
                 {
                     var fromRealValue = GetRealValue(col, fromValue);
                     var toRealValue = GetRealValue(col, toValue);
-                    strResult.Append($"{fromRealValue} => {toRealValue}");
+                    strResult.Append($"{col.showcolumnname} {fromRealValue} => {toRealValue}\r\n");
                 }
             }
 
             log.log_content = strResult.ToString();
             LogBLL.WriteLog(log);
+        }
+
+        public void LogUpdate<T>(T from, T to, UserModel loginInfo) where T : class, new()
+        {
+            LogUpdate(from, to, null, loginInfo);
+        }
+
+        public void LogUpdate<T>(T to, string json, UserModel loginInfo) where T : class, new()
+        {
+            var db = BaseConnection.InitDatabase();
+            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            if (entityInfo == null)
+            {
+                return;
+            }
+            if (entityInfo.Primarys.Length < 1)
+            {
+                return;
+            }
+            var primaryName = entityInfo.Primarys[0].Attribute.Name;
+            var keyValue = entityInfo.Primarys[0].GetValue(to);
+            var sql = $"SELECT * FROM {entityInfo.DbName} WHERE {primaryName} = {BaseConnection.ParaPre}{primaryName}";
+            var dicParas = new Dictionary<string, object> { { primaryName, keyValue } };
+            var from = db.Select<T>().WithSql(sql, dicParas).First();
+            LogUpdate(from, to, json, loginInfo);
         }
 
         private string GetRealValue(sys_dbcolumnEntity col, string value)
@@ -159,14 +218,14 @@ namespace Luckyu.App.System
                 case "text":
                 case "datetime":
                 case "number":
-                    realvalue = $"{value}\r\n";
+                    realvalue = $"{value}";
                     break;
                 case "user":
                     {
                         var user = userBLL.GetEntityByCache(r => r.user_id == value);
                         if (user != null)
                         {
-                            realvalue = $"{user.realname}\r\n";
+                            realvalue = $"{user.realname}";
                         }
                         break;
                     }
@@ -175,7 +234,7 @@ namespace Luckyu.App.System
                         var dept = deptBLL.GetEntityByCache(r => r.department_id == value);
                         if (dept != null)
                         {
-                            realvalue = $"{dept.fullname}\r\n";
+                            realvalue = $"{dept.fullname}";
                         }
                         break;
                     }
@@ -184,7 +243,7 @@ namespace Luckyu.App.System
                         var company = companyBLL.GetEntityByCache(r => r.company_id == value);
                         if (company != null)
                         {
-                            realvalue = $"{company.fullname}\r\n";
+                            realvalue = $"{company.fullname}";
                         }
                         break;
                     }
@@ -193,7 +252,7 @@ namespace Luckyu.App.System
                         var group = groupBLL.GetEntityByCache(r => r.group_id == value);
                         if (group != null)
                         {
-                            realvalue = $"{group.groupname}\r\n";
+                            realvalue = $"{group.groupname}";
                         }
                         break;
                     }
@@ -206,12 +265,12 @@ namespace Luckyu.App.System
                             var group = groupBLL.GetEntityByCache(r => r.group_id == value);
                             strTemp.Append($"{group.groupname},");
                         }
-                        realvalue = $"{strTemp.ToString().TrimEnd(',')}\r\n";
+                        realvalue = $"{strTemp.ToString().TrimEnd(',')}";
                         break;
                     }
                 case "dataitem":
                     {
-                        var format = JsonConvert.DeserializeObject<DbFormatModel>(col.showformat);
+                        var format = col.showformat.ToObject<DbFormatModel>();
                         if (format != null)
                         {
                             var items = dataitemBLL.GetDetailByCache(format.itemcode);
@@ -219,14 +278,14 @@ namespace Luckyu.App.System
                             {
                                 var vals = value.SplitNoEmpty(",");
                                 var selectitems = items.Where(r => vals.Contains(r.itemvalue)).ToList();
-                                realvalue = $"{string.Join(",", selectitems.Select(r => r.showname))}\r\n";
+                                realvalue = $"{string.Join(",", selectitems.Select(r => r.showname))}";
                             }
                             else
                             {
                                 var selectitem = items.Where(r => r.itemvalue == value).FirstOrDefault();
                                 if (selectitem != null)
                                 {
-                                    realvalue = $"{selectitem.showname}\r\n";
+                                    realvalue = $"{selectitem.showname}";
                                 }
                             }
                         }
@@ -234,7 +293,7 @@ namespace Luckyu.App.System
                     }
                 case "datasource":
                     {
-                        var format = JsonConvert.DeserializeObject<DbFormatModel>(col.showformat);
+                        var format = col.showformat.ToObject<DbFormatModel>();
                         if (format != null)
                         {
 
@@ -243,7 +302,7 @@ namespace Luckyu.App.System
                     }
                 case "datalocal":
                     {
-                        var format = JsonConvert.DeserializeObject<DbFormatModel>(col.showformat);
+                        var format = col.showformat.ToObject<DbFormatModel>();
                         if (format != null)
                         {
 

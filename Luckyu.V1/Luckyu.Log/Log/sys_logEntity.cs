@@ -34,6 +34,12 @@ namespace Luckyu.Log
         public DateTime log_time { get; set; }
 
         /// <summary>
+        ///  process_id  业务主键
+        /// </summary>
+        [Column(StringLength = 50)]
+        public string process_id { get; set; } = "";
+
+        /// <summary>
         ///  log_content   动作
         /// </summary>
         [Column(StringLength = -1)]

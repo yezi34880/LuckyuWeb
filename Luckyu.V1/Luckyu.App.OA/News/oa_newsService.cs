@@ -1,5 +1,6 @@
 ﻿using FreeSql.Internal.Model;
 using Luckyu.App.Organization;
+using Luckyu.App.System;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
 using System;
@@ -13,6 +14,7 @@ namespace Luckyu.App.OA
     {
         #region Var
         private DataAuthorizeBLL dataBLL = new DataAuthorizeBLL();
+        private DataBaseBLL dbBLL = new DataBaseBLL();
         #endregion
 
         public JqgridPageResponse<oa_newsEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
@@ -56,6 +58,7 @@ namespace Luckyu.App.OA
         {
             entity.Remove(loginInfo);
             BaseRepository().UpdateOnlyColumns(entity, r => new { r.is_delete, r.delete_userid, r.delete_username, r.deletetime });
+            dbBLL.LogDelete(entity, loginInfo);
         }
 
         public void Publish(oa_newsEntity entity, UserModel loginInfo)
@@ -85,11 +88,13 @@ namespace Luckyu.App.OA
                 {
                     entity.Create(loginInfo);
                     trans.Insert(entity);
+                    dbBLL.LogInsert(entity, loginInfo);
                 }
                 else
                 {
                     entity.Modify(keyValue, loginInfo);
                     trans.UpdateAppendColumns(entity, strEntity, r => new { r.edittime, r.edit_userid, r.edit_username });
+                    dbBLL.LogUpdate(entity, strEntity, loginInfo);
                 }
                 trans.Commit();
             }

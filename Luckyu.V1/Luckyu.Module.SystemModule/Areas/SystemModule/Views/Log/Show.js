@@ -14,7 +14,7 @@ var bootstrap = function (layui) {
                 luckyu.ajax.getv2(luckyu.rootUrl + "/SystemModule/Log/GetFormData", { keyValue: keyValue }
                     , function (data) {
                         $('[lay-filter="Log"]').setFormValue(data.Log);
-                        $('#ip').val(data.Log.host + " " + data.Log.ip_address + " " + data.Log.ip_location);
+                        //$('#ip').val(data.Log.host + " " + data.Log.ip_address + " " + data.Log.ip_location);
                     });
             }
         },
