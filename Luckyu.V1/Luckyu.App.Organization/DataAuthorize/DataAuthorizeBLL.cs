@@ -64,12 +64,18 @@ namespace Luckyu.App.Organization
                 return null;
             }
             var data = new DataAuthorizeModel();
+            data.staterange = listdata.Exists(r => r.staterange == 1) ? 1 : 0;
+            data.edittype = 0;
+            if (listdata.Exists(r => r.staterange == 2))
+            {
+                data.edittype = 2;
+            }
+            else if (listdata.Exists(r => r.staterange == 1))
+            {
+                data.edittype = 1;
+            }
             foreach (var item in listdata)
             {
-                if (item.staterange == 1)
-                {
-                    data.staterange = 1;
-                }
                 if (item.objectrange == 9)  // 全部
                 {
                     data.IsAll = true;
@@ -170,6 +176,13 @@ namespace Luckyu.App.Organization
                 }
             }
             return data;
+        }
+
+        public DataAuthorizeModel GetDataAuthByUser(DataAuthorizeModuleEnum model, UserModel loginInfo)
+        {
+            var moduleName = model.ToString();
+            var dataAuth = GetDataAuthByUser(moduleName, loginInfo);
+            return dataAuth;
         }
         #endregion
 

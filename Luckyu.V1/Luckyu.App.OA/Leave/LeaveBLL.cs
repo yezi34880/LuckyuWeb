@@ -13,6 +13,7 @@ namespace Luckyu.App.OA
         #region Var
         private oa_leaveService leaveService = new oa_leaveService();
         private WFTaskBLL taskBLL = new WFTaskBLL();
+        private DataAuthorizeBLL dataBLL = new DataAuthorizeBLL();
         #endregion
 
         #region Get
@@ -53,9 +54,24 @@ namespace Luckyu.App.OA
             {
                 return ResponseResult.Fail(MessageString.NoData);
             }
-            if (entity.state != (int)StateEnum.Draft)
+            var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
+            if (dataauth.edittype == 0)
             {
-                return ResponseResult.Fail("只有起草状态才能删除");
+                if (entity.state != (int)StateEnum.Draft)
+                {
+                    return ResponseResult.Fail("只有起草状态才能删除");
+                }
+                if (entity.create_userid != loginInfo.user_id)
+                {
+                    return ResponseResult.Fail("只创建人才能删除");
+                }
+            }
+            else if (dataauth.edittype == 1)
+            {
+                if (entity.state != (int)StateEnum.Draft)
+                {
+                    return ResponseResult.Fail("只有起草状态才能删除");
+                }
             }
             leaveService.DeleteForm(entity, loginInfo);
             return ResponseResult.Success();
@@ -71,9 +87,24 @@ namespace Luckyu.App.OA
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(MessageString.NoData);
                 }
-                if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
+                if (dataauth.edittype == 0)
                 {
-                    return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能编辑");
+                    if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                    {
+                        return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能编辑");
+                    }
+                    if (old.create_userid != loginInfo.user_id)
+                    {
+                        return ResponseResult.Fail<oa_leaveEntity>("只创建人才能删除");
+                    }
+                }
+                else if (dataauth.edittype == 1)
+                {
+                    if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                    {
+                        return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能删除");
+                    }
                 }
             }
 
@@ -82,7 +113,7 @@ namespace Luckyu.App.OA
             {
                 var json = JsonConvert.SerializeObject(entity);
                 // 0 起草  1 生效  2 审批中  3 驳回
-                var res = taskBLL.Create("Leave", entity.id, $"请假申请 {entity.id}", json, loginInfo);
+                var res = taskBLL.Create(FlowEnum.Leave, entity.id, $"请假申请 {entity.id}", json, loginInfo);
                 if (res.code != 200)
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(res.info);

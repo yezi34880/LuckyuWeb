@@ -374,6 +374,12 @@ namespace Luckyu.App.Workflow
             taskService.Create(instanceEntity, newTask, listHistory, listSql);
             return ResponseResult.Success();
         }
+        public ResponseResult Create(FlowEnum flow, string processId, string processName, string processContent, UserModel loginInfo)
+        {
+            var flowCode = flow.ToString();
+            var res = Create(flowCode, processId, processName, processContent, loginInfo);
+            return res;
+        }
 
         /// <summary>
         /// 审批
@@ -659,7 +665,7 @@ namespace Luckyu.App.Workflow
 
             instance.is_finished = 1;
 
-            taskService.Complete(instance,  listTask, listHistory, listSql);
+            taskService.Complete(instance, listTask, listHistory, listSql);
             return ResponseResult.Success();
         }
 

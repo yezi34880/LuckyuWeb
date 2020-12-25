@@ -46,14 +46,19 @@ namespace Luckyu.App.Organization
         public string objectname { get; set; }
 
         /// <summary>
-        ///  is_enable   
+        ///  edittype   
         /// </summary>
-        public int is_enable { get; set; }
+        public int edittype { get; set; }
 
         /// <summary>
         ///  staterange   
         /// </summary>
         public int staterange { get; set; }
+
+        /// <summary>
+        ///  is_enable   
+        /// </summary>
+        public int is_enable { get; set; }
 
        /// <summary>
         ///  remark   

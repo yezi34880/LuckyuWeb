@@ -11,7 +11,15 @@ namespace Luckyu.App.Organization
     {
         public bool IsAll { get; set; }
 
+        /// <summary>
+        /// 0 仅查看生效 1 查看所有状态
+        /// </summary>
         public int staterange { get; set; }
+
+        /// <summary>
+        /// 0 仅查看 1 可编辑起草 驳回 2 可编辑所有
+        /// </summary>
+        public int edittype { get; set; }
 
         public List<string> UserIds { get; set; }
 

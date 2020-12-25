@@ -21,7 +21,7 @@
             if (isPage) {
                 pagerHeight = pagerHeight + $(isPage).height();
             }
-            else if (isFooter) {
+            if (isFooter) {
                 pagerHeight = pagerHeight + $('#gbox_' + gridid + ' div.ui-jqgrid-sdiv').height();
             }
             var height = window.innerHeight - top - pagerHeight;

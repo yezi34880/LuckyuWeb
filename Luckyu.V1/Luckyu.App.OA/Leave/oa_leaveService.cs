@@ -24,7 +24,7 @@ namespace Luckyu.App.OA
             Expression<Func<oa_leaveEntity, bool>> exp = r => r.is_delete == 0;
 
             #region 数据权限
-            var dataauth = dataBLL.GetDataAuthByUser("oa_leave", loginInfo);
+            var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
             if (dataauth != null)
             {
                 Expression<Func<oa_leaveEntity, bool>> expSelf = r => r.user_id == loginInfo.user_id;
