@@ -136,7 +136,7 @@ namespace Luckyu.Utility
         public static DateTime ToDate(this object data, string format, IFormatProvider provider, DateTimeStyles style)
         {
             if (data == null)
-                return DateTime.MinValue;
+                return LuckyuHelper.MinDate;
             DateTime result;
             return DateTime.TryParseExact(data.ToString(), format, provider, style, out result) ? result : DateTime.MinValue;
         }
@@ -147,7 +147,7 @@ namespace Luckyu.Utility
         public static DateTime ToDate(this object data)
         {
             if (data == null)
-                return DateTime.MinValue;
+                return LuckyuHelper.MinDate;
             DateTime result;
             return DateTime.TryParse(data.ToString(), out result) ? result : DateTime.MinValue;
         }

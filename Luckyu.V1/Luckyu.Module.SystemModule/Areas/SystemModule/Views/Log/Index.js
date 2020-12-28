@@ -21,11 +21,27 @@ var bootstrap = function (layui) {
                     { name: 'op_type', label: "操作", width: 50, },
                     { name: 'user_name', label: "用户", width: 80, },
                     {
-                        name: 'log_time', label: "时间", width: 100, align: "right", search: false,
+                        name: 'log_time', label: "时间", width: 100, align: "right",
                         formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
-                        //stype: "daterange"
+                        searchoptions: {
+                            // 只能选择月份
+                            dataInit: function (elem) {
+                                $(elem).focus(function () {
+                                    WdatePicker({
+                                        el: this,
+                                        dateFmt: 'yyyy-MM',
+                                        onpicked: function (dp) {
+                                            grid[0].triggerToolbar();
+                                        },
+                                        oncleared: function (dp) {
+                                            grid[0].triggerToolbar();
+                                        }
+                                    });
+                                });
+                            }
+                        }
                     },
-                    { name: 'module', label: "模块", width: 200, },
+                    { name: 'module', label: "模块", width: 150, },
                     { name: 'log_content', label: "内容", width: 500, search: false },
                 ],
                 rownumbers: true,

@@ -8,6 +8,9 @@ namespace Luckyu.Utility
 {
     public class LuckyuHelper
     {
+        public static DateTime MinDate = DateTime.Parse("1900-1-1");
+        public static DateTime MaxDate = DateTime.Parse("3000-1-1");
+
         public static bool IsDebug()
         {
 #if DEBUG

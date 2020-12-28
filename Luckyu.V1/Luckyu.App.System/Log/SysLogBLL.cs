@@ -21,11 +21,20 @@ namespace Luckyu.App.System
             Expression<Func<sys_logEntity, bool>> exp = r => r.is_enable == 1 && r.log_type == logtype;
             var query = db.Select<sys_logEntity>().Where(exp);
             var filters = new List<DynamicFilterInfo>();
+            var date = DateTime.Today;
             if (jqPage.isSearch)
             {
                 foreach (var rule in jqPage.fitersObj.rules)
                 {
-                    filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                    switch (rule.field)
+                    {
+                        case "log_time":
+                            date = rule.data.ToDate();
+                            break;
+                        default:
+                            filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                            break;
+                    }
                 }
             }
             if (!filters.IsEmpty())
@@ -40,7 +49,7 @@ namespace Luckyu.App.System
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
             long total;
-            var list = logService.GetPage(jqPage.page, jqPage.rows, query, out total);
+            var list = logService.GetPage(jqPage.page, jqPage.rows, query, date, out total);
             var page = new JqgridPageResponse<sys_logEntity>
             {
                 count = jqPage.rows,

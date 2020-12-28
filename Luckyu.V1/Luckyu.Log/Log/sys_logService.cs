@@ -24,9 +24,9 @@ namespace Luckyu.Log
             db.Insert(entity).AsTable(tablename => tablename + tableSuffix).ExecuteAffrows();
         }
 
-        public List<sys_logEntity> GetPage(int pageIndex, int paegSize, ISelect<sys_logEntity> query, out long total)
+        public List<sys_logEntity> GetPage(int pageIndex, int paegSize, ISelect<sys_logEntity> query, DateTime date, out long total)
         {
-            var list = query.AsTable((_, tablename) => tablename + tableSuffix).Count(out total).Page(pageIndex, paegSize).ToList();
+            var list = query.AsTable((_, tablename) => $"{tablename}_{date.ToString("yyyyMM")}").Count(out total).Page(pageIndex, paegSize).ToList();
             return list;
         }
 
