@@ -8,10 +8,10 @@ using System.Collections.Generic;
 namespace Luckyu.App.System
 {
     /// <summary>
-    ///  sys_annex   
+    ///  sys_annexfile   
     /// </summary>
-    [Table(Name = "SYS_ANNEX")]
-    public class sys_annexEntity
+    [Table(Name = "SYS_ANNEXFILE")]
+    public class sys_annexfileEntity
     {
         #region 属性
 
@@ -22,14 +22,19 @@ namespace Luckyu.App.System
         public string annex_id { get; set; }
 
         /// <summary>
-        ///  folder_id   
+        ///  external_id   
         /// </summary>
-        public string folder_id { get; set; }
+        public string external_id { get; set; }
 
         /// <summary>
         ///  filename   
         /// </summary>
         public string filename { get; set; }
+
+        /// <summary>
+        ///  basepath   
+        /// </summary>
+        public string basepath { get; set; }
 
         /// <summary>
         ///  filepath   

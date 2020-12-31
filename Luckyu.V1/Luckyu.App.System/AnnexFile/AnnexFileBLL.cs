@@ -10,20 +10,21 @@ using System.Threading.Tasks;
 
 namespace Luckyu.App.System
 {
-    public class AnnexBLL
+    public class AnnexFileBLL
     {
         #region Var
-        private sys_annexService annexService = new sys_annexService();
+        private sys_annexfileService annexService = new sys_annexfileService();
+        private ConfigBLL configBLL = new ConfigBLL();
 
         #endregion
 
         #region Get
-        public sys_annexEntity GetEntity(Expression<Func<sys_annexEntity, bool>> condition, string orderby = "")
+        public sys_annexfileEntity GetEntity(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
         {
             var entity = annexService.GetEntity(condition, orderby);
             return entity;
         }
-        public List<sys_annexEntity> GetList(Expression<Func<sys_annexEntity, bool>> condition, string orderby = "")
+        public List<sys_annexfileEntity> GetList(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
         {
             var list = annexService.GetList(condition, orderby);
             return list;
@@ -32,25 +33,25 @@ namespace Luckyu.App.System
         #endregion
 
         #region Set
-        public sys_annexEntity SaveAnnex(string folderId, string preFolderName, string fileName, string contentType, Stream fileStream, UserModel userInfo)
+        public sys_annexfileEntity SaveAnnex(string folderId, string preFolderName, string fileName, string contentType, Stream fileStream, UserModel userInfo)
         {
             if (fileStream == null || fileStream.Length < 1)
             {
                 return null;
             }
 
-            var annex = new sys_annexEntity();
+            var annex = new sys_annexfileEntity();
             annex.Create(userInfo);
-            annex.folder_id = folderId;
+            annex.external_id = folderId;
 
-            string basePath = AppSettingsHelper.GetAppSetting("AnnexPath");
+            var basepath = GetBasePath();
             string FileEextension = Path.GetExtension(fileName);
             string virtualPath = $"{userInfo.user_id}\\{DateTime.Now.ToString("yyyyMMdd")}\\{annex.annex_id}{FileEextension}";
             if (!preFolderName.IsEmpty())
             {
                 virtualPath = FileHelper.Combine(preFolderName, virtualPath);
             }
-            string realPath = FileHelper.Combine(basePath, virtualPath);
+            string realPath = FileHelper.Combine(basepath.Item2, virtualPath);
             //创建文件夹
             string path = Path.GetDirectoryName(realPath);
             if (!Directory.Exists(path))
@@ -66,6 +67,7 @@ namespace Luckyu.App.System
                 fs.Close();
             }
             annex.downloadcount = 0;
+            annex.basepath = basepath.Item1;
             annex.fileextenssion = FileEextension;
             annex.filename = fileName;
             annex.filepath = virtualPath;
@@ -102,7 +104,7 @@ namespace Luckyu.App.System
         /// 转换 附件记录列表 至 可预览数据
         /// </summary>
         /// <returns></returns>
-        public FileInputResponse ChangeListToPreview(List<sys_annexEntity> list)
+        public FileInputResponse ChangeListToPreview(List<sys_annexfileEntity> list)
         {
             if (list.IsEmpty())
             {
@@ -127,7 +129,7 @@ namespace Luckyu.App.System
                 {
                     type = type,
                     size = r.filesize.ToInt(),
-                    downloadUrl = "/BaseModule/Annexes/ShowAnnexesFile?fileId=" + r.annex_id,
+                    downloadUrl = "/SystemModule/Annex/ShowFile?fileId=" + r.annex_id,
                     caption = r.filename,
                     key = r.annex_id
                 };
@@ -147,11 +149,29 @@ namespace Luckyu.App.System
         /// <param name="condition"></param>
         /// <param name="orderby"></param>
         /// <returns></returns>
-        public FileInputResponse GetPreviewList(Expression<Func<sys_annexEntity, bool>> condition, string orderby = "")
+        public FileInputResponse GetPreviewList(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
         {
             var list = GetList(condition, orderby);
             var res = ChangeListToPreview(list);
             return res;
+        }
+        #endregion
+
+        #region private
+        private (string, string) GetBasePath()
+        {
+            var configCode = $"annexbasepath_{DateTime.Today.ToString("yyyy")}";
+            var config = configBLL.GetEntityByCache(configCode);
+            if (config != null)
+            {
+                return (configCode, config.configvalue);
+            }
+            else
+            {
+                configCode = "annexbasepath";
+                string basePath = configBLL.GetValueByCache(configCode);
+                return (configCode, basePath);
+            }
         }
         #endregion
 

@@ -17,7 +17,7 @@ namespace Luckyu.Utility
             var res = new ResponseResult
             {
                 code = 200,
-                info = "操作成功",
+                info = MessageString.Success,
                 data = data
             };
             return Json(res);
@@ -27,7 +27,7 @@ namespace Luckyu.Utility
             var res = new ResponseResult
             {
                 code = 200,
-                info = "操作成功",
+                info = MessageString.Success,
                 data = data
             };
             return Json(res);

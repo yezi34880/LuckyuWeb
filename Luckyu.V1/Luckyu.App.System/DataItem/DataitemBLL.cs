@@ -19,8 +19,8 @@ namespace Luckyu.App.System
         #endregion
 
         #region Cache
-        private string cacheKeyClassify = CacheFactory.GetCurrentDomain() + "luckyu_dataitem";
-        private string cacheKeyDetail = CacheFactory.GetCurrentDomain() + "luckyu_dataitem_detail";
+        private string cacheKeyClassify = CacheFactory.GetCurrentDomain() + "luckyu_dataitem_";
+        private string cacheKeyDetail = CacheFactory.GetCurrentDomain() + "luckyu_dataitem_detail_";
         private ICache cache = CacheFactory.Create();
 
         #endregion

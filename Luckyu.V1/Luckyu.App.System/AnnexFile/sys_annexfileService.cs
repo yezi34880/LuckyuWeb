@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Luckyu.App.System
 {
-    public class sys_annexService : RepositoryFactory<sys_annexEntity>
+    public class sys_annexfileService : RepositoryFactory<sys_annexfileEntity>
     {
-        public void Insert(sys_annexEntity entity)
+        public void Insert(sys_annexfileEntity entity)
         {
             BaseRepository().Insert(entity);
         }
-        public void Delete(sys_annexEntity entity)
+        public void Delete(sys_annexfileEntity entity)
         {
             BaseRepository().Delete(entity);
         }
