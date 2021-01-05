@@ -6,11 +6,11 @@
 支持多公司 多部门 多岗位 划分,数据权限灵活配置, 项目分模块开发 <br/>
 支持动态工作流设计, 工作流分版本 <br/>
 支持动态数据权限配置 <br/>
-![菜单搜索与换肤](https://images.gitee.com/uploads/images/2020/1029/171631_29728759_543243.gif "theme.gif")
+![菜单搜索与换肤](./mdimage/1.gif)
 
-![列表标题栏搜索](https://images.gitee.com/uploads/images/2020/1029/163810_55ecdce6_543243.gif "search2.gif")
+![列表标题栏搜索](./mdimage/2.gif)
 
-![流程图设计](https://images.gitee.com/uploads/images/2020/1029/170356_f351c4ef_543243.jpeg "workflow.jpg")
+![流程图设计](./mdimage/3.gif)
 
 ## 说明
 基于 Layui 后台框架, 整合了许多第三方插件如 jqgrid eletree xmselect等
@@ -25,7 +25,7 @@ ORM框架 FreeSql
 采取分项目,分模块开发
 Luckyu.Web为主启动项目
 各功能模块以 Luckyu.Module 开头
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1010/110915_53b08b55_543243.jpeg "1.jpg")
+![输入图片说明](./mdimage/4.jpeg)
 
 ★★★重点★★★
 各项目模块 新建项目类型为 RCL (Razor Class Library)
