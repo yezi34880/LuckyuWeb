@@ -10,7 +10,7 @@
 
 ![列表标题栏搜索](./mdimage/2.gif)
 
-![流程图设计](./mdimage/3.gif)
+![流程图设计](./mdimage/3.jpeg)
 
 ## 说明
 基于 Layui 后台框架, 整合了许多第三方插件如 jqgrid eletree xmselect等
