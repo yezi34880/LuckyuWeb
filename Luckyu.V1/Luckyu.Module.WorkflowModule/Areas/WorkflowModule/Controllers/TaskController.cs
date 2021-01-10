@@ -1,6 +1,7 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.App.Workflow;
 using Luckyu.Utility;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Luckyu.Module.WorkflowModule.Controllers
     {
         #region Var
         private WFTaskBLL taskBLL = new WFTaskBLL();
+        private UserBLL userBLL = new UserBLL();
         #endregion
 
         #region Index
@@ -91,9 +93,15 @@ namespace Luckyu.Module.WorkflowModule.Controllers
 
         #region Interface
         [AjaxOnly, HttpPost]
-        public IActionResult Create(string flowCode, string processId, string processName, string processContent)
+        public IActionResult Create(string flowCode, string processId, string processName, string processContent, string submitUserId)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            if (!submitUserId.IsEmpty())
+            {
+                var user = userBLL.GetEntityByCache(r => r.user_id == submitUserId);
+                loginInfo = new UserModel();
+                loginInfo = user.Adapt<UserModel>();
+            }
             var res = taskBLL.Create(flowCode, processId, processName, processContent, loginInfo);
             return Json(res);
         }

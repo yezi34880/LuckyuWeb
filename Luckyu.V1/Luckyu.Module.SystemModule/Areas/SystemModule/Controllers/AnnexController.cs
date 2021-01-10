@@ -56,8 +56,7 @@ namespace Luckyu.Module.SystemModule.Controllers
                     var file = files[i];
                     annexBLL.SaveAnnex(keyValue, preFolderName, file.FileName, file.ContentType, file.OpenReadStream(), loginInfo);
                 }
-                var Annex = annexBLL.GetList(r => r.external_id == keyValue);
-                res = annexBLL.ChangeListToPreview(Annex);
+                res = annexBLL.GetPreviewList(r => r.external_id == keyValue);
             }
             return Json(res);
         }

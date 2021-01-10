@@ -164,7 +164,7 @@
          */
         moveRowUp: function (rowId) {
             var $tr = $("#" + rowId);
-            if ($tr.index() > 0) {
+            if ($tr.index() > 1) {
                 var tr1 = $tr.prev();
                 var num = $tr.find("td.jqgrid-rownum");
                 var num1 = tr1.find("td.jqgrid-rownum");

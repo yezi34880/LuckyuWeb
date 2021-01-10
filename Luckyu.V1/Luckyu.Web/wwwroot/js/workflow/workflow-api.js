@@ -23,6 +23,7 @@
                 processId: '',
                 flowCode: '',
                 processName: '',
+                submitUserId: '',
                 callback: null,
             }
             $.extend(DefaultOption, op);
