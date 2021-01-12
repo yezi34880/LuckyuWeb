@@ -25,9 +25,9 @@ namespace Luckyu.Log
             logService.Insert(entity);
         }
 
-        public static sys_logEntity GetLog(string keyValue)
+        public static sys_logEntity GetLog(string keyValue, DateTime date)
         {
-            var entity = logService.GetEntity(r => r.log_id == keyValue);
+            var entity = logService.GetEntity(r => r.log_id == keyValue, date);
             return entity;
         }
 

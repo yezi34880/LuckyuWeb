@@ -33,7 +33,7 @@ namespace Luckyu.App.System
         #endregion
 
         #region Set
-        public sys_annexfileEntity SaveAnnex(string folderId, string preFolderName, string fileName, string contentType, Stream fileStream, UserModel userInfo)
+        public sys_annexfileEntity SaveAnnex(string exId, string folderPre, string fileName, string contentType, Stream fileStream, UserModel userInfo)
         {
             if (fileStream == null || fileStream.Length < 1)
             {
@@ -42,14 +42,14 @@ namespace Luckyu.App.System
 
             var annex = new sys_annexfileEntity();
             annex.Create(userInfo);
-            annex.external_id = folderId;
+            annex.external_id = exId;
 
             var basepath = GetBasePath();
             string FileEextension = Path.GetExtension(fileName);
             string virtualPath = $"{userInfo.user_id}\\{DateTime.Now.ToString("yyyyMMdd")}\\{annex.annex_id}{FileEextension}";
-            if (!preFolderName.IsEmpty())
+            if (!folderPre.IsEmpty())
             {
-                virtualPath = FileHelper.Combine(preFolderName, virtualPath);
+                virtualPath = FileHelper.Combine(folderPre, virtualPath);
             }
             string realPath = FileHelper.Combine(basepath.Item2, virtualPath);
             //创建文件夹

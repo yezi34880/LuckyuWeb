@@ -12,7 +12,7 @@ namespace Luckyu.App.Organization
     {
         public JqgridPageResponse<sys_userEntity> Page(JqgridPageRequest jqpage, string organizationTag, string organizationId)
         {
-            Expression<Func<sys_userEntity, bool>> expCondition = r => r.is_delete == 0 && r.level < 99;
+            Expression<Func<sys_userEntity, bool>> expCondition = r => r.is_delete == 0;
             if (!organizationId.IsEmpty() && organizationId != "-1")
             {
                 if (organizationTag.StartsWith("company"))

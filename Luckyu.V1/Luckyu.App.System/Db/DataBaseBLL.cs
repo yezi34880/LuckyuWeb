@@ -177,7 +177,10 @@ namespace Luckyu.App.System
                 {
                     var fromRealValue = GetRealValue(col, fromValue);
                     var toRealValue = GetRealValue(col, toValue);
-                    strResult.Append($"{col.showcolumnname} {fromRealValue} => {toRealValue}\r\n");
+                    if (fromRealValue != toRealValue)
+                    {
+                        strResult.Append($"{col.showcolumnname} {fromRealValue} => {toRealValue}\r\n");
+                    }
                 }
             }
 
@@ -218,7 +221,7 @@ namespace Luckyu.App.System
                 case "text":
                 case "datetime":
                 case "number":
-                    realvalue = $"{value}";
+                    realvalue = $"{value.ToDecimal()}";
                     break;
                 case "user":
                     {

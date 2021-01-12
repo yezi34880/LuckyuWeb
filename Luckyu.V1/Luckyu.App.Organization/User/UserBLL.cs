@@ -33,7 +33,7 @@ namespace Luckyu.App.Organization
         public JqgridPageResponse<sys_userEntity> Page(JqgridPageRequest jqPage, string organizationTag, string organizationId)
         {
             var page = userService.Page(jqPage, organizationTag, organizationId);
-            if (!page.IsEmpty())
+            if (!page.rows.IsEmpty())
             {
                 var rolws = roleBLL.GetAllByCache();
                 var posts = postBLL.GetAllByCache();

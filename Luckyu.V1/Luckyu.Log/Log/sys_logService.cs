@@ -30,11 +30,11 @@ namespace Luckyu.Log
             return list;
         }
 
-        public sys_logEntity GetEntity(Expression<Func<sys_logEntity, bool>> condition)
+        public sys_logEntity GetEntity(Expression<Func<sys_logEntity, bool>> condition, DateTime date)
         {
             var db = LogDBConnection.InitDatabase();
             var query = db.Select<sys_logEntity>().Where(condition);
-            var entity = query.AsTable((_, tablename) => tablename + tableSuffix).First();
+            var entity = query.AsTable((_, tablename) => $"{tablename}_{date.ToString("yyyyMM")}").First();
             return entity;
         }
 

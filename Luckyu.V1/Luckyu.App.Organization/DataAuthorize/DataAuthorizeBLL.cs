@@ -184,6 +184,28 @@ namespace Luckyu.App.Organization
             var dataAuth = GetDataAuthByUser(moduleName, loginInfo);
             return dataAuth;
         }
+
+        public Dictionary<string, object> GetFormData(string keyValue)
+        {
+            var entity = GetEntity(r => r.auth_id == keyValue);
+
+            entity.seeobjecttype = -1;// 默认为空
+            if (entity != null)
+            {
+                var list = GetDetailList(r => r.auth_id == keyValue);
+                if (!list.IsEmpty())
+                {
+                    entity.seeobjecttype = list[0].objecttype;
+                    entity.seeobject_ids = string.Join(",", list.Select(r => r.object_id));
+                    entity.seeobjectnames = string.Join(",", list.Select(r => r.objectname));
+                }
+            }
+            var dic = new Dictionary<string, object>
+            {
+                {"DataAuthorize",entity }
+            };
+            return dic;
+        }
         #endregion
 
         #region  Set

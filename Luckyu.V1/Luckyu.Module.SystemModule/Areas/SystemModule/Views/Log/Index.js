@@ -32,9 +32,11 @@ var bootstrap = function (layui) {
                                         dateFmt: 'yyyy-MM',
                                         onpicked: function (dp) {
                                             grid[0].triggerToolbar();
+                                            $(elem).blur();
                                         },
                                         oncleared: function (dp) {
                                             grid[0].triggerToolbar();
+                                            $(elem).blur();
                                         }
                                     });
                                 });
@@ -83,12 +85,13 @@ var bootstrap = function (layui) {
                     layui.notice.error("没有选中任何行数据");
                     return;
                 }
+                var rowData = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
                     id: "Show",
                     title: "查看",
                     width: 900,
-                    height: 700,
-                    url: luckyu.rootUrl + "/SystemModule/Log/Show?keyValue=" + rowid,
+                    height: 600,
+                    url: luckyu.rootUrl + "/SystemModule/Log/Show?keyValue=" + rowid + "&date=" + rowData.log_time,
                 });
             });
 

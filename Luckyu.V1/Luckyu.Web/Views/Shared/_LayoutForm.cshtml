@@ -7,6 +7,7 @@
     <link href="~/lib/jqGrid/css/ui.jqgrid-bootstrap.css" rel="stylesheet" />
     <link href="~/lib/layuiadmin/modules/css/eleTree.css" rel="stylesheet" />
     <link href="~/lib/layuiadmin/style/admin.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet" />
     @RenderSection("Header", false)
     <style type="text/css">
         .layui-form {
@@ -68,7 +69,7 @@
                 <% } else if (item.formdetail.FormType === "number") { %>
                 <input id="<%= item.formdetail.FieldName %>" type="text" class="layui-input" lay-verify="number" />
                 <% } else if (item.formdetail.FormType === "date") { %>
-                <input id="<%= item.formdetail.CoFieldNamede %>" type="datetime" class="layui-input Wdate" onfocus="WdatePicker()"  />
+                <input id="<%= item.formdetail.CoFieldNamede %>" type="datetime" class="layui-input Wdate" onfocus="WdatePicker()" />
                 <% } else if (item.formdetail.FormType === "dataitem") {   %>
                 <% var format = $imports.JSON.parse(item.formdetail.Format); %>
                 <div id="<%= item.formdetail.FieldName %>" class="xm-select" ext-type="dataitem" ext-code="<%= format.Code %>" ext-multiple="<%= format.Multiple %>"></div>
@@ -96,6 +97,8 @@
     <script src="~/lib/ueditor/ueditor.all.min.js"></script>
     <script src="~/lib/ueditor/ueditor.parse.min.js"></script>
     <script src="~/lib/jquery.numeric/jquery.numeric.js"></script>
+    <script src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script src="~/lib/bootstrap-fileinput/js/locales/zh.js"></script>
     @Html.AppendJs("~/js/luckyu-grid.js")
     @Html.AppendJs("~/js/luckyu-select.js")
     @Html.AppendJs("~/js/luckyu-form.js")

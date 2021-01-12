@@ -38,9 +38,9 @@ namespace Luckyu.Module.SystemModule.Controllers
             return View();
         }
 
-        public IActionResult GetFormData(string keyValue)
+        public IActionResult GetFormData(string keyValue, DateTime date)
         {
-            var log = LogBLL.GetLog(keyValue);
+            var log = LogBLL.GetLog(keyValue, date);
             var data = new
             {
                 Log = log

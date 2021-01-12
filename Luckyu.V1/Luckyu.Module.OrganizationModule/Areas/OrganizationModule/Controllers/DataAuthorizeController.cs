@@ -53,21 +53,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
 
         public IActionResult GetFormData(string keyValue)
         {
-            var entity = dataBLL.GetEntity(r => r.auth_id == keyValue);
-            if (entity != null)
-            {
-                var list = dataBLL.GetDetailList(r => r.auth_id == keyValue);
-                if (!list.IsEmpty())
-                {
-                    entity.seeobjecttype = list[0].objecttype;
-                    entity.seeobject_ids = string.Join(",", list.Select(r => r.object_id));
-                    entity.seeobjectnames = string.Join(",", list.Select(r => r.objectname));
-                }
-            }
-            var dic = new Dictionary<string, object>
-            {
-                {"DataAuthorize",entity }
-            };
+            var dic = dataBLL.GetFormData(keyValue);
             return Success(dic);
         }
         [HttpPost, AjaxOnly]

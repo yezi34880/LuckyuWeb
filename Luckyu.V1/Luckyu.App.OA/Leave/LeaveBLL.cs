@@ -1,4 +1,5 @@
 ﻿using Luckyu.App.Organization;
+using Luckyu.App.System;
 using Luckyu.App.Workflow;
 using Luckyu.Utility;
 using Newtonsoft.Json;
@@ -14,6 +15,7 @@ namespace Luckyu.App.OA
         private oa_leaveService leaveService = new oa_leaveService();
         private WFTaskBLL taskBLL = new WFTaskBLL();
         private DataAuthorizeBLL dataBLL = new DataAuthorizeBLL();
+        private AnnexFileBLL fileBLL = new AnnexFileBLL();
         #endregion
 
         #region Get
@@ -36,9 +38,11 @@ namespace Luckyu.App.OA
             {
                 return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
             }
+            var annex = fileBLL.GetPreviewList(r => r.external_id == keyValue);
             var dic = new Dictionary<string, object>
             {
-                {"Leave",entity }
+                {"Leave",entity },
+                {"Annex",annex }
             };
             return ResponseResult.Success(dic);
         }

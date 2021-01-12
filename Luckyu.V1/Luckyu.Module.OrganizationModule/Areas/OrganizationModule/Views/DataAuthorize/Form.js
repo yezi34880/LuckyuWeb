@@ -167,7 +167,8 @@ var bootstrap = function (layui) {
             if (!!keyValue) {
                 luckyu.ajax.getv2(luckyu.rootUrl + "/OrganizationModule/DataAuthorize/GetFormData", { keyValue: keyValue }
                     , function (data) {
-                        $('[lay-filter="DataAuthorize"]').setFormValue(data.Company);
+                        debugger;
+                        $('[lay-filter="DataAuthorize"]').setFormValue(data.DataAuthorize);
                     })
             }
         },

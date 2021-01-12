@@ -179,7 +179,7 @@
                             }
                         }
                         else if ($obj.hasClass("xm-select")) {
-                            var xmselect = xmSelect.get($obj[0], true);
+                            var xmselect = xmSelect.get("#" + id, true);
                             if (!xmselect) {
                                 continue;
                             }
@@ -368,4 +368,84 @@
         }
     };
     luckyu.form.init();
+
+    /**
+     * 文件上传组件
+     * */
+    luckyu.fileinput = {
+        init: function (op) {
+            $.fn.extend({
+                /**
+                 * 初始化文件上传控件
+                 */
+                initFileInput: function (option) {
+                    var $self = $(this);
+                    var has = $self.parents(".file-input");
+                    if (!!has && has.length > 0) {
+                        $self.fileinput("destroy").off();
+                    }
+                    $self[0].deleteAnnex = [];
+                    if (!!option.folderPre) {
+                        $self.attr("luckyu-folderPre", option.folderPre);
+                    }
+                    var defaultOption = {};
+                    $.extend(defaultOption, option);
+                    $self.fileinput({
+                        language: "zh",
+                        uploadUrl: "/SystemModule/Annex/UploadAnnex",
+                        deleteUrl: "/SystemModule/Annex/VirtualDeleteAnnex",
+                        showUpload: false, //是否显示上传按钮
+                        showRemove: true,
+                        uploadAsync: false, //是否异步
+                        initialPreviewAsData: true,
+                        overwriteInitial: false,  // 新选择图片是否替换原有预览图，false为不替换
+                        initialPreview: !defaultOption.initialPreview ? [] : defaultOption.initialPreview,
+                        initialPreviewConfig: !defaultOption.initialPreviewConfig ? [] : defaultOption.initialPreviewConfig,
+                        layoutTemplates: {
+                            actionUpload: "",
+                        },
+                    }).on('filedeleted', function (event, key, jqXHR, data) { // 删除已上传文件,只记录key,保存一并删除
+                        if ($self[0].deleteAnnex.indexOf(key) < 0) {
+                            $self[0].deleteAnnex.push(key);
+                        }
+                    });
+                },
+                /**
+                 * 上传
+                 * @param {any} exId 文件外部Id
+                 * @param {any} callback 回调
+                 */
+                uploadFile: function (exId, callback) {
+                    var $self = $(this);
+                    var files = $self.fileinput('getFileList');
+                    if (!!files && files.length > 0) {
+                        $self.on('filebatchpreupload', function (event, data, previewId, index) {
+                            if (!!$self.folderPre) {
+                                var folderPre = $self.attr("luckyu-folderPre");
+                                folderPre = !!folderPre ? folderPre : "";
+                                data.formdata.append("folderPre", folderPre);
+                            }
+                            data.formdata.append("exId", exId);
+                            data.formdata.append("__RequestVerificationToken", $.validateToken);
+                        });
+                        $self.on('filebatchuploadsuccess', function (data, previewId, index) {
+                            luckyu.layer.closeLoading(loading);
+                            if (!!callback) {
+                                callback();
+                            }
+                        });
+                        var loading = luckyu.layer.loading();
+                        $self.fileinput('upload');
+                    }
+                    else {
+                        if (!!callback) {
+                            callback();
+                        }
+                    }
+                }
+            });
+        }
+    };
+    luckyu.fileinput.init();
+
 })(window.layui);

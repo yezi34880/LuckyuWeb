@@ -36,27 +36,29 @@ namespace Luckyu.Module.SystemModule.Controllers
                 return null;
             }
             Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
-            return File(filePath, annex.contexttype);
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+            return File(bytes, annex.contexttype, annex.filename);
         }
 
         /// <summary>
         /// 上传附件
         /// </summary>
         [ValidateAntiForgeryToken]
-        public IActionResult UploadAnnex(string keyValue, string preFolderName, List<IFormFile> files)
+        public IActionResult UploadAnnex(string exId, string folderPre)
         {
             var res = new FileInputResponse();
-            if (files.Count > 0)
+            if (HttpContext.Request.Form.Files.Count > 0)
             {
                 var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
                 res.initialPreview = new List<string>();
                 res.initialPreviewConfig = new List<initialPreviewConfig>();
+                var files = HttpContext.Request.Form.Files;
                 for (int i = 0; i < files.Count; i++)
                 {
                     var file = files[i];
-                    annexBLL.SaveAnnex(keyValue, preFolderName, file.FileName, file.ContentType, file.OpenReadStream(), loginInfo);
+                    annexBLL.SaveAnnex(exId, folderPre, file.FileName, file.ContentType, file.OpenReadStream(), loginInfo);
                 }
-                res = annexBLL.GetPreviewList(r => r.external_id == keyValue);
+                res = annexBLL.GetPreviewList(r => r.external_id == exId);
             }
             return Json(res);
         }
