@@ -26,6 +26,7 @@ namespace Luckyu.App.System
         private DataitemBLL dataitemBLL = new DataitemBLL();
         #endregion
 
+        #region Log
         public void LogInsert<T>(T entity, UserModel loginInfo) where T : class, new()
         {
             var db = BaseConnection.InitDatabase();
@@ -212,6 +213,50 @@ namespace Luckyu.App.System
             var from = db.Select<T>().WithSql(sql, dicParas).First();
             LogUpdate(from, to, json, loginInfo);
         }
+
+        #endregion
+
+        /// <summary>
+        /// 后台验证
+        /// </summary>
+        public ResponseResult CheckEntity<T>(T entity) where T : class, new()
+        {
+            var db = BaseConnection.InitDatabase();
+            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            if (entityInfo == null)
+            {
+                return ResponseResult.Fail(MessageString.Fail);
+            }
+            if (entityInfo.Primarys.Length < 1)
+            {
+                return ResponseResult.Fail(MessageString.Fail);
+            }
+            //var primaryName = entityInfo.Primarys[0].Attribute.Name;
+            var keyValue = entityInfo.Primarys[0].GetValue(entity).ToString();
+            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbName);
+            if (tableInfo == null)
+            {
+                return ResponseResult.Fail(MessageString.Fail);
+            }
+            var columns = columnService.GetList(r => r.table_id == tableInfo.table_id && r.layverify.Contains("required"));
+            var propeties = typeof(T).GetProperties();
+            foreach (var col in columns)
+            {
+                var propety = propeties.Where(r => r.Name.ToLower() == col.dbcolumnname.ToLower()).FirstOrDefault();
+                if (propety == null)
+                {
+                    continue;
+                }
+                var value = propety.GetValue(entity).ToString();
+                if (value.IsEmpty())
+                {
+                    var msg = col.showcolumnname + " " + MessageString.Required;
+                    return ResponseResult.Fail(msg);
+                }
+            }
+            return ResponseResult.Success();
+        }
+
 
         private string GetRealValue(sys_dbcolumnEntity col, string value)
         {

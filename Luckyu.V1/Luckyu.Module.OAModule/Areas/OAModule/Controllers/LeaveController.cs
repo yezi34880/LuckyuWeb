@@ -59,7 +59,7 @@ namespace Luckyu.Module.OAModule.Controllers
 
         [HttpPost, AjaxOnly]
         [ValidateAntiForgeryToken]
-        public IActionResult SaveForm(string keyValue, string strEntity, bool isSubmit)
+        public IActionResult SaveForm(string keyValue, string strEntity, int isSubmit)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             var res = leaveBLL.SaveForm(keyValue, strEntity, isSubmit, loginInfo);

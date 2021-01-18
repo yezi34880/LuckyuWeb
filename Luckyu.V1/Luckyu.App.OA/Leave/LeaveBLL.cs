@@ -16,6 +16,7 @@ namespace Luckyu.App.OA
         private WFTaskBLL taskBLL = new WFTaskBLL();
         private DataAuthorizeBLL dataBLL = new DataAuthorizeBLL();
         private AnnexFileBLL fileBLL = new AnnexFileBLL();
+        private DataBaseBLL dbBLL = new DataBaseBLL();
         #endregion
 
         #region Get
@@ -81,10 +82,10 @@ namespace Luckyu.App.OA
             return ResponseResult.Success();
         }
 
-        public ResponseResult<oa_leaveEntity> SaveForm(string keyValue, string strEntity, bool isSubmit, UserModel loginInfo)
+        public ResponseResult<oa_leaveEntity> SaveForm(string keyValue, string strEntity, int isSubmit, UserModel loginInfo)
         {
             var entity = strEntity.ToObject<oa_leaveEntity>();
-            if (!keyValue.IsEmpty())
+            if (!keyValue.IsEmpty()) // 修改
             {
                 var old = GetEntity(r => r.id == keyValue);
                 if (old == null)
@@ -112,8 +113,18 @@ namespace Luckyu.App.OA
                 }
             }
 
+            // 统一的后台验证
+            if (isSubmit > 0)
+            {
+                var res = dbBLL.CheckEntity(entity);
+                if (res.code == (int)ResponseCode.Fail)
+                {
+                    return ResponseResult.Fail<oa_leaveEntity>(res.info);
+                }
+            }
+
             leaveService.SaveForm(keyValue, entity, strEntity, loginInfo);
-            if (isSubmit)
+            if (isSubmit > 0)
             {
                 var json = JsonConvert.SerializeObject(entity);
                 // 0 起草  1 生效  2 审批中  3 驳回
@@ -125,6 +136,7 @@ namespace Luckyu.App.OA
             }
             return ResponseResult.Success(entity);
         }
+
         #endregion
 
 

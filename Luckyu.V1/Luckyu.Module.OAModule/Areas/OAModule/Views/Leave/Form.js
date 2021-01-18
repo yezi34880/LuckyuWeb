@@ -55,7 +55,7 @@ var bootstrap = function (layui) {
             keyValue: keyValue,
             strEntity: JSON.stringify(formData),
             deleteAnnex: deleteAnnex,
-            isSubmit: false
+            isSubmit: 0
         }, function (data) {
             keyValue = data.id;
 
@@ -78,7 +78,7 @@ var bootstrap = function (layui) {
                 keyValue: keyValue,
                 strEntity: JSON.stringify(formData),
                 deleteAnnex: deleteAnnex,
-                isSubmit: true
+                isSubmit: 1
             }, function (data) {
                 keyValue = data.id;
 
