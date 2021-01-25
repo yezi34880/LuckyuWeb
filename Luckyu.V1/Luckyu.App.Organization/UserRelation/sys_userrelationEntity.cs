@@ -2,6 +2,7 @@ using Luckyu.Log;
 using System;
 using System.Collections.Generic;
 using FreeSql.DataAnnotations;
+using Luckyu.Utility;
 
 namespace Luckyu.App.Organization
 {
@@ -59,10 +60,13 @@ namespace Luckyu.App.Organization
         #region 方法
         public void Create(UserModel loginInfo)
         {
-            this.id = SnowflakeHelper.NewCode();
-            this.create_userid = loginInfo.user_id;
-            this.create_username = loginInfo.realname;
+            if (this.id.IsEmpty())
+            {
+                this.id = SnowflakeHelper.NewCode();
+            }
             this.createtime = DateTime.Now;
+            this.create_userid = loginInfo.user_id;
+            this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
         }
         #endregion
     }

@@ -50,6 +50,10 @@ namespace Luckyu.App.Organization
 
         public int is_enable { get; set; }
 
+        /// <summary>
+        /// 记录用户登录信息
+        /// </summary>
+        public string token { get; set; }
 
     }
 }

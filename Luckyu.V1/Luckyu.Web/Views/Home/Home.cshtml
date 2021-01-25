@@ -30,10 +30,6 @@
                 font-size: 12px;
                 font-weight: 400;
             }
-
-        .istop {
-            font-weight: bold;
-        }
     </style>
 }
 
@@ -61,11 +57,36 @@
         </div>
     </div>
 
-    <div class="layui-col-xs12">
-        <button type="button" id="trySingal" class="layui-btn">测试</button>
-    </div>
 </div>
 
+<script id="templeteNews" type="text/html">
+    {{each News item index}}
+    <div class="ahoit-msg-line">
+        <a style="text-decoration: none;" luckyu-id="{{item.news_id}}" title="{{item.title}}">
+            ●&nbsp;&nbsp; {{if item.sort  > 0}}  <i class="fa fa-star"></i>  {{/if}}【{{item.catetory}}】{{item.title}}
+        </a>
+        <label>{{item.publishtime | dateFormat 'yyyy-MM-dd'}}</label>
+    </div>
+    {{/each}}
+</script>
+
+<script id="templeteTask" type="text/html">
+    {{each Task item index}}
+    <div class="ahoit-msg-line">
+        <a style="text-decoration: none;" luckyu-nodetype="{{item.nodetype}}" luckyu-taskId="{{item.task_id}}" luckyu-instanceId="{{item.instance_id}}" luckyu-processId="{{item.process_id}}" title="{{item.processname}}">
+            ●&nbsp;&nbsp;【{{item.flowname}}】{{item.processname}}
+        </a>
+        <label>{{item.createtime | dateFormat 'yyyy-MM-dd'}}</label>
+    </div>
+    {{/each}}
+</script>
+
 @section Footer{
+    <script src="~/lib/art-template/template-web.js"></script>
+    <script>
+        template.defaults.imports.dateFormat = function (date, format) {
+            return new Date(date).format(format);
+        };
+    </script>
     @Html.AppendJs("~/Views/Home/Home.js")
 }

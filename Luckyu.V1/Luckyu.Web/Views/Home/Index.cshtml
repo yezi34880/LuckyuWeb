@@ -37,12 +37,12 @@
         restartOnRequestAfter: false
     };
     $("#firstloading").height(window.innerHeight - 1).width(window.innerWidth - 1);
-    window.onresize = function () {
+    $(window).resize(function () {
         var firstloading = $("#firstloading");
         if (!!firstloading && firstloading.length > 0) {
             firstloading.height(window.innerHeight - 1).width(window.innerWidth - 1);
         }
-    };
+    });
 </script>
 <div class="layui-layout-body">
     <div id="Luckyu_app">
@@ -65,15 +65,15 @@
                     </li>
                 </ul>
                 <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
-                    <li class="layui-nav-item" lay-unselect>
-                        <a lay-href="/OAModule/News/ShowIndex" layadmin-event="message" lay-text="消息中心">
-                            <i class="layui-icon layui-icon-notice"></i>
-                            <span class="layui-badge-dot"></span>
-                        </a>
-                    </li>
                     <li class="layui-nav-item layui-hide-xs" lay-unselect>
                         <a href="javascript:;" layadmin-event="note">
                             <i class="layui-icon layui-icon-note"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item" lay-unselect>
+                        <a lay-href="/SystemModule/Message/ShowIndex" layadmin-event="message" lay-text="消息中心">
+                            <i class="layui-icon layui-icon-notice"></i>
+                            <span class="layui-badge-dot"></span>
                         </a>
                     </li>
                     <li class="layui-nav-item" lay-unselect>

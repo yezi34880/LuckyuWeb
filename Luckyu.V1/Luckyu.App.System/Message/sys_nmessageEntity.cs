@@ -1,78 +1,68 @@
-﻿using Luckyu.App.Organization;
+﻿using System;
+using FreeSql.DataAnnotations;
+using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
-using FreeSql.DataAnnotations;
-using System;
 
-namespace Luckyu.App.OA
+namespace Luckyu.App.System
 {
     /// <summary>
-    ///  oa_leave   
+    /// sys_message  消息
     /// </summary>
-    [Table(Name = "OA_LEAVE")]
-    public class oa_leaveEntity : ExtensionEntityBase
+    [Table(Name = "SYS_MESSAGE")]
+    public class sys_messageEntity
     {
         #region 属性
         /// <summary>
-        ///  leave_id   
+        /// message_id
         /// </summary>
         [Column(IsPrimary = true)]
-        public string leave_id { get; set; }
+        public string message_id { get; set; }
 
         /// <summary>
-        ///  user_id   
+        ///  catetory   
         /// </summary>
-        public string user_id { get; set; }
+        public string catetory { get; set; }
 
         /// <summary>
-        ///  username   
+        ///  contents   
         /// </summary>
-        public string username { get; set; }
+        public string contents { get; set; }
 
         /// <summary>
-        ///  department_id   
+        /// to_userid
         /// </summary>
-        public string department_id { get; set; }
+        public string to_userid { get; set; }
 
         /// <summary>
-        ///  company_id   
+        /// to_username
         /// </summary>
-        public string company_id { get; set; }
+        public string to_username { get; set; }
 
         /// <summary>
-        ///  begintime   
+        /// send_userid
         /// </summary>
-        public DateTime begintime { get; set; }
+        public string send_userid { get; set; }
 
         /// <summary>
-        ///  endtime   
+        /// send_username
         /// </summary>
-        public DateTime endtime { get; set; }
+        public string send_username { get; set; }
 
         /// <summary>
-        ///  spantime   
+        /// sendtime
         /// </summary>
-        public decimal spantime { get; set; }
+        public DateTime sendtime { get; set; }
 
         /// <summary>
-        ///  leavetype   
+        /// is_read
         /// </summary>
-        public int leavetype { get; set; }
+        public int is_read { get; set; }
 
         /// <summary>
-        ///  reason   
+        /// readtime
         /// </summary>
-        public string reason { get; set; }
-
-        /// <summary>
-        ///  state   0 起草 1 生效 2 报批 -1 驳回
-        /// </summary>
-        public int state { get; set; }
-
-        /// <summary>
-        ///  remark   
-        /// </summary>
-        public string remark { get; set; }
+        public DateTime readtime { get; set; }
 
         /// <summary>
         ///  create_userid   
@@ -129,32 +119,21 @@ namespace Luckyu.App.OA
         #region 方法
         public void Create(UserModel loginInfo)
         {
-            if (this.leave_id.IsEmpty())
-            {
-                this.leave_id = SnowflakeHelper.NewCode();
-            }
+            this.message_id = SnowflakeHelper.NewCode();
+
+            this.catetory = "系统通知";
+            this.send_userid = loginInfo.user_id;
+            this.send_username = $"{loginInfo.realname}-{loginInfo.loginname}";
+            this.sendtime = DateTime.Now;
+
+            this.is_read = 0;
+            this.readtime = LuckyuHelper.MinDate;
+
             this.createtime = DateTime.Now;
             this.create_userid = loginInfo.user_id;
             this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
+        }
 
-            this.user_id = loginInfo.user_id;
-            this.department_id = loginInfo.department_id;
-            this.company_id = loginInfo.company_id;
-        }
-        public void Modify(string keyValue, UserModel loginInfo)
-        {
-            this.leave_id = keyValue;
-            this.edittime = DateTime.Now;
-            this.edit_userid = loginInfo.user_id;
-            this.edit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
-        }
-        public void Remove(UserModel loginInfo)
-        {
-            this.is_delete = 1;
-            this.deletetime = DateTime.Now;
-            this.delete_userid = loginInfo.user_id;
-            this.delete_username = $"{loginInfo.realname}-{loginInfo.loginname}";
-        }
         #endregion
     }
 }

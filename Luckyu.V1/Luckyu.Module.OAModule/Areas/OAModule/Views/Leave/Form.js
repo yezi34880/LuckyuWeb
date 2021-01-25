@@ -27,7 +27,7 @@ var bootstrap = function (layui) {
                     , function (data) {
                         $('[lay-filter="Leave"]').setFormValue(data.Leave);
                         $("#statename").val(luckyu.clientdata.getDataitemName(data.Leave.state, "state"));
-                        $("#username").val(luckyu.clientdata.getUserName(data.Leave.user_id));
+                        //$("#username").val(luckyu.clientdata.getUserName(data.Leave.user_id));
                         $("#deptname").val(luckyu.clientdata.getDepartmentName(data.Leave.department_id));
                         $("#companyname").val(luckyu.clientdata.getCompanyName(data.Leave.company_id));
 

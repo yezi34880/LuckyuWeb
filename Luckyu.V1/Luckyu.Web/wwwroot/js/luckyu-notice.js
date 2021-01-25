@@ -4,7 +4,7 @@
         init: function () {
             // 初始化配置，同一样式只需要配置一次，非必须初始化，有默认配置
             layui.notice.options = {
-                closeButton: false,//显示关闭按钮
+                closeButton: true,//显示关闭按钮
                 debug: false,//启用debug
                 positionClass: "toast-top-center",//弹出的位置,
                 showDuration: "300",//显示的时间

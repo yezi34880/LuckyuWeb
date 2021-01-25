@@ -1,5 +1,6 @@
 ﻿using DeviceDetectorNET;
 using Luckyu.Cache;
+using Luckyu.Log;
 using Luckyu.Utility;
 using Mapster;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,12 @@ using System.Linq;
 
 namespace Luckyu.App.Organization
 {
+    /*
+     关系
+    cookie  token 
+    cache  toke  loginname  一对一
+    cache  loginname  loginlist 一对多        
+     */
     public class LoginUserInfo
     {
         #region var
@@ -37,6 +44,9 @@ namespace Luckyu.App.Organization
             }
         }
 
+        /// <summary>
+        /// 登录
+        /// </summary>
         public void SetLogin(string loginname, HttpContext httpContext, string appId)
         {
             var loginInfo = new LoginInfo
@@ -53,7 +63,7 @@ namespace Luckyu.App.Organization
                 loginInfo.device = (info.Match.Os == null ? "" : $" os: {info.Match.Os.Name} {info.Match.Os.Version} {info.Match.Os.Platform}");
             }
 
-            // 写入 Cookie
+            // 写入 Cookie  cookie 记录 用户 token ，根据token在后台缓存中查找登录信息（可能多条，同时登陆，暂不考录禁止重复登录）
             string cookie = httpContext.GetCookie(cookieKeyToken);
             if (cookie.IsEmpty())
             {
@@ -65,7 +75,7 @@ namespace Luckyu.App.Organization
                 loginInfo.token = cookie;
             }
 
-            // 缓存 登录信息
+            // 缓存 记录 登录信息，多条则为重复登录  
             var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginname);
             if (loginList == null)// 此账号第一次登录
             {
@@ -85,7 +95,7 @@ namespace Luckyu.App.Organization
             }
             cache.Write(cacheKeyToken + loginname, loginList);
 
-            // 缓存帐号信息
+            // 缓存帐号信息  
             var token = cache.Read<string>(cacheKeyToken + loginInfo.token);
             if (token.IsEmpty())
             {
@@ -93,6 +103,9 @@ namespace Luckyu.App.Organization
             }
         }
 
+        /// <summary>
+        /// 检查登录状态
+        /// </summary>
         public bool IsOnLine(HttpContext httpContext)
         {
             try
@@ -126,47 +139,74 @@ namespace Luckyu.App.Organization
                 }
                 else
                 {
-                    UserModel userInfo = new UserModel
+                    if (httpContext != null && httpContext.Items.ContainsKey("LoginUserInfo"))
                     {
-                        loginname = thislogin.loginname,
-                    };
-
-                    var user = userBLL.GetEntityByLoginName(userInfo.loginname);
-                    if (user != null)
-                    {
-                        userInfo = user.Adapt<UserModel>();
-
-                        var relations = relationBLL.GetListByUser(user.user_id);
-                        userInfo.post_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Post).Select(r => r.object_id).ToList();
-                        userInfo.role_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Role).Select(r => r.object_id).ToList();
-                        userInfo.group_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Group).Select(r => r.object_id).ToList();
-                        userInfo.manage_dept_ids = relations.Where(r => r.relationtype == (int)UserRelationType.DeptManager).Select(r => r.object_id).ToList();
-
-                        var company = companyBLL.GetEntityByCache(r => r.company_id == user.company_id);
-                        userInfo.companyname = company.IsEmpty() ? "未设公司" : (company.shortname.Trim().IsEmpty() ? company.fullname : company.shortname);
-
-                        var companyid = company.IsEmpty() ? "" : company.company_id;
-                        var dept = deptBLL.GetEntityByCache(r => r.department_id == user.department_id, companyid);
-                        userInfo.departmentname = dept.IsEmpty() ? "未设部门" : (dept.shortname.Trim().IsEmpty() ? dept.fullname : dept.shortname);
-
-                        if (httpContext != null && !httpContext.Items.ContainsKey("LoginUserInfo"))
-                        {
-                            httpContext.Items.Add("LoginUserInfo", userInfo);
-                        }
                         return true;
                     }
                     else
                     {
-                        return false;
+                        UserModel userInfo = new UserModel
+                        {
+                            loginname = thislogin.loginname,
+                        };
+
+                        var user = userBLL.GetEntityByLoginName(userInfo.loginname);
+                        if (user != null)
+                        {
+                            userInfo = user.Adapt<UserModel>();
+
+                            userInfo.token = token;
+
+                            var relations = relationBLL.GetListByUser(user.user_id);
+                            userInfo.post_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Post).Select(r => r.object_id).ToList();
+                            userInfo.role_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Role).Select(r => r.object_id).ToList();
+                            userInfo.group_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Group).Select(r => r.object_id).ToList();
+                            userInfo.manage_dept_ids = relations.Where(r => r.relationtype == (int)UserRelationType.DeptManager).Select(r => r.object_id).ToList();
+
+                            var company = companyBLL.GetEntityByCache(r => r.company_id == user.company_id);
+                            userInfo.companyname = company.IsEmpty() ? "未设公司" : (company.shortname.Trim().IsEmpty() ? company.fullname : company.shortname);
+
+                            var companyid = company.IsEmpty() ? "" : company.company_id;
+                            var dept = deptBLL.GetEntityByCache(r => r.department_id == user.department_id, companyid);
+                            userInfo.departmentname = dept.IsEmpty() ? "未设部门" : (dept.shortname.Trim().IsEmpty() ? dept.fullname : dept.shortname);
+
+                            if (httpContext != null && !httpContext.Items.ContainsKey("LoginUserInfo"))
+                            {
+                                httpContext.Items.Add("LoginUserInfo", userInfo);
+                            }
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                var logger = NLog.LogManager.GetCurrentClassLogger();
+                var entity = new sys_logEntity();
+                entity.log_type = (int)LogType.Login;
+                entity.op_type = "登录异常";
+                entity.log_time = DateTime.Now;
+                entity.module = "LoginError";
+                var loginInfo = LoginUserInfo.Instance.GetLoginUser(httpContext);
+                if (loginInfo != null)
+                {
+                    entity.user_id = loginInfo.user_id;
+                    entity.user_name = loginInfo.realname;
+                }
+                entity.log_content = LogHelper.ErrorFormat(ex, entity);
+                logger.Error(ex);
+                LogBLL.WriteLog(entity);
                 return false;
             }
         }
 
+        /// <summary>
+        /// 退出登录
+        /// </summary>
         public void Logout(HttpContext httpContext)
         {
             string token = httpContext.GetCookie(cookieKeyToken);
@@ -178,6 +218,7 @@ namespace Luckyu.App.Organization
                 if (!loginname.IsEmpty())
                 {
                     var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginname);
+
                     var thislogin = loginList.Where(r => r.token == token).FirstOrDefault();
                     loginList.Remove(thislogin);
                     cache.Write(cacheKeyToken + thislogin.loginname, loginList);
@@ -185,6 +226,9 @@ namespace Luckyu.App.Organization
             }
         }
 
+        /// <summary>
+        /// 获取当前用户
+        /// </summary>
         public UserModel GetLoginUser(HttpContext httpContext)
         {
             if (httpContext == null)
@@ -220,28 +264,78 @@ namespace Luckyu.App.Organization
             }
         }
 
+        #region SingalIR
+        /// <summary>
+        /// 增加 SingalIR 通知链接
+        /// </summary>
         public void AddSingalIRConnection(HttpContext httpContext, string connectionId)
         {
+            var isOn = IsOnLine(httpContext);
+            if (!isOn)
+            {
+                return;
+            }
             var loginInfo = GetLoginUser(httpContext);
             var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginInfo.loginname);
             if (!loginList.Exists(r => r.connection_id == connectionId))
             {
-
+                var thisLogin = loginList.Where(r => r.token == loginInfo.token).FirstOrDefault();
+                if (thisLogin != null)
+                {
+                    thisLogin.connection_id = connectionId;
+                    cache.Write(cacheKeyToken + loginInfo.loginname, loginList);
+                }
             }
         }
 
+        /// <summary>
+        /// 删除 SingalIR 通知链接
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <param name="connectionId"></param>
         public void RemoveSingalIRConnection(HttpContext httpContext, string connectionId)
         {
+            var isOn = IsOnLine(httpContext);
+            if (!isOn)
+            {
+                return;
+            }
             var loginInfo = GetLoginUser(httpContext);
             var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginInfo.loginname);
+            if (loginList == null)
+            {
+                loginList = new List<LoginInfo>();
+            }
             var that = loginList.Where(r => r.connection_id == connectionId).FirstOrDefault();
             if (that != null)
             {
                 that.connection_id = "";
-                cache.Remove(cacheKeyToken + loginInfo.loginname);
+                //cache.Remove(cacheKeyToken + loginInfo.loginname);
                 cache.Write(cacheKeyToken + loginInfo.loginname, loginList);
             }
         }
 
+        public List<string> GetConnectionIdByLoginname(string loginname)
+        {
+            var loginList = cache.Read<List<LoginInfo>>(cacheKeyToken + loginname);
+            if (loginList == null)
+            {
+                loginList = new List<LoginInfo>();
+            }
+            var connectionIds = loginList.Where(r => !r.connection_id.IsEmpty()).Select(r => r.connection_id).ToList();
+            return connectionIds;
+        }
+        public List<string> GetConnectionIdByUserId(string user_id)
+        {
+            var user = userBLL.GetEntityByCache(r => r.user_id == user_id);
+            if (user == null)
+            {
+                return new List<string>();
+            }
+            var connectionIds = GetConnectionIdByLoginname(user.loginname);
+            return connectionIds;
+        }
+
+        #endregion
     }
 }

@@ -130,10 +130,10 @@ namespace Luckyu.App.Workflow
             this.delegate_id = SnowflakeHelper.NewCode();
             this.createtime = DateTime.Now;
             this.create_userid = loginInfo.user_id;
-            this.create_username = loginInfo.realname;
+            this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
 
             this.user_id = loginInfo.user_id;
-            this.username = loginInfo.realname;
+            this.username = $"{loginInfo.realname}-{loginInfo.loginname}";
             this.department_id = loginInfo.department_id;
             this.company_id = loginInfo.company_id;
         }
@@ -142,14 +142,14 @@ namespace Luckyu.App.Workflow
             this.delegate_id = keyValue;
             this.edittime = DateTime.Now;
             this.edit_userid = loginInfo.user_id;
-            this.edit_username = loginInfo.realname;
+            this.edit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
         }
         public void Remove(UserModel loginInfo)
         {
             this.is_delete = 1;
             this.deletetime = DateTime.Now;
             this.delete_userid = loginInfo.user_id;
-            this.delete_username = loginInfo.realname;
+            this.delete_username = $"{loginInfo.realname}-{loginInfo.loginname}";
         }
         #endregion
 

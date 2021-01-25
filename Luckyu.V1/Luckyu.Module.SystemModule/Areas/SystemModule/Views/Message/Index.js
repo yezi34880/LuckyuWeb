@@ -1,5 +1,5 @@
 ﻿/*
- *  新闻通知
+ *  消息
  */
 var bootstrap = function (layui) {
     "use strict";
@@ -12,38 +12,30 @@ var bootstrap = function (layui) {
         },
         initGrid: function () {
             grid = grid.LuckyuGrid({
-                url: luckyu.rootUrl + "/OAModule/News/ShowPage",
+                url: luckyu.rootUrl + "/SystemModule/Message/Page",
                 datatype: "json",
                 altRows: true,//隔行换色
                 postData: {},
                 colModel: [
-                    { name: 'news_id', hidden: true, key: true },
-                    { name: 'catetory', label: "分类", width: 80 },
+                    { name: 'message_id', hidden: true, key: true },
+                    { name: 'catetory', label: "分类", width: 80, },
+                    { name: 'contents', label: "内容", width: 500, },
+                    { name: 'to_username', label: "接收人", width: 100, },
+                    { name: 'send_username', label: "发送人", width: 100, },
                     {
-                        name: 'title', label: "标题", width: 400,
-                        formatter: function (cellvalue, option, row) {
-                            var result = cellvalue;
-                            if (row.sort > 0) {
-                                result = '<i class="fa fa-star"></i> ' + result;
-                            }
-                            return result;
-                        }
-                    },
-                    { name: 'source', label: "来源", width: 100 },
-                    { name: 'keywords', label: "关键词", width: 100 },
-                    {
-                        name: 'publishtime', label: "发布时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d' },
+                        name: 'sendtime', label: "发送时间", width: 100, align: "right",
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
                         stype: "daterange"
                     },
                 ],
                 rownumbers: true,
                 viewrecords: true,
+                shrinkToFit: true,
                 rowNum: 30,
                 rowList: [30, 50, 100],
                 pager: "#gridPager",
-                //sortname: "publishtime",
-                //sortorder: "DESC",
+                sortname: "sendtime",
+                sortorder: "DESC",
                 onSelectRow: function (rowid, status) {
                     if (status) {
                         slectRowId = rowid;
@@ -70,22 +62,24 @@ var bootstrap = function (layui) {
                 grid.clearSearchBar();
             });
 
-            $("#show").click(function () {
-                var rowid = grid.getGridParam("selrow");
-                if (!rowid) {
-                    layui.notice.error("没有选中任何行数据");
-                    return;
-                }
-                var row = grid.getRowData(rowid);
+            $("#add").click(function () {
                 luckyu.layer.layerFormTop({
                     id: "Form",
-                    title: row.title,
-                    width: 1300,
-                    height: 850,
-                    url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + rowid,
+                    title: "新增",
+                    width: 600,
+                    height: 250,
+                    url: luckyu.rootUrl + "/SystemModule/Message/Form",
+                    btn: [{
+                        name: "发送",
+                        callback: function (index, layero) {
+                            layero.find("iframe")[0].contentWindow.saveClick(index, function () {
+                                page.search();
+                            });
+                            return false;
+                        }
+                    }]
                 });
             });
-
         },
         search: function () {
             slectRowId = '';

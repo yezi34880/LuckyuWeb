@@ -14,10 +14,10 @@ namespace Luckyu.App.OA
     {
         #region 属性
         /// <summary>
-        ///  id   
+        ///  news_id   
         /// </summary>
         [Column(IsPrimary = true)]
-        public string id { get; set; }
+        public string news_id { get; set; }
 
         /// <summary>
         ///  title   
@@ -124,25 +124,28 @@ namespace Luckyu.App.OA
         #region 方法
         public void Create(UserModel loginInfo)
         {
-            this.id = SnowflakeHelper.NewCode();
+            if (this.news_id.IsEmpty())
+            {
+                this.news_id = SnowflakeHelper.NewCode();
+            }
             this.createtime = DateTime.Now;
             this.create_userid = loginInfo.user_id;
-            this.create_username = loginInfo.realname;
+            this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
             this.state = 1;
         }
         public void Modify(string keyValue, UserModel loginInfo)
         {
-            this.id = keyValue;
+            this.news_id = keyValue;
             this.edittime = DateTime.Now;
             this.edit_userid = loginInfo.user_id;
-            this.edit_username = loginInfo.realname;
+            this.edit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
         }
         public void Remove(UserModel loginInfo)
         {
             this.is_delete = 1;
             this.deletetime = DateTime.Now;
             this.delete_userid = loginInfo.user_id;
-            this.delete_username = loginInfo.realname;
+            this.delete_username = $"{loginInfo.realname}-{loginInfo.loginname}";
         }
         #endregion
 

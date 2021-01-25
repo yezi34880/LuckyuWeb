@@ -556,6 +556,13 @@
                             };
                         }
                         else if (col.stype === "daterange") {
+                            //col.formatter = function (cellvalue, options, rowObject) {
+                            //    var result = "";
+                            //    if (cellvalue > '1900-1-1') {
+                            //        result = cellvalue;
+                            //    }
+                            //    return result;
+                            //};
                             col.searchoptions = {
                                 dataInit: function (elem) {
                                     $(elem).luckyurangedate({

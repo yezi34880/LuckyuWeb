@@ -127,7 +127,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             {
                 if (organizationTag.StartsWith("company"))
                 {
-                    var users = userBLL.GetAllByCache(organizationId);
+                    list = userBLL.GetAllByCache(organizationId);
                 }
                 else
                 {

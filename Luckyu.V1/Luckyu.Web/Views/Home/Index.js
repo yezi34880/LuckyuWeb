@@ -17,11 +17,19 @@
         singalir: function () {
             var connection = new signalR.HubConnectionBuilder().withUrl("/messagehub").build();
             connection.on("ReceiveMessage", function (message) {
-                console.log("message", message);
-                layui.notice.info(message);
+                //layui.notice.info(message);
+                layui.notice.info(message, "", {
+                    closeButton: true,  //显示关闭按钮
+                    positionClass: "toast-bottom-right",  //弹出的位置
+                    onclick: function () {
+                        
+                    }
+                });
             });
+            connection.start();
         },
         bind: function () {
+            // 搜索数据源为 所有菜单
             var searchSource = [];
             $("#LAY-system-side-menu a[lay-href]").each(function () {
                 var that = $(this);
@@ -31,6 +39,7 @@
                 });
             });
 
+            // 搜索
             $("#searchKeyword").typeahead({
                 source: searchSource,
                 afterSelect: function (item, a, b) {
@@ -38,7 +47,6 @@
                     $("#searchKeyword").val('');
                 }
             });
-
             // 切换用户
             $("#switchUser").click(function () {
                 luckyu.layer.layerForm({
@@ -93,6 +101,7 @@
                 });
             });
             page.bind();
+
             page.singalir();
         },
     };

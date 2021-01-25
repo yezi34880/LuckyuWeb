@@ -4,7 +4,7 @@ using FreeSql.DataAnnotations;
 namespace Luckyu.App.System
 {
     /// <summary>
-    ///  sys_dbtable   
+    ///  sys_dbtable   数据库 表
     /// </summary>
     [Table(Name = "SYS_DBTABLE")]
     public class sys_dbtableEntity

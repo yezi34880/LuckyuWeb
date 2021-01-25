@@ -165,7 +165,7 @@ namespace Luckyu.App.Organization
             }
             this.createtime = DateTime.Now;
             this.create_userid = loginInfo.user_id;
-            this.create_username = loginInfo.realname;
+            this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
 
             this.parent_id = this.parent_id.IsEmpty() ? "0" : this.parent_id;
         }
@@ -174,7 +174,7 @@ namespace Luckyu.App.Organization
             this.company_id = keyValue;
             this.edittime = DateTime.Now;
             this.edit_userid = loginInfo.user_id;
-            this.edit_username = loginInfo.realname;
+            this.edit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
 
             this.parent_id = this.parent_id.IsEmpty() ? "0" : this.parent_id;
         }
@@ -183,7 +183,7 @@ namespace Luckyu.App.Organization
             this.is_delete = 1;
             this.deletetime = DateTime.Now;
             this.delete_userid = loginInfo.user_id;
-            this.delete_username = loginInfo.realname;
+            this.delete_username = $"{loginInfo.realname}-{loginInfo.loginname}";
         }
         #endregion
     }

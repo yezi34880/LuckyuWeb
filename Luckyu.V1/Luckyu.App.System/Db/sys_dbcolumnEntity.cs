@@ -4,7 +4,7 @@ using FreeSql.DataAnnotations;
 namespace Luckyu.App.System
 {
     /// <summary>
-    ///  sys_dbcolumn   
+    ///  sys_dbcolumn   数据库列
     /// </summary>
     [Table(Name = "SYS_DBCOLUMN")]
     public class sys_dbcolumnEntity

@@ -1,0 +1,31 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+
+}
+
+<div lay-filter="Message">
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">接收人</label>
+        <div class="layui-input-block inputselect">
+            <input id="to_username" type="text" class="layui-input" lay-verify="required"  readonly />
+            <input id="to_userid" type="hidden" />
+            <span id="to_usernameSelect" class="luckyu-input-button" title="选取">...</span>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">内容</label>
+        <div class="layui-input-block">
+            <textarea id="contents" class="layui-textarea" lay-verify="required" rows="4"></textarea>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/Message/Form.js")
+}
+
+

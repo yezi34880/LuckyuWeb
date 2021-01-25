@@ -26,25 +26,11 @@
             $("#newsMore").click(function () {
                 top.layui.index.openTabsPage('/OAModule/News/ShowIndex', '消息中心');
             });
-
-            $("#trySingal").click(function () {
-                luckyu.ajax.postv2("/Home/Try", {}, function (res) {
-
-                });
-            });
         },
         refrash: function () {
             luckyu.ajax.getNoloading('/WorkflowModule/Task/HomeShow', {}, function (res) {
                 if (res.code === 200) {
-                    var html = '';
-                    for (var i = 0; i < res.data.Task.length; i++) {
-                        var row = res.data.Task[i];
-                        html += '\
-<div class="ahoit-msg-line">\
-    <a style="text-decoration: none;" luckyu-nodetype="'+ row.nodetype + '" luckyu-taskId="' + row.task_id + '" luckyu-instanceId="' + row.instance_id + '" luckyu-processId="' + row.process_id + '" title="' + row.processname + '">●&nbsp;&nbsp;【' + row.flowname + '】' + row.processname + ' </a>\
-    <label>'+ new Date(row.createtime).format("yy-MM-dd") + '</label>\
-</div>';
-                    }
+                    var html = template("templeteNews", res.data);
                     $("#task").html(html);
                     $("#task div.ahoit-msg-line a").click(function () {
                         var self = $(this);
@@ -98,15 +84,7 @@
             });
             luckyu.ajax.getNoloading('/OAModule/News/HomeShow', {}, function (res) {
                 if (res.code === 200) {
-                    var html = '';
-                    for (var i = 0; i < res.data.News.length; i++) {
-                        var row = res.data.News[i];
-                        html += '\
-<div class="ahoit-msg-line ' + (row.sort > 0 ? 'istop' : '') + '" >\
-    <a style="text-decoration: none;" luckyu-id="' + row.id + '"  title="' + row.title + '">●&nbsp;&nbsp;【' + row.catetory + '】' + row.title + '</a>\
-    <label>'+ new Date(row.publishtime).format("yyyy-MM-dd") + '</label>\
-</div>';
-                    }
+                    var html = template("templeteNews", res.data);
                     $("#news").html(html);
                     $("#news div.ahoit-msg-line a").click(function () {
                         var self = $(this);

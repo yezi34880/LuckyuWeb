@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using DeviceDetectorNET;
 using Luckyu.App.Organization;
+using Luckyu.App.System;
 using Luckyu.Cache;
 using Luckyu.Log;
 using Luckyu.Utility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Luckyu.Web.Controllers
 {
@@ -28,7 +30,9 @@ namespace Luckyu.Web.Controllers
             List<sys_moduleEntity> listSelfModule;
             var modules = moduleBLL.GetModuleTreeByUser(loginInfo, out listSelfModule);
             loginInfo.modules = listSelfModule;
+
             LoginUserInfo.Instance.UpdateLoginUser(HttpContext, loginInfo);
+            //LoginUserInfo.Instance.AddSingalIRConnection(HttpContext, connection_id);
 
             ViewBag.Modules = modules;
             return View();
@@ -120,10 +124,5 @@ namespace Luckyu.Web.Controllers
         }
         #endregion
 
-        public IActionResult Try()
-        {
-            //var singal = new SignalRHelper();
-            return Success();
-        }
     }
 }

@@ -21,7 +21,7 @@ var bootstrap = function (layui) {
                         name: 'state', label: "状态", width: 60, align: "center",
                         stype: "dataitem", dataitemcode: "state", formatterdataitem: "stateshow"
                     },
-                    { name: 'id', label: "流水号", width: 130, key: true },
+                    { name: 'leave_id', hidden: true, key: true },
                     {
                         name: 'user_id', label: "用户", width: 80,
                         stype: "user_id",

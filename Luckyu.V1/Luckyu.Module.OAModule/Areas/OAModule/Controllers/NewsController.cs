@@ -93,7 +93,7 @@ namespace Luckyu.Module.OAModule.Controllers
         }
         public IActionResult Show(string keyValue)
         {
-            var news = newsBLL.GetEntity(r => r.id == keyValue) ?? new oa_newsEntity();
+            var news = newsBLL.GetEntity(r => r.news_id == keyValue) ?? new oa_newsEntity();
             return View(news);
         }
         #endregion
@@ -105,8 +105,6 @@ namespace Luckyu.Module.OAModule.Controllers
             {
                 page = 1,
                 rows = 5,
-                sidx = "createtime",
-                sord = "DESC"
             };
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             var page = newsBLL.ShowPage(jqPage, loginInfo);

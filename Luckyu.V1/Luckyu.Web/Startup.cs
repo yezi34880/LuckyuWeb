@@ -1,3 +1,4 @@
+using Luckyu.App.System;
 using Luckyu.DataAccess;
 using Luckyu.Log;
 using Luckyu.Utility;

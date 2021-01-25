@@ -17,9 +17,9 @@ var bootstrap = function (layui) {
                 altRows: true,//隔行换色
                 postData: {},
                 colModel: [
-                    { name: 'id', hidden: true, key: true },
+                    { name: 'news_id', hidden: true, key: true },
                     { name: 'catetory', label: "分类", width: 80, },
-                    { name: 'title', label: "标题", width: 200, },
+                    { name: 'title', label: "标题", width: 300, },
                     { name: 'source', label: "来源", width: 100, },
                     { name: 'keywords', label: "关键词", width: 100, },
                     {
@@ -47,15 +47,12 @@ var bootstrap = function (layui) {
                             }
                         }
                     },
-                    { name: 'remark', label: "备注", width: 100, }
                 ],
                 rownumbers: true,
                 viewrecords: true,
                 rowNum: 30,
                 rowList: [30, 50, 100],
                 pager: "#gridPager",
-                sortname: "publishtime",
-                sortorder: "DESC",
                 onSelectRow: function (rowid, status) {
                     if (status) {
                         slectRowId = rowid;
@@ -134,6 +131,22 @@ var bootstrap = function (layui) {
                         layui.notice.success(info);
                         page.searchInCurrentPage();
                     });
+                });
+            });
+
+            $("#show").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                var row = grid.getRowData(rowid);
+                luckyu.layer.layerFormTop({
+                    id: "Form",
+                    title: row.title,
+                    width: 1300,
+                    height: 850,
+                    url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + rowid,
                 });
             });
 

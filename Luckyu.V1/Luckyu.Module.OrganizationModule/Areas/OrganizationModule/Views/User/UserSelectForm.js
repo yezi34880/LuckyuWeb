@@ -87,23 +87,12 @@ var bootstrap = function (layui) {
     function addUser(useritem) {
         var $warp = $('#selected_user_list');
         var _html = '<div class="user-selected-box" data-value="' + useritem.user_id + '" >';
-        _html += '<p><span data-id="' + useritem.company_id + '"></span></p>';
-        _html += '<p><span data-id="' + useritem.department_id + '"></span>【' + useritem.realname + '-' + useritem.loginname + '】</p>';
+        _html += '<p>' + luckyu.clientdata.getCompanyName(useritem.company_id) + '</p>';
+        _html += '<p>' + luckyu.clientdata.getDepartmentName(useritem.department_id) + '</p>';
+        _html += '<p>' + useritem.realname + '-' + useritem.loginname + '</p>';
         _html += '<span class="user-reomve" title="移除选中人员"></span>';
         _html += '</div>';
         $warp.append(_html);
-        top.luckyu.clientdata.getAsync('department', {
-            key: useritem.department_id,
-            callback: function (_data, op) {
-                $warp.find('[data-id="' + op.key + '"]').text(_data.name);
-            }
-        });
-        top.luckyu.clientdata.getAsync('company', {
-            key: useritem.company_id,
-            callback: function (_data, op) {
-                $warp.find('[data-id="' + op.key + '"]').text(_data.name);
-            }
-        });
 
         $warp.find("div.user-selected-box[data-value='" + useritem.user_id + "'] span.user-reomve").one("click", function () {
             var $divUser = $(this).parent();
@@ -149,9 +138,9 @@ var bootstrap = function (layui) {
             });
 
             $("#treeDepartment").resizeEleTree();
-            window.onresize = function () {
+            $(window).resize(function () {
                 $("#treeDepartment").resizeEleTree();
-            };
+            });
         },
         bind: function () {
             // 已选人员按钮
@@ -245,22 +234,12 @@ var bootstrap = function (layui) {
                             companyId: _data.companyId,
                             departmentId: _data.departmentId,
                         };
-                        top.luckyu.clientdata.getAsync('department', {
-                            key: _data.departmentId,
-                            callback: function (_data1, op1) {
-                                userinfo.companyName = _data1.name;
-                            }
-                        });
-                        top.luckyu.clientdata.getAsync('company', {
-                            key: _data.companyId,
-                            callback: function (_data2, op2) {
-                                userinfo.departmentName = _data2.name;
-                            }
-                        });
+                        userinfo.departmentName = luckyu.clientdata.getDepartmentName(_data.departmentId)
+                        userinfo.companyName = luckyu.clientdata.getCompanyName(_data.companyId)
+
                         userInfolist.push(userinfo);
                     }
                 });
-
             }
         }
 

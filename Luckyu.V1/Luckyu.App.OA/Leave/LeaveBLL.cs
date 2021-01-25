@@ -34,7 +34,7 @@ namespace Luckyu.App.OA
 
         public ResponseResult<Dictionary<string, object>> GetFormData(string keyValue)
         {
-            var entity = GetEntity(r => r.id == keyValue);
+            var entity = GetEntity(r => r.leave_id == keyValue);
             if (entity == null)
             {
                 return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
@@ -54,7 +54,7 @@ namespace Luckyu.App.OA
 
         public ResponseResult DeleteForm(string keyValue, UserModel loginInfo)
         {
-            var entity = GetEntity(r => r.id == keyValue);
+            var entity = GetEntity(r => r.leave_id == keyValue);
             if (entity == null)
             {
                 return ResponseResult.Fail(MessageString.NoData);
@@ -87,7 +87,7 @@ namespace Luckyu.App.OA
             var entity = strEntity.ToObject<oa_leaveEntity>();
             if (!keyValue.IsEmpty()) // 修改
             {
-                var old = GetEntity(r => r.id == keyValue);
+                var old = GetEntity(r => r.leave_id == keyValue);
                 if (old == null)
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(MessageString.NoData);
@@ -128,7 +128,7 @@ namespace Luckyu.App.OA
             {
                 var json = JsonConvert.SerializeObject(entity);
                 // 0 起草  1 生效  2 审批中  3 驳回
-                var res = taskBLL.Create(FlowEnum.Leave, entity.id, $"请假申请 {entity.id}", json, loginInfo);
+                var res = taskBLL.Create(FlowEnum.Leave, entity.leave_id, $"请假申请 {entity.username}", json, loginInfo);
                 if (res.code != 200)
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(res.info);

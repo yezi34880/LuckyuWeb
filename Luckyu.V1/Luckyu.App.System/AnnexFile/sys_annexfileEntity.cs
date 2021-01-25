@@ -92,7 +92,7 @@ namespace Luckyu.App.System
             }
             this.createtime = DateTime.Now;
             this.create_userid = loginInfo.user_id;
-            this.create_username = loginInfo.realname;
+            this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
         }
         #endregion
     }
