@@ -16,9 +16,10 @@
         },
         singalir: function () {
             var connection = new signalR.HubConnectionBuilder().withUrl("/messagehub").build();
-            connection.on("ReceiveMessage", function (message) {
+            connection.on("ReceiveMessage", function (res) {
                 //layui.notice.info(message);
-                layui.notice.info(message, "", {
+                var result = JSON.parse(res);
+                layui.notice.info(result.info, "", {
                     closeButton: true,  //显示关闭按钮
                     positionClass: "toast-bottom-right",  //弹出的位置
                     onclick: function () {

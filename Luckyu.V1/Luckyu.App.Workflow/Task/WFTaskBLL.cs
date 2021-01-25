@@ -1,6 +1,8 @@
 ﻿using Luckyu.App.Organization;
+using Luckyu.App.System;
 using Luckyu.Utility;
 using Mapster;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +23,10 @@ namespace Luckyu.App.Workflow
         private wf_taskhistoryService taskhistoryService = new wf_taskhistoryService();
         private wf_taskService taskService = new wf_taskService();
         private wf_task_authorizeService taskauthService = new wf_task_authorizeService();
+        private WFDelegateBLL delegateBLL = new WFDelegateBLL();
         private UserBLL userBLL = new UserBLL();
         private UserRelationBLL userrelationBLL = new UserRelationBLL();
-        private WFDelegateBLL delegateBLL = new WFDelegateBLL();
+        private MessageBLL messageBLL = new MessageBLL();
         #endregion
 
         #region Get
@@ -312,7 +315,7 @@ namespace Luckyu.App.Workflow
 
             // 单据提交人 后期 同公司 同部门 根据这个值计算 后期考虑作为入参 代为提交别人单据的情况 先不管
             instanceEntity.submit_user_id = loginInfo.user_id;
-            instanceEntity.submit_username = loginInfo.realname;
+            instanceEntity.submit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
 
             instanceEntity.Create(loginInfo);
             instanceEntity.schemejson = scheme.schemejson;
@@ -372,12 +375,47 @@ namespace Luckyu.App.Workflow
                 listSql.AddRange(turple.Item3);
             }
             taskService.Create(instanceEntity, newTask, listHistory, listSql);
-            return ResponseResult.Success();
+
+            var msg = $"{instanceEntity.submit_username} 提交了【{instanceEntity.flowname}】{newTask.processname}审批流程";
+            return ResponseResult.Success(msg, (object)newTask.authrizes);
         }
         public ResponseResult Create(FlowEnum flow, string processId, string processName, string processContent, UserModel loginInfo)
         {
             var flowCode = flow.ToString();
             var res = Create(flowCode, processId, processName, processContent, loginInfo);
+            return res;
+        }
+
+        public async Task<ResponseResult> Create(string flowCode, string processId, string processName, string processContent, UserModel loginInfo, IHubContext<MessageHub> hubContext)
+        {
+            var res = Create(flowCode, processId, processName, processContent, loginInfo);
+            if (res.code == (int)ResponseCode.Success)
+            {
+                var authrizes = res.data as List<wf_task_authorizeEntity>;
+                var nextUsers = GetUserByAuth(authrizes);
+                foreach (var user in nextUsers)
+                {
+                    var sendRes = new ResponseResult();
+                    sendRes.info = res.info;
+                    await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
+                }
+            }
+            return res;
+        }
+        public async Task<ResponseResult> Create(FlowEnum flow, string processId, string processName, string processContent, UserModel loginInfo, IHubContext<MessageHub> hubContext)
+        {
+            var res = Create(flow, processId, processName, processContent, loginInfo);
+            if (res.code == (int)ResponseCode.Success)
+            {
+                var authrizes = res.data as List<wf_task_authorizeEntity>;
+                var nextUsers = GetUserByAuth(authrizes);
+                foreach (var user in nextUsers)
+                {
+                    var sendRes = new ResponseResult();
+                    sendRes.info = res.info;
+                    await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
+                }
+            }
             return res;
         }
 
@@ -529,7 +567,25 @@ namespace Luckyu.App.Workflow
                 }
             }
             taskService.Approve(instance, task, newTask, listHistory, listSql);
-            return ResponseResult.Success();
+            var msg = $"{instance.submit_username} 提交了【{instance.flowname}】{newTask.processname}审批流程";
+            return ResponseResult.Success(msg, (object)newTask.authrizes);
+        }
+
+        public async Task<ResponseResult> Approve(string taskId, int result, string opinion, UserModel loginInfo, IHubContext<MessageHub> hubContext)
+        {
+            var res = Approve(taskId, result, opinion, loginInfo);
+            if (res.code == (int)ResponseCode.Success)
+            {
+                var authrizes = res.data as List<wf_task_authorizeEntity>;
+                var nextUsers = GetUserByAuth(authrizes);
+                foreach (var user in nextUsers)
+                {
+                    var sendRes = new ResponseResult();
+                    sendRes.info = res.info;
+                    await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
+                }
+            }
+            return res;
         }
 
         /// <summary>
@@ -855,10 +911,8 @@ namespace Luckyu.App.Workflow
                         taskEntity.Create(loginInfo);
 
                         var turple = GetNextAuth(nodeNext, instanceEntity, taskEntity.task_id, loginInfo);
-                        var listAuth = turple.Item1;
+                        taskEntity.authrizes = turple.Item1; // 下一步审批人
                         bool isContainSelf = turple.Item2;  // 下一步审批人是否包含自己
-
-                        taskEntity.authrizes = listAuth;
                         if (isContainSelf)
                         {
                             listSql.Add(nodeNext.sqlsuccess);

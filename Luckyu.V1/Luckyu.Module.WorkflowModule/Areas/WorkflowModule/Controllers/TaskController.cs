@@ -1,8 +1,10 @@
 ﻿using Luckyu.App.Organization;
+using Luckyu.App.System;
 using Luckyu.App.Workflow;
 using Luckyu.Utility;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,13 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         #region Var
         private WFTaskBLL taskBLL = new WFTaskBLL();
         private UserBLL userBLL = new UserBLL();
+
+        private readonly IHubContext<MessageHub> _hubContext;
+        public TaskController(IHubContext<MessageHub> messageHubContext)
+        {
+            _hubContext = messageHubContext;
+        }
+
         #endregion
 
         #region Index
@@ -93,7 +102,7 @@ namespace Luckyu.Module.WorkflowModule.Controllers
 
         #region Interface
         [AjaxOnly, HttpPost]
-        public IActionResult Create(string flowCode, string processId, string processName, string processContent, string submitUserId)
+        public async Task<IActionResult> Create(string flowCode, string processId, string processName, string processContent, string submitUserId)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             if (!submitUserId.IsEmpty())
@@ -102,15 +111,15 @@ namespace Luckyu.Module.WorkflowModule.Controllers
                 loginInfo = new UserModel();
                 loginInfo = user.Adapt<UserModel>();
             }
-            var res = taskBLL.Create(flowCode, processId, processName, processContent, loginInfo);
+            var res = await taskBLL.Create(flowCode, processId, processName, processContent, loginInfo, _hubContext);
             return Json(res);
         }
 
         [AjaxOnly, HttpPost]
-        public IActionResult Approve(string taskId, int result, string opinion)
+        public async Task<IActionResult> Approve(string taskId, int result, string opinion)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = taskBLL.Approve(taskId, result, opinion, loginInfo);
+            var res = await taskBLL.Approve(taskId, result, opinion, loginInfo, _hubContext);
             return Json(res);
         }
 

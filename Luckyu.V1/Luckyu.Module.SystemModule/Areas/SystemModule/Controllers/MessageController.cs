@@ -3,6 +3,7 @@ using Luckyu.App.System;
 using Luckyu.Log;
 using Luckyu.Utility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,10 @@ namespace Luckyu.Module.SystemModule.Controllers
         #region Var
         private MessageBLL messageBLL = new MessageBLL();
 
-        private readonly Microsoft.AspNetCore.SignalR.IHubContext<MessageHub> _messageHubContext;
-        public MessageController(Microsoft.AspNetCore.SignalR.IHubContext<MessageHub> messageHubContext)
+        private readonly IHubContext<MessageHub> _hubContext;
+        public MessageController(IHubContext<MessageHub> messageHubContext)
         {
-            _messageHubContext = messageHubContext;
+            _hubContext = messageHubContext;
         }
 
         #endregion
@@ -52,7 +53,7 @@ namespace Luckyu.Module.SystemModule.Controllers
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             var entity = strEntity.ToObject<sys_messageEntity>();
-            await messageBLL.Send(entity, loginInfo, _messageHubContext);
+            await messageBLL.Send(entity, loginInfo, _hubContext);
             return Success();
         }
         #endregion

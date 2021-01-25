@@ -33,6 +33,7 @@
 ORM框架 FreeSql
 前台框架 Layui 
 缓存 Redis 与 MemoryCache 可切换
+利用 SingnalIR 实时推送消息
 
 ## 分模块开发
 采取分项目,分模块开发

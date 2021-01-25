@@ -2,10 +2,12 @@
 using Luckyu.App.System;
 using Luckyu.App.Workflow;
 using Luckyu.Utility;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Luckyu.App.OA
 {
@@ -82,7 +84,7 @@ namespace Luckyu.App.OA
             return ResponseResult.Success();
         }
 
-        public ResponseResult<oa_leaveEntity> SaveForm(string keyValue, string strEntity, int isSubmit, UserModel loginInfo)
+        public async Task<ResponseResult<oa_leaveEntity>> SaveForm(string keyValue, string strEntity, int isSubmit, UserModel loginInfo, IHubContext<MessageHub> messageHubContext)
         {
             var entity = strEntity.ToObject<oa_leaveEntity>();
             if (!keyValue.IsEmpty()) // 修改
@@ -128,7 +130,7 @@ namespace Luckyu.App.OA
             {
                 var json = JsonConvert.SerializeObject(entity);
                 // 0 起草  1 生效  2 审批中  3 驳回
-                var res = taskBLL.Create(FlowEnum.Leave, entity.leave_id, $"请假申请 {entity.username}", json, loginInfo);
+                var res = await taskBLL.Create(FlowEnum.Leave, entity.leave_id, $"请假申请 {entity.username}", json, loginInfo, messageHubContext);
                 if (res.code != 200)
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(res.info);

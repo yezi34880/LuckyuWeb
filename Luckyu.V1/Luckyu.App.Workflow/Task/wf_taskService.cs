@@ -12,6 +12,9 @@ namespace Luckyu.App.Workflow
 {
     public class wf_taskService : RepositoryFactory<wf_taskEntity>
     {
+        /// <summary>
+        /// 待办任务
+        /// </summary>
         public JqgridPageResponse<WFTaskModel> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             var db = BaseRepository().db;

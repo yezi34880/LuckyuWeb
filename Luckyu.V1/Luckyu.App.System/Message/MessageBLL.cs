@@ -37,8 +37,8 @@ namespace Luckyu.App.System
             {
                 var item = new sys_messageEntity();
                 item = entity.Adapt<sys_messageEntity>();
-                item.to_userid = userId;
                 var user = userBLL.GetEntityByCache(r => r.user_id == userId) ?? new sys_userEntity();
+                item.to_userid = userId;
                 item.to_username = $"{user.realname}-{user.loginname}";
                 list.Add(item);
             }
@@ -53,7 +53,9 @@ namespace Luckyu.App.System
                 var user = userBLL.GetEntityByCache(r => r.user_id == item.to_userid);
                 if (user != null)
                 {
-                    await SignalRHelper.SendMessageToUser(hubContext, user.loginname, entity.contents);
+                    var res = new ResponseResult();
+                    res.info = entity.contents;
+                    await SignalRHelper.SendMessageToUser(hubContext, user.loginname, res);
                 }
             }
         }

@@ -119,9 +119,15 @@ namespace Luckyu.App.System
         #region 方法
         public void Create(UserModel loginInfo)
         {
-            this.message_id = SnowflakeHelper.NewCode();
+            if (this.message_id.IsEmpty())
+            {
+                this.message_id = SnowflakeHelper.NewCode();
+            }
+            if (this.catetory.IsEmpty())
+            {
+                this.catetory = "系统通知";
+            }
 
-            this.catetory = "系统通知";
             this.send_userid = loginInfo.user_id;
             this.send_username = $"{loginInfo.realname}-{loginInfo.loginname}";
             this.sendtime = DateTime.Now;
