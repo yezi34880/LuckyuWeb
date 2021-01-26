@@ -63,7 +63,7 @@ namespace Luckyu.Web.Controllers
             log.log_content = $"用户 {username} 登录";
             if (res.code == 200)
             {
-                LoginUserInfo.Instance.SetLogin(res.data.loginname, HttpContext, "Luckyu.Web");
+                LoginUserInfo.Instance.SetLogin(res.data.loginname, HttpContext, LoginAppEnum.WebBackground);
                 log.log_content += "  登录成功";
                 log.op_type = "成功";
                 log.user_id = res.data.user_id;

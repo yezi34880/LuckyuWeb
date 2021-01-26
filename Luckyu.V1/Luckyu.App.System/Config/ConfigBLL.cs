@@ -1,4 +1,5 @@
-﻿using Luckyu.Cache;
+﻿using Luckyu.App.Organization;
+using Luckyu.Cache;
 using Luckyu.Utility;
 using System;
 using System.Collections.Generic;
@@ -64,7 +65,56 @@ namespace Luckyu.App.System
                 return entity.configvalue;
             }
         }
+        public JqgridPageResponse<sys_configEntity> Page(JqgridPageRequest jqpage)
+        {
+            var page = configService.Page(jqpage);
+            return page;
+        }
 
+        public ResponseResult<Dictionary<string, object>> GetFormData(string keyValue)
+        {
+            var entity = GetEntity(r => r.config_id == keyValue);
+            if (entity == null)
+            {
+                return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
+            }
+            var dic = new Dictionary<string, object>
+            {
+                {"Config",entity }
+            };
+            return ResponseResult.Success(dic);
+        }
+
+        #endregion
+
+        #region Set
+
+        public ResponseResult DeleteForm(string keyValue, UserModel loginInfo)
+        {
+            var entity = GetEntity(r => r.config_id == keyValue);
+            if (entity == null)
+            {
+                return ResponseResult.Fail(MessageString.NoData);
+            }
+            configService.DeleteForm(entity, loginInfo);
+            return ResponseResult.Success();
+        }
+
+        public ResponseResult<sys_configEntity> SaveForm(string keyValue, string strEntity, UserModel loginInfo)
+        {
+            var entity = strEntity.ToObject<sys_configEntity>();
+            if (!keyValue.IsEmpty())
+            {
+                var old = GetEntity(r => r.config_id == keyValue);
+                if (old == null)
+                {
+                    return ResponseResult.Fail<sys_configEntity>(MessageString.NoData);
+                }
+            }
+
+            configService.SaveForm(keyValue, entity, strEntity, loginInfo);
+            return ResponseResult.Success(entity);
+        }
         #endregion
     }
 }

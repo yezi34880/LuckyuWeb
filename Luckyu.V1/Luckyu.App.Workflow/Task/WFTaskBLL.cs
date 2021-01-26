@@ -207,6 +207,8 @@ namespace Luckyu.App.Workflow
         #endregion
 
         #region Set
+
+        #region Create
         /// <summary>
         /// 创建流程
         /// </summary>
@@ -419,6 +421,9 @@ namespace Luckyu.App.Workflow
             return res;
         }
 
+        #endregion
+
+        #region Approval
         /// <summary>
         /// 审批
         /// </summary>
@@ -587,6 +592,8 @@ namespace Luckyu.App.Workflow
             }
             return res;
         }
+
+        #endregion
 
         /// <summary>
         /// 加签

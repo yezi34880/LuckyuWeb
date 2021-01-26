@@ -103,6 +103,11 @@ namespace Luckyu.App.Organization
             }
         }
 
+        public void SetLogin(string loginname, HttpContext httpContext, LoginAppEnum appId)
+        {
+            SetLogin(loginname, httpContext, appId.ToString());
+        }
+
         /// <summary>
         /// 检查登录状态
         /// </summary>

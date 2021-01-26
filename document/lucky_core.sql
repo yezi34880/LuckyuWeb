@@ -11,7 +11,7 @@
  Target Server Version : 50717
  File Encoding         : 65001
 
- Date: 25/01/2021 13:53:17
+ Date: 26/01/2021 15:03:11
 */
 
 SET NAMES utf8mb4;
@@ -252,28 +252,29 @@ INSERT INTO `sys_company` VALUES ('1297458150068326400', '1297427797396033536', 
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_config`;
 CREATE TABLE `sys_config`  (
-  `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `config_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `configcode` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `configname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `configvalue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `create_userId` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `createtime` datetime(0) NULL DEFAULT NULL,
   `edittime` datetime(0) NULL DEFAULT NULL,
   `edit_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `edit_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `is_delete` int(255) NOT NULL,
+  `deletetime` datetime(0) NULL DEFAULT NULL,
   `delete_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `delete_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `is_enable` int(255) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`config_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_config
 -- ----------------------------
-INSERT INTO `sys_config` VALUES ('111', 'annexbasepath', '附件目录地址', 'D:/MyProject/OpenSource/LuckyuWeb/File/AnnexFile', '', '', '', NULL, NULL, '', '', 0, '', '', 0);
+INSERT INTO `sys_config` VALUES ('111', 'annexbasepath', '附件目录地址', 'D:/MyProject/OpenSource/LuckyuWeb/File/AnnexFile', '默认附件目录位置，每年可以使用新路径 配置编码为【annexbasepath_yyyy】', '', '', NULL, '2021-01-26 15:00:13', '1', '超级管理员-system', 0, NULL, '', '', 1);
 
 -- ----------------------------
 -- Table structure for sys_dataauthorize

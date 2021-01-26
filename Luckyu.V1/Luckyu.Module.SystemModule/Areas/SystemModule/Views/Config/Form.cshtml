@@ -1,0 +1,42 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div lay-filter="Config">
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">编码</label>
+        <div class="layui-input-block">
+            <input id="configcode" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-block">
+            <input id="configname" type="text" class="layui-input" lay-verify="required" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">值</label>
+        <div class="layui-input-block">
+            <textarea id="configvalue" class="layui-textarea" lay-verify="required" rows="10"></textarea>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input id="remark" type="text" class="layui-input" />
+        </div>
+    </div>
+    @*<div class="form-item layui-col-xs12">
+        <div class="layui-input-block">
+            <input type="checkbox" id="is_enable" lay-skin="switch" lay-text="有效|无效" checked />
+        </div>
+    </div>*@
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/SystemModule/Views/Config/Form.js")
+}
