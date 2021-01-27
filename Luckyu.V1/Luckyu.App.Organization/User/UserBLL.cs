@@ -51,7 +51,7 @@ namespace Luckyu.App.Organization
             return page;
         }
 
-        public sys_userEntity GetEntity(Expression<Func<sys_userEntity, bool>> condition, Expression<Func<sys_userEntity, object>> orderExp = null, bool isDesc=false)
+        public sys_userEntity GetEntity(Expression<Func<sys_userEntity, bool>> condition, Expression<Func<sys_userEntity, object>> orderExp = null, bool isDesc = false)
         {
             var entity = userService.GetEntity(condition, orderExp, isDesc);
             return entity;
@@ -68,7 +68,7 @@ namespace Luckyu.App.Organization
             {
                 if (companyId == "" || companyId == "-1" || companyId.ToLower() == "all")
                 {
-                    list = GetList(r => r.is_delete == 0 , r => r.sort);
+                    list = GetList(r => r.is_delete == 0, r => r.sort);
                 }
                 else
                 {
@@ -114,7 +114,12 @@ namespace Luckyu.App.Organization
                     var model = new ClientDataMapModel
                     {
                         code = item.loginname,
-                        name = item.realname
+                        name = item.realname,
+                        ext = new Dictionary<string, string>
+                        {
+                            { "department_id",item.department_id},
+                            {"company_id",item.company_id  },
+                        }
                     };
                     dic.Add(item.user_id, model);
                     cache.Write(cacheKey + "dic", dic);

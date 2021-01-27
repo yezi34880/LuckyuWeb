@@ -16,14 +16,8 @@ namespace Luckyu.App.Workflow
         public JqgridPageResponse<wf_delegateEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             Expression<Func<wf_delegateEntity, bool>> exp = r => r.create_userid == loginInfo.user_id;
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("starttime",
-                (field, data) => SearchConditionHelper.GetDateCondition(field, data)
-                );
-            dicCondition.Add("endtime",
-                (field, data) => SearchConditionHelper.GetDateCondition(field, data)
-                );
-            var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
+
+            var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }
 

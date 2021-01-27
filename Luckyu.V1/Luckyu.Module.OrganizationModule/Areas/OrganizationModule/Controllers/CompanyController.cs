@@ -186,11 +186,18 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var treeData = companyBLL.GetSelectTree();
             return Json(treeData);
         }
-        public IActionResult GetAllCompanyTree()
+        public IActionResult GetAllCompanyTree(bool multiple = false)
         {
             var treeData = companyBLL.GetTree();
-            if (treeData.IsEmpty())
-                treeData = new List<eleTree>();
+            if (multiple)
+            {
+                treeData.Insert(0, new eleTree
+                {
+                    id = "-1",
+                    label = "全部",
+                    ext = new Dictionary<string, string> { { "tag", "all" } }
+                });
+            }
             var data = new
             {
                 code = 0,

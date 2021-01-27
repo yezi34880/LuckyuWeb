@@ -11,7 +11,7 @@ var bootstrap = function (layui) {
             page.initGrid();
         },
         initGrid: function () {
-            grid = grid.jqGrid({
+            grid = grid.LuckyuGrid({
                 url: luckyu.rootUrl + "/OrganizationModule/Post/Page",
                 datatype: "json",
                 altRows: true,//隔行换色
@@ -23,19 +23,8 @@ var bootstrap = function (layui) {
                     { name: 'remark', label: "备注", width: 80, },
                     { name: 'sort', label: "排序", width: 40, search: false },
                     {
-                        name: 'is_enable', label: '有效', width: 40,
-                        stype: "select",
-                        searchoptions: {
-                            value: { "-1": "全部", "1": "有效", "0": "无效" },
-                            defaultValue: "-1"
-                        },
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 1: return '<i class="fa fa-toggle-on"></i>';
-                                case 0: return '<i class="fa fa-toggle-off"></i>';
-                                default: return '';
-                            }
-                        }
+                        name: 'is_enable', label: '有效', width: 40, align: "center",
+                        stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     },
                 ],
                 rownumbers: true,

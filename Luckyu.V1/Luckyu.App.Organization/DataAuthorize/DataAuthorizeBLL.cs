@@ -53,9 +53,6 @@ namespace Luckyu.App.Organization
         /// <summary>
         /// 获取当前模块配置人员
         /// </summary>
-        /// <param name="moduleName"></param>
-        /// <param name="loginInfo"></param>
-        /// <returns></returns>
         public DataAuthorizeModel GetDataAuthByUser(string moduleName, UserModel loginInfo)
         {
             var listdata = GetList(r => r.modulename.Contains(moduleName) && (r.object_id == loginInfo.user_id || loginInfo.role_ids.Contains(r.object_id) || loginInfo.post_ids.Contains(r.object_id)));
@@ -178,9 +175,9 @@ namespace Luckyu.App.Organization
             return data;
         }
 
-        public DataAuthorizeModel GetDataAuthByUser(DataAuthorizeModuleEnum model, UserModel loginInfo)
+        public DataAuthorizeModel GetDataAuthByUser(DataAuthorizeModuleEnum module, UserModel loginInfo)
         {
-            var moduleName = model.ToString();
+            var moduleName = module.ToString();
             var dataAuth = GetDataAuthByUser(moduleName, loginInfo);
             return dataAuth;
         }
@@ -206,6 +203,34 @@ namespace Luckyu.App.Organization
             };
             return dic;
         }
+
+        /// <summary>
+        /// 判断通用权限 0 仅查看 1 可编辑起草 驳回 2 可编辑所有
+        /// </summary>
+        //public ResponseResult CanOperate(DataAuthorizeModuleEnum module, UserModel loginInfo)
+        //{
+        //    var dataauth = GetDataAuthByUser(module, loginInfo);
+        //    if (dataauth.edittype == 0)  // 0 仅查看 1 可编辑起草 驳回 2 可编辑所有
+        //    {
+        //        if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+        //        {
+        //            return ResponseResult.Fail("只有起草状态才能编辑");
+        //        }
+        //        if (old.create_userid != loginInfo.user_id)
+        //        {
+        //            return ResponseResult.Fail("只创建人才能删除");
+        //        }
+        //    }
+        //    else if (dataauth.edittype == 1)
+        //    {
+        //        if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+        //        {
+        //            return ResponseResult.Fail("只有起草状态才能删除");
+        //        }
+        //    }
+        //    return ResponseResult.Success();
+        //}
+
         #endregion
 
         #region  Set

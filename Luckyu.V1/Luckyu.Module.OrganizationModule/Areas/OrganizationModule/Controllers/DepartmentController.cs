@@ -178,7 +178,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
                 {
                     id = "-1",
                     label = "全部",
-                    ext = new Dictionary<string, string> { { "tag", "" } }
+                    ext = new Dictionary<string, string> { { "tag", "all" } }
                 });
             }
             var data = new

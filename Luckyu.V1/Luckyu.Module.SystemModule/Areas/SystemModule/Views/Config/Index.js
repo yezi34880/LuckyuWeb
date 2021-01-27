@@ -23,14 +23,8 @@ var bootstrap = function (layui) {
                     { name: 'configvalue', label: "值", width: 250, },
                     { name: 'remark', label: "备注", width: 150, },
                     //{
-                    //    name: 'is_enable', label: '是否生效', width: 40, search: false,
-                    //    formatter: function (cellvalue, options, rowObject) {
-                    //        switch (cellvalue) {
-                    //            case 1: return '<i class="fa fa-toggle-on"></i>';
-                    //            case 0: return '<i class="fa fa-toggle-off"></i>';
-                    //            default: return '';
-                    //        }
-                    //    }
+                    //    name: 'is_enable', label: '是否生效', width: 40, align: "center",
+                    //     stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     //},
                 ],
                 rownumbers: true,

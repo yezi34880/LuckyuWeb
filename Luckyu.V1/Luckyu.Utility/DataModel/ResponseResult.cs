@@ -48,6 +48,7 @@ namespace Luckyu.Utility
             return res;
         }
 
+        #region 泛型转换
         public static ResponseResult<T> Fail<T>(string info = "操作失败", T data = default(T))
         {
             var res = new ResponseResult<T>
@@ -80,6 +81,17 @@ namespace Luckyu.Utility
             };
             return res;
         }
+
+        public static ResponseResult<T> Create<T>(ResponseResult res)
+        {
+            var resT = new ResponseResult<T>
+            {
+                code = res.code,
+                info = res.info,
+            };
+            return resT;
+        }
+        #endregion
 
         public object data { get; set; }
     }

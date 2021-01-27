@@ -178,44 +178,18 @@ var bootstrap = function (layui) {
             page.bind();
 
             // 初始化选中
-            var $warp = $('#selected_user_list');
             for (var i = 0; i < userlistselected.length; i++) {
                 var userId = userlistselected[i];
-                if (!!userId) {
-                    top.luckyu.clientdata.getAsync('user', {
-                        key: userId,
-                        callback: function (_data, op) {
-                            var _html = '<div class="user-selected-box" data-value="' + op.key + '" >';
-                            _html += '<p><span data-id="' + _data.companyId + '"></span></p>';
-                            _html += '<p><span data-id="' + _data.departmentId + '"></span>【' + _data.name + '-' + _data.account + '】</p>';
-                            _html += '<span class="user-reomve" title="移除选中人员"></span>';
-                            _html += '</div>';
-                            $warp.append(_html);
-                            top.luckyu.clientdata.getAsync('department', {
-                                key: _data.departmentId,
-                                callback: function (_data1, op1) {
-                                    $warp.find('[data-id="' + op1.key + '"]').text(_data1.name);
-                                }
-                            });
-                            top.luckyu.clientdata.getAsync('company', {
-                                key: _data.companyId,
-                                callback: function (_data2, op2) {
-                                    $warp.find('[data-id="' + op2.key + '"]').text(_data2.name);
-                                }
-                            });
-                        }
-                    });
-                }
+                var useritem1 = luckyu.clientdata.getUserInfo(userId);
+                var useritem2 = {
+                    user_id: userId,
+                    loginname: useritem1.code,
+                    realname: useritem1.name,
+                    department_id: useritem1.ext.department_id,
+                    company_id: useritem1.ext.company_id
+                };
+                addUser(useritem2);
             }
-            $warp.find("span.user-reomve").one("click", function () {
-                var $divUser = $(this).parent();
-                var userid = $divUser.attr('data-value');
-                removeUser(userid);
-                userlistselected.splice(userlistselected.indexOf(userid), 1);
-                $divUser.remove();
-                $('#user_list').find('[data-value="' + userid + '"]').removeClass('active');
-            });
-
         },
     };
     page.init();

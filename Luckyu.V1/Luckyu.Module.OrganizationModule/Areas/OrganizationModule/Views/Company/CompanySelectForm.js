@@ -13,10 +13,10 @@ var bootstrap = function (layui) {
     var tree;
     var page = {
         bind: function () {
-            tree = layui.tree.render({
-                elem: '#tree',
+            tree = layui.eleTree.render({
+                elem: '#treeTree',
                 defaultExpandAll: true,
-                url: luckyu.rootUrl + "/OrganizationModule/Company/GetAllCompanyTree",
+                url: luckyu.rootUrl + "/OrganizationModule/Company/GetAllCompanyTree?multiple=" + multiple,
                 expandOnClickNode: false,
                 showCheckbox: true,
                 showLine: true,
@@ -33,10 +33,23 @@ var bootstrap = function (layui) {
                     tree.unCheckNodes()
                     tree.setChecked([d.data.currentData.id], true)
                 }
+                if (multiple === true && d.data.currentData.ext.tag === "all") {
+                    if (d.isChecked) {
+                        var nodes = tree.getAllNodeData();
+                        var arr = [];
+                        for (var i = 0; i < nodes.length; i++) {
+                            arr.push(nodes[i].id);
+                        }
+                        tree.setChecked(arr, false);
+                    }
+                    else {
+                        tree.unCheckNodes();
+                    }
+                }
             })
-            $("#tree").resizeEleTree();
+            $("#treeTree").resizeEleTree();
             window.onresize = function () {
-                $("#tree").resizeEleTree();
+                $("#treeTree").resizeEleTree();
             };
         },
         init: function () {

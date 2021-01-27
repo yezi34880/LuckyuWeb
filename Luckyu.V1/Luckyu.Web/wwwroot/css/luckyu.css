@@ -48,6 +48,10 @@
     display: initial !important;
 }
 
+.ui-jqgrid tr.ui-search-toolbar select {
+    border-color: #D2D2D2 !important;
+}
+
 .luckyu-input-button {
     position: absolute;
     right: 0;

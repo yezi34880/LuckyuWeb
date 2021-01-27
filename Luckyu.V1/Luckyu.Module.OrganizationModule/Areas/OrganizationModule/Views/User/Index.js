@@ -34,7 +34,7 @@ var bootstrap = function (layui) {
             })
         },
         initGrid: function () {
-            grid = $("#grid").jqGrid({
+            grid = $("#grid").LuckyuGrid({
                 url: luckyu.rootUrl + "/OrganizationModule/User/Page",
                 datatype: "json",
                 altRows: true,//隔行换色
@@ -47,37 +47,28 @@ var bootstrap = function (layui) {
                     { name: 'usercode', label: "工号", width: 80, },
                     {
                         name: 'sex', label: "性别", width: 60,
-                        stype: "select",
-                        searchoptions: {
-                            value: { "-1": "全部", "1": "男", "2": "女" },
-                            defaultValue: "-1"
-                        },
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 1: return '男';
-                                case 2: return '女';
-                                default: return '';
-                            }
-                        }
+                        stype: "dataitem", dataitemcode: "sex",
+
+                        //stype: "select",
+                        //searchoptions: {
+                        //    value: { "-1": "全部", "1": "男", "2": "女" },
+                        //    defaultValue: "-1"
+                        //},
+                        //formatter: function (cellvalue, options, rowObject) {
+                        //    switch (cellvalue) {
+                        //        case 1: return '男';
+                        //        case 2: return '女';
+                        //        default: return '';
+                        //    }
+                        //}
                     },
                     { name: 'email', label: "Email", width: 100, },
                     { name: 'mobile', label: "联系电话", width: 100, },
                     { name: 'sort', label: "排序", width: 50, search: false },
                     { name: 'remark', label: "备注", width: 80, },
                     {
-                        name: 'is_enable', label: '有效', width: 40,
-                        stype: "select",
-                        searchoptions: {
-                            value: { "-1": "全部", "1": "有效", "0": "无效" },
-                            defaultValue: "-1"
-                        },
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 1: return '<i class="fa fa-toggle-on"></i>';
-                                case 0: return '<i class="fa fa-toggle-off"></i>';
-                                default: return '';
-                            }
-                        }
+                        name: 'is_enable', label: '有效', width: 60, align: "center",
+                        stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     },
                     { name: 'np_roles', label: "角色", width: 200, search: false, sortable: false },
                     { name: 'np_posts', label: "岗位", width: 200, search: false, sortable: false },

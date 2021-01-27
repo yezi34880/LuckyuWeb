@@ -22,11 +22,7 @@ namespace Luckyu.App.System
             {
                 exp = exp.LinqAnd(r => r.dataitem_id == classifyId);
             }
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("is_enable",
-                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-                );
-            var page = BaseRepository().GetPage(jqpage, exp, dicCondition);
+            var page = BaseRepository().GetPage(jqpage, exp);
             return page;
         }
 

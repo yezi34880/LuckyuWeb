@@ -15,12 +15,8 @@ namespace Luckyu.App.Organization
         public JqgridPageResponse<sys_moduleEntity> Page(JqgridPageRequest jqpage)
         {
             Expression<Func<sys_moduleEntity, bool>> expCondition = r => r.is_delete == 0;
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("is_enable",
-                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-                );
 
-            var page = BaseRepository().GetPage(jqpage, expCondition, dicCondition);
+            var page = BaseRepository().GetPage(jqpage, expCondition);
             return page;
         }
 

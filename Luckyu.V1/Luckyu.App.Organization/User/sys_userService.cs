@@ -25,14 +25,7 @@ namespace Luckyu.App.Organization
                 }
             }
             var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("is_enable",
-                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-                );
-            dicCondition.Add("sex",
-                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-                );
-
-            var page = BaseRepository().GetPage(jqpage, expCondition, dicCondition);
+            var page = BaseRepository().GetPage(jqpage, expCondition);
             return page;
         }
         public void DeleteForm(sys_userEntity entity, UserModel loginInfo)

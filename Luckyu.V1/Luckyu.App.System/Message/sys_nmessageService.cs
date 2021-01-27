@@ -17,14 +17,7 @@ namespace Luckyu.App.System
         {
             Expression<Func<sys_messageEntity, bool>> exp = r => r.is_delete == 0;
 
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("send_userid",
-               (field, data) => SearchConditionHelper.GetStringContainCondition(field, data)
-               );
-            dicCondition.Add("sendtime",
-                (field, data) => SearchConditionHelper.GetDateCondition(field, data)
-                );
-            var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
+            var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }
 
@@ -32,11 +25,7 @@ namespace Luckyu.App.System
         {
             Expression<Func<sys_messageEntity, bool>> exp = r => r.is_delete == 0 && r.to_userid == loginInfo.user_id;
 
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("sendtime",
-                (field, data) => SearchConditionHelper.GetDateCondition(field, data)
-                );
-            var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
+            var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }
 

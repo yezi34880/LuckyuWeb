@@ -12,11 +12,7 @@ namespace Luckyu.App.Organization
         public JqgridPageResponse<sys_dataauthorizeEntity> Page(JqgridPageRequest jqPage)
         {
             Expression<Func<sys_dataauthorizeEntity, bool>> exp = r => r.is_delete == 0;
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("is_enable",
-                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-                );
-            var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
+            var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }
 

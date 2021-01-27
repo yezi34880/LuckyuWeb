@@ -270,7 +270,7 @@
                 title: "部门选择",
                 width: 450,
                 height: 660,
-                url: luckyu.rootUrl + "/OrganizationModule/Department/DepartmentSelectForm?multiple=" + defaultOption.multiple + "$companyId=" + companyId,
+                url: luckyu.rootUrl + "/OrganizationModule/Department/DepartmentSelectForm?multiple=" + defaultOption.multiple + "&companyId=" + defaultOption.companyId,
                 btn: [{
                     name: "确定",
                     callback: function (index, layero) {
@@ -297,7 +297,7 @@
                 title: "公司选择",
                 width: 450,
                 height: 660,
-                url: luckyu.rootUrl + "/OrganizationModule/Company/CompanyForm?multiple=" + defaultOption.multiple,
+                url: luckyu.rootUrl + "/OrganizationModule/Company/CompanySelectForm?multiple=" + defaultOption.multiple,
                 btn: [{
                     name: "确定",
                     callback: function (index, layero) {

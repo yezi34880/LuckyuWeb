@@ -32,14 +32,8 @@ var bootstrap = function (layui) {
                     },
                     { name: 'flowcode', label: "委托流程", width: 300, },
                     {
-                        name: 'is_enable', label: '是否有效', width: 40, search: false,
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 1: return '<i class="fa fa-toggle-on"></i>';
-                                case 0: return '<i class="fa fa-toggle-off"></i>';
-                                default: return '';
-                            }
-                        }
+                        name: 'is_enable', label: '是否有效', width: 40, align: "center",
+                        stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     },
                     { name: 'remark', label: "备注", width: 100, }
                 ],

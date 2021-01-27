@@ -17,11 +17,7 @@ namespace Luckyu.App.System
         {
             Expression<Func<sys_coderuleEntity, bool>> exp = r => r.is_delete == 0;
 
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("is_enable",
-                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-                );
-            var page = BaseRepository().GetPage(jqpage, exp, dicCondition);
+            var page = BaseRepository().GetPage(jqpage, exp);
             return page;
         }
 

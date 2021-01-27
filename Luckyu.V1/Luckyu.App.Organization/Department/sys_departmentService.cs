@@ -16,11 +16,7 @@ namespace Luckyu.App.Organization
             {
                 expCondition = expCondition.LinqAnd(r => r.company_id == companyId);
             }
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            dicCondition.Add("is_enable",
-                (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-                );
-            var page = BaseRepository().GetPage(jqpage, expCondition, dicCondition);
+            var page = BaseRepository().GetPage(jqpage, expCondition);
             return page;
         }
 

@@ -75,7 +75,7 @@
             if (!$grid || $grid.length < 1) {
                 return;
             }
-            grid.jqGrid('filterToolbar', {
+            $grid.jqGrid('filterToolbar', {
                 autosearch: true,  // true输入后回车键搜索，false文本改变搜索
                 stringResult: true,
                 beforeSearch: function () {  // 重新设置参数 手动触发查询
@@ -83,19 +83,30 @@
                         var filters = JSON.parse(this.p.postData.filters)
                         var rules = filters.rules;
                         if (!!rules && rules.length > 0) {
+                            var colModel = $grid.jqGrid("getGridParam", "colModel");
                             for (var i = 0; i < rules.length; i++) {
                                 var rule = rules[i];
                                 var $ele = $("#gs_" + rule.field);
                                 var val1 = $ele.val();
                                 var val2 = $ele.attr("_realValue");
                                 rule.data = val2 || val1;
+
+                                rule.stype = "";
+                                var model = colModel.filter(r => r.name === rule.field);
+                                if (!!model && model.length > 0) {
+                                    rule.stype = model[0].stype;
+                                    if (!!model[0].dataitemcode) {
+                                        rule.stype = "dataitem";
+                                    }
+                                }
                             }
                         }
                         this.p.postData.filters = JSON.stringify(filters);
                     }
                 },
                 onClearSearchValue: function (elem, colIndex, s, d) {
-                    $(elem).attr("_realValue", "");
+                    $(elem).attr("_realValue", "").val("");
+
                 },
             });
         },
@@ -432,10 +443,15 @@
                                 }
                             }
                             col.searchoptions = {
+                                //dataInit: function (ele, op, a) {
+                                //    debugger;
+                                //},
                                 value: function () {
                                     var selectoption = { "-1": "全部" };
+                                    var thiscolname = this.name;
+                                    var thiscol = op.colModel.filter(z => z.name === thiscolname);
                                     luckyu.clientdata.getAllAsync('dataItem', {
-                                        code: this.name,
+                                        code: thiscol[0].dataitemcode,
                                         callback: function (_datas) {
                                             for (var key in _datas) {
                                                 selectoption[_datas[key].value] = _datas[key].name;
@@ -475,6 +491,10 @@
                                                     $(elem).val(names);
                                                     self[0].triggerToolbar();
                                                 }
+                                                else {
+                                                    $(elem).attr("_realValue", "").val("");
+                                                    self[0].triggerToolbar();
+                                                }
                                             }
                                         });
                                     });
@@ -501,17 +521,17 @@
                                         luckyu.layer.departmentSelectForm({
                                             initValue: (!!alreadyValues ? alreadyValues.split(',') : []),
                                             multiple: true,
-                                            callback: function (userlist) {
-                                                var strUserList = userlist.join(',');
-                                                $(elem).attr("_realValue", strUserList);
-                                                luckyu.clientdata.getsAsync('user', {
-                                                    key: strUserList,
-                                                    callback: function (item) {
-                                                        var names = item.map(t => t.name).join(",");
-                                                        $(elem).val(names);
-                                                    }
-                                                });
-                                                self[0].triggerToolbar();
+                                            callback: function (nodelist) {
+                                                if (!!nodelist && nodelist.length > 0) {
+                                                    var ids = nodelist.map(r => r.id).join(",");
+                                                    var names = nodelist.map(r => r.label).join(",");
+                                                    $(elem).attr("_realValue", ids).val(names);
+                                                    self[0].triggerToolbar();
+                                                }
+                                                else {
+                                                    $(elem).attr("_realValue", "").val("");
+                                                    self[0].triggerToolbar();
+                                                }
                                             }
                                         });
                                     });
@@ -538,17 +558,17 @@
                                         luckyu.layer.companySelectForm({
                                             initValue: (!!alreadyValues ? alreadyValues.split(',') : []),
                                             multiple: true,
-                                            callback: function (userlist) {
-                                                var strUserList = userlist.join(',');
-                                                $(elem).attr("_realValue", strUserList);
-                                                luckyu.clientdata.getsAsync('user', {
-                                                    key: strUserList,
-                                                    callback: function (item) {
-                                                        var names = item.map(t => t.name).join(",");
-                                                        $(elem).val(names);
-                                                    }
-                                                });
-                                                self[0].triggerToolbar();
+                                            callback: function (nodelist) {
+                                                if (!!nodelist && nodelist.length > 0) {
+                                                    var ids = nodelist.map(r => r.id).join(",");
+                                                    var names = nodelist.map(r => r.label).join(",");
+                                                    $(elem).attr("_realValue", ids).val(names);
+                                                    self[0].triggerToolbar();
+                                                }
+                                                else {
+                                                    $(elem).attr("_realValue", "").val("");
+                                                    self[0].triggerToolbar();
+                                                }
                                             }
                                         });
                                     });

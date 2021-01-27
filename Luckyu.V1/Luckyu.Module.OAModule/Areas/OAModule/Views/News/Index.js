@@ -28,24 +28,12 @@ var bootstrap = function (layui) {
                         stype: "daterange"
                     },
                     {
-                        name: 'is_publish', label: '是否发布', width: 40, search: false,
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 1: return '<i class="fa fa-toggle-on"></i>';
-                                case 0: return '<i class="fa fa-toggle-off"></i>';
-                                default: return '';
-                            }
-                        }
+                        name: 'is_publish', label: '是否发布', width: 40, align: "center",
+                        stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     },
                     {
-                        name: 'sort', label: '是否置顶', width: 40, search: false,
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 99: return '<i class="fa fa-toggle-on"></i>';
-                                case 0: return '<i class="fa fa-toggle-off"></i>';
-                                default: return '';
-                            }
-                        }
+                        name: 'sort', label: '是否置顶', width: 40, align: "center",
+                        stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     },
                 ],
                 rownumbers: true,

@@ -21,43 +21,24 @@ namespace Luckyu.App.OA
         {
             Expression<Func<oa_newsEntity, bool>> exp = r => r.is_delete == 0;
 
-            #region 查询条件
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            //dicCondition.Add("catetory",
-            //    (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-            //    );
-            dicCondition.Add("publishtime",
-                (field, data) => SearchConditionHelper.GetDateCondition(field, data)
-                );
-            #endregion
             if (jqPage.sidx.IsEmpty())
             {
                 jqPage.sord = "";
                 jqPage.sidx = "sort DESC,publishtime DESC";
             }
-            var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
+            var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }
         public JqgridPageResponse<oa_newsEntity> ShowPage(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             Expression<Func<oa_newsEntity, bool>> exp = r => r.is_delete == 0 && r.is_publish == 1;
 
-            #region 查询条件
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
-            //dicCondition.Add("catetory",
-            //    (field, data) => SearchConditionHelper.GetStringEqualCondition(field, data, "-1")
-            //    );
-            dicCondition.Add("publishtime",
-                (field, data) => SearchConditionHelper.GetDateCondition(field, data)
-                );
-            #endregion
-
             if (jqPage.sidx.IsEmpty())
             {
                 jqPage.sord = "";
                 jqPage.sidx = "sort DESC,publishtime DESC";
             }
-            var page = BaseRepository().GetPage(jqPage, exp, dicCondition);
+            var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }
 

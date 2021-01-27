@@ -11,33 +11,48 @@ var bootstrap = function (layui) {
     top.alreadyselect = null;
     var companyId = request("companyId");
 
-    var treeDepartment;
+    var tree;
     var page = {
         bind: function () {
-            treeDepartment = layui.eleTree.render({
-                elem: '#treeDepartment',
+            tree = layui.eleTree.render({
+                elem: '#tree',
                 defaultExpandAll: true,
                 url: luckyu.rootUrl + "/OrganizationModule/Department/GetTree?companyId=" + companyId + "&multiple=" + multiple,
                 expandOnClickNode: false,
                 showCheckbox: true,
                 showLine: true,
                 highlightCurrent: true,
-                checkStrictly: multiple ? false : true,
+                //checkStrictly: multiple ? false : true,
+                checkStrictly: true,
                 done: function () {
                     if (!!alreadys && alreadys.length > 0) {
-                        treeDepartment.setChecked(alreadys, true)
+                        tree.setChecked(alreadys, true)
                     }
                 }
             });
-            layui.eleTree.on("nodeChecked(treeDepartment)", function (d) {
+            layui.eleTree.on("nodeChecked(tree)", function (d) {
                 if (multiple === false) {
-                    treeDepartment.unCheckNodes()
-                    treeDepartment.setChecked([d.data.currentData.id], true)
+                    tree.unCheckNodes()
+                    tree.setChecked([d.data.currentData.id], true)
                 }
+                if (multiple === true && d.data.currentData.ext.tag === "all") {
+                    if (d.isChecked) {
+                        var nodes = tree.getAllNodeData();
+                        var arr = [];
+                        for (var i = 0; i < nodes.length; i++) {
+                            arr.push(nodes[i].id);
+                        }
+                        tree.setChecked(arr, false);
+                    }
+                    else {
+                        tree.unCheckNodes();
+                    }
+                }
+
             })
-            $("#treeDepartment").resizeEleTree();
+            $("#tree").resizeEleTree();
             window.onresize = function () {
-                $("#treeDepartment").resizeEleTree();
+                $("#tree").resizeEleTree();
             };
         },
         init: function () {
@@ -47,7 +62,7 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex) {
-        var nodes = treeDepartment.getChecked(false, false);
+        var nodes = tree.getChecked(false, false);
         parent.layui.layer.close(layerIndex);
         return nodes;
     };

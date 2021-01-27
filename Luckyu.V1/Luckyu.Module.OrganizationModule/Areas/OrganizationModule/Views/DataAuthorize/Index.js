@@ -23,19 +23,8 @@ var bootstrap = function (layui) {
                     { name: 'objectrange', label: "查看范围", width: 80, stype: "dataitem", dataitemcode: "objectrange"},
                     { name: 'modulename', label: "模块名称", width: 250, stype: "dataitem", dataitemcode: "modulename"},
                     {
-                        name: 'is_enable', label: '有效', width: 40, //search: false,该列不搜索
-                        stype: "select",
-                        searchoptions: {
-                            value: { "-1": "全部", "1": "有效", "0": "无效" },
-                            defaultValue: "-1"
-                        },
-                        formatter: function (cellvalue, options, rowObject) {
-                            switch (cellvalue) {
-                                case 1: return '<i class="fa fa-toggle-on"></i>';
-                                case 0: return '<i class="fa fa-toggle-off"></i>';
-                                default: return '';
-                            }
-                        }
+                        name: 'is_enable', label: '有效', width: 40, align: "center",
+                        stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     },
                     { name: 'remark', label: "备注", width: 80, },
                 ],
