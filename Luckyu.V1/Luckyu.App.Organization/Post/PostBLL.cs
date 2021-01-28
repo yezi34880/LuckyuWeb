@@ -17,7 +17,7 @@ namespace Luckyu.App.Organization
         #endregion
 
         #region cache
-        private string cacheKey = CacheFactory.GetCurrentDomain() + "luckyu_post_";
+        private string cacheKey = CacheFactory.CachePrefix() + "post_";
         private ICache cache = CacheFactory.Create();
 
         #endregion

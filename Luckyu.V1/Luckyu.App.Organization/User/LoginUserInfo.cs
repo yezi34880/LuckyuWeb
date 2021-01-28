@@ -22,7 +22,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         /// 秘钥
         /// </summary>
-        private string cookieKeyToken = "luckyu_login_token";
+        private string cookieKeyToken = CacheFactory.CachePrefix() + "login_token";
 
         private UserBLL userBLL = new UserBLL();
         private CompanyBLL companyBLL = new CompanyBLL();
@@ -31,7 +31,7 @@ namespace Luckyu.App.Organization
         #endregion
 
         #region cache
-        private string cacheKeyToken = CacheFactory.GetCurrentDomain() + "luckyu_login_token";
+        private string cacheKeyToken = CacheFactory.CachePrefix() + "login_token";
         private ICache cache = CacheFactory.Create();
 
         #endregion
@@ -101,11 +101,6 @@ namespace Luckyu.App.Organization
             {
                 cache.Write(cacheKeyToken + loginInfo.token, loginInfo.loginname);
             }
-        }
-
-        public void SetLogin(string loginname, HttpContext httpContext, LoginAppEnum appId)
-        {
-            SetLogin(loginname, httpContext, appId.ToString());
         }
 
         /// <summary>

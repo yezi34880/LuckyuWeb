@@ -18,7 +18,7 @@ namespace Luckyu.App.Organization
         #endregion
 
         #region cache
-        private string cacheKey = CacheFactory.GetCurrentDomain() + "luckyu_dataauthorize_";
+        private string cacheKey = CacheFactory.CachePrefix() + "dataauthorize_";
         private ICache cache = CacheFactory.Create();
 
         #endregion

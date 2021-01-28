@@ -18,12 +18,12 @@ namespace Luckyu.Cache
         }
 
         /// <summary>
-        /// 多域名 缓存后缀 先留着
+        /// 多缓存 缓存后缀 先留着
         /// </summary>
         /// <returns></returns>
-        public static string GetCurrentDomain()
+        public static string CachePrefix()
         {
-            return "";
+            return LuckyuHelper.AppID ;
         }
     }
 }

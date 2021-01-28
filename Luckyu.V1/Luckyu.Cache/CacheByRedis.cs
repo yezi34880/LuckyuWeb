@@ -19,20 +19,25 @@ namespace Luckyu.Cache
         {
             if (connectionString.IsEmpty())
             {
-                throw new Exception("请先调用CacheByRedis.SetConnectString方法设置connectionString");
+                var conString = AppSettingsHelper.GetConnectionString("Redis");
+                if (conString.IsEmpty())
+                {
+                    throw new Exception("请先调用CacheByRedis.SetConnectString方法设置connectionString");
+                }
+                connectionString = conString;
             }
             redis = ConnectionMultiplexer.Connect(connectionString);
-            db = redis.GetDatabase(99);
-        }
-        public static void SetConnectString(string conString)
-        {
-            connectionString = conString;
+            db = redis.GetDatabase(0);
         }
 
         public T Read<T>(string cacheKey) where T : class
         {
-            var str = db.StringGet(cacheKey);
-            var result = JsonConvert.DeserializeObject<T>(str);
+            var res = db.StringGet(cacheKey);
+            if (!res.HasValue)
+            {
+                return default(T);
+            }
+            var result = JsonConvert.DeserializeObject<T>(res);
             return result;
         }
 
@@ -56,7 +61,7 @@ namespace Luckyu.Cache
             //FlushDatabase didn't work for me: got error admin mode not enabled error
             //server.FlushDatabase();
             var keys = server.Keys();
-            var strStar = CacheFactory.GetCurrentDomain() + "lucky_login_";
+            var strStar = CacheFactory.CachePrefix() + "login_";
             foreach (var key in keys)
             {
                 var k = key.ToString();
@@ -71,7 +76,7 @@ namespace Luckyu.Cache
         public void Write<T>(string cacheKey, T value) where T : class
         {
             var str = JsonConvert.SerializeObject(value);
-            db.StringSet(cacheKey, str, TimeSpan.FromDays(1));
+            db.StringSet(cacheKey, str);
         }
 
         public void Write<T>(string cacheKey, T value, TimeSpan timeSpan) where T : class

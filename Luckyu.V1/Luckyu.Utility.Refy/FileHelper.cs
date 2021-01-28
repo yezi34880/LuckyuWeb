@@ -8,8 +8,8 @@ namespace Luckyu.Utility
     {
         #region 获取文件版本号版本号
         private static string RunMode = AppSettingsHelper.GetAppSetting("RunMode");
-        private static string cacheKeyContent = CacheFactory.GetCurrentDomain() + "luckyu_filepath_";
-        private static string cacheKeyVersion = CacheFactory.GetCurrentDomain() + "luckyu_fileverion_";
+        private static string cacheKeyContent = CacheFactory.CachePrefix() + "filepath_";
+        private static string cacheKeyVersion = CacheFactory.CachePrefix() + "fileverion_";
 
         public static string GetFileContent(string filePath)
         {

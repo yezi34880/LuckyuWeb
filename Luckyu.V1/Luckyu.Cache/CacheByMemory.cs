@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Luckyu.Utility;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace Luckyu.Cache
         public void RemoveAllwithoutLogin()
         {
             var allKeys = GetCacheKeys();
-            var strStar = CacheFactory.GetCurrentDomain() + "luckyu_login_";
+            var strStar = CacheFactory.CachePrefix() + "login_";
             foreach (var key in allKeys)
             {
                 if (key.StartsWith(strStar))
@@ -75,7 +76,7 @@ namespace Luckyu.Cache
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            myCache.Set<T>(cacheKey, value, TimeSpan.FromDays(1));
+            myCache.Set<T>(cacheKey, value);
         }
 
         public void Write<T>(string cacheKey, T value, TimeSpan timeSpan) where T : class

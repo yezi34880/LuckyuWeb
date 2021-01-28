@@ -23,8 +23,8 @@ namespace Luckyu.App.Organization
         #endregion
 
         #region cache
-        private string cacheKey = CacheFactory.GetCurrentDomain() + "luckyu_user_";
-        private string cacheKeyLoginname = CacheFactory.GetCurrentDomain() + "luckyu_user_loginname_";
+        private string cacheKey = CacheFactory.CachePrefix() + "user_";
+        private string cacheKeyLoginname = CacheFactory.CachePrefix() + "user_loginname_";
         private ICache cache = CacheFactory.Create();
 
         #endregion
