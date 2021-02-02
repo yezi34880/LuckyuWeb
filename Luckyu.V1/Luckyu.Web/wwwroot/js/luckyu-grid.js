@@ -157,8 +157,10 @@
                             case "custom":
                                 var xmselect = $(this.innerHTML).find(".xm-select");
                                 if (!!xmselect) {
-                                    xmSelect.get("#" + xmselect.attr("id"), true)
-                                    tmp[nm] = xmSelect.get("#" + xmselect.attr("id"), true).getValue("valueStr");
+                                    var xms = xmSelect.get("#" + xmselect.attr("id"), true);
+                                    var val = xms.getValue("valueStr");;
+                                    val = !!val ? val : "";
+                                    tmp[nm] = val.indexOf(",") < 0 ? val : (val + ",");
                                 }
                                 break;
                         }

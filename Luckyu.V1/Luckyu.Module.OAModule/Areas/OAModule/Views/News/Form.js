@@ -23,9 +23,6 @@ var bootstrap = function (layui) {
                         $('[lay-filter="News"]').setFormValue(data.News);
                     })
             }
-            else {
-                $("#statename").val("起草");
-            }
         },
     };
     page.init();
@@ -39,7 +36,7 @@ var bootstrap = function (layui) {
             keyValue: keyValue,
             strEntity: JSON.stringify(formData),
         }, function (data) {
-            keyValue = data.id;
+            keyValue = data.news_id;
             if (!!callBack) {
                 callBack();
             }

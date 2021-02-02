@@ -58,7 +58,7 @@ namespace Luckyu.App.System
             var entity = GetEntityByCache(configCode);
             if (entity == null)
             {
-                throw new Exception("该配置项不存在");
+                throw new Exception($"{configCode}配置项不存在");
             }
             else
             {

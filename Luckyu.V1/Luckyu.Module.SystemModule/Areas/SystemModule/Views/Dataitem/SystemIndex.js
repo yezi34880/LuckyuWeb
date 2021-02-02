@@ -53,7 +53,7 @@ var bootstrap = function (layui) {
             })
         },
         initGrid: function () {
-            grid = $("#grid").jqGrid({
+            grid = $("#grid").LuckyuGrid({
                 url: luckyu.rootUrl + "/SystemModule/Dataitem/SystemPage",
                 datatype: "json",
                 altRows: true,//隔行换色

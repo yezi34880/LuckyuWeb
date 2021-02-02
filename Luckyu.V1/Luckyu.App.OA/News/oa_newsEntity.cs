@@ -25,9 +25,9 @@ namespace Luckyu.App.OA
         public string title { get; set; }
 
         /// <summary>
-        ///  catetory   
+        ///  category   
         /// </summary>
-        public string catetory { get; set; }
+        public string category { get; set; }
 
         /// <summary>
         ///  keywords   

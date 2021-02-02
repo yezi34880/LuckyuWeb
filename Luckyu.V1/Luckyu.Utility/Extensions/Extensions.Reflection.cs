@@ -29,6 +29,11 @@ namespace Luckyu.Utility
             }
             return description.Description;
         }
+        public static bool HasAttribute<T>(this MemberInfo type) where T : Attribute
+        {
+            var attribute = type.GetCustomAttribute<T>();
+            return attribute != null;
+        }
 
         public static bool HasAttribute<T>(this Type type) where T : Attribute
         {

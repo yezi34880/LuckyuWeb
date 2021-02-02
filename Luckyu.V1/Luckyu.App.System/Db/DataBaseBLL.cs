@@ -47,6 +47,7 @@ namespace Luckyu.App.System
                 return;
             }
             var log = new sys_logEntity();
+            log.app_name = LuckyuHelper.AppID;
             log.log_type = (int)LogType.Business;
             log.module = $"{ tableInfo.showname}";
             log.op_type = "新增";
@@ -94,6 +95,7 @@ namespace Luckyu.App.System
             //var primaryName = entityInfo.Primarys[0].Attribute.Name;
             var keyValue = entityInfo.Primarys[0].GetValue(entity).ToString();
             var log = new sys_logEntity();
+            log.app_name = LuckyuHelper.AppID;
             log.log_type = (int)LogType.Business;
             log.module = $"{ tableInfo.showname}";
             log.op_type = "删除";
@@ -146,6 +148,7 @@ namespace Luckyu.App.System
                 onlyCols.AddRange(dict.Keys.ToList());
             }
             var log = new sys_logEntity();
+            log.app_name = LuckyuHelper.AppID;
             log.log_type = (int)LogType.Business;
             log.module = $"{ tableInfo.showname}";
             log.op_type = "修改";

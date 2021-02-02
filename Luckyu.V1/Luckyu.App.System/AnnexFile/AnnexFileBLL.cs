@@ -92,7 +92,16 @@ namespace Luckyu.App.System
                 }
             }
         }
-
+        public void DeleteAnnexs(List<string> fileIds)
+        {
+            if (!fileIds.IsEmpty())
+            {
+                foreach (var fileId in fileIds)
+                {
+                    DeleteAnnex(fileId);
+                }
+            }
+        }
         #endregion
 
         #region bootstrap fileinput 预览

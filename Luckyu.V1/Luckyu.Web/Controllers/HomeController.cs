@@ -44,6 +44,7 @@ namespace Luckyu.Web.Controllers
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             var log = new sys_logEntity
             {
+                app_name = LuckyuHelper.AppID,
                 log_type = (int)LogType.Operation,
                 op_type = "访问菜单",
                 host = HttpContext.Request.Host.Host,

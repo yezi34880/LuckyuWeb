@@ -18,18 +18,16 @@ namespace Luckyu.Web
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            //var controllerName = ((Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)context.ActionDescriptor).ControllerName;
-            //var actionName = ((Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)context.ActionDescriptor).ActionName;
-
-            var typeController = context.Controller.GetType();
-            var typeAction = ((Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)context.ActionDescriptor).MethodInfo.GetType();
-            if (typeController.HasAttribute<AllowAnonymousAttribute>() || typeAction.HasAttribute<AllowAnonymousAttribute>())
+            var descriptor = context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
+            var action = descriptor.MethodInfo;
+            var controller = descriptor.ControllerTypeInfo;
+            if (controller.HasAttribute<AllowAnonymousAttribute>() || action.HasAttribute<AllowAnonymousAttribute>())
             {
                 return;
             }
 
-            var isOn = LoginUserInfo.Instance.IsOnLine(context.HttpContext);
-            if (!isOn)
+            var isOnLine = LoginUserInfo.Instance.IsOnLine(context.HttpContext);
+            if (!isOnLine)
             {
                 context.Result = new RedirectResult("~/Login/Index");
             }

@@ -85,7 +85,7 @@ var bootstrap = function (layui) {
                 if (!!callBack) {
                     callBack();
                 }
-                $("#AnnexName").upload(keyValue, function () {
+                    $("#AnnexName").uploadFile(keyValue, function () {
                     parent.layui.layer.close(layerIndex);
                 });
             });

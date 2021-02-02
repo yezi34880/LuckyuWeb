@@ -63,7 +63,7 @@
     {{each News item index}}
     <div class="ahoit-msg-line">
         <a style="text-decoration: none;" luckyu-id="{{item.news_id}}" title="{{item.title}}">
-            ●&nbsp;&nbsp; {{if item.sort  > 0}}  <i class="fa fa-star"></i>  {{/if}}【{{item.catetory}}】{{item.title}}
+            ●&nbsp;&nbsp; {{if item.sort  > 0}}  <i class="fa fa-star"></i>  {{/if}}【{{item.category}}】{{item.title}}
         </a>
         <label>{{item.publishtime | dateFormat 'yyyy-MM-dd'}}</label>
     </div>

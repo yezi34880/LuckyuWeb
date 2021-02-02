@@ -55,6 +55,7 @@ namespace Luckyu.Web.Controllers
             {
                 log.device = (info.Match.Client == null ? "" : $"{info.Match.Client.Type}: {info.Match.Client.Name} {info.Match.Client.Version} ") + (info.Match.Os == null ? "" : $" os: {info.Match.Os.Name} {info.Match.Os.Version} {info.Match.Os.Platform}");
             }
+            log.app_name = LuckyuHelper.AppID;
             log.host = request.Host.Host;
             log.ip_address = HttpContext.GetRequestIp();
             log.log_type = (int)LogType.Login;

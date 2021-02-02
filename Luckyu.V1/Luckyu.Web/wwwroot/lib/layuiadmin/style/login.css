@@ -13,8 +13,8 @@ html,body,#LAY_app{height:100%;}
 #Luckyu-user-login {
     background-image: url(/image/login.jpg);
     background-repeat: no-repeat;
-    background-size: cover;
-    -moz-background-size: cover;
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
 }
 #Luckyu-user-login,
 .layadmin-user-display-show{display: block !important;} 

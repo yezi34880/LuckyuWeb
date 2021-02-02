@@ -399,6 +399,7 @@ namespace Luckyu.App.Workflow
                 {
                     var sendRes = new ResponseResult();
                     sendRes.info = res.info;
+                    sendRes.data = "审批通知";
                     await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
                 }
             }
@@ -415,6 +416,7 @@ namespace Luckyu.App.Workflow
                 {
                     var sendRes = new ResponseResult();
                     sendRes.info = res.info;
+                    sendRes.data = "审批通知";
                     await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
                 }
             }
@@ -587,6 +589,7 @@ namespace Luckyu.App.Workflow
                 {
                     var sendRes = new ResponseResult();
                     sendRes.info = res.info;
+                    sendRes.data = "审批通知";
                     await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
                 }
             }

@@ -21,12 +21,6 @@ var bootstrap = function (layui) {
                 }
             });
             $("#department_id").initLocal({});
-            $("#sex").initLocal({
-                data: [
-                    { name: "男", value: 1 },
-                    { name: "女", value: 2 },
-                ]
-            });
             layui.layer.close(loading);
         },
         initData: function () {

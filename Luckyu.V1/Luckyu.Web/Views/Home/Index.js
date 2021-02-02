@@ -19,11 +19,16 @@
             connection.on("ReceiveMessage", function (res) {
                 //layui.notice.info(message);
                 var result = JSON.parse(res);
-                layui.notice.info(result.info, "", {
+                layui.notice.info(result.info, result.data, {
                     closeButton: true,  //显示关闭按钮
                     positionClass: "toast-bottom-right",  //弹出的位置
-                    onclick: function () {
-                        
+                    onclick: function (e) {
+                        if (result.data === "审批通知") {
+                            layui.index.openTabsPage("/WorkflowModule/Task/Index", "我的任务");
+                        }
+                        else {
+                            layui.index.openTabsPage("/SystemModule/Message/ShowIndex", "通知中心");
+                        }
                     }
                 });
             });
@@ -43,7 +48,7 @@
             // 搜索
             $("#searchKeyword").typeahead({
                 source: searchSource,
-                afterSelect: function (item, a, b) {
+                afterSelect: function (item) {
                     layui.index.openTabsPage(item.href, item.name);
                     $("#searchKeyword").val('');
                 }

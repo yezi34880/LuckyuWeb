@@ -40,6 +40,24 @@ namespace Luckyu.Module.SystemModule.Controllers
             return File(bytes, annex.contexttype, annex.filename);
         }
 
+        public IActionResult ShowFileByExid(string exId)
+        {
+            var annex = annexBLL.GetEntity(r => r.external_id == exId);
+            if (annex == null)
+            {
+                return null;
+            }
+            var basepath = configBLL.GetValueByCache(annex.basepath);
+            var filePath = FileHelper.Combine(basepath, annex.filepath);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return null;
+            }
+            Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+            return File(bytes, annex.contexttype, annex.filename);
+        }
+
         /// <summary>
         /// 上传附件
         /// </summary>

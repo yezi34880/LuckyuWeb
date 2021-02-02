@@ -54,7 +54,7 @@ var bootstrap = function (layui) {
             })
         },
         initGrid: function () {
-            grid = $("#grid").jqGrid({
+            grid = $("#grid").LuckyuGrid({
                 url: luckyu.rootUrl + "/SystemModule/Dataitem/Page",
                 datatype: "json",
                 altRows: true,//隔行换色
@@ -114,8 +114,8 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 var node = treeDataitem.getHighlightNode();
-                if (!node) {
-                    layui.notice.error("请选择分类");
+                if (!node.id) {
+                    layui.notice.error("请选择字典分类");
                     return;
                 }
                 var dataitem_id = node.id;

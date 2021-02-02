@@ -65,6 +65,7 @@ namespace Luckyu.DataAccess
                                       }
                                       var log = new sys_logEntity();
                                       log.log_type = (int)LogType.Sql;
+                                      log.app_name = LuckyuHelper.AppID;
                                       log.log_content = result;
                                       log.log_json = JsonConvert.SerializeObject(dic);
                                       logService.Insert(log);

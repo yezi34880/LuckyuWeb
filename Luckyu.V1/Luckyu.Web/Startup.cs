@@ -41,12 +41,12 @@ namespace Luckyu.Web
             services.AddSignalR();
             services.AddScoped<SignalRHelper>();
 
-            // 附件文件夹
-            var baseFilePath = AppSettingsHelper.GetAppSetting("AnnexPath");
-            if (!Directory.Exists(baseFilePath))
-            {
-                Directory.CreateDirectory(baseFilePath);
-            }
+            //// 附件文件夹 配置项放数据库了
+            //var baseFilePath = AppSettingsHelper.GetAppSetting("AnnexPath");
+            //if (!Directory.Exists(baseFilePath))
+            //{
+            //    Directory.CreateDirectory(baseFilePath);
+            //}
 
             // UEditor
             var configPath = FileHelper.Combine(Environment.CurrentDirectory, "wwwroot/lib/ueditor/config/config.json");
@@ -64,6 +64,7 @@ namespace Luckyu.Web
                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";   // 设置时间格式
            });
 
+            #region 动态加载 模块程序集
             // 动态加载 模块程序集
             var fileNames = Directory.GetFiles(AppContext.BaseDirectory, "Luckyu.Module.*.dll");
             foreach (var name in fileNames)
@@ -96,6 +97,7 @@ namespace Luckyu.Web
                 System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(name);
             }
 
+            #endregion
 
             // IP信任列表
             //services.Configure<ForwardedHeadersOptions>(options =>

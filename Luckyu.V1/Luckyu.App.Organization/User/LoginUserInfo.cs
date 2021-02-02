@@ -186,20 +186,21 @@ namespace Luckyu.App.Organization
             catch (Exception ex)
             {
                 var logger = NLog.LogManager.GetCurrentClassLogger();
-                var entity = new sys_logEntity();
-                entity.log_type = (int)LogType.Login;
-                entity.op_type = "登录异常";
-                entity.log_time = DateTime.Now;
-                entity.module = "LoginError";
+                var log = new sys_logEntity();
+                log.app_name = LuckyuHelper.AppID;
+                log.log_type = (int)LogType.Login;
+                log.op_type = "登录异常";
+                log.log_time = DateTime.Now;
+                log.module = "LoginError";
                 var loginInfo = LoginUserInfo.Instance.GetLoginUser(httpContext);
                 if (loginInfo != null)
                 {
-                    entity.user_id = loginInfo.user_id;
-                    entity.user_name = loginInfo.realname;
+                    log.user_id = loginInfo.user_id;
+                    log.user_name = loginInfo.realname;
                 }
-                entity.log_content = LogHelper.ErrorFormat(ex, entity);
+                log.log_content = LogHelper.ErrorFormat(ex, log);
                 logger.Error(ex);
-                LogBLL.WriteLog(entity);
+                LogBLL.WriteLog(log);
                 return false;
             }
         }

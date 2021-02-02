@@ -1612,7 +1612,7 @@ layui.define(["jquery","laytpl"], function (exports) {
             var obj={};
             if(!this.prevClickEle) return obj;
             obj["node"]=this.prevClickEle;
-            obj[options.request.key]=this.prevClickEle.parent(".eleTree-node").data(options.request.key);
+            obj[options.request.key]=this.prevClickEle.parent(".eleTree-node").data(options.request.key).toString();
             // 合并其他自定义数据到选中节点数据
             var f = function (data) {
                 data.forEach(function (val) {

@@ -45,6 +45,7 @@ namespace Luckyu.App.System
             messageService.Insert(list, loginInfo);
             return list;
         }
+
         public async Task Send(sys_messageEntity entity, UserModel loginInfo, IHubContext<MessageHub> hubContext)
         {
             var list = Send(entity, loginInfo);
@@ -55,6 +56,7 @@ namespace Luckyu.App.System
                 {
                     var res = new ResponseResult();
                     res.info = entity.contents;
+                    res.data = "系统通知";
                     await SignalRHelper.SendMessageToUser(hubContext, user.loginname, res);
                 }
             }

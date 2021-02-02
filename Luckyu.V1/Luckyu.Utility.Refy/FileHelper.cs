@@ -131,7 +131,7 @@ namespace Luckyu.Utility
                     DirectoryInfo dir = new DirectoryInfo(Environment.CurrentDirectory);
                     var dirName = relativePath.Replace("Areas/", "");
                     dirName = dirName.Substring(0, dirName.IndexOf('/'));
-                    dirName = $"Luckyu.Module.{dirName}";
+                    dirName = $"*.Module.{dirName}";
                     var dir1 = dir.Parent.GetDirectories(dirName, SearchOption.TopDirectoryOnly);
                     if (dir1 != null && dir1.Length > 0)
                     {

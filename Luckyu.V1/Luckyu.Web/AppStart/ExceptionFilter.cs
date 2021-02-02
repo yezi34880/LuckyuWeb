@@ -18,29 +18,30 @@ namespace Luckyu.Web
         {
             var logger = NLog.LogManager.GetCurrentClassLogger();
             var request = context.HttpContext.Request;
-            var entity = new sys_logEntity();
+            var log = new sys_logEntity();
             var info = DeviceDetector.GetInfoFromUserAgent(request.Headers["User-Agent"].ToString());
             if (info != null)
             {
-                entity.device = (info.Match.Client == null ? "" : $"{info.Match.Client.Type}: {info.Match.Client.Name} {info.Match.Client.Version} ") + (info.Match.Os == null ? "" : $" os: {info.Match.Os.Name} {info.Match.Os.Version} {info.Match.Os.Platform}");
+                log.device = (info.Match.Client == null ? "" : $"{info.Match.Client.Type}: {info.Match.Client.Name} {info.Match.Client.Version} ") + (info.Match.Os == null ? "" : $" os: {info.Match.Os.Name} {info.Match.Os.Version} {info.Match.Os.Platform}");
             }
-            entity.host = request.Host.Host;
-            entity.ip_address = context.HttpContext.GetRequestIp();
-            entity.log_type = (int)LogType.Exception;
-            entity.op_type = "异常";
-            entity.log_time = DateTime.Now;
-            entity.module = context.ActionDescriptor.DisplayName;
+            log.app_name = LuckyuHelper.AppID;
+            log.host = request.Host.Host;
+            log.ip_address = context.HttpContext.GetRequestIp();
+            log.log_type = (int)LogType.Exception;
+            log.op_type = "异常";
+            log.log_time = DateTime.Now;
+            log.module = context.ActionDescriptor.DisplayName;
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(context.HttpContext);
             if (loginInfo != null)
             {
-                entity.user_id = loginInfo.user_id;
-                entity.user_name = loginInfo.realname;
+                log.user_id = loginInfo.user_id;
+                log.user_name = loginInfo.realname;
             }
-            entity.log_content = LogHelper.ErrorFormat(context.Exception, entity);
+            log.log_content = LogHelper.ErrorFormat(context.Exception, log);
 
-            logger.Error(entity.log_content);
-            LogBLL.WriteLog(entity);
-            SendEmail(entity.log_content);
+            logger.Error(log.log_content);
+            LogBLL.WriteLog(log);
+            SendEmail(log.log_content);
 
             if (request.IsAjaxRequest())
             {

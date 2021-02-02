@@ -18,7 +18,7 @@ var bootstrap = function (layui) {
                 postData: {},
                 colModel: [
                     { name: 'news_id', hidden: true, key: true },
-                    { name: 'catetory', label: "分类", width: 80, },
+                    { name: 'category', label: "分类", width: 80, },
                     { name: 'title', label: "标题", width: 300, },
                     { name: 'source', label: "来源", width: 100, },
                     { name: 'keywords', label: "关键词", width: 100, },

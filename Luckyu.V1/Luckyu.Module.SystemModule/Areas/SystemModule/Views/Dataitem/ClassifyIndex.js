@@ -11,7 +11,7 @@ var bootstrap = function (layui) {
             page.initGrid();
         },
         initGrid: function () {
-            grid = grid.jqGrid({
+            grid = grid.LuckyuGrid({
                 url: luckyu.rootUrl + "/SystemModule/Dataitem/ClassifyPage",
                 datatype: "json",
                 altRows: true,//隔行换色

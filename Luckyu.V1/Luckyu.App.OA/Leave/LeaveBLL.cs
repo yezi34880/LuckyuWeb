@@ -84,10 +84,11 @@ namespace Luckyu.App.OA
             return ResponseResult.Success();
         }
 
-        public async Task<ResponseResult<oa_leaveEntity>> SaveForm(string keyValue, string strEntity, int isSubmit, UserModel loginInfo, IHubContext<MessageHub> messageHubContext)
+        public async Task<ResponseResult<oa_leaveEntity>> SaveForm(string keyValue, string strEntity, List<string> deleteAnnex, int isSubmit, UserModel loginInfo, IHubContext<MessageHub> messageHubContext)
         {
             var entity = strEntity.ToObject<oa_leaveEntity>();
-            if (!keyValue.IsEmpty()) // 修改
+            // 修改 权限判断
+            if (!keyValue.IsEmpty())
             {
                 var old = GetEntity(r => r.leave_id == keyValue);
                 if (old == null)
@@ -126,6 +127,9 @@ namespace Luckyu.App.OA
             }
 
             leaveService.SaveForm(keyValue, entity, strEntity, loginInfo);
+            fileBLL.DeleteAnnexs(deleteAnnex);
+
+            // 提交审批
             if (isSubmit > 0)
             {
                 var json = JsonConvert.SerializeObject(entity);

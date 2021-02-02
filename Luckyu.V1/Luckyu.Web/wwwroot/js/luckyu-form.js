@@ -113,7 +113,8 @@
                         }
                         else if (self.hasClass("xm-select")) {
                             var val = xmSelect.get("#" + id, true).getValue("valueStr");
-                            objData[name] = val;
+                            val = !!val ? val : "";
+                            objData[name] = val.indexOf(",") < 0 ? val : (val + ",");
                         }
                         else if (self.hasClass("luckyu-editor")) {
                             var ue = UE.getEditor(id);
@@ -189,7 +190,12 @@
                             }
                             else {
                                 if (typeof (value) === 'string') {
-                                    xmValue = value.split(',');
+                                    var strvalus = value.split(',');
+                                    for (var z = 0; z < strvalus.length; z++) {
+                                        if (!!strvalus[z]) {
+                                            xmValue.push(value[z]);
+                                        }
+                                    }
                                 }
                                 else {
                                     for (var z = 0; z < value.length; z++) {
@@ -275,7 +281,12 @@
                             }
                             else {
                                 if (typeof (value) === 'string') {
-                                    xmValue = value.split(',');
+                                    var strvalus = value.split(',');
+                                    for (var z = 0; z < strvalus.length; z++) {
+                                        if (!!strvalus[z]) {
+                                            xmValue.push(value[z]);
+                                        }
+                                    }
                                 }
                                 else {
                                     for (var z = 0; z < value.length; z++) {
@@ -388,7 +399,15 @@
                     if (!!option.folderPre) {
                         $self.attr("luckyu-folderPre", option.folderPre);
                     }
-                    var defaultOption = {};
+                    var defaultOption = {
+                        minFileSize: null,
+                        maxFileSize: null,
+                        minFileCount: 0,
+                        maxFileCount: 0,
+                        allowedFileExtensions: null,
+                        initialPreview: [],
+                        initialPreviewConfig: []
+                    };
                     $.extend(defaultOption, option);
                     $self.fileinput({
                         language: "zh",
@@ -398,9 +417,10 @@
                         showRemove: true,
                         uploadAsync: false, //是否异步
                         initialPreviewAsData: true,
+                        validateInitialCount: true,
                         overwriteInitial: false,  // 新选择图片是否替换原有预览图，false为不替换
-                        initialPreview: !defaultOption.initialPreview ? [] : defaultOption.initialPreview,
-                        initialPreviewConfig: !defaultOption.initialPreviewConfig ? [] : defaultOption.initialPreviewConfig,
+                        initialPreview: defaultOption.initialPreview,
+                        initialPreviewConfig: defaultOption.initialPreviewConfig,
                         layoutTemplates: {
                             actionUpload: "",
                         },

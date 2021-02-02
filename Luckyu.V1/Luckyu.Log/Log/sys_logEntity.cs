@@ -8,6 +8,7 @@ namespace Luckyu.Log
     ///  sys_log   
     /// </summary>
     [Table(Name = "SYS_LOG")]
+    [Index("index1", "process_id")]
     public class sys_logEntity
     {
         #region 属性
@@ -21,7 +22,7 @@ namespace Luckyu.Log
         /// <summary>
         ///  app_name   项目名
         /// </summary>
-        public string app_name { get; set; } = "Luckyu.Web";
+        public string app_name { get; set; }
 
         /// <summary>
         ///  log_type  LogType.Operation枚举  1-登录日志2-操作日志3-异常日志4-调试信息 5-SQL

@@ -67,10 +67,10 @@ namespace Luckyu.Module.OAModule.Controllers
 
         [HttpPost, AjaxOnly]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveForm(string keyValue, string strEntity, int isSubmit)
+        public async Task<IActionResult> SaveForm(string keyValue, string strEntity, List<string> deleteAnnex, int isSubmit)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = await leaveBLL.SaveForm(keyValue, strEntity, isSubmit, loginInfo, _hubContext);
+            var res = await leaveBLL.SaveForm(keyValue, strEntity, deleteAnnex, isSubmit, loginInfo, _hubContext);
             return Json(res);
         }
 
