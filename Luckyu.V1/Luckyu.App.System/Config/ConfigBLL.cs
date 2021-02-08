@@ -97,6 +97,7 @@ namespace Luckyu.App.System
                 return ResponseResult.Fail(MessageString.NoData);
             }
             configService.DeleteForm(entity, loginInfo);
+            cache.Remove(cacheKey);
             return ResponseResult.Success();
         }
 
@@ -113,6 +114,7 @@ namespace Luckyu.App.System
             }
 
             configService.SaveForm(keyValue, entity, strEntity, loginInfo);
+            cache.Remove(cacheKey);
             return ResponseResult.Success(entity);
         }
         #endregion

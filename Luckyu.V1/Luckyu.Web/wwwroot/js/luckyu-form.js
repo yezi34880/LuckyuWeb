@@ -112,9 +112,12 @@
                             }
                         }
                         else if (self.hasClass("xm-select")) {
-                            var val = xmSelect.get("#" + id, true).getValue("valueStr");
-                            val = !!val ? val : "";
-                            objData[name] = val.indexOf(",") < 0 ? val : (val + ",");
+                            var xmsel = xmSelect.get("#" + id, true);
+                            var val = xmsel.getValue("valueStr");
+                            if (xmsel.options.radio === false) {
+                                val = val + ",";
+                            }
+                            objData[name] = val;
                         }
                         else if (self.hasClass("luckyu-editor")) {
                             var ue = UE.getEditor(id);
@@ -193,7 +196,7 @@
                                     var strvalus = value.split(',');
                                     for (var z = 0; z < strvalus.length; z++) {
                                         if (!!strvalus[z]) {
-                                            xmValue.push(value[z]);
+                                            xmValue.push(strvalus[z]);
                                         }
                                     }
                                 }
@@ -284,7 +287,7 @@
                                     var strvalus = value.split(',');
                                     for (var z = 0; z < strvalus.length; z++) {
                                         if (!!strvalus[z]) {
-                                            xmValue.push(value[z]);
+                                            xmValue.push(strvalus[z]);
                                         }
                                     }
                                 }
@@ -344,7 +347,12 @@
                                         }
                                         else {
                                             if (typeof (value) === 'string') {
-                                                xmValue = value.split(',');
+                                                var strvalus = value.split(',');
+                                                for (var z = 0; z < strvalus.length; z++) {
+                                                    if (!!strvalus[z]) {
+                                                        xmValue.push(strvalus[z]);
+                                                    }
+                                                }
                                             }
                                             else {
                                                 for (var z = 0; z < value.length; z++) {
@@ -435,7 +443,13 @@
                  * @param {any} exId 文件外部Id
                  * @param {any} callback 回调
                  */
-                uploadFile: function (exId, callback) {
+                uploadFile: function (option) {
+                    var defaultOp = {
+                        exId: '',
+                        exCode: "",
+                        callback: null,
+                    };
+                    $.extend(defaultOption, option);
                     var $self = $(this);
                     var files = $self.fileinput('getFileList');
                     if (!!files && files.length > 0) {
@@ -445,21 +459,22 @@
                                 folderPre = !!folderPre ? folderPre : "";
                                 data.formdata.append("folderPre", folderPre);
                             }
-                            data.formdata.append("exId", exId);
+                            data.formdata.append("exId", defaultOp.exId);
+                            data.formdata.append("exCode", defaultOp.exCode);
                             data.formdata.append("__RequestVerificationToken", $.validateToken);
                         });
                         $self.on('filebatchuploadsuccess', function (data, previewId, index) {
                             luckyu.layer.closeLoading(loading);
-                            if (!!callback) {
-                                callback();
+                            if (!!defaultOption.callback) {
+                                defaultOption.callback();
                             }
                         });
                         var loading = luckyu.layer.loading();
                         $self.fileinput('upload');
                     }
                     else {
-                        if (!!callback) {
-                            callback();
+                        if (!!defaultOption.callback) {
+                            defaultOption.callback();
                         }
                     }
                 }

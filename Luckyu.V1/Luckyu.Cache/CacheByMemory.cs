@@ -14,7 +14,7 @@ namespace Luckyu.Cache
     {
         private static MemoryCache myCache;
 
-        public static CacheByMemory GetInstance()
+        public CacheByMemory()
         {
             if (myCache == null)
             {
@@ -28,7 +28,6 @@ namespace Luckyu.Cache
                 };
                 myCache = new MemoryCache(cacheOps);
             }
-            return new CacheByMemory();
         }
 
         //缓存的配置

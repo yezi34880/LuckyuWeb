@@ -96,11 +96,7 @@ namespace Luckyu.App.Organization
             cache.Write(cacheKeyToken + loginname, loginList);
 
             // 缓存帐号信息  
-            var token = cache.Read<string>(cacheKeyToken + loginInfo.token);
-            if (token.IsEmpty())
-            {
-                cache.Write(cacheKeyToken + loginInfo.token, loginInfo.loginname);
-            }
+            cache.Write(cacheKeyToken + loginInfo.token, loginInfo.loginname);
         }
 
         /// <summary>

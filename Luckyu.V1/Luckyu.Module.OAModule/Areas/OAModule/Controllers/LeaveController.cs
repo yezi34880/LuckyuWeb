@@ -51,6 +51,13 @@ namespace Luckyu.Module.OAModule.Controllers
             return Json(res);
         }
 
+        [HttpPost, AjaxOnly]
+        public async Task<IActionResult> Revoke(string keyValue)
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var res = leaveBLL.Revoke(keyValue, loginInfo, _hubContext);
+            return Json(res);
+        }
         #endregion
 
         #region From

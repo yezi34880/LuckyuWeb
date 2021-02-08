@@ -13,7 +13,7 @@ namespace Luckyu.Cache
             }
             else
             {
-                return CacheByMemory.GetInstance();
+                return new CacheByMemory();
             }
         }
 

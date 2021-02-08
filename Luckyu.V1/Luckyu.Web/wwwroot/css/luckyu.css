@@ -129,3 +129,8 @@ input.numeric {
     .typeahead.dropdown-menu li.active {
         border: 1px inset var(--tn-nav-color);
     }
+
+.btn-primary {
+    background-color: var(--tn-nav-color) !important;
+    border-color: var(--tn-nav-color) !important;
+}

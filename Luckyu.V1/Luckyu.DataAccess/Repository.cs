@@ -1500,7 +1500,11 @@ namespace Luckyu.DataAccess
                     {
                         continue;
                     }
-                    if (!rule.stype.IsEmpty())
+                    if (rule.stype.IsEmpty() || rule.stype == "text")
+                    {
+                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                    }
+                    else
                     {
                         switch (rule.stype)
                         {
@@ -1512,6 +1516,14 @@ namespace Luckyu.DataAccess
                             case "dataitem":
                                 filters.Add(SearchConditionHelper.GetStringEqualCondition(rule.field, rule.data, "-1"));
                                 break;
+                            case "dataitems":
+                                {
+                                    if (rule.data != "-1")
+                                    {
+                                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                                    }
+                                    break;
+                                }
                             case "daterange":
                                 filters.Add(SearchConditionHelper.GetDateCondition(rule.field, rule.data));
                                 break;
@@ -1519,10 +1531,6 @@ namespace Luckyu.DataAccess
                                 filters.Add(SearchConditionHelper.GetNumberCondition(rule.field, rule.data));
                                 break;
                         }
-                    }
-                    else
-                    {
-                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
                     }
                 }
             }

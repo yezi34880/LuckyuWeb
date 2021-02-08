@@ -53,6 +53,28 @@ namespace Luckyu.App.OA
         #endregion
 
         #region Set
+        /// <summary>
+        /// 生效撤回
+        /// </summary>
+        public async Task<ResponseResult> Revoke(string keyValue, UserModel loginInfo, IHubContext<MessageHub> hubContext)
+        {
+            var entity = GetEntity(r => r.leave_id == keyValue);
+            if (entity == null)
+            {
+                return ResponseResult.Fail(MessageString.NoData);
+            }
+            if (entity.state != (int)StateEnum.Effect)
+            {
+                return ResponseResult.Fail("只有生效状态才能请求生效撤回");
+            }
+            var json = JsonConvert.SerializeObject(entity);
+            var res = await taskBLL.Create(FlowEnum.Leave_Revoke, entity.leave_id, $"请假-生效撤回 {entity.username}", json, loginInfo, hubContext);
+            if (res.code != 200)
+            {
+                return ResponseResult.Fail(res.info);
+            }
+            return ResponseResult.Success();
+        }
 
         public ResponseResult DeleteForm(string keyValue, UserModel loginInfo)
         {

@@ -61,11 +61,11 @@ namespace Luckyu.Web.Controllers
             log.log_type = (int)LogType.Login;
             log.log_time = DateTime.Now;
             log.module = "Login";
-            log.log_content = $"用户 {username} 登录";
+            log.log_content = $"用户 { username } 登录";
             if (res.code == 200)
             {
                 LoginUserInfo.Instance.SetLogin(res.data.loginname, HttpContext, LuckyuHelper.AppID);
-                log.log_content += "  登录成功";
+                log.log_content += $"  登录成功 {res.data.realname}-{res.data.loginname}";
                 log.op_type = "成功";
                 log.user_id = res.data.user_id;
                 log.user_name = res.data.realname;
@@ -74,7 +74,7 @@ namespace Luckyu.Web.Controllers
             }
             else
             {
-                log.log_content += "  登录失败" + res.info;
+                log.log_content += "  登录失败 " + res.info;
                 log.op_type = "失败";
                 LogBLL.WriteLog(log);
                 return Fail(res.info);

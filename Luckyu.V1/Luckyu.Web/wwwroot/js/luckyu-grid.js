@@ -104,6 +104,12 @@
                         this.p.postData.filters = JSON.stringify(filters);
                     }
                 },
+                beforeClear: function (a, b, c, d) {
+                    this.p.postData._search = false;
+                    if (!!this.p.postData.filters) {
+                        this.p.postData.filters = [];
+                    }
+                },
                 onClearSearchValue: function (elem, colIndex, s, d) {
                     $(elem).attr("_realValue", "").val("");
 
@@ -157,10 +163,12 @@
                             case "custom":
                                 var xmselect = $(this.innerHTML).find(".xm-select");
                                 if (!!xmselect) {
-                                    var xms = xmSelect.get("#" + xmselect.attr("id"), true);
-                                    var val = xms.getValue("valueStr");;
-                                    val = !!val ? val : "";
-                                    tmp[nm] = val.indexOf(",") < 0 ? val : (val + ",");
+                                    var xmsel = xmSelect.get("#" + xmselect.attr("id"), true);
+                                    var val = xmsel.getValue("valueStr");
+                                    if (xmsel.options.radio === false) {
+                                        val = val + ",";
+                                    }
+                                    tmp[nm] = val;
                                 }
                                 break;
                         }
@@ -410,7 +418,8 @@
                     var self = $(this);
                     for (var i = 0; i < op.colModel.length; i++) {
                         var col = op.colModel[i];
-                        if (col.stype === "dataitem") {
+                        if (col.stype === "dataitem") {  // 数据字典 单选
+                            col.ltype = col.stype;
                             col.stype = "select";
                             if (!col.formatter) {
                                 if (!!col.formatterdataitem) {
@@ -448,6 +457,61 @@
                                 //dataInit: function (ele, op, a) {
                                 //    debugger;
                                 //},
+                                value: function () {
+                                    var selectoption = { "-1": "全部" };
+                                    var thiscolname = this.name;
+                                    var thiscol = op.colModel.filter(z => z.name === thiscolname);
+                                    luckyu.clientdata.getAllAsync('dataItem', {
+                                        code: thiscol[0].dataitemcode,
+                                        callback: function (_datas) {
+                                            for (var key in _datas) {
+                                                selectoption[_datas[key].value] = _datas[key].name;
+                                            }
+                                        }
+                                    });
+                                    return selectoption;
+                                },
+                                defaultValue: "-1"
+                            };
+                        }
+                        else if (col.stype === "dataitems") {  // 数据字典 多选
+                            col.ltype = col.stype;
+                            col.stype = "select";
+                            if (!col.formatter) {
+                                if (!!col.formatterdataitem) {
+                                    col.formatter = function (cellvalue, options, rowObject) {
+                                        var result = '';
+                                        cellvalue = cellvalue.trimRight(',');
+                                        luckyu.clientdata.getsAsync('dataItem', {
+                                            key: cellvalue,
+                                            code: options.colModel.formatterdataitem,
+                                            callback: function (_data) {
+                                                if (!!_data) {
+                                                    result = _data;
+                                                }
+                                            }
+                                        });
+                                        return result;
+                                    };
+                                }
+                                else {
+                                    col.formatter = function (cellvalue, options, rowObject) {
+                                        var result = '';
+                                        cellvalue = cellvalue.trimRight(',');
+                                        luckyu.clientdata.getsAsync('dataItem', {
+                                            key: cellvalue,
+                                            code: options.colModel.dataitemcode,
+                                            callback: function (_data) {
+                                                if (!!_data) {
+                                                    result = _data;
+                                                }
+                                            }
+                                        });
+                                        return result;
+                                    };
+                                }
+                            }
+                            col.searchoptions = {
                                 value: function () {
                                     var selectoption = { "-1": "全部" };
                                     var thiscolname = this.name;
@@ -578,13 +642,13 @@
                             };
                         }
                         else if (col.stype === "daterange") {
-                            //col.formatter = function (cellvalue, options, rowObject) {
-                            //    var result = "";
-                            //    if (cellvalue > '1900-1-1') {
-                            //        result = cellvalue;
-                            //    }
-                            //    return result;
-                            //};
+                            col.formatter = function (cellvalue, options, rowObject) {
+                                var result = "";
+                                if (cellvalue > '1900-1-1') {
+                                    result = cellvalue;
+                                }
+                                return result;
+                            };
                             col.searchoptions = {
                                 dataInit: function (elem) {
                                     $(elem).luckyurangedate({

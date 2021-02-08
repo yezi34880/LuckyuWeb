@@ -11,17 +11,14 @@ namespace Luckyu.App.System
 {
     public class sys_dataitem_detailService : RepositoryFactory<sys_dataitem_detailEntity>
     {
-        public JqgridPageResponse<sys_dataitem_detailEntity> Page(JqgridPageRequest jqpage, string classifyId, bool isALL)
+        public JqgridPageResponse<sys_dataitem_detailEntity> Page(JqgridPageRequest jqpage, string classifyId, bool isSystem)
         {
             Expression<Func<sys_dataitem_detailEntity, bool>> exp = r => r.is_delete == 0;
-            if (!isALL)
+            if (!isSystem)
             {
                 exp = exp.LinqAnd(r => r.is_system == 0);
             }
-            if (!classifyId.IsEmpty() && classifyId != "-1")
-            {
-                exp = exp.LinqAnd(r => r.dataitem_id == classifyId);
-            }
+            exp = exp.LinqAnd(r => r.dataitem_id == classifyId);
             var page = BaseRepository().GetPage(jqpage, exp);
             return page;
         }

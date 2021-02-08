@@ -190,9 +190,9 @@ namespace Luckyu.Module.SystemModule.Controllers
             return Json(treeData);
         }
         [HttpGet, AjaxOnly]
-        public IActionResult GetTree()
+        public IActionResult GetTree(int isSystem = 0)
         {
-            var treeData = dataitemBLL.GetTree();
+            var treeData = dataitemBLL.GetTree(isSystem);
             if (treeData.IsEmpty())
                 treeData = new List<eleTree>();
             var data = new

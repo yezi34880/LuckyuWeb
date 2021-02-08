@@ -19,5 +19,10 @@ namespace Luckyu.App.OA
             var logger = NLog.LogManager.GetCurrentClassLogger();
             logger.Debug(str);
         }
+
+        public ResponseResult CheckApprove(int result, string opinion)
+        {
+            return ResponseResult.Success();
+        }
     }
 }

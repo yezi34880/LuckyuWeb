@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,31 +28,32 @@ namespace Luckyu.Module.SystemModule.Controllers
             var annex = annexBLL.GetEntity(r => r.annex_id == fileId);
             if (annex == null)
             {
-                return null;
+                return new EmptyResult();
             }
             var basepath = configBLL.GetValueByCache(annex.basepath);
             var filePath = FileHelper.Combine(basepath, annex.filepath);
             if (!System.IO.File.Exists(filePath))
             {
-                return null;
+                return new EmptyResult();
             }
             Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
             var bytes = System.IO.File.ReadAllBytes(filePath);
             return File(bytes, annex.contexttype, annex.filename);
         }
 
-        public IActionResult ShowFileByExid(string exId)
+        public IActionResult ShowFileByExid(string exId, string exCode)
         {
-            var annex = annexBLL.GetEntity(r => r.external_id == exId);
-            if (annex == null)
+            Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
+            if (!exCode.IsEmpty())
             {
-                return null;
+                exp = exp.LinqAnd(r => r.externalcode == exCode);
             }
+            var annex = annexBLL.GetEntity(exp, "createtime DESC");
             var basepath = configBLL.GetValueByCache(annex.basepath);
             var filePath = FileHelper.Combine(basepath, annex.filepath);
             if (!System.IO.File.Exists(filePath))
             {
-                return null;
+                return new EmptyResult();
             }
             Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
             var bytes = System.IO.File.ReadAllBytes(filePath);
@@ -62,7 +64,7 @@ namespace Luckyu.Module.SystemModule.Controllers
         /// 上传附件
         /// </summary>
         [ValidateAntiForgeryToken]
-        public IActionResult UploadAnnex(string exId, string folderPre)
+        public IActionResult UploadAnnex(string exId, string exCode, string folderPre)
         {
             var res = new FileInputResponse();
             if (HttpContext.Request.Form.Files.Count > 0)
@@ -74,7 +76,7 @@ namespace Luckyu.Module.SystemModule.Controllers
                 for (int i = 0; i < files.Count; i++)
                 {
                     var file = files[i];
-                    annexBLL.SaveAnnex(exId, folderPre, file.FileName, file.ContentType, file.OpenReadStream(), loginInfo);
+                    annexBLL.SaveAnnex(exId, exCode, folderPre, file.FileName, file.ContentType, file.OpenReadStream(), loginInfo);
                 }
                 res = annexBLL.GetPreviewList(r => r.external_id == exId);
             }

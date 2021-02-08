@@ -11,7 +11,7 @@
  Target Server Version : 50717
  File Encoding         : 65001
 
- Date: 27/01/2021 17:18:57
+ Date: 08/02/2021 09:45:33
 */
 
 SET NAMES utf8mb4;
@@ -71,7 +71,7 @@ DROP TABLE IF EXISTS `oa_news`;
 CREATE TABLE `oa_news`  (
   `news_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `catetory` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `source` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `publishtime` datetime(0) NOT NULL,
@@ -107,6 +107,7 @@ DROP TABLE IF EXISTS `sys_annexfile`;
 CREATE TABLE `sys_annexfile`  (
   `annex_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `external_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `externalcode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `basepath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `filepath` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -125,7 +126,7 @@ CREATE TABLE `sys_annexfile`  (
 -- ----------------------------
 -- Records of sys_annexfile
 -- ----------------------------
-INSERT INTO `sys_annexfile` VALUES ('1348264427807444992', '1348260081048883200', '140904xr8h00ssn0g0zgza.jpg', 'annexbasepath', 'Leave\\1\\20210110\\1348264427807444992.jpg', 177813, '.jpg', 'image/jpeg', '', 0, '2021-01-10 21:44:24', '1', '超级管理员');
+INSERT INTO `sys_annexfile` VALUES ('1348264427807444992', '1348260081048883200', NULL, '140904xr8h00ssn0g0zgza.jpg', 'annexbasepath', 'Leave\\1\\20210110\\1348264427807444992.jpg', 177813, '.jpg', 'image/jpeg', '', 0, '2021-01-10 21:44:24', '1', '超级管理员');
 
 -- ----------------------------
 -- Table structure for sys_authorize
@@ -365,7 +366,7 @@ INSERT INTO `sys_dataitem` VALUES ('1309414846479077376', 'stateshow', '审批�
 INSERT INTO `sys_dataitem` VALUES ('1314211643311394816', 'modulename', '数据权限-模块', '1', 1, 1, '', '2020-10-08 22:30:47', '1', '超级管理员', '2020-10-08 22:57:41', '1', '超级管理员', 0, '', NULL, '', 1);
 INSERT INTO `sys_dataitem` VALUES ('1314218336153899008', 'objecttype', '数据权限-查看着类型', '1', 1, 2, '', '2020-10-08 22:57:23', '1', '超级管理员', '2020-10-08 22:57:46', '1', '超级管理员', 0, '', NULL, '', 1);
 INSERT INTO `sys_dataitem` VALUES ('1314218512541159424', 'objectrange', '数据权限-查看范围', '1', 1, 3, '', '2020-10-08 22:58:05', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1);
-INSERT INTO `sys_dataitem` VALUES ('1318451052059693056', 'newscatetory', '新闻通知类型', '1308776944787132416', 0, 4, '', '2020-10-20 15:16:41', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1);
+INSERT INTO `sys_dataitem` VALUES ('1318451052059693056', 'newscategory', '新闻通知类型', '1308776944787132416', 0, 4, '', '2020-10-20 15:16:41', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1);
 INSERT INTO `sys_dataitem` VALUES ('1354340767845453824', 'enable', '是否', '1308777574587043840', 1, 1, '', '2021-01-27 16:09:36', '1', '超级管理员-system', '2021-01-27 16:56:45', '1', '超级管理员-system', 0, '', NULL, '', 1);
 INSERT INTO `sys_dataitem` VALUES ('1354340882689691648', 'enableshow', '是否-标签', '1308777574587043840', 1, 2, '', '2021-01-27 16:10:04', '1', '超级管理员-system', '2021-01-27 16:56:50', '1', '超级管理员-system', 0, '', NULL, '', 1);
 INSERT INTO `sys_dataitem` VALUES ('1354352738137411584', 'sex', '男女', '1308777574587043840', 1, 5, '', '2021-01-27 16:57:10', '1', '超级管理员-system', NULL, '', '', 0, '', NULL, '', 1);
@@ -427,11 +428,11 @@ INSERT INTO `sys_dataitem_detail` VALUES ('1314221158832410624', '13142185125411
 INSERT INTO `sys_dataitem_detail` VALUES ('1314221220388016128', '1314218512541159424', 'objectrange', '同公司', '1', '', '', 2, '2020-10-08 23:08:51', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
 INSERT INTO `sys_dataitem_detail` VALUES ('1314221252579299328', '1314218512541159424', 'objectrange', '同部门', '2', '', '', 3, '2020-10-08 23:08:58', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
 INSERT INTO `sys_dataitem_detail` VALUES ('1314221292244832256', '1314218512541159424', 'objectrange', '全部', '9', '', '', 9, '2020-10-08 23:09:08', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
-INSERT INTO `sys_dataitem_detail` VALUES ('1318452283981303808', '1318451052059693056', 'newscatetory', '新闻通知', '新闻通知', '', '', 1, '2020-10-20 15:21:35', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
+INSERT INTO `sys_dataitem_detail` VALUES ('1318452283981303808', '1318451052059693056', 'newscategory', '新闻通知', '新闻通知', '', '', 1, '2020-10-20 15:21:35', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
 INSERT INTO `sys_dataitem_detail` VALUES ('1354341056115773440', '1354340767845453824', 'enable', '有效', '1', '', '', 1, '2021-01-27 16:10:45', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
 INSERT INTO `sys_dataitem_detail` VALUES ('1354341095273795584', '1354340767845453824', 'enable', '无效', '0', '', '', 2, '2021-01-27 16:10:54', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
-INSERT INTO `sys_dataitem_detail` VALUES ('1354341198491422720', '1354340882689691648', 'enableshow', '<i class=\"fa fa-toggle-on\"></i>', '1', '', '', 1, '2021-01-27 16:11:19', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
-INSERT INTO `sys_dataitem_detail` VALUES ('1354341257605943296', '1354340882689691648', 'enableshow', '<i class=\"fa fa-toggle-off\"></i>', '0', '', '', 2, '2021-01-27 16:11:33', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
+INSERT INTO `sys_dataitem_detail` VALUES ('1354341198491422720', '1354340882689691648', 'enableshow', '<span class=\"label label-success\">是</span>', '1', '', '', 1, '2021-01-27 16:11:19', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
+INSERT INTO `sys_dataitem_detail` VALUES ('1354341257605943296', '1354340882689691648', 'enableshow', '<span class=\"label label-default\">否</span>', '0', '', '', 2, '2021-01-27 16:11:33', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
 INSERT INTO `sys_dataitem_detail` VALUES ('1354352796228521984', '1354352738137411584', 'sex', '男', '1', '', '', 1, '2021-01-27 16:57:24', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
 INSERT INTO `sys_dataitem_detail` VALUES ('1354352827119570944', '1354352738137411584', 'sex', '女', '2', '', '', 2, '2021-01-27 16:57:31', '1', '超级管理员', NULL, '', '', 0, '', NULL, '', 1, 0);
 
@@ -457,6 +458,8 @@ CREATE TABLE `sys_dbcolumn`  (
 -- Records of sys_dbcolumn
 -- ----------------------------
 INSERT INTO `sys_dbcolumn` VALUES ('1', '1', 'user_id', '用户', '', 'user', '', NULL, 6, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('11', '2', 'title', '标题', NULL, 'text', NULL, NULL, 6, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('12', '2', 'publishtime', '发布时间', NULL, 'datetime', NULL, NULL, 6, 0);
 INSERT INTO `sys_dbcolumn` VALUES ('2', '1', 'department_id', '部门', '', 'department', NULL, NULL, 6, 0);
 INSERT INTO `sys_dbcolumn` VALUES ('3', '1', 'company_id', '公司', '', 'company', NULL, NULL, 6, 0);
 INSERT INTO `sys_dbcolumn` VALUES ('4', '1', 'begintime', '开始时间', '', 'datetime', NULL, NULL, 6, 0);
@@ -484,6 +487,7 @@ CREATE TABLE `sys_dbtable`  (
 -- Records of sys_dbtable
 -- ----------------------------
 INSERT INTO `sys_dbtable` VALUES ('1', 'oa_leave', '请假', '', '', '', '2020-11-21 21:12:14');
+INSERT INTO `sys_dbtable` VALUES ('2', 'oa_news', '新闻', NULL, NULL, NULL, '2021-01-28 14:45:11');
 
 -- ----------------------------
 -- Table structure for sys_department
@@ -595,6 +599,8 @@ INSERT INTO `sys_message` VALUES ('1353530876759248896', '系统通知', '消息
 INSERT INTO `sys_message` VALUES ('1353531983233421312', '系统通知', '通知', '1', '超级管理员-system', '1', '超级管理员-system', '2021-01-25 10:35:47', 0, '1900-01-01 00:00:00', '1', '超级管理员-system', '2021-01-25 10:35:47', NULL, '', '', 0, '', '', NULL);
 INSERT INTO `sys_message` VALUES ('1353531983237615616', '系统通知', '通知', '1306793709295243264', '测试用户-ceshi', '1', '超级管理员-system', '2021-01-25 10:35:47', 0, '1900-01-01 00:00:00', '1', '超级管理员-system', '2021-01-25 10:35:47', NULL, '', '', 0, '', '', NULL);
 INSERT INTO `sys_message` VALUES ('1353532182458667008', '系统通知', '测试通知', '1306793709295243264', '测试用户-ceshi', '1', '超级管理员-system', '2021-01-25 10:36:34', 0, '1900-01-01 00:00:00', '1', '超级管理员-system', '2021-01-25 10:36:34', NULL, '', '', 0, '', '', NULL);
+INSERT INTO `sys_message` VALUES ('1354610349415993344', '系统通知', '通知', '1', '超级管理员-system', '1', '超级管理员-system', '2021-01-28 10:00:49', 0, '1900-01-01 00:00:00', '1', '超级管理员-system', '2021-01-28 10:00:49', NULL, '', '', 0, '', '', NULL);
+INSERT INTO `sys_message` VALUES ('1354631008779112448', '系统通知', '实地测试', '1', '超级管理员-system', '1', '超级管理员-system', '2021-01-28 11:22:55', 0, '1900-01-01 00:00:00', '1', '超级管理员-system', '2021-01-28 11:22:55', NULL, '', '', 0, '', '', NULL);
 
 -- ----------------------------
 -- Table structure for sys_module
@@ -841,7 +847,8 @@ CREATE TABLE `wf_flow`  (
 -- ----------------------------
 -- Records of wf_flow
 -- ----------------------------
-INSERT INTO `wf_flow` VALUES ('1306861995051585536', 'leave', '请假', '办公类', 0, '', '1', '超级管理员', '2020-09-18 15:45:55', '2020-12-06 14:55:01', '1', '超级管理员', 0, NULL, '', '', 1);
+INSERT INTO `wf_flow` VALUES ('1306861995051585536', 'Leave', '请假', '办公类', 0, '', '1', '超级管理员', '2020-09-18 15:45:55', '2021-02-08 09:27:00', '1', '超级管理员-system', 0, NULL, '', '', 1);
+INSERT INTO `wf_flow` VALUES ('1358588645791109120', 'Leave_Revoke', '请假-生效撤回', '办公类', 0, '', '1', '超级管理员-system', '2021-02-08 09:29:09', NULL, '', '', 0, NULL, '', '', 1);
 
 -- ----------------------------
 -- Table structure for wf_flow_authorize
@@ -911,7 +918,8 @@ CREATE TABLE `wf_flow_scheme`  (
 -- ----------------------------
 -- Records of wf_flow_scheme
 -- ----------------------------
-INSERT INTO `wf_flow_scheme` VALUES ('1335477829084778496', '1306861995051585536', '{\"nodes\":[{\"id\":\"444ae837-e699-ab72-f58d-31991db832e9\",\"name\":\"结束\",\"left\":415,\"top\":424,\"type\":\"endround\",\"width\":52,\"height\":52},{\"id\":\"e3b1dc31-cc41-2702-5de8-49bf8fd20e62\",\"name\":\"开始\",\"left\":405,\"top\":34,\"type\":\"startround\",\"width\":52,\"height\":52,\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\",\"confluence_type\":\"1\",\"confluence_rate\":\"\",\"forms\":[{\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\"}],\"sqlsuccess\":\"update oa_leave set state = 2\\nwhere id = @processId\",\"sqlfail\":\"\",\"injectprogram\":\"\",\"sqlcondition\":\"\",\"authusers\":[]},{\"id\":\"fcde8608-a060-3fb7-b066-71e74d577d2c\",\"name\":\"超级管理员审批\",\"left\":365,\"top\":292,\"type\":\"stepnode\",\"width\":150,\"height\":65,\"dbFailId\":\"\",\"dbFailSql\":\"\",\"auditors\":[],\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\",\"timeoutAction\":48,\"timeoutNotice\":24,\"confluence_type\":\"1\",\"confluence_rate\":\"\",\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\",\"sqlsuccess\":\"update oa_leave set state = 1\\nwhere id = @processId\",\"sqlfail\":\"update oa_leave set state = -1\\nwhere id = @processId\",\"injectassembly\":\"\",\"injectclass\":\"\",\"sqlcondition\":\"\",\"authusers\":[{\"objecttype\":\"1\",\"objectids\":\"1\",\"objectnames\":\"超级管理员\",\"objectrange\":\"\"}],\"forms\":[{\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\"}]},{\"id\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"name\":\"测试用户2审批\",\"left\":362,\"top\":157,\"type\":\"stepnode\",\"width\":150,\"height\":65,\"dbFailId\":\"\",\"dbFailSql\":\"\",\"auditors\":[],\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\",\"timeoutAction\":48,\"timeoutNotice\":24,\"confluence_type\":\"1\",\"confluence_rate\":\"\",\"sqlsuccess\":\"\",\"sqlfail\":\"update oa_leave set state = -1\\nwhere id = @processId\",\"injectassembly\":\"\",\"injectclass\":\"\",\"sqlcondition\":\"\",\"authusers\":[{\"objecttype\":\"1\",\"objectids\":\"1306793948387348480\",\"objectnames\":\"测试用户2\",\"objectrange\":\"\"}],\"forms\":[{\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\"}]}],\"lines\":[{\"id\":\"d6e1d37e-2e29-12b9-591d-3ee8c378f3db\",\"from\":\"fcde8608-a060-3fb7-b066-71e74d577d2c\",\"to\":\"444ae837-e699-ab72-f58d-31991db832e9\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"0\",\"type\":\"sl\"},{\"id\":\"8df5698a-d26b-db29-5f70-f9fdf3c4dec1\",\"from\":\"e3b1dc31-cc41-2702-5de8-49bf8fd20e62\",\"to\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"1\",\"type\":\"sl\"},{\"id\":\"2d682a0a-4bd4-d655-1f74-469ca20dfd5a\",\"from\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"to\":\"fcde8608-a060-3fb7-b066-71e74d577d2c\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"1\",\"type\":\"sl\"},{\"id\":\"52f5406e-c0de-036e-8a36-c21cee20ddda\",\"from\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"to\":\"444ae837-e699-ab72-f58d-31991db832e9\",\"sp\":\"right\",\"ep\":\"right\",\"name\":\"\",\"wftype\":\"2\",\"type\":\"lr\",\"M\":582.5}]}');
+INSERT INTO `wf_flow_scheme` VALUES ('1358588106286174208', '1306861995051585536', '{\"nodes\":[{\"id\":\"444ae837-e699-ab72-f58d-31991db832e9\",\"name\":\"结束\",\"left\":415,\"top\":424,\"type\":\"endround\",\"width\":52,\"height\":52},{\"id\":\"e3b1dc31-cc41-2702-5de8-49bf8fd20e62\",\"name\":\"开始\",\"left\":405,\"top\":34,\"type\":\"startround\",\"width\":52,\"height\":52,\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\",\"confluence_type\":\"1\",\"confluence_rate\":\"\",\"forms\":[{\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\"}],\"sqlsuccess\":\"update oa_leave set state = 2\\nwhere id = @processId\",\"sqlfail\":\"\",\"injectprogram\":\"\",\"sqlcondition\":\"\",\"authusers\":[]},{\"id\":\"fcde8608-a060-3fb7-b066-71e74d577d2c\",\"name\":\"超级管理员审批\",\"left\":365,\"top\":292,\"type\":\"stepnode\",\"width\":150,\"height\":65,\"dbFailId\":\"\",\"dbFailSql\":\"\",\"auditors\":[],\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\",\"timeoutAction\":48,\"timeoutNotice\":24,\"confluence_type\":\"1\",\"confluence_rate\":\"\",\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\",\"sqlsuccess\":\"update oa_leave set state = 1\\nwhere id = @processId\",\"sqlfail\":\"update oa_leave set state = -1\\nwhere id = @processId\",\"injectassembly\":\"\",\"injectclass\":\"\",\"sqlcondition\":\"\",\"authusers\":[{\"objecttype\":\"1\",\"objectids\":\"1\",\"objectnames\":\"超级管理员\",\"objectrange\":\"\"}],\"forms\":[{\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\"}]},{\"id\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"name\":\"测试用户2审批\",\"left\":362,\"top\":157,\"type\":\"stepnode\",\"width\":150,\"height\":65,\"dbFailId\":\"\",\"dbFailSql\":\"\",\"auditors\":[],\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\",\"timeoutAction\":48,\"timeoutNotice\":24,\"confluence_type\":\"1\",\"confluence_rate\":\"\",\"sqlsuccess\":\"\",\"sqlfail\":\"update oa_leave set state = -1\\nwhere id = @processId\",\"injectassembly\":\"\",\"injectclass\":\"\",\"sqlcondition\":\"\",\"authusers\":[{\"objecttype\":\"1\",\"objectids\":\"1306793948387348480\",\"objectnames\":\"测试用户2\",\"objectrange\":\"\"}],\"forms\":[{\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\"}]}],\"lines\":[{\"id\":\"d6e1d37e-2e29-12b9-591d-3ee8c378f3db\",\"from\":\"fcde8608-a060-3fb7-b066-71e74d577d2c\",\"to\":\"444ae837-e699-ab72-f58d-31991db832e9\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"0\",\"type\":\"sl\"},{\"id\":\"8df5698a-d26b-db29-5f70-f9fdf3c4dec1\",\"from\":\"e3b1dc31-cc41-2702-5de8-49bf8fd20e62\",\"to\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"1\",\"type\":\"sl\"},{\"id\":\"2d682a0a-4bd4-d655-1f74-469ca20dfd5a\",\"from\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"to\":\"fcde8608-a060-3fb7-b066-71e74d577d2c\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"1\",\"type\":\"sl\"},{\"id\":\"52f5406e-c0de-036e-8a36-c21cee20ddda\",\"from\":\"af55b2d7-1e63-2434-9611-4104893a1da0\",\"to\":\"444ae837-e699-ab72-f58d-31991db832e9\",\"sp\":\"right\",\"ep\":\"right\",\"name\":\"\",\"wftype\":\"2\",\"type\":\"lr\",\"M\":582.5}]}');
+INSERT INTO `wf_flow_scheme` VALUES ('1358588646017601536', '1358588645791109120', '{\"nodes\":[{\"id\":\"fd9e9ec6-2ef9-273a-ca70-3405a7c34cec\",\"name\":\"开始\",\"left\":475,\"top\":51,\"type\":\"startround\",\"width\":52,\"height\":52,\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\"},{\"id\":\"cafc94c9-1f60-ce39-95a0-f402aa800bfd\",\"name\":\"结束\",\"left\":489,\"top\":282,\"type\":\"endround\",\"width\":52,\"height\":52},{\"id\":\"e9c1b3bf-a4e2-8f78-a1a8-6f226bc111a7\",\"name\":\"审批\",\"left\":435,\"top\":169,\"type\":\"stepnode\",\"width\":150,\"height\":65,\"dbFailId\":\"\",\"dbFailSql\":\"\",\"auditors\":[],\"wfForms\":[],\"authorizeFields\":[],\"iocName\":\"\",\"dbSuccessId\":\"\",\"dbSuccessSql\":\"\",\"timeoutAction\":48,\"timeoutNotice\":24,\"confluence_type\":\"1\",\"confluence_rate\":\"\",\"sqlsuccess\":\"UPDATE oa_leave SET state = 0 WHERE leave_id = @processId \",\"sqlfail\":\"\",\"injectassembly\":\"\",\"injectclass\":\"\",\"sqlcondition\":\"\",\"authusers\":[{\"objecttype\":\"1\",\"objectids\":\"1\",\"objectnames\":\"超级管理员\",\"objectrange\":\"\"}],\"forms\":[{\"formname\":\"请假\",\"formurl\":\"/OAModule/Leave/Form\"}]}],\"lines\":[{\"id\":\"996d78ba-7df7-3360-b853-51261d5118ca\",\"from\":\"fd9e9ec6-2ef9-273a-ca70-3405a7c34cec\",\"to\":\"e9c1b3bf-a4e2-8f78-a1a8-6f226bc111a7\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"1\",\"type\":\"sl\"},{\"id\":\"35737a4c-8d2c-f6b9-640f-85646b1046e5\",\"from\":\"e9c1b3bf-a4e2-8f78-a1a8-6f226bc111a7\",\"to\":\"cafc94c9-1f60-ce39-95a0-f402aa800bfd\",\"sp\":\"bottom\",\"ep\":\"top\",\"name\":\"\",\"wftype\":\"1\",\"type\":\"sl\"}]}');
 
 -- ----------------------------
 -- Table structure for wf_task

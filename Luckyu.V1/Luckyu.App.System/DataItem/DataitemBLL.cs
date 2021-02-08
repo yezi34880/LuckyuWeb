@@ -85,9 +85,13 @@ namespace Luckyu.App.System
             }).ToList();
             return tree;
         }
-        public List<eleTree> GetTree()
+        public List<eleTree> GetTree(int isSystem)
         {
             var all = GetAllClassifyByCache();
+            if (isSystem == 0)
+            {
+                all = all.Where(r => r.is_system == 0).ToList();
+            }
             var tree = ToTree("0", all);
             return tree;
         }
@@ -128,13 +132,13 @@ namespace Luckyu.App.System
         #region Detail
 
         #region Get
-        public JqgridPageResponse<sys_dataitem_detailEntity> DetailPage(JqgridPageRequest jqpage, string classifyId, bool isALL)
+        public JqgridPageResponse<sys_dataitem_detailEntity> DetailPage(JqgridPageRequest jqpage, string classifyId, bool isSystem)
         {
-            var page = dataitemdetailService.Page(jqpage, classifyId, isALL);
+            var page = dataitemdetailService.Page(jqpage, classifyId, isSystem);
             return page;
         }
 
-        public sys_dataitem_detailEntity GetDetailEntity(Expression<Func<sys_dataitem_detailEntity, bool>> condition )
+        public sys_dataitem_detailEntity GetDetailEntity(Expression<Func<sys_dataitem_detailEntity, bool>> condition)
         {
             var entity = dataitemdetailService.GetEntity(condition);
             return entity;

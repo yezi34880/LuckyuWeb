@@ -356,8 +356,11 @@ namespace Luckyu.App.Workflow
             {
                 listSql.Add(nodeStart.sqlsuccess);
             }
-            ProcessNodeInject(nodeStart, 1, "");
-
+            var res = ProcessNodeInject(nodeStart, 1, "");
+            if (res.code == (int)ResponseCode.Fail)
+            {
+                return ResponseResult.Fail(res.info, res.data);
+            }
             var lines = nodeModel.lines.Where(r => r.from == nodeStart.id).ToList();
             if (lines.IsEmpty())
             {
@@ -494,7 +497,11 @@ namespace Luckyu.App.Workflow
             historyCurrent.authorizen_userame = loginInfo.realname;
             historyCurrent.Create(loginInfo);
             listHistory.Add(historyCurrent);
-            ProcessNodeInject(nodeCurrent, result, opinion);
+            var res = ProcessNodeInject(nodeCurrent, result, opinion);
+            if (res.code == (int)ResponseCode.Fail)
+            {
+                return ResponseResult.Fail(res.info, res.data);
+            }
 
             bool IsContiune = false;
             // 如果是会签, 必须满足条件才进入下一节点
@@ -659,7 +666,11 @@ namespace Luckyu.App.Workflow
             var schemeModel = instance.schemejson.ToObject<WFSchemeModel>();
             var firsttask = tasks.Select(r => r).FirstOrDefault();
             var firstnode = schemeModel.nodes.Where(r => r.id == firsttask.node_id).Select(r => r).FirstOrDefault();
-            ProcessNodeInject(firstnode, 2, "");
+            var res = ProcessNodeInject(firstnode, 2, "");
+            if (res.code == (int)ResponseCode.Fail)
+            {
+                return ResponseResult.Fail(res.info, res.data);
+            }
 
             var history = new wf_taskhistoryEntity();
             history = firsttask.Adapt<wf_taskhistoryEntity>();
@@ -711,7 +722,11 @@ namespace Luckyu.App.Workflow
                 historyCurrent.authorizen_userame = loginInfo.realname;
                 historyCurrent.Create(loginInfo);
                 listHistory.Add(historyCurrent);
-                ProcessNodeInject(nodeCurrent, 1, "");
+                var res = ProcessNodeInject(nodeCurrent, 1, "");
+                if (res.code == (int)ResponseCode.Fail)
+                {
+                    return ResponseResult.Fail(res.info, res.data);
+                }
 
                 task.is_done = 1;
                 var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
@@ -805,7 +820,7 @@ namespace Luckyu.App.Workflow
         /// <param name="node">节点</param>
         /// <param name="result">审批结果 1 通过 2 拒绝</param>
         /// <param name="opinion">审批意见</param>
-        private void ProcessNodeInject(WFSchemeNodeModel node, int result, string opinion)
+        private ResponseResult ProcessNodeInject(WFSchemeNodeModel node, int result, string opinion)
         {
             if (!node.injectassembly.IsEmpty() && !node.injectclass.IsEmpty())
             {
@@ -816,9 +831,21 @@ namespace Luckyu.App.Workflow
                 {
                     throw new Exception($"{node.name}执行程序配置错误，请联系管理员");
                 }
-                MethodInfo meth = tp.GetMethod("Approve");//加载方法
-                meth.Invoke(process, new object[] { result, opinion });//执行
+                MethodInfo methCheck = tp.GetMethod("CheckApprove");//加载方法
+                var res = methCheck.Invoke(process, new object[] { result, opinion }) as ResponseResult;//执行
+                if (res == null)
+                {
+                    throw new Exception($"{node.name}执行程序配置错误，验证出错，请联系管理员");
+                }
+                if (res.code == (int)ResponseCode.Success)
+                {
+                    MethodInfo meth = tp.GetMethod("Approve");//加载方法
+                    meth.Invoke(process, new object[] { result, opinion });//执行
+                    return ResponseResult.Success();
+                }
+                return res;
             }
+            return ResponseResult.Success();
         }
 
         /// <summary>
@@ -895,6 +922,7 @@ namespace Luckyu.App.Workflow
                     {   // 开始之后 为执行节点  task 表不插值  history插入执行  需要递归 , 可能后面都是执行 知道结束    
                         listSql.Add(nodeNext.sqlsuccess);
                         ProcessNodeInject(nodeNext, 1, "");
+
                         currentLine = alllines.Where(r => r.from == nodeNext.id).FirstOrDefault();
 
                         var historyProcess = new wf_taskhistoryEntity();

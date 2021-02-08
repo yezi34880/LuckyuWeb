@@ -62,7 +62,9 @@ var bootstrap = function (layui) {
             if (!!callBack) {
                 callBack();
             }
-            $("#AnnexName").uploadFile(keyValue);
+            $("#AnnexName").uploadFile({
+                exId: keyValue
+            });
 
         });
     };
@@ -85,9 +87,13 @@ var bootstrap = function (layui) {
                 if (!!callBack) {
                     callBack();
                 }
-                    $("#AnnexName").uploadFile(keyValue, function () {
-                    parent.layui.layer.close(layerIndex);
+                $("#AnnexName").uploadFile({
+                    exId: keyValue,
+                    callback: function () {
+                        parent.layui.layer.close(layerIndex);
+                    }
                 });
+
             });
         });
     };

@@ -11,7 +11,7 @@ var bootstrap = function (layui) {
             page.initGrid();
         },
         initGrid: function () {
-            grid = $("#grid").jqGrid({
+            grid = $("#grid").LuckyuGrid({
                 url: luckyu.rootUrl + "/WorkflowModule/Designer/Page",
                 datatype: "json",
                 altRows: true,//隔行换色

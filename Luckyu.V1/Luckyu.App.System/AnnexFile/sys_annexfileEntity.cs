@@ -27,6 +27,11 @@ namespace Luckyu.App.System
         public string external_id { get; set; }
 
         /// <summary>
+        ///  externalcode   
+        /// </summary>
+        public string externalcode { get; set; }
+
+        /// <summary>
         ///  filename   
         /// </summary>
         public string filename { get; set; }

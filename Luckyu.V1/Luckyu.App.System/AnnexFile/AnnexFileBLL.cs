@@ -33,7 +33,7 @@ namespace Luckyu.App.System
         #endregion
 
         #region Set
-        public sys_annexfileEntity SaveAnnex(string exId, string folderPre, string fileName, string contentType, Stream fileStream, UserModel userInfo)
+        public sys_annexfileEntity SaveAnnex(string exId, string exCode, string folderPre, string fileName, string contentType, Stream fileStream, UserModel userInfo)
         {
             if (fileStream == null || fileStream.Length < 1)
             {
@@ -43,6 +43,7 @@ namespace Luckyu.App.System
             var annex = new sys_annexfileEntity();
             annex.Create(userInfo);
             annex.external_id = exId;
+            annex.externalcode = exCode;
 
             var basepath = GetBasePath();
             string FileEextension = Path.GetExtension(fileName);

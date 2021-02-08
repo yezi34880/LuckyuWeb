@@ -170,16 +170,16 @@ var bootstrap = function (layui) {
                 }
                 var rowData = grid.getRawRowData(rowid);
                 if (rowData.state !== 1) {
-                    layui.notice.error("只有生效单据才能请求撤回");
+                    layui.notice.error("只有生效单据才能请求生效撤回");
                     return;
                 }
-                luckyu.layer.layerConfirm('确定要请求撤回吗？', function (con) {
-                    luckyu.workflowapi.create({
-                        processId: rowid,
-                        flowCode: "Leave_Revoke",
-                        processName: "请假申请-撤回 " + rowid
+                luckyu.layer.layerConfirm('确定要请求撤回该数据吗？', function (con) {
+                    luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/Revoke", { keyValue: rowid }, function (data, info) {
+                        layui.notice.success(info);
+                        //page.searchInCurrentPage();
                     });
                 });
+
             });
             $("#seeapproval").click(function () {
                 var rowid = grid.getGridParam("selrow");

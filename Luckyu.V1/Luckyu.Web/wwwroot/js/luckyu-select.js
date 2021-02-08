@@ -377,7 +377,7 @@
                     $.extend(defaultOption, option);
                     luckyu.ajax.getSync(luckyu.rootUrl + "/OrganizationModule/Company/GetSelectTree", {},
                         function (res) {
-                            var xmData = res;
+                            var xmData = !!res ? res : [];
                             var op = {
                                 el: id,
                                 theme: {
