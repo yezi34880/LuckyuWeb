@@ -295,6 +295,33 @@ var bootstrap = function () {
                 colModel: [
                     { name: 'formname', label: "名称", width: 100, editable: true, },
                     { name: 'formurl', label: '地址', width: 400, editable: true, },
+                    {
+                        name: 'canedit', label: '可编辑', width: 150, editable: true,
+                        edittype: 'custom',
+                        editoptions: {
+                            dataInit: function (ele, options) {
+                                var select = $(ele).find("div.xm-select");
+                                var data = [
+                                    { value: "0", name: "不可编辑" },
+                                    { value: "1", name: "可编辑" },
+                                ];
+                                var val = select.attr("_value");
+                                val = val != "1" ? "0" : "1";
+                                select.initLocal({
+                                    data: data,
+                                    initValue: val,
+                                });
+                            },
+                            custom_element: function (value, options) {
+                                var html = '<div class="xm-select" _value="' + value + '"></div>';
+                                return html;
+                            },
+                            custom_value: function (ele, operation, value) {
+                                var xmselect = xmSelect.get("#" + ele.attr("id"), true);
+                                return xmselect.getValue("valueStr");
+                            }
+                        },
+                    },
                 ],
                 rownumbers: true,
                 viewrecords: true,

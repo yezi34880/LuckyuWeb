@@ -180,11 +180,11 @@ namespace Luckyu.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Login}/{action=Index}/{id?}");
+                    pattern: "{controller=Login}/{action=Index}/{keyValue?}");
 
                 endpoints.MapControllerRoute(
                     name: "areas",
-                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{keyValue?}");
 
                 endpoints.MapHub<MessageHub>("/messagehub");
 

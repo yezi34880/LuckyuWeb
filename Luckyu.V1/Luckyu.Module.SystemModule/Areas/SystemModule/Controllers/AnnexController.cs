@@ -23,9 +23,9 @@ namespace Luckyu.Module.SystemModule.Controllers
         private ConfigBLL configBLL = new ConfigBLL();
         #endregion
 
-        public IActionResult ShowFile(string fileId)
+        public IActionResult ShowFile(string keyValue)
         {
-            var annex = annexBLL.GetEntity(r => r.annex_id == fileId);
+            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue);
             if (annex == null)
             {
                 return new EmptyResult();

@@ -132,7 +132,7 @@ var bootstrap = function (layui) {
                 $("#tabForms>.layui-tab-content").html(htmlIframe);
                 $("#tabForms>.layui-tab-content iframe").each(function () {
                     var iframeWindow = this.contentWindow;
-                    this.onload = !!iframeWindow.load ? iframeWindow.load() : function () {
+                    this.onload = !!iframeWindow.loaded ? iframeWindow.loaded() : function () {
                         $("input[type!='file'],textarea", iframeWindow.document).attr("disabled", "disabled");
                         $("button[title=删除文件]").attr("disabled", "disabled");
                         setTimeout(function () {
@@ -177,30 +177,47 @@ var bootstrap = function (layui) {
     page.init();
 
     approveClick = function (layerIndex, callBack) {
-        luckyu.layer.layerFormTop({
-            id: "FormApp",
-            title: "审核",
-            width: 600,
-            height: 400,
-            url: luckyu.rootUrl + "/WorkflowModule/Task/ApproveForm",
-            btn: [{
-                name: "确定",
-                callback: function (index, layero) {
-                    var res = layero.find("iframe")[0].contentWindow.saveClick(index);
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: res.result, opinion: res.opinion }, function (data) {
-                        if (!!callBack) {
-                            callBack();
-                        }
-                        parent.layui.layer.close(layerIndex);
-                    });
-                }
-            }, {
-                name: "取消",
-                callback: function (index, layero) {
 
-                }
-            }]
+        // 这里有个难点 ，可能有多个iframe页，但每个页面save方法也可能是异步的，必须每个都验证通过最后材质执行审批动作，
+        // 例如一个页面必填项未填写，则不走审批
+        // 暂时没想好
+        var flag = true;
+        $("#tabForms>.layui-tab-content iframe").each(function () {
+            var iframeWindow = this.contentWindow;
+            if (!!iframeWindow.approveSave) {
+                flag = iframeWindow.approveSave();
+            }
         });
+
+        console.log("审批");
+        return;
+        // 验证通过 才执行审批，必填项等
+        if (flag) {
+            luckyu.layer.layerFormTop({
+                id: "FormApp",
+                title: "审核",
+                width: 600,
+                height: 400,
+                url: luckyu.rootUrl + "/WorkflowModule/Task/ApproveForm",
+                btn: [{
+                    name: "确定",
+                    callback: function (index, layero) {
+                        var res = layero.find("iframe")[0].contentWindow.saveClick(index);
+                        luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: res.result, opinion: res.opinion }, function (data) {
+                            if (!!callBack) {
+                                callBack();
+                            }
+                            parent.layui.layer.close(layerIndex);
+                        });
+                    }
+                }, {
+                    name: "取消",
+                    callback: function (index, layero) {
+
+                    }
+                }]
+            });
+        }
     };
     adduserClick = function (layerIndex, callBack) {
         luckyu.layer.userSelectForm({

@@ -32,7 +32,6 @@ namespace Luckyu.Web.Controllers
             loginInfo.modules = listSelfModule;
 
             LoginUserInfo.Instance.UpdateLoginUser(HttpContext, loginInfo);
-            //LoginUserInfo.Instance.AddSingalIRConnection(HttpContext, connection_id);
 
             ViewBag.Modules = modules;
             return View();
