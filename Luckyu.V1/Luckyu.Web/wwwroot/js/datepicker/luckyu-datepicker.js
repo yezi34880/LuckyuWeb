@@ -89,7 +89,7 @@
                 $container.find('.luckyu-search-date-datepicker-content').hide();
                 $self.val("");
 
-                DefaultOption._begindate = "1901-01-01";
+                DefaultOption._begindate = "1900-01-01";
                 DefaultOption._enddate = "3000-01-01";
                 if (!!DefaultOption.select) {
                     DefaultOption.select(DefaultOption._begindate, DefaultOption._enddate);

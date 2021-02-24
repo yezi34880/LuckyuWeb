@@ -13,7 +13,7 @@
             if (!$grid || $grid.length < 1) {
                 return;
             }
-            var gridid = grid.attr("id");
+            var gridid = $grid.attr("id");
             var top = $grid.offset().top;
             var isPage = $grid.getGridParam("pager");
             var pagerHeight = 10;

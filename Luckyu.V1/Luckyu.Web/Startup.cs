@@ -41,13 +41,6 @@ namespace Luckyu.Web
             services.AddSignalR();
             services.AddScoped<SignalRHelper>();
 
-            //// 附件文件夹 配置项放数据库了
-            //var baseFilePath = AppSettingsHelper.GetAppSetting("AnnexPath");
-            //if (!Directory.Exists(baseFilePath))
-            //{
-            //    Directory.CreateDirectory(baseFilePath);
-            //}
-
             // UEditor
             var configPath = FileHelper.Combine(Environment.CurrentDirectory, "wwwroot/lib/ueditor/config/config.json");
             var uePath = AppSettingsHelper.GetAppSetting("UEPath");
@@ -132,9 +125,14 @@ namespace Luckyu.Web
             app.UseStaticFiles();
 
             //读取Views文件夹下的js和css
+            var viewsPath = FileHelper.Combine(Directory.GetCurrentDirectory(), "Views");
+            if (!Directory.Exists(viewsPath))
+            {
+                Directory.CreateDirectory(viewsPath);
+            }
             app.UseStaticFiles(new StaticFileOptions()
             {
-                FileProvider = new PhysicalFileProvider(FileHelper.Combine(Directory.GetCurrentDirectory(), "Views")),
+                FileProvider = new PhysicalFileProvider(viewsPath),
                 RequestPath = new PathString("/Views"),
                 ContentTypeProvider = new FileExtensionContentTypeProvider(
                             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -144,9 +142,14 @@ namespace Luckyu.Web
                             })
             });
             //读取Areas  Views文件夹下的js和css
+            var areasPath = Path.Combine(Directory.GetCurrentDirectory(), "Areas");
+            if (!Directory.Exists(areasPath))
+            {
+                Directory.CreateDirectory(areasPath);
+            }
             app.UseStaticFiles(new StaticFileOptions()
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Areas")),
+                FileProvider = new PhysicalFileProvider(areasPath),
                 RequestPath = new PathString("/Areas"),
                 ContentTypeProvider = new FileExtensionContentTypeProvider(
                         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

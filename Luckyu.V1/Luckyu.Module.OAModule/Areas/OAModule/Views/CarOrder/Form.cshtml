@@ -1,0 +1,83 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+
+}
+
+<div class="layui-tab layui-tab-brief" style="margin:0;" lay-filter="CarOrder">
+    <ul class="layui-tab-title">
+        <li class="layui-this">内容</li>
+        <li>附件</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <div>
+                <div class="form-item layui-col-xs6">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-block">
+                        <input id="statename" type="text" class="layui-input" readonly />
+                    </div>
+                </div>
+                <div class="form-item layui-col-xs6">
+                    <label class="layui-form-label">用户</label>
+                    <div class="layui-input-block">
+                        <input id="username" type="text" class="layui-input" readonly />
+                    </div>
+                </div>
+                <div class="form-item layui-col-xs6">
+                    <label class="layui-form-label">部门</label>
+                    <div class="layui-input-block">
+                        <input id="deptname" type="text" class="layui-input" readonly />
+                    </div>
+                </div>
+                <div class="form-item layui-col-xs6">
+                    <label class="layui-form-label">公司</label>
+                    <div class="layui-input-block">
+                        <input id="companyname" type="text" class="layui-input" readonly />
+                    </div>
+                </div>
+                <div class="form-item layui-col-xs6">
+                    <label class="layui-form-label">开始时间</label>
+                    <div class="layui-input-block">
+                        <input id="begintime" type="text" class="layui-input Wdate" lay-verify="required" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" />
+                    </div>
+                </div>
+                <div class="form-item layui-col-xs6">
+                    <label class="layui-form-label">结束时间</label>
+                    <div class="layui-input-block">
+                        <input id="endtime" type="text" class="layui-input Wdate" lay-verify="required" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" />
+                    </div>
+                </div>
+                <div class="form-item layui-col-xs12">
+                    <label class="layui-form-label">地点</label>
+                    <div class="layui-input-block">
+                        <input id="place" type="text" class="layui-input" />
+                    </div>
+                </div>
+                <div class="form-item layui-col-xs12">
+                    <label class="layui-form-label">事由</label>
+                    <div class="layui-input-block">
+                        <input id="reason" type="text" class="layui-input" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-tab-item">
+            <div>
+                <div class="layui-col-xs12 form-item">
+                    <input id="AnnexName" name="AnnexName" multiple type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+
+    @Html.AppendJs("~/Areas/OAModule/Views/CarOrder/Form.js")
+}
+
+

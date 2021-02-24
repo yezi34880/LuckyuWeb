@@ -1,5 +1,5 @@
 ﻿/*
- * 请假编辑/查看
+ * 约车 编辑/查看
  */
 var saveClick, acceptClick;
 var bootstrap = function (layui) {
@@ -16,20 +16,20 @@ var bootstrap = function (layui) {
             var loading = luckyu.layer.loading();
 
             $("#AnnexName").initFileInput({
-                folderPre: "Leave"
+                folderPre: "CarOrder"
             });
 
             layui.layer.close(loading);
         },
         initData: function () {
             if (!!keyValue) {
-                luckyu.ajax.getv2(luckyu.rootUrl + "/OAModule/Leave/GetFormData", { keyValue: keyValue }
+                luckyu.ajax.getv2(luckyu.rootUrl + "/OAModule/CarOrder/GetFormData", { keyValue: keyValue }
                     , function (data) {
-                        $('[lay-filter="Leave"]').setFormValue(data.Leave);
-                        $("#statename").val(luckyu.clientdata.getDataitemName(data.Leave.state, "state"));
-                        //$("#username").val(luckyu.clientdata.getUserName(data.Leave.user_id));
-                        $("#deptname").val(luckyu.clientdata.getDepartmentName(data.Leave.department_id));
-                        $("#companyname").val(luckyu.clientdata.getCompanyName(data.Leave.company_id));
+                        $('[lay-filter="CarOrder"]').setFormValue(data.CarOrder);
+                        $("#statename").val(luckyu.clientdata.getDataitemName(data.CarOrder.state, "state"));
+                        //$("#username").val(luckyu.clientdata.getUserName(data.CarOrder.user_id));
+                        $("#deptname").val(luckyu.clientdata.getDepartmentName(data.CarOrder.department_id));
+                        $("#companyname").val(luckyu.clientdata.getCompanyName(data.CarOrder.company_id));
 
                         $('#AnnexName').initFileInput({
                             initialPreview: data.Annex.initialPreview,
@@ -49,15 +49,15 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex, callBack) {
-        var formData = $('[lay-filter="Leave"]').getFormValue();
+        var formData = $('[lay-filter="CarOrder"]').getFormValue();
         var deleteAnnex = $("#AnnexName")[0].deleteAnnex;
-        luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
+        luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/CarOrder/SaveForm", {
             keyValue: keyValue,
             strEntity: JSON.stringify(formData),
             deleteAnnex: deleteAnnex,
             isSubmit: 0
         }, function (data) {
-            keyValue = data.leave_id;
+            keyValue = data.order_id;
 
             if (!!callBack) {
                 callBack();
@@ -74,15 +74,15 @@ var bootstrap = function (layui) {
             return false;
         }
         luckyu.layer.layerConfirm('确定要提交吗？', function () {
-            var formData = $('[lay-filter="Leave"]').getFormValue();
+            var formData = $('[lay-filter="CarOrder"]').getFormValue();
             var deleteAnnex = $("#AnnexName")[0].deleteAnnex;
-            luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
+            luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/CarOrder/SaveForm", {
                 keyValue: keyValue,
                 strEntity: JSON.stringify(formData),
                 deleteAnnex: deleteAnnex,
                 isSubmit: 1
             }, function (data) {
-                keyValue = data.leave_id;
+                keyValue = data.order_id;
 
                 if (!!callBack) {
                     callBack();

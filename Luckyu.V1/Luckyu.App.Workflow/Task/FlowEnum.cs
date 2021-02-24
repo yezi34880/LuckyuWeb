@@ -9,6 +9,8 @@ namespace Luckyu.App.Workflow
     public enum FlowEnum
     {
         Leave,
-        Leave_Revoke
+        Leave_Revoke,
+        CarOrder,
+        Car_Revoke,
     }
 }

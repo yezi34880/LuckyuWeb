@@ -8,7 +8,7 @@ namespace Luckyu.Log
     ///  sys_log   
     /// </summary>
     [Table(Name = "SYS_LOG")]
-    [Index("index1", "process_id")]
+    [Index("index1", "log_type,log_time,process_id,user_id")]
     public class sys_logEntity
     {
         #region 属性
