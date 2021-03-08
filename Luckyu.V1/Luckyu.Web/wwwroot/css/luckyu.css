@@ -134,3 +134,15 @@ input.numeric {
     background-color: var(--tn-nav-color) !important;
     border-color: var(--tn-nav-color) !important;
 }
+
+.luckyu-search-date-btn-block > a:hover {
+    background-color: var(--tn-nav-color) !important;
+}
+
+.luckyu-search-date-btn-block > a.active {
+    background-color: var(--tn-nav-color) !important;
+}
+
+.luckyu_numberrange button.numok {
+    background-color: var(--tn-nav-color) !important;
+}

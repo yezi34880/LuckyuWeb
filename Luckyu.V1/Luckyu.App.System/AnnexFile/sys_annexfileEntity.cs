@@ -72,6 +72,11 @@ namespace Luckyu.App.System
         public int downloadcount { get; set; }
 
         /// <summary>
+        ///  sort   
+        /// </summary>
+        public int sort { get; set; }
+
+        /// <summary>
         ///  createtime   
         /// </summary>
         public DateTime? createtime { get; set; }

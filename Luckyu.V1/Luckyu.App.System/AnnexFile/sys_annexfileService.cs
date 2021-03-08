@@ -13,11 +13,27 @@ namespace Luckyu.App.System
     {
         public void Insert(sys_annexfileEntity entity)
         {
-            BaseRepository().Insert(entity);
+            BaseRepository().db.Insert(entity).ExecuteAffrows();
         }
         public void Delete(sys_annexfileEntity entity)
         {
-            BaseRepository().Delete(entity);
+            BaseRepository().db.Delete<sys_annexfileEntity>().Where(entity).ExecuteAffrows();
         }
+        public void Update(List<sys_annexfileEntity> list)
+        {
+            var db = BaseRepository().db;
+            db.Transaction(() =>
+            {
+                foreach (var item in list)
+                {
+                    db.Update<sys_annexfileEntity>().SetSource(item).UpdateColumns(r => new
+                    {
+                        r.sort,
+                        //r.externalcode
+                    }).ExecuteAffrows();
+                }
+            });
+        }
+
     }
 }

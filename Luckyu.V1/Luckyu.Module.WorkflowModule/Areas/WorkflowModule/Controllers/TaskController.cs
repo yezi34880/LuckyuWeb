@@ -102,7 +102,7 @@ namespace Luckyu.Module.WorkflowModule.Controllers
 
         #region Interface
         [AjaxOnly, HttpPost]
-        public async Task<IActionResult> Create(string flowCode, string processId, string processName, string processContent, string submitUserId)
+        public async Task<IActionResult> Create(string flowCode, string processId, string processName, string processContent, string submitUserId, string departmentId, string companyId)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             if (!submitUserId.IsEmpty())
@@ -110,6 +110,14 @@ namespace Luckyu.Module.WorkflowModule.Controllers
                 var user = userBLL.GetEntityByCache(r => r.user_id == submitUserId);
                 loginInfo = new UserModel();
                 loginInfo = user.Adapt<UserModel>();
+            }
+            if (!departmentId.IsEmpty())
+            {
+                loginInfo.department_id = departmentId;
+            }
+            if (!companyId.IsEmpty())
+            {
+                loginInfo.company_id = companyId;
             }
             var res = await taskBLL.Create(flowCode, processId, processName, processContent, loginInfo, _hubContext);
             return Json(res);

@@ -85,8 +85,8 @@ namespace Luckyu.App.System
             if (entity != null)
             {
                 annexService.Delete(entity);
-                string basePath = AppSettingsHelper.GetAppSetting("AnnexPath");
-                string realPath = FileHelper.Combine(basePath, entity.filepath);
+                var basepath = GetBasePath();
+                string realPath = FileHelper.Combine(basepath.Item2, entity.filepath);
                 if (File.Exists(realPath))
                 {
                     File.Delete(realPath);
@@ -103,6 +103,21 @@ namespace Luckyu.App.System
                 }
             }
         }
+        public void UpdateAnnex(List<initialPreviewConfig> previewAnnex)
+        {
+            var list = new List<sys_annexfileEntity>();
+            for (int i = 0; i < previewAnnex.Count; i++)
+            {
+                var item = previewAnnex[i];
+                list.Add(new sys_annexfileEntity
+                {
+                    annex_id = item.key,
+                    sort = (i + 1)
+                });
+            }
+            annexService.Update(list);
+        }
+
         #endregion
 
         #region bootstrap fileinput 预览

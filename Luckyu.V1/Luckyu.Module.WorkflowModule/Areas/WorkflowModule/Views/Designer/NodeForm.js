@@ -35,14 +35,18 @@ var bootstrap = function () {
                     $("#tabProgram").show();
                     break;
                 case "confluencenode": // 会签
-                    $("#tabUser").show();
-                    $("#tabForm").show();
+                    //$("#tabUser").show();
+                    //$("#tabForm").show();
                     $("#tabSQLSuccess").show();
                     $("#tabProgram").show();
                     $("#divConfluence").show();
                     break;
                 case "conditionnode":  //条件
                     $("#tabSQLCondition").show();
+                    break;
+                case "processnode": // 执行
+                    $("#tabSQLSuccess").show();
+                    $("#tabProgram").show();
                     break;
             }
 

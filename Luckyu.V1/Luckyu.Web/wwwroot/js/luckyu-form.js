@@ -454,11 +454,9 @@
                     var files = $self.fileinput('getFileList');
                     if (!!files && files.length > 0) {
                         $self.on('filebatchpreupload', function (event, data, previewId, index) {
-                            if (!!$self.folderPre) {
-                                var folderPre = $self.attr("luckyu-folderPre");
-                                folderPre = !!folderPre ? folderPre : "";
-                                data.formdata.append("folderPre", folderPre);
-                            }
+                            var folderPre = $self.attr("luckyu-folderPre");
+                            folderPre = !!folderPre ? folderPre : "";
+                            data.formdata.append("folderPre", folderPre);
                             data.formdata.append("exId", defaultOp.exId);
                             data.formdata.append("exCode", defaultOp.exCode);
                             data.formdata.append("__RequestVerificationToken", $.validateToken);

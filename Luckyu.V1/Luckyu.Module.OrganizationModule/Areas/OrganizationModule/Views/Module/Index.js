@@ -19,9 +19,18 @@ var bootstrap = function (layui) {
                 colModel: [
                     { name: 'module_id', hidden: true, key: true },
                     { name: 'modulecode', label: "菜单编码", width: 60, },
-                    { name: 'modulename', label: "菜单名称", width: 100, },
+                    {
+                        name: 'modulename', label: "菜单名称", width: 100,
+                        formatter: function (cell, op, row) {
+                            var result = cell;
+                            if (!!row.moduleicon) {
+                                result = '<i class="' + row.moduleicon + '" style="font-size: small;"></i>  ' + result;
+                            }
+                            return result;
+                        }
+                    },
                     { name: 'moduleurl', label: "地址", width: 200, },
-                    { name: 'sort', label: "排序", width: 40, search: false },
+                    { name: 'sort', label: "排序", width: 40, search: false, align: "right" },
                     { name: 'remark', label: "备注", width: 80, },
                     {
                         name: 'is_enable', label: '有效', width: 40, align: "center",

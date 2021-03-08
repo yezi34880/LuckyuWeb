@@ -23,7 +23,7 @@
     border-color: rgb(230, 230, 230);
 }
 
-    /*.luckyu-search-date-text:hover {
+/*.luckyu-search-date-text:hover {
         color: #3498DB;
         border: 1px solid #3498DB;
     }*/
@@ -79,16 +79,16 @@
         text-align: center;
         color: #fff;
         background: #9da6bd;
-        text-decoration:none;
+        text-decoration: none;
         border-bottom: 1px solid #afb8cc;
     }
 
         .luckyu-search-date-btn-block > a:hover {
-            background: var(--tn-nav-color);
+            background: #1E9FFF;
         }
 
         .luckyu-search-date-btn-block > a.active {
-            background: var(--tn-nav-color);
+            background: #1E9FFF;
         }
 
 .luckyu-search-date-datepicker-content {

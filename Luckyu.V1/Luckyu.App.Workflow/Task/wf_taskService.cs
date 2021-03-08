@@ -87,18 +87,21 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
-        public void Create(wf_flow_instanceEntity instance, wf_taskEntity newTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Create(wf_flow_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
         {
             var trans = BaseRepository().BeginTrans();
             try
             {
                 trans.Insert(instance);
-                if (!newTask.IsEmpty())
+                if (!listTask.IsEmpty())
                 {
-                    trans.Insert(newTask);
-                    if (!newTask.authrizes.IsEmpty())
+                    trans.Insert(listTask);
+                    foreach (var task in listTask)
                     {
-                        trans.Insert(newTask.authrizes);
+                        if (!task.authrizes.IsEmpty())
+                        {
+                            trans.Insert(task.authrizes);
+                        }
                     }
                 }
                 if (!listHistory.IsEmpty())
@@ -126,7 +129,7 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Approve(wf_flow_instanceEntity instance, wf_taskEntity currentTask, wf_taskEntity newTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Approve(wf_flow_instanceEntity instance, wf_taskEntity currentTask, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -135,12 +138,15 @@ namespace Luckyu.App.Workflow
                 {
                     trans.UpdateOnlyColumns(currentTask, r => new { r.is_done });
                 }
-                if (!newTask.IsEmpty())
+                if (!listTask.IsEmpty())
                 {
-                    trans.Insert(newTask);
-                    if (!newTask.authrizes.IsEmpty())
+                    trans.Insert(listTask);
+                    foreach (var task in listTask)
                     {
-                        trans.Insert(newTask.authrizes);
+                        if (!task.authrizes.IsEmpty())
+                        {
+                            trans.Insert(task.authrizes);
+                        }
                     }
                 }
                 if (!listHistory.IsEmpty())

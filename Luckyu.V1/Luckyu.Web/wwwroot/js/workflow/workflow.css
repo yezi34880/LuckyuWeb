@@ -89,6 +89,10 @@
     background: url(/image/luckyu-workflow/processnode.png) no-repeat 0 0;
 }
 
+.workflow .ico_switchnode {
+    background: url(/image/luckyu-workflow/switchnode.png) no-repeat 0 0;
+}
+
 .workflow .ico_confluencenode {
     background: url(/image/luckyu-workflow/confluencenode.png) no-repeat 0 0;
 }

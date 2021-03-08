@@ -19,7 +19,16 @@ var bootstrap = function (layui) {
                 colModel: [
                     { name: 'news_id', hidden: true, key: true },
                     { name: 'category', label: "分类", width: 80, },
-                    { name: 'title', label: "标题", width: 300, },
+                    {
+                        name: 'title', label: "标题", width: 300,
+                        formatter: function (cellvalue, option, row) {
+                            var result = cellvalue;
+                            if (row.sort > 0) {
+                                result = '<i class="fa fa-star"></i> ' + result;
+                            }
+                            return result;
+                        }
+                    },
                     { name: 'source', label: "来源", width: 100, },
                     { name: 'keywords', label: "关键词", width: 100, },
                     {
@@ -29,10 +38,6 @@ var bootstrap = function (layui) {
                     },
                     {
                         name: 'is_publish', label: '是否发布', width: 40, align: "center",
-                        stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
-                    },
-                    {
-                        name: 'sort', label: '是否置顶', width: 40, align: "center",
                         stype: "dataitem", dataitemcode: "enable", formatterdataitem: "enableshow"
                     },
                 ],
