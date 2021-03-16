@@ -590,7 +590,7 @@ namespace Luckyu.App.Workflow
         /// <param name="userId">加签人员</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
-        public ResponseResult AddUser(string taskId, string userId, UserModel loginInfo)
+        public ResponseResult AddUser(string taskId, List<string> userIds, UserModel loginInfo)
         {
             var task = taskService.GetEntity(r => r.task_id == taskId);
             if (task == null)
@@ -602,20 +602,30 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("该流程实例不存在");
             }
-            var auth = new wf_task_authorizeEntity();
-            auth.task_id = task.task_id;
-            auth.user_id = userId;
-            auth.is_add = 1;  // 加签审批
-            auth.Create(loginInfo);
 
-            var user = userBLL.GetEntityByCache(r => r.user_id == userId);
+            var auths = new List<wf_task_authorizeEntity>();
+            var users = new List<sys_userEntity>();
+            foreach (var userId in userIds)
+            {
+                var auth = new wf_task_authorizeEntity();
+                auth.task_id = task.task_id;
+                auth.user_id = userId;
+                auth.is_add = 1;  // 加签审批
+                auth.Create(loginInfo);
+                auths.Add(auth);
+
+                var user = userBLL.GetEntityByCache(r => r.user_id == userId);
+                users.Add(user);
+            }
 
             var history = new wf_taskhistoryEntity();
             history = task.Adapt<wf_taskhistoryEntity>();
-            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname} 申请 {user.realname}-{user.loginname} 【加签】审批";
+            var struser = string.Join(",", users.Select(r => $"{r.realname}-{r.loginname}"));
+            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请  {struser} 【加签】审批";
+            history.result = 3;
             history.Create(loginInfo);
 
-            taskService.AddUser(auth, history);
+            taskService.AddUser(auths, history);
             return ResponseResult.Success();
         }
 

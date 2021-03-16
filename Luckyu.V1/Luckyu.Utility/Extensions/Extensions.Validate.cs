@@ -66,14 +66,7 @@ namespace Luckyu.Utility
         /// <param name="value">值</param>
         public static bool IsEmpty(this object value)
         {
-            if (value != null && !string.IsNullOrEmpty(value.ToString()))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return value == null || string.IsNullOrWhiteSpace(value.ToString());
         }
 
 

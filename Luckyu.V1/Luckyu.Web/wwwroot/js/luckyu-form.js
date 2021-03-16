@@ -410,6 +410,7 @@
                     var defaultOption = {
                         minFileSize: null,
                         maxFileSize: null,
+                        browseClass: "layui-btn",
                         minFileCount: 0,
                         maxFileCount: 0,
                         allowedFileExtensions: null,
@@ -417,8 +418,15 @@
                         initialPreviewConfig: []
                     };
                     $.extend(defaultOption, option);
+                    if (defaultOption.initialPreview === null) {
+                        defaultOption.initialPreview = [];
+                    }
+                    if (defaultOption.initialPreviewConfig === null) {
+                        defaultOption.initialPreviewConfig = [];
+                    }
                     $self.fileinput({
                         language: "zh",
+                        theme: "explorer-fa",
                         uploadUrl: "/SystemModule/Annex/UploadAnnex",
                         deleteUrl: "/SystemModule/Annex/VirtualDeleteAnnex",
                         showUpload: false, //是否显示上传按钮

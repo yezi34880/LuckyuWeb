@@ -93,7 +93,7 @@ namespace Luckyu.App.Organization
         public string wechat { get; set; }
 
         /// <summary>
-        ///  level   0-一般用户1-管理员2-超级管理员
+        ///  level   0-一般用户 9-管理员 99-超级管理员
         /// </summary>
         public int level { get; set; }
 

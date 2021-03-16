@@ -12,7 +12,7 @@ namespace Luckyu.Utility
         public JObject ExtObject { get; set; }
 
         [NotMapped]
-        public string ExtDataJson
+        public string ExtJson
         {
             get
             {

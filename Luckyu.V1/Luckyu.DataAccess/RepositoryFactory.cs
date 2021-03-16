@@ -55,6 +55,11 @@ namespace Luckyu.DataAccess
             var entity = BaseRepository().GetListTop<T>(top, condition, orderby, isDesc);
             return entity;
         }
+        public T GetEntityTop<T>(int top, Expression<Func<T, bool>> condition, string orderby = "") where T : class, new()
+        {
+            var entity = BaseRepository().GetEntityTop<T>(top, condition, orderby);
+            return entity;
+        }
 
     }
 }

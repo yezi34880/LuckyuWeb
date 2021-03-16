@@ -21,18 +21,21 @@ namespace Luckyu.Module.SystemModule.Controllers
 
         #endregion
 
-        #region SystemIndex
+        #region Index
         [HttpGet]
-        public IActionResult SystemIndex()
+        public IActionResult Index()
         {
             return View();
         }
         [HttpGet]
-        public IActionResult SystemPage(JqgridPageRequest jqpage, string classifyId)
+        public IActionResult Page(JqgridPageRequest jqpage, string classifyId)
         {
-            var page = dataitemBLL.DetailPage(jqpage, classifyId, true);
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var isSystem = (loginInfo.level == 99 || loginInfo.level == 9);
+            var page = dataitemBLL.DetailPage(jqpage, classifyId, isSystem);
             return Json(page);
         }
+
         [HttpPost, AjaxOnly]
         public IActionResult DeleteForm(string keyValue)
         {
@@ -45,21 +48,6 @@ namespace Luckyu.Module.SystemModule.Controllers
             dataitemBLL.DeleteDetailForm(entity, loginInfo);
             return Success();
         }
-        #endregion
-
-        #region Index
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
-        [HttpGet]
-        public IActionResult Page(JqgridPageRequest jqpage, string classifyId)
-        {
-            var page = dataitemBLL.DetailPage(jqpage, classifyId, false);
-            return Json(page);
-        }
-
         #endregion
 
         #region Form
@@ -190,8 +178,10 @@ namespace Luckyu.Module.SystemModule.Controllers
             return Json(treeData);
         }
         [HttpGet, AjaxOnly]
-        public IActionResult GetTree(int isSystem = 0)
+        public IActionResult GetTree()
         {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var isSystem = (loginInfo.level == 99 || loginInfo.level == 9) ? 1 : 0;
             var treeData = dataitemBLL.GetTree(isSystem);
             if (treeData.IsEmpty())
                 treeData = new List<eleTree>();

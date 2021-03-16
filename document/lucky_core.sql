@@ -11,11 +11,49 @@
  Target Server Version : 50717
  File Encoding         : 65001
 
- Date: 08/02/2021 09:45:33
+ Date: 16/03/2021 11:46:46
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for oa_carorder
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_carorder`;
+CREATE TABLE `oa_carorder`  (
+  `order_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `user_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `department_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `company_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `begintime` datetime(0) NOT NULL,
+  `endtime` datetime(0) NOT NULL,
+  `place` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '地点',
+  `reason` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `cost` decimal(18, 2) NOT NULL COMMENT '费用',
+  `carno` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '车牌号',
+  `isselfdrive` int(255) NOT NULL COMMENT '是否自驾',
+  `driver_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '驾驶员',
+  `drivername` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '驾驶员姓名',
+  `state` int(255) NOT NULL COMMENT '0 起草 1 生效 2 报批 3 驳回',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_userId` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `createtime` datetime(0) NULL DEFAULT NULL,
+  `edittime` datetime(0) NULL DEFAULT NULL,
+  `edit_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `edit_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `is_delete` int(255) NOT NULL,
+  `delete_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `delete_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `deletetime` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`order_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of oa_carorder
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for oa_leave
@@ -96,9 +134,9 @@ CREATE TABLE `oa_news`  (
 -- ----------------------------
 -- Records of oa_news
 -- ----------------------------
-INSERT INTO `oa_news` VALUES ('1318832748131127296', '安徽出台57条举措 让群众办事像网购一样方便', '新闻通知', '', '金台资讯', '2020-10-21 16:31:00', '<p style=\"margin-top: 0px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">人民网合肥10月21日电(周坤) 21日上午，在安徽省政府召开的进一步优化营商环境更好服务市场主体工作方案新闻发布会上，安徽省人民政府副秘书长、办公厅主任张杰对安徽省近日制定出台的《进一步优化营商环境更好服务市场主体工作方案》进行解读。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">张杰称，近年来，安徽省持续深化“放管服”改革，极大改善了营商环境，但还存在一些薄弱环节，特别是受新冠肺炎疫情影响，企业的生产经营仍然面临不少困难。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">为此，安徽省既关注企业当前面临的困难，又着眼于打破制约企业长期健康发展的体制机制障碍，制定出台《进一步优化营商环境更好服务市场主体工作方案》(以下简称，《工作方案》)。</span></p><p style=\"margin-top: 26px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">发布会上，张杰解读《进一步优化营商环境更好服务市场主体工作方案》。周坤 摄</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">据了解，《工作方案》包括持续提升投资建设便利度、进一步简化企业生产经营审批和条件、优化外贸外资企业经营环境等6个方面，20项工作内容、57条改革举措。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">通过减环节、压时限、强服务，改变过去企业百姓办事时间久、排队长、手续多，让“四最”营商环境，成为安徽省政府服务群众、服务企业的一个“金刚钻”和“金招牌”。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">张杰介绍，该《工作方案》充分体现安徽创新特色。通过加快“皖事通办”平台建设，构建企业群众统一办事平台，持续优化完善 7×24小时不打烊“随时办”服务，着力实现“市场主体和群众找政府办事像网购一样方便”。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">在推进长三角一体化发展方面，安徽将加强与沪苏浙联动，共同创建长三角区域国家级智能网联汽车先导区，推动更多涉企事项“跨省通办”、长三角“一网通办”，助力长三角一体化高质量发展。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">《工作方案》中还明确提出，支持各地进一步拓宽“地摊经济”场所和时间，实施审慎包容监管；对开展“共享用工”企业，给予就业补助资金补贴等；加快创新型医疗器械审评审批并推进临床应用，12月底前，实现行政审批时限比承诺时限缩减20%。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">张杰表示，下一步，安徽省将对标国际国内先进水平，加大创新探索力度，推出更多务实管用的改革举措，全面优化流程环节、全面服务惠企利民、全面增强法治水平，不断放大政策效应，持续将营商环境改革向纵深推进，加快打造市场化法治化国际化营商环境。</span></p><p><img src=\"/upload/image/20201021/6373889650335255406187585.jpg\" title=\"5a794938aca5a.jpg\" alt=\"5a794938aca5a.jpg\" width=\"536\" height=\"317\" style=\"width: 536px; height: 317px;\"/></p>', 1, 1, 0, '', '1', '超级管理员', '2020-10-21 16:33:25', '2020-10-21 17:03:16', '1', '超级管理员', 0, '', '', NULL);
-INSERT INTO `oa_news` VALUES ('1318842079190847488', '爱我人民爱我军 习近平这样锻造坚如磐石的军民关系', '新闻通知', '', '央视网', '2020-10-14 17:17:00', '<p>&nbsp; &nbsp; 2020年10月20日，全国双拥模范城（县）命名暨双拥模范单位和个人表彰大会举行，习近平总书记亲切会见与会代表，向他们表示诚挚问候，向受到命名表彰的全国双拥模范城（县）、双拥模范单位和个人表示热烈祝贺。</p><p>&nbsp; &nbsp; 习近平总书记始终高度重视双拥工作，多次在重要会议、国内考察时亲力亲为指导推动。他强调拥军优属、拥政爱民是我党我军特有的政治优势，坚如磐石的军政军民关系是我们战胜一切艰难险阻、不断从胜利走向胜利的重要法宝。</p><p>&nbsp; &nbsp; “难得举城作一庆，爱我人民爱我军。”军爱民，民拥军，最伟大的力量是同心合力。央视网《联播+》为您梳理总书记讲话，一起感受“军地合力，军民同心”汇聚起的磅礴力量。</p><p class=\"title\" style=\"box-sizing: border-box; text-size-adjust: none; padding: 0px; margin-top: 0.48rem; margin-bottom: 0.6rem; list-style: none; letter-spacing: 2px; color: rgb(51, 51, 51); font-size: 0.36rem; line-height: 0.6rem; text-align: justify; width: 745.1px;\"><img src=\"/upload/image/20201021/6373889697771858202780849.png\" alt=\"\" width=\"500\" style=\"font-family: &quot;PingFang SC&quot;, &quot;PingFang TC&quot;, &quot;Microsoft YaHei&quot;, STHeiti, arial, helvetica, sans-serif; font-size: 0.36rem; text-align: center; text-indent: 2em; box-sizing: border-box; border: 0px; display: block; width: 745.1px; box-shadow: rgba(0, 0, 0, 0.2) 0.02rem 0.04rem 0.05rem;\"/><img src=\"/ueupload/image/20201022/6373898291425161326583507.jpeg\" title=\"20170802002.jpeg\" alt=\"20170802002.jpeg\"/></p><p class=\"photo_img_20190808\" style=\"box-sizing: border-box; text-size-adjust: none; padding: 0px; margin-top: 0.48rem; margin-bottom: 0.48rem; list-style: none; letter-spacing: 2px; color: rgb(51, 51, 51); font-size: 0.36rem; line-height: 0.6rem; text-align: center; text-indent: 2em; font-family: &quot;PingFang SC&quot;, &quot;PingFang TC&quot;, &quot;Microsoft YaHei&quot;, STHeiti, arial, helvetica, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);\"><img src=\"/upload/image/20201021/6373889697822698385642401.png\" alt=\"\" width=\"500\" style=\"box-sizing: border-box; border: 0px; display: block; width: 745.1px; box-shadow: rgba(0, 0, 0, 0.2) 0.02rem 0.04rem 0.05rem;\"/></p><p><br/></p>', 1, 1, 99, '', '1', '超级管理员', '2020-10-21 17:10:29', '2020-10-22 17:01:57', '1', '超级管理员', 0, '', '', NULL);
-INSERT INTO `oa_news` VALUES ('1352974899303550976', '上海1地升为中风险 全国现有6+67个高中风险地区', '新闻通知', '上海,中风险', '新京报', '2021-01-23 21:41:00', '<p><img src=\"/ueupload/image/20210123/6374703491943502427073932.jpeg\"/></p>', 1, 1, 0, '', '1', '超级管理员', '2021-01-23 21:42:08', NULL, '', '', 0, '', '', NULL);
+INSERT INTO `oa_news` VALUES ('1318832748131127296', '安徽出台57条举措 让群众办事像网购一样方便', '新闻通知', '', '金台资讯', '2020-10-21 16:31:00', '<p style=\"margin-top: 0px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">人民网合肥10月21日电(周坤) 21日上午，在安徽省政府召开的进一步优化营商环境更好服务市场主体工作方案新闻发布会上，安徽省人民政府副秘书长、办公厅主任张杰对安徽省近日制定出台的《进一步优化营商环境更好服务市场主体工作方案》进行解读。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">张杰称，近年来，安徽省持续深化“放管服”改革，极大改善了营商环境，但还存在一些薄弱环节，特别是受新冠肺炎疫情影响，企业的生产经营仍然面临不少困难。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">为此，安徽省既关注企业当前面临的困难，又着眼于打破制约企业长期健康发展的体制机制障碍，制定出台《进一步优化营商环境更好服务市场主体工作方案》(以下简称，《工作方案》)。</span></p><p style=\"margin-top: 26px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">发布会上，张杰解读《进一步优化营商环境更好服务市场主体工作方案》。周坤 摄</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">据了解，《工作方案》包括持续提升投资建设便利度、进一步简化企业生产经营审批和条件、优化外贸外资企业经营环境等6个方面，20项工作内容、57条改革举措。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">通过减环节、压时限、强服务，改变过去企业百姓办事时间久、排队长、手续多，让“四最”营商环境，成为安徽省政府服务群众、服务企业的一个“金刚钻”和“金招牌”。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">张杰介绍，该《工作方案》充分体现安徽创新特色。通过加快“皖事通办”平台建设，构建企业群众统一办事平台，持续优化完善 7×24小时不打烊“随时办”服务，着力实现“市场主体和群众找政府办事像网购一样方便”。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">在推进长三角一体化发展方面，安徽将加强与沪苏浙联动，共同创建长三角区域国家级智能网联汽车先导区，推动更多涉企事项“跨省通办”、长三角“一网通办”，助力长三角一体化高质量发展。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">《工作方案》中还明确提出，支持各地进一步拓宽“地摊经济”场所和时间，实施审慎包容监管；对开展“共享用工”企业，给予就业补助资金补贴等；加快创新型医疗器械审评审批并推进临床应用，12月底前，实现行政审批时限比承诺时限缩减20%。</span></p><p style=\"margin-top: 22px; margin-bottom: 0px; padding: 0px; line-height: 24px; color: rgb(51, 51, 51); text-align: justify; font-family: arial; white-space: normal; background-color: rgb(255, 255, 255);\"><span class=\"bjh-p\">张杰表示，下一步，安徽省将对标国际国内先进水平，加大创新探索力度，推出更多务实管用的改革举措，全面优化流程环节、全面服务惠企利民、全面增强法治水平，不断放大政策效应，持续将营商环境改革向纵深推进，加快打造市场化法治化国际化营商环境。</span></p><p><img src=\"/upload/image/20201021/6373889650335255406187585.jpg\" title=\"5a794938aca5a.jpg\" alt=\"5a794938aca5a.jpg\" width=\"536\" height=\"317\" style=\"width: 536px; height: 317px;\"/></p>', 1, 1, 0, '', '1', '超级管理员', '2020-10-21 16:33:25', '2021-02-26 17:39:23', '1', '超级管理员', 0, '', '', NULL);
+INSERT INTO `oa_news` VALUES ('1318842079190847488', '爱我人民爱我军 习近平这样锻造坚如磐石的军民关系', '新闻通知', '', '央视网', '2020-10-14 17:17:00', '<p>&nbsp; &nbsp; 2020年10月20日，全国双拥模范城（县）命名暨双拥模范单位和个人表彰大会举行，习近平总书记亲切会见与会代表，向他们表示诚挚问候，向受到命名表彰的全国双拥模范城（县）、双拥模范单位和个人表示热烈祝贺。</p><p>&nbsp; &nbsp; 习近平总书记始终高度重视双拥工作，多次在重要会议、国内考察时亲力亲为指导推动。他强调拥军优属、拥政爱民是我党我军特有的政治优势，坚如磐石的军政军民关系是我们战胜一切艰难险阻、不断从胜利走向胜利的重要法宝。</p><p>&nbsp; &nbsp; “难得举城作一庆，爱我人民爱我军。”军爱民，民拥军，最伟大的力量是同心合力。央视网《联播+》为您梳理总书记讲话，一起感受“军地合力，军民同心”汇聚起的磅礴力量。</p><p class=\"title\" style=\"box-sizing: border-box; text-size-adjust: none; padding: 0px; margin-top: 0.48rem; margin-bottom: 0.6rem; list-style: none; letter-spacing: 2px; color: rgb(51, 51, 51); font-size: 0.36rem; line-height: 0.6rem; text-align: justify; width: 745.1px;\"><img src=\"/upload/image/20201021/6373889697771858202780849.png\" alt=\"\" width=\"500\" style=\"font-family: &quot;PingFang SC&quot;, &quot;PingFang TC&quot;, &quot;Microsoft YaHei&quot;, STHeiti, arial, helvetica, sans-serif; font-size: 0.36rem; text-align: center; text-indent: 2em; box-sizing: border-box; border: 0px; display: block; width: 745.1px; box-shadow: rgba(0, 0, 0, 0.2) 0.02rem 0.04rem 0.05rem;\"/><img src=\"/ueupload/image/20201022/6373898291425161326583507.jpeg\" title=\"20170802002.jpeg\" alt=\"20170802002.jpeg\"/></p><p class=\"photo_img_20190808\" style=\"box-sizing: border-box; text-size-adjust: none; padding: 0px; margin-top: 0.48rem; margin-bottom: 0.48rem; list-style: none; letter-spacing: 2px; color: rgb(51, 51, 51); font-size: 0.36rem; line-height: 0.6rem; text-align: center; text-indent: 2em; font-family: &quot;PingFang SC&quot;, &quot;PingFang TC&quot;, &quot;Microsoft YaHei&quot;, STHeiti, arial, helvetica, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);\"><img src=\"/upload/image/20201021/6373889697822698385642401.png\" alt=\"\" width=\"500\" style=\"box-sizing: border-box; border: 0px; display: block; width: 745.1px; box-shadow: rgba(0, 0, 0, 0.2) 0.02rem 0.04rem 0.05rem;\"/></p><p><br/></p>', 1, 1, 99, '', '1', '超级管理员', '2020-10-21 17:10:29', '2021-02-26 17:39:27', '1', '超级管理员', 0, '', '', NULL);
+INSERT INTO `oa_news` VALUES ('1352974899303550976', '上海1地升为中风险 全国现有6+67个高中风险地区', '新闻通知', '上海,中风险', '新京报', '2021-01-23 21:41:00', '<p><img src=\"/ueupload/image/20210123/6374703491943502427073932.jpeg\"/></p>', 1, 1, 0, '', '1', '超级管理员', '2021-01-23 21:42:08', '2021-02-26 17:39:19', '1', '超级管理员', 0, '', '', NULL);
 
 -- ----------------------------
 -- Table structure for sys_annexfile
@@ -116,6 +154,7 @@ CREATE TABLE `sys_annexfile`  (
   `contexttype` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `downloadcount` int(255) NOT NULL,
+  `sort` int(255) NOT NULL DEFAULT 0,
   `createtime` datetime(0) NULL DEFAULT NULL,
   `create_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -126,7 +165,7 @@ CREATE TABLE `sys_annexfile`  (
 -- ----------------------------
 -- Records of sys_annexfile
 -- ----------------------------
-INSERT INTO `sys_annexfile` VALUES ('1348264427807444992', '1348260081048883200', NULL, '140904xr8h00ssn0g0zgza.jpg', 'annexbasepath', 'Leave\\1\\20210110\\1348264427807444992.jpg', 177813, '.jpg', 'image/jpeg', '', 0, '2021-01-10 21:44:24', '1', '超级管理员');
+INSERT INTO `sys_annexfile` VALUES ('1348264427807444992', '1348260081048883200', NULL, '140904xr8h00ssn0g0zgza.jpg', 'annexbasepath', 'Leave\\1\\20210110\\1348264427807444992.jpg', 177813, '.jpg', 'image/jpeg', '', 0, 0, '2021-01-10 21:44:24', '1', '超级管理员');
 
 -- ----------------------------
 -- Table structure for sys_authorize
@@ -639,7 +678,6 @@ INSERT INTO `sys_module` VALUES ('12', '10', 'dataitem', '数据字典分类', '
 INSERT INTO `sys_module` VALUES ('13', '10', 'dataitemdetail', '数据字段明细', '/SystemModule/Dataitem/Index', '', 4, '', NULL, NULL, NULL, '2020-09-12 23:26:41', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
 INSERT INTO `sys_module` VALUES ('1300809545546862592', '1', 'dataauthorize', '数据权限管理', '/OrganizationModule/DataAuthorize/Index', '', 10, '', '1', '超级管理员', '2020-09-01 22:55:38', '2020-10-07 14:45:47', '1', '超级管理员', 0, '', '', NULL, 1);
 INSERT INTO `sys_module` VALUES ('1301536109125308416', '1', 'user', '用户管理', '/OrganizationModule/User/Index', '', 6, '', '1', '超级管理员', '2020-09-03 23:02:44', '2020-09-03 23:03:34', '1', '超级管理员', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1304803595438395392', '10', 'dataitemdetailsystem', '数据字典明细-管理员', '/SystemModule/Dataitem/SystemIndex', '', 3, '', '1', '超级管理员', '2020-09-12 23:26:34', NULL, '', '', 0, '', '', NULL, 1);
 INSERT INTO `sys_module` VALUES ('1305783733730807808', '0', 'workflow', '流程管理', '', 'layui-icon layui-icon-link', 3, '', '1', '超级管理员', '2020-09-15 16:21:17', NULL, '', '', 0, '', '', NULL, 1);
 INSERT INTO `sys_module` VALUES ('1305783880967655424', '1305783733730807808', 'designer', '流程设计', '/WorkflowModule/Designer/Index', '', 1, '', '1', '超级管理员', '2020-09-15 16:21:52', NULL, '', '', 0, '', '', NULL, 1);
 INSERT INTO `sys_module` VALUES ('1308753678907346944', '1305783733730807808', 'mytask', '我的任务', '/WorkflowModule/Task/Index', '', 5, '', '1', '超级管理员', '2020-09-23 21:02:47', NULL, '', '', 0, '', '', NULL, 1);
@@ -650,6 +688,7 @@ INSERT INTO `sys_module` VALUES ('1321834335111876608', '1305783733730807808', '
 INSERT INTO `sys_module` VALUES ('1323639339174989824', '10', 'coderule', '编码规则', '/SystemModule/CodeRule/Index', '', 10, '', '1', '超级管理员', '2020-11-03 22:53:05', NULL, '', '', 0, '', '', NULL, 1);
 INSERT INTO `sys_module` VALUES ('1333041917851734016', '10', 'log', '系统日志', '/SystemModule/Log/Index', '', 15, '', '1', '超级管理员', '2020-11-29 21:35:35', NULL, '', '', 0, '', '', NULL, 1);
 INSERT INTO `sys_module` VALUES ('1353517145971101696', '10', 'message', '消息通知', '/SystemModule/Message/Index', '', 30, '', '1', '超级管理员', '2021-01-25 09:36:49', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1365235791206420480', '1308754116331311104', 'carorder', '车辆预约', '/OAModule/CarOrder/Index', '', 10, '', '1', '超级管理员-system', '2021-02-26 17:42:32', NULL, '', '', 0, '', '', NULL, 1);
 INSERT INTO `sys_module` VALUES ('14', '10', 'config', '配置字段', '/SystemModule/Config/Index', '', 1, '', NULL, NULL, NULL, '2020-09-12 23:26:47', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
 INSERT INTO `sys_module` VALUES ('15', '1305783733730807808', 'monitor', '流程监控', '/WorkflowModule/Monitor/Index', NULL, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
 INSERT INTO `sys_module` VALUES ('2', '1', 'company', '公司管理', '/OrganizationModule/Company/Index', '', 1, '', NULL, NULL, NULL, '2020-09-01 23:08:36', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
@@ -986,6 +1025,10 @@ INSERT INTO `wf_task_authorize` VALUES ('1336677443402076160', '1336677443397881
 INSERT INTO `wf_task_authorize` VALUES ('1336677516676567042', '1336677516676567041', '1306793948387348480', '', '', '', '', '', '', 0, '1306793709295243264');
 INSERT INTO `wf_task_authorize` VALUES ('1336681153326878720', '1336681153322684416', '1306793948387348480', '', '', '', '', '', '', 0, '1306793709295243264');
 INSERT INTO `wf_task_authorize` VALUES ('1336681212277821442', '1336681212277821441', '1306793948387348480', '', '', '', '', '', '', 0, '1306793709295243264');
+INSERT INTO `wf_task_authorize` VALUES ('1371440954501894144', '1336681212277821441', '1306793709295243264', '', '', '', '', '', '', 1, '1');
+INSERT INTO `wf_task_authorize` VALUES ('1371440954501894145', '1336681212277821441', '1', '', '', '', '', '', '', 1, '1');
+INSERT INTO `wf_task_authorize` VALUES ('1371442676179800064', '1336681153322684416', '1306793709295243264', '', '', '', '', '', '', 1, '1');
+INSERT INTO `wf_task_authorize` VALUES ('1371442676179800065', '1336681153322684416', '1', '', '', '', '', '', '', 1, '1');
 
 -- ----------------------------
 -- Table structure for wf_taskhistory
@@ -1042,5 +1085,7 @@ INSERT INTO `wf_taskhistory` VALUES ('1336677443364327424', '', '130686199505158
 INSERT INTO `wf_taskhistory` VALUES ('1336677516676567040', '', '1306861995051585536', '1336677515871260672', '1336677515674128384', 'e3b1dc31-cc41-2702-5de8-49bf8fd20e62', '开始', 'startround', '0', '', '', '', 0, '【发起流程】', '2020-12-09 22:22:09', '1306793709295243264', '测试用户', '');
 INSERT INTO `wf_taskhistory` VALUES ('1336681153289129984', '', '1306861995051585536', '1336681152248942592', '1336677441883738112', 'e3b1dc31-cc41-2702-5de8-49bf8fd20e62', '开始', 'startround', '0', '', '', '', 0, '【发起流程】', '2020-12-09 22:36:36', '1306793709295243264', '测试用户', '');
 INSERT INTO `wf_taskhistory` VALUES ('1336681212277821440', '', '1306861995051585536', '1336681211438960640', '1336677515674128384', 'e3b1dc31-cc41-2702-5de8-49bf8fd20e62', '开始', 'startround', '0', '', '', '', 0, '【发起流程】', '2020-12-09 22:36:50', '1306793709295243264', '测试用户', '');
+INSERT INTO `wf_taskhistory` VALUES ('1371440954527059968', '1336681212277821441', '1306861995051585536', '1336681211438960640', '1336677515674128384', 'af55b2d7-1e63-2434-9611-4104893a1da0', '测试用户2审批', 'stepnode', 'e3b1dc31-cc41-2702-5de8-49bf8fd20e62', '开始', '', '', 3, '超级管理员-system  申请  测试用户-ceshi,超级管理员-system 【加签】审批', '2021-03-15 20:39:38', '1', '超级管理员-system', '');
+INSERT INTO `wf_taskhistory` VALUES ('1371442676179800066', '1336681153322684416', '1306861995051585536', '1336681152248942592', '1336677441883738112', 'af55b2d7-1e63-2434-9611-4104893a1da0', '测试用户2审批', 'stepnode', 'e3b1dc31-cc41-2702-5de8-49bf8fd20e62', '开始', '', '', 3, '超级管理员-system  申请  测试用户-ceshi,超级管理员-system 【加签】审批', '2021-03-15 20:46:29', '1', '超级管理员-system', '');
 
 SET FOREIGN_KEY_CHECKS = 1;

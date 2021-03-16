@@ -93,6 +93,16 @@ namespace Luckyu.App.System
                 all = all.Where(r => r.is_system == 0).ToList();
             }
             var tree = ToTree("0", all);
+
+
+            // 存在只分享子分类 而不分享上级分类的  放在根节点展示 加上
+            var noRootList = all.Where(r => r.parent_id != "0" && !all.Select(t => t.dataitem_id).Contains(r.parent_id)).Select(r => r).ToList();
+            foreach (var item in noRootList)
+            {
+                var treeNoRoot = ToTree(item.parent_id, all);
+                tree.AddRange(treeNoRoot);
+            }
+
             return tree;
         }
         private List<eleTree> ToTree(string parentId, List<sys_dataitemEntity> list)

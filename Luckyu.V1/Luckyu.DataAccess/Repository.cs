@@ -859,7 +859,7 @@ namespace Luckyu.DataAccess
 
         #endregion
 
-        #region Entity 查询
+        #region   查询
         public bool Exist<T>(T entity) where T : class, new()
         {
             var result = db.Select<T>(entity).Any();
@@ -1224,6 +1224,31 @@ namespace Luckyu.DataAccess
             return list;
         }
 
+        #endregion
+
+        #region GetEntityTop
+        /// <summary>
+        /// 根据排序取第几条
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="top"></param>
+        /// <param name="condition"></param>
+        /// <param name="orderby"></param>
+        /// <returns></returns>
+        public T GetEntityTop<T>(int top, Expression<Func<T, bool>> condition, string orderby = "") where T : class, new()
+        {
+            var query = db.Select<T>().Where(condition);
+            if (!string.IsNullOrEmpty(orderby))
+            {
+                query = query.OrderBy(orderby);
+            }
+            var entity = query.Skip(top - 1).Take(1).First();
+            if (entity != null)
+            {
+                AttachExtObject<T>(ref entity);
+            }
+            return entity;
+        }
         #endregion
 
         #region GetPage

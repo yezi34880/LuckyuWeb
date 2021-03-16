@@ -25,7 +25,7 @@ namespace Luckyu.Module.SystemModule.Controllers
 
         public IActionResult ShowFile(string keyValue)
         {
-            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue);
+            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
             if (annex == null)
             {
                 return new EmptyResult();
@@ -37,9 +37,30 @@ namespace Luckyu.Module.SystemModule.Controllers
                 return new EmptyResult();
             }
             Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
+            Response.ContentType = annex.contexttype;
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+            return File(bytes, annex.contexttype);
+        }
+
+        public IActionResult DownloadFile(string keyValue)
+        {
+            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
+            if (annex == null)
+            {
+                return new EmptyResult();
+            }
+            var basepath = configBLL.GetValueByCache(annex.basepath);
+            var filePath = FileHelper.Combine(basepath, annex.filepath);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return new EmptyResult();
+            }
+            Response.Headers.Append("Content-Disposition", "attachment; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
+            Response.ContentType = annex.contexttype;
             var bytes = System.IO.File.ReadAllBytes(filePath);
             return File(bytes, annex.contexttype, annex.filename);
         }
+
 
         public IActionResult ShowFileByExid(string exId, string exCode)
         {
@@ -48,7 +69,7 @@ namespace Luckyu.Module.SystemModule.Controllers
             {
                 exp = exp.LinqAnd(r => r.externalcode == exCode);
             }
-            var annex = annexBLL.GetEntity(exp, "createtime DESC");
+            var annex = annexBLL.GetEntity(exp, r => r.createtime, true);
             var basepath = configBLL.GetValueByCache(annex.basepath);
             var filePath = FileHelper.Combine(basepath, annex.filepath);
             if (!System.IO.File.Exists(filePath))
@@ -56,8 +77,29 @@ namespace Luckyu.Module.SystemModule.Controllers
                 return new EmptyResult();
             }
             Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
+            Response.ContentType = annex.contexttype;
             var bytes = System.IO.File.ReadAllBytes(filePath);
-            return File(bytes, annex.contexttype, annex.filename);
+            return File(bytes, annex.contexttype);
+        }
+
+        public IActionResult ShowFileByExidSort(string exId, int sort)
+        {
+            Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
+            var annex = annexBLL.GetEntityTop(sort, exp, "sort,createtime");
+            if (annex == null)
+            {
+                return new EmptyResult();
+            }
+            var basepath = configBLL.GetValueByCache(annex.basepath);
+            var filePath = FileHelper.Combine(basepath, annex.filepath);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return new EmptyResult();
+            }
+            Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
+            Response.ContentType = annex.contexttype;
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+            return File(bytes, annex.contexttype);
         }
 
         /// <summary>

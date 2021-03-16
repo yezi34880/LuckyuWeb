@@ -529,6 +529,43 @@
                                 defaultValue: "-1"
                             };
                         }
+                        else if (col.stype === "datasource") {
+                            col.ltype = col.stype;
+                            col.stype = "select";
+                            if (!col.formatter) {
+                                col.formatter = function (cellvalue, options, rowObject) {
+                                    var result = '';
+                                    ahoit.clientdata.getAsync('commonData', {
+                                        url: options.colModel.datasourceurl,
+                                        key: cellvalue,
+                                        keyId: options.colModel.datasourcevalue,
+                                        callback: function (_data) {
+                                            if (!!_data[options.colModel.datasourcename]) {
+                                                result = _data[options.colModel.datasourcename];
+                                            }
+                                        }
+                                    });
+                                    return result;
+                                };
+                            }
+                            col.searchoptions = {
+                                value: function () {
+                                    var selectoption = { "-1": "全部" };
+                                    var thiscolname = this.name;
+                                    var thiscol = op.colModel.filter(z => z.name === thiscolname);
+                                    ahoit.clientdata.getAllAsync('commonData', {
+                                        url: thiscol[0].datasourceurl,
+                                        callback: function (_datas) {
+                                            for (var z = 0; z < _datas.length; z++) {
+                                                selectoption[_datas[z][thiscol[0].datasourcevalue]] = _datas[z][thiscol[0].datasourcename];
+                                            }
+                                        }
+                                    });
+                                    return selectoption;
+                                },
+                                defaultValue: "-1"
+                            };
+                        }
                         else if (col.stype === "user_id") {
                             col.formatter = function (cellvalue, options, rowObject) {
                                 var result = "";

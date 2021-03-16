@@ -24,12 +24,28 @@ namespace Luckyu.App.System
             var entity = annexService.GetEntity(condition, orderby);
             return entity;
         }
+        public sys_annexfileEntity GetEntity(Expression<Func<sys_annexfileEntity, bool>> condition, Expression<Func<sys_annexfileEntity, object>> orderby, bool isDesc = false)
+        {
+            var entity = annexService.GetEntity(condition, orderby, isDesc);
+            return entity;
+        }
+
+        public sys_annexfileEntity GetEntityTop(int top, Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
+        {
+            var entity = annexService.GetEntityTop(top, condition, orderby);
+            return entity;
+        }
+
         public List<sys_annexfileEntity> GetList(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
         {
             var list = annexService.GetList(condition, orderby);
             return list;
         }
-
+        public List<sys_annexfileEntity> GetList(Expression<Func<sys_annexfileEntity, bool>> condition, Expression<Func<sys_annexfileEntity, object>> orderby, bool isDesc = false)
+        {
+            var list = annexService.GetList(condition, orderby, isDesc);
+            return list;
+        }
         #endregion
 
         #region Set
@@ -133,7 +149,11 @@ namespace Luckyu.App.System
         {
             if (list.IsEmpty())
             {
-                return null;
+                return new FileInputResponse
+                {
+                    initialPreview = null,
+                    initialPreviewConfig = null,
+                };
             }
             var previewsConfig = list.Select(r =>
             {

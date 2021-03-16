@@ -179,12 +179,12 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void AddUser(wf_task_authorizeEntity auth, wf_taskhistoryEntity history)
+        public void AddUser(List<wf_task_authorizeEntity> auths, wf_taskhistoryEntity history)
         {
             var trans = BaseRepository().BeginTrans();
             try
             {
-                trans.Insert(auth);
+                trans.Insert(auths);
                 trans.Insert(history);
                 trans.Commit();
             }

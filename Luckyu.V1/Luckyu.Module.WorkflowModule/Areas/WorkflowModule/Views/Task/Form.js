@@ -45,6 +45,7 @@ var bootstrap = function (layui) {
                                 [
                                     { value: 1, name: '<span class="label label-success">通过</span>' },
                                     { value: 2, name: '<span class="label label-error">驳回</span>' },
+                                    { value: 3, name: '<span class="label label-warning">申请加签</span>' },
                                     { value: -1, name: '<span class="label label-info">正在审批</span>' },
                                 ]
                             );
@@ -221,11 +222,13 @@ var bootstrap = function (layui) {
     };
     adduserClick = function (layerIndex, callBack) {
         luckyu.layer.userSelectForm({
-            multiple: false,
+            multiple: true,
             callback: function (userlist) {
-                var user = userlist[0];
-                luckyu.layer.layerConfirm("确定邀请 " + user.realname + " 加签审批？", function () {
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userId: userId }, function (data) {
+                debugger;
+                var userIds = userlist.map(r => r.userId);
+                var usernames = userlist.map(r => r.realname).join(",");
+                luckyu.layer.layerConfirm("确定邀请以下用户加签审批？<br />" + usernames, function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds }, function (data) {
                         if (!!callBack) {
                             callBack();
                         }
