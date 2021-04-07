@@ -75,6 +75,12 @@
             if (!$grid || $grid.length < 1) {
                 return;
             }
+            var grid_id = $grid.attr("id");
+            var filter_id = grid_id + "_rn";
+            $("#" + filter_id).html('<div style="cursor:pointer;font-size: larger;" title="筛选"><i class="fa fa-filter"></i></div>');
+            $("#" + filter_id).click(function () {
+                luckyu.grid.toggleSearchBar(grid);
+            });
             $grid.jqGrid('filterToolbar', {
                 autosearch: true,  // true输入后回车键搜索，false文本改变搜索
                 stringResult: true,
@@ -112,8 +118,13 @@
                 },
                 onClearSearchValue: function (elem, colIndex, s, d) {
                     $(elem).attr("_realValue", "").val("");
-
                 },
+            });
+            var refrash_id = "gsh_" + grid_id + "_rn";
+            $("#" + refrash_id).css("vertical-align", "middle");
+            $("#" + refrash_id).html('<div style="cursor:pointer;font-size: larger;text-align: center;" title="清空条件"><i class="fa fa-refresh"></i></div>');
+            $("#" + refrash_id).click(function () {
+                luckyu.grid.clearSearchBar(grid);
             });
         },
         /**
@@ -167,6 +178,9 @@
                                     var val = xmsel.getValue("valueStr");
                                     if (xmsel.options.radio === false) {
                                         val = val + ",";
+                                    }
+                                    if (val === ",") {
+                                        val = "";
                                     }
                                     tmp[nm] = val;
                                 }
@@ -481,7 +495,7 @@
                                 if (!!col.formatterdataitem) {
                                     col.formatter = function (cellvalue, options, rowObject) {
                                         var result = '';
-                                        cellvalue = cellvalue.trimRight(',');
+                                        cellvalue = !cellvalue ? "" : cellvalue.trimRight(',');
                                         luckyu.clientdata.getsAsync('dataItem', {
                                             key: cellvalue,
                                             code: options.colModel.formatterdataitem,
@@ -497,7 +511,7 @@
                                 else {
                                     col.formatter = function (cellvalue, options, rowObject) {
                                         var result = '';
-                                        cellvalue = cellvalue.trimRight(',');
+                                        cellvalue = !cellvalue ? "" : cellvalue.trimRight(',');
                                         luckyu.clientdata.getsAsync('dataItem', {
                                             key: cellvalue,
                                             code: options.colModel.dataitemcode,

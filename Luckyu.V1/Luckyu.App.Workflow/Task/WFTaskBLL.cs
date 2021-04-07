@@ -26,6 +26,7 @@ namespace Luckyu.App.Workflow
         private WFDelegateBLL delegateBLL = new WFDelegateBLL();
         private UserBLL userBLL = new UserBLL();
         private UserRelationBLL userrelationBLL = new UserRelationBLL();
+        private DepartmentManageBLL manageBLL = new DepartmentManageBLL();
         private MessageBLL messageBLL = new MessageBLL();
         #endregion
 
@@ -356,7 +357,7 @@ namespace Luckyu.App.Workflow
             {
                 listSql.Add(nodeStart.sqlsuccess);
             }
-            var res = ProcessNodeInject(nodeStart, 1, "");
+            var res = ProcessNodeInject(nodeStart, instance.instance_id, instance.process_id, 1, "");
             if (res.code == (int)ResponseCode.Fail)
             {
                 return ResponseResult.Fail(res.info, res.data);
@@ -509,7 +510,7 @@ namespace Luckyu.App.Workflow
             historyCurrent.authorizen_userame = loginInfo.realname;
             historyCurrent.Create(loginInfo);
             listHistory.Add(historyCurrent);
-            var res = ProcessNodeInject(nodeCurrent, result, opinion);
+            var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, result, opinion);
             if (res.code == (int)ResponseCode.Fail)
             {
                 return ResponseResult.Fail(res.info, res.data);
@@ -517,20 +518,21 @@ namespace Luckyu.App.Workflow
 
             task.is_done = 1;
             var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
-            if (result == 1)
-            {
-                lines = lines.Where(r => r.wftype == 1 || r.wftype == 0).ToList();
-                if (!nodeCurrent.sqlsuccess.IsEmpty())
-                {
-                    listSql.Add(nodeCurrent.sqlsuccess);
-                }
-            }
-            else if (result == 2)
+
+            if (result == 2) // 拒绝
             {
                 lines = lines.Where(r => r.wftype == 2 || r.wftype == 0).ToList();
                 if (!nodeCurrent.sqlfail.IsEmpty())
                 {
                     listSql.Add(nodeCurrent.sqlfail);
+                }
+            }
+            else  // 同意
+            {
+                lines = lines.Where(r => r.wftype == 1 || r.wftype == 0).ToList();
+                if (!nodeCurrent.sqlsuccess.IsEmpty())
+                {
+                    listSql.Add(nodeCurrent.sqlsuccess);
                 }
             }
             if (lines.IsEmpty())
@@ -654,7 +656,7 @@ namespace Luckyu.App.Workflow
             var schemeModel = instance.schemejson.ToObject<WFSchemeModel>();
             var firsttask = tasks.Select(r => r).FirstOrDefault();
             var firstnode = schemeModel.nodes.Where(r => r.id == firsttask.node_id).Select(r => r).FirstOrDefault();
-            var res = ProcessNodeInject(firstnode, 2, "");
+            var res = ProcessNodeInject(firstnode, instance.instance_id, instance.process_id, 2, "");
             if (res.code == (int)ResponseCode.Fail)
             {
                 return ResponseResult.Fail(res.info, res.data);
@@ -712,7 +714,7 @@ namespace Luckyu.App.Workflow
                     historyCurrent.authorizen_userame = loginInfo.realname;
                     historyCurrent.Create(loginInfo);
                     listHistory.Add(historyCurrent);
-                    var res = ProcessNodeInject(nodeCurrent, 1, "");
+                    var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, 1, "");
                     if (res.code == (int)ResponseCode.Fail)
                     {
                         return ResponseResult.Fail(res.info, res.data);
@@ -811,7 +813,7 @@ namespace Luckyu.App.Workflow
         /// <param name="node">节点</param>
         /// <param name="result">审批结果 1 通过 2 拒绝</param>
         /// <param name="opinion">审批意见</param>
-        private ResponseResult ProcessNodeInject(WFSchemeNodeModel node, int result, string opinion)
+        private ResponseResult ProcessNodeInject(WFSchemeNodeModel node, string instanceId, string processId, int result, string opinion)
         {
             if (!node.injectassembly.IsEmpty() && !node.injectclass.IsEmpty())
             {
@@ -823,7 +825,7 @@ namespace Luckyu.App.Workflow
                     throw new Exception($"{node.name}执行程序配置错误，请联系管理员");
                 }
                 MethodInfo methCheck = tp.GetMethod("CheckApprove");//加载方法
-                var res = methCheck.Invoke(process, new object[] { result, opinion }) as ResponseResult;//执行
+                var res = methCheck.Invoke(process, new object[] { instanceId, processId, result, opinion }) as ResponseResult;//执行
                 if (res == null)
                 {
                     throw new Exception($"{node.name}执行程序配置错误，验证出错，请联系管理员");
@@ -831,7 +833,7 @@ namespace Luckyu.App.Workflow
                 if (res.code == (int)ResponseCode.Success)
                 {
                     MethodInfo meth = tp.GetMethod("Approve");//加载方法
-                    meth.Invoke(process, new object[] { result, opinion });//执行
+                    meth.Invoke(process, new object[] { instanceId, processId, result, opinion });//执行
                     return ResponseResult.Success();
                 }
                 else
@@ -914,7 +916,7 @@ namespace Luckyu.App.Workflow
                     else if (nodeNext.type == "processnode") // 执行
                     {   // 之后为执行节点  task 表不插值  history插入执行  需要递归 , 可能后面都是执行 直到结束    
                         listSql.Add(nodeNext.sqlsuccess);
-                        ProcessNodeInject(nodeNext, 1, "");
+                        ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "");
 
                         currentLine = alllines.Where(r => r.from == nodeNext.id).FirstOrDefault();
 
@@ -983,7 +985,7 @@ namespace Luckyu.App.Workflow
                         if (isContainSelf)  // 如果下一步包含自己 则 递归
                         {
                             listSql.Add(nodeNext.sqlsuccess);
-                            ProcessNodeInject(nodeNext, 1, "");
+                            ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "");
 
                             var historySelf = new wf_taskhistoryEntity();
                             historySelf = taskEntity.Adapt<wf_taskhistoryEntity>();
@@ -1076,7 +1078,7 @@ namespace Luckyu.App.Workflow
                             else if (nodeAuth.objectrange == 3)
                             {
                                 auth.manage_dept_id = instance.department_id;
-                                if (loginInfo.post_ids.Contains(objectId) && loginInfo.manage_dept_ids.Contains(instance.department_id))
+                                if (loginInfo.post_ids.Contains(objectId) && loginInfo.managedepartments.Exists(r => r.relationtype == 2 && r.object_id == objectId && r.department_id == instance.department_id))
                                 {
                                     isContainSelf = true;
                                 }
@@ -1104,7 +1106,7 @@ namespace Luckyu.App.Workflow
                             else if (nodeAuth.objectrange == 3)
                             {
                                 auth.manage_dept_id = instance.department_id;
-                                if (loginInfo.role_ids.Contains(objectId) && loginInfo.manage_dept_ids.Contains(instance.department_id))
+                                if (loginInfo.role_ids.Contains(objectId) && loginInfo.managedepartments.Exists(r => r.relationtype == 1 && r.object_id == objectId && r.department_id == instance.department_id))
                                 {
                                     isContainSelf = true;
                                 }
@@ -1188,7 +1190,7 @@ namespace Luckyu.App.Workflow
                 }
                 if (!auth.post_id.IsEmpty())
                 {
-                    var userIds = allrelation.Where(r => r.relationtype == (int)UserRelationType.Post && r.object_id == auth.post_id).Select(r => r.user_id).ToList();
+                    var userIds = allrelation.Where(r => r.relationtype == (int)UserRelationEnum.Post && r.object_id == auth.post_id).Select(r => r.user_id).ToList();
                     if (!auth.company_id.IsEmpty())
                     {
                         var users = alluser.Where(r => userIds.Contains(r.user_id) && r.company_id == auth.company_id).ToList();
@@ -1207,9 +1209,9 @@ namespace Luckyu.App.Workflow
                     }
                     if (!auth.manage_dept_id.IsEmpty())
                     {
-                        var manages = allrelation.Where(r => r.relationtype == (int)UserRelationType.DeptManager && r.object_id == auth.manage_dept_id).Select(r => r.user_id).ToList();
-                        manages = userIds.Intersect(manages).ToList();
-                        var users = alluser.Where(r => manages.Contains(r.user_id)).ToList();
+                        var magener_ids = manageBLL.GetDepartmentManagers(auth.manage_dept_id, auth.post_id, DepartmentManageRelationEnum.Post);
+                        magener_ids = userIds.Intersect(magener_ids).ToList();
+                        var users = alluser.Where(r => magener_ids.Contains(r.user_id)).ToList();
                         if (!users.IsEmpty())
                         {
                             listUser.AddRange(users);
@@ -1218,7 +1220,7 @@ namespace Luckyu.App.Workflow
                 }
                 if (!auth.role_id.IsEmpty())
                 {
-                    var userIds = allrelation.Where(r => r.relationtype == (int)UserRelationType.Role && r.object_id == auth.role_id).Select(r => r.user_id).ToList();
+                    var userIds = allrelation.Where(r => r.relationtype == (int)UserRelationEnum.Role && r.object_id == auth.role_id).Select(r => r.user_id).ToList();
                     if (!auth.company_id.IsEmpty())
                     {
                         var users = alluser.Where(r => userIds.Contains(r.user_id) && r.company_id == auth.company_id).ToList();
@@ -1237,9 +1239,9 @@ namespace Luckyu.App.Workflow
                     }
                     if (!auth.manage_dept_id.IsEmpty())
                     {
-                        var manages = allrelation.Where(r => r.relationtype == (int)UserRelationType.DeptManager && r.object_id == auth.manage_dept_id).Select(r => r.user_id).ToList();
-                        manages = userIds.Intersect(manages).ToList();
-                        var users = alluser.Where(r => manages.Contains(r.user_id)).ToList();
+                        var magener_ids = manageBLL.GetDepartmentManagers(auth.manage_dept_id, auth.post_id, DepartmentManageRelationEnum.Role);
+                        magener_ids = userIds.Intersect(magener_ids).ToList();
+                        var users = alluser.Where(r => magener_ids.Contains(r.user_id)).ToList();
                         if (!users.IsEmpty())
                         {
                             listUser.AddRange(users);
@@ -1248,7 +1250,7 @@ namespace Luckyu.App.Workflow
                 }
                 if (!auth.group_id.IsEmpty())
                 {
-                    var userIds = allrelation.Where(r => r.relationtype == (int)UserRelationType.Group && r.object_id == auth.group_id).Select(r => r.user_id).ToList();
+                    var userIds = allrelation.Where(r => r.relationtype == (int)UserRelationEnum.Group && r.object_id == auth.group_id).Select(r => r.user_id).ToList();
                     var users = alluser.Where(r => userIds.Contains(r.user_id)).ToList();
                     if (users != null)
                     {

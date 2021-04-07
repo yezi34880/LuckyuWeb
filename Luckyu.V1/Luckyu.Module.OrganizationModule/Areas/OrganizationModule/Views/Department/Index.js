@@ -92,13 +92,6 @@ var bootstrap = function (layui) {
         },
         initBtn: function () {
 
-            $("#searchfilter").click(function () {
-                grid.toggleSearchBar();
-            });
-            $("#reset").click(function () {
-                grid.clearSearchBar();
-            });
-
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
                     id: "Form",
@@ -152,37 +145,6 @@ var bootstrap = function (layui) {
                         page.searchInCurrentPage();
                     });
                 });
-            });
-            // 设置分管
-            $("#manager").click(function () {
-                var rowid = grid.getGridParam("selrow");
-                if (!rowid) {
-                    layui.notice.error("没有选中任何行数据");
-                    return;
-                }
-                luckyu.ajax.get(luckyu.rootUrl + "/OrganizationModule/UserRelation/GetUsers", { relationType: 4, objectId: rowid },
-                    function (res) {
-                        var userIds = res.data.map(function (obj) {
-                            return obj.F_UserId;
-                        });
-                        luckyu.layer.userSelectForm({
-                            initValue: userIds,
-                            callback: function (userlist) {
-                                if (!userlist || userlist.length < 1) {
-                                    return;
-                                }
-                                var ids = userlist.map(r => r.userId).join(",");
-                                luckyu.ajax.postv2(luckyu.rootUrl + "/OrganizationModule/UserRelation/SetUsers", {
-                                    relationType: 4,
-                                    objectId: rowid,
-                                    userIds: ids
-                                }, function (data, info) {
-                                    layui.notice.success(info);
-                                    page.searchInCurrentPage();
-                                });
-                            }
-                        });
-                    });
             });
         },
         search: function (postData) {

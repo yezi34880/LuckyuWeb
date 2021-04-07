@@ -1,6 +1,7 @@
 ﻿using FreeSql.Internal.Model;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -52,6 +53,35 @@ namespace Luckyu.App.Organization
                 {
                     entity.Create(loginInfo);
                     trans.Insert(entity);
+
+                    var defaultRoles = db.Queryable<sys_roleEntity>().Where(r => r.is_default == 1 && r.is_delete == 0 && r.is_enable == 1).ToList();
+                    if (!defaultRoles.IsEmpty())
+                    {
+                        foreach (var role in defaultRoles)
+                        {
+                            var auth = new sys_userrelationEntity();
+                            auth.Create(loginInfo);
+                            auth.user_id = entity.user_id;
+                            auth.relationtype = (int)UserRelationEnum.Role;
+                            auth.object_id = role.role_id;
+                            db.Insert(auth).ExecuteAffrows();
+                        }
+                    }
+
+                    var defaultPosts = db.Queryable<sys_postEntity>().Where(r => r.is_default == 1 && r.is_delete == 0 && r.is_enable == 1).ToList();
+                    if (!defaultPosts.IsEmpty())
+                    {
+                        foreach (var post in defaultPosts)
+                        {
+                            var auth = new sys_userrelationEntity();
+                            auth.Create(loginInfo);
+                            auth.user_id = entity.user_id;
+                            auth.relationtype = (int)UserRelationEnum.Post;
+                            auth.object_id = post.post_id;
+                            db.Insert(auth).ExecuteAffrows();
+                        }
+                    }
+
                 }
                 else
                 {

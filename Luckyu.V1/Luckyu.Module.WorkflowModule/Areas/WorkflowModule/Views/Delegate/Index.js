@@ -63,12 +63,6 @@ var bootstrap = function (layui) {
             };
         },
         initBtn: function () {
-            $("#searchfilter").click(function () {
-                grid.toggleSearchBar();
-            });
-            $("#reset").click(function () {
-                grid.clearSearchBar();
-            });
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({

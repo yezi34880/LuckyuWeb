@@ -110,12 +110,6 @@ var bootstrap = function (layui) {
 
         },
         initBtn: function () {
-            $("#searchfilter").click(function () {
-                grid.toggleSearchBar();
-            });
-            $("#reset").click(function () {
-                grid.clearSearchBar();
-            });
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
@@ -151,7 +145,7 @@ var bootstrap = function (layui) {
                         name: "保存",
                         callback: function (index, layero) {
                             layero.find("iframe")[0].contentWindow.saveClick(index, function () {
-                                page.search();
+                                page.searchInCurrentPage();
                             });
                             return false;
                         }
@@ -264,7 +258,6 @@ var bootstrap = function (layui) {
                     });
                 });
             });
-
             $("#setpost").click(function () {
                 var rowid = grid.getGridParam("selrow");
                 if (!rowid) {
@@ -302,7 +295,6 @@ var bootstrap = function (layui) {
                     });
                 });
             });
-
             $("#setgroup").click(function () {
                 var rowid = grid.getGridParam("selrow");
                 if (!rowid) {
@@ -325,7 +317,7 @@ var bootstrap = function (layui) {
                             name: "确定",
                             callback: function (index, layero) {
                                 var posts = layero.find("iframe")[0].contentWindow.saveClick(index);
-                                var objectIds = posts.map(r => r.post_id);
+                                var objectIds = posts.map(r => r.group_id);
                                 var requestData = {
                                     relationType: 3,
                                     userId: rowid,
@@ -347,36 +339,24 @@ var bootstrap = function (layui) {
                     layui.notice.error("没有选中任何行数据");
                     return;
                 }
-                luckyu.ajax.get(luckyu.rootUrl + '/OrganizationModule/UserRelation/GetRelations', { relationType: 4, userId: rowid }, function (res) {
-                    var alreadyselect = [];
-                    if (!!res.data && res.data.length > 0) {
-                        alreadyselect = res.data.map(r => r.object_id);
-                    }
-                    top.alreadyselect = alreadyselect;
-                    luckyu.layer.layerFormTop({
-                        id: "Form",
-                        title: "设置分管部门",
-                        width: 500,
-                        height: 550,
-                        url: luckyu.rootUrl + "/OrganizationModule/Department/DepartmentSelectForm?multiple=true",
-                        btn: [{
-                            name: "确定",
-                            callback: function (index, layero) {
-                                var depts = layero.find("iframe")[0].contentWindow.saveClick(index);
-                                var objectIds = depts.map(r => r.id);
-                                var requestData = {
-                                    relationType: 4,
-                                    userId: rowid,
-                                    objectIds: objectIds
-                                };
-                                luckyu.ajax.postv2(luckyu.rootUrl + '/OrganizationModule/UserRelation/SetRelations', requestData, function (data, info) {
-                                    layui.notice.success(info);
-                                    page.searchInCurrentPage();
-                                });
-                            }
-                        }]
-                    });
+
+                luckyu.layer.layerFormTop({
+                    id: "Form",
+                    title: "设置分管",
+                    width: 800,
+                    height: 550,
+                    url: luckyu.rootUrl + "/OrganizationModule/DepartmentManage/ManageForm?userId=" + rowid,
+                    btn: [{
+                        name: "确定",
+                        callback: function (index, layero) {
+                            layero.find("iframe")[0].contentWindow.saveClick(index, function () {
+                                page.searchInCurrentPage();
+                            });
+                            return false;
+                        }
+                    }]
                 });
+
             });
         },
         search: function (postData) {

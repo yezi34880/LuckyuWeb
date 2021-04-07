@@ -45,8 +45,9 @@ var bootstrap = function (layui) {
                                 [
                                     { value: 1, name: '<span class="label label-success">通过</span>' },
                                     { value: 2, name: '<span class="label label-error">驳回</span>' },
-                                    { value: 3, name: '<span class="label label-warning">申请加签</span>' },
-                                    { value: -1, name: '<span class="label label-info">正在审批</span>' },
+                                    { value: 3, name: '<span class="label label-primary">申请加签</span>' },
+                                    { value: 4, name: '<span class="label label-info">已阅</span>' },
+                                    { value: -1, name: '<span class="label label-Default">正在审批</span>' },
                                 ]
                             );
                             return result;
@@ -190,8 +191,6 @@ var bootstrap = function (layui) {
             }
         });
 
-        console.log("审批");
-        return;
         // 验证通过 才执行审批，必填项等
         if (flag) {
             luckyu.layer.layerFormTop({
@@ -224,7 +223,6 @@ var bootstrap = function (layui) {
         luckyu.layer.userSelectForm({
             multiple: true,
             callback: function (userlist) {
-                debugger;
                 var userIds = userlist.map(r => r.userId);
                 var usernames = userlist.map(r => r.realname).join(",");
                 luckyu.layer.layerConfirm("确定邀请以下用户加签审批？<br />" + usernames, function () {
@@ -249,7 +247,7 @@ var bootstrap = function (layui) {
                 name: "确定",
                 callback: function (index, layero) {
                     var res = layero.find("iframe")[0].contentWindow.saveClick(index);
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: 0, opinion: res.opinion }, function (data) {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: 4, opinion: res.opinion }, function (data) {
                         if (!!callBack) {
                             callBack();
                         }

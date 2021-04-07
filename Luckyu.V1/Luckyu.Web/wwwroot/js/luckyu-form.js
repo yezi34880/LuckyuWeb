@@ -117,6 +117,9 @@
                             if (xmsel.options.radio === false) {
                                 val = val + ",";
                             }
+                            if (val === ",") {
+                                val = "";
+                            }
                             objData[name] = val;
                         }
                         else if (self.hasClass("luckyu-editor")) {

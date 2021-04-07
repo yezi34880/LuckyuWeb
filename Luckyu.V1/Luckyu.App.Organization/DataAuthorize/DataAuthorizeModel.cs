@@ -71,7 +71,7 @@ namespace Luckyu.App.Organization
                 {
                     foreach (var postid in this.PostIds)
                     {
-                        var users = relations.Where(r => r.relationtype == (int)UserRelationType.Post && r.object_id == postid).Select(r => r.user_id).ToList();
+                        var users = relations.Where(r => r.relationtype == (int)UserRelationEnum.Post && r.object_id == postid).Select(r => r.user_id).ToList();
                         userIds.AddRangeNoRepeat(users);
                     }
                 }
@@ -79,7 +79,7 @@ namespace Luckyu.App.Organization
                 {
                     foreach (var roleid in this.RoleIds)
                     {
-                        var users = relations.Where(r => r.relationtype == (int)UserRelationType.Role && r.object_id == roleid).Select(r => r.user_id).ToList();
+                        var users = relations.Where(r => r.relationtype == (int)UserRelationEnum.Role && r.object_id == roleid).Select(r => r.user_id).ToList();
                         userIds.AddRangeNoRepeat(users);
                     }
                 }
@@ -87,7 +87,7 @@ namespace Luckyu.App.Organization
                 {
                     foreach (var groupid in this.GroupIds)
                     {
-                        var users = relations.Where(r => r.relationtype == (int)UserRelationType.Group && r.object_id == groupid).Select(r => r.user_id).ToList();
+                        var users = relations.Where(r => r.relationtype == (int)UserRelationEnum.Group && r.object_id == groupid).Select(r => r.user_id).ToList();
                         userIds.AddRangeNoRepeat(users);
                     }
                 }

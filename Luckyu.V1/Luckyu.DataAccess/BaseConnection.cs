@@ -44,10 +44,32 @@ namespace Luckyu.DataAccess
                           .UseConnectionString(GetDbType(), GetConnectionString())
                           .UseNameConvert(FreeSql.Internal.NameConvertType.ToLower)
                           .UseAutoSyncStructure(false) //自动同步实体结构到数据库
-                          .UseGenerateCommandParameterWithLambda(LuckyuHelper.IsDebug() ? false : true)
-                          .UseNoneCommandParameter(LuckyuHelper.IsDebug() ? true : false)
+                                                       //.UseGenerateCommandParameterWithLambda(LuckyuHelper.IsDebug() ? false : true)
+                                                       //.UseNoneCommandParameter(LuckyuHelper.IsDebug() ? true : false)
+                          .UseGenerateCommandParameterWithLambda(true)
+                          .UseNoneCommandParameter(false)
                           .UseMonitorCommand((command) =>
                           {
+                              var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
+                              var sql = command.CommandText;
+                              foreach (var keyword in keywords)
+                              {
+                                  if (sql.ToLower().Trim().StartsWith(keyword))
+                                  {
+                                      var dic = new Dictionary<string, string>();
+                                      foreach (DbParameter para in command.Parameters)
+                                      {
+                                          dic.Add(para.ParameterName, para.Value.ToString());
+                                      }
+                                      var log = new sys_logEntity();
+                                      log.log_type = (int)LogType.Sql;
+                                      log.app_name = LuckyuHelper.AppID;
+                                      log.log_content = sql;
+                                      log.log_json = JsonConvert.SerializeObject(dic);
+                                      logService.Insert(log);
+                                      break;
+                                  }
+                              }
 
                           }, (command, result) =>
                           {

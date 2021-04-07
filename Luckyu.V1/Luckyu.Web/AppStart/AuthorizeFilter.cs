@@ -29,7 +29,14 @@ namespace Luckyu.Web
             var isOnLine = LoginUserInfo.Instance.IsOnLine(context.HttpContext);
             if (!isOnLine)
             {
-                context.Result = new RedirectResult("~/Login/Index");
+                if (context.HttpContext.Request.Path.ToString().Contains("MobileModule"))
+                {
+                    context.Result = new RedirectResult("~/MobileModule/Login/Index");
+                }
+                else
+                {
+                    context.Result = new RedirectResult("~/Login/Index");
+                }
             }
         }
     }

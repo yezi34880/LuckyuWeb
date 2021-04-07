@@ -11,11 +11,66 @@
  Target Server Version : 50717
  File Encoding         : 65001
 
- Date: 16/03/2021 11:46:46
+ Date: 07/04/2021 23:09:24
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for bn_product
+-- ----------------------------
+DROP TABLE IF EXISTS `bn_product`;
+CREATE TABLE `bn_product`  (
+  `product_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `productcode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `productname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `state` int(255) NOT NULL COMMENT '0 起草 1 生效 2 报批 3 驳回',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_userId` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `createtime` datetime(0) NULL DEFAULT NULL,
+  `edittime` datetime(0) NULL DEFAULT NULL,
+  `edit_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `edit_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `is_delete` int(255) NOT NULL,
+  `delete_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `delete_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `deletetime` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`product_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of bn_product
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for bn_product_supplier
+-- ----------------------------
+DROP TABLE IF EXISTS `bn_product_supplier`;
+CREATE TABLE `bn_product_supplier`  (
+  `purchase_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `product_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `supplier_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `suppliername` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `unitprice` decimal(18, 2) NOT NULL,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_userId` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `createtime` datetime(0) NULL DEFAULT NULL,
+  `edittime` datetime(0) NULL DEFAULT NULL,
+  `edit_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `edit_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `is_delete` int(255) NOT NULL,
+  `delete_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `delete_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `deletetime` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`purchase_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of bn_product_supplier
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for oa_carorder
@@ -490,22 +545,23 @@ CREATE TABLE `sys_dbcolumn`  (
   `layverify` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `laylength` int(11) NOT NULL DEFAULT 6,
   `is_hidden` int(2) NOT NULL DEFAULT 0,
+  `is_ext` int(255) NOT NULL DEFAULT 0,
   PRIMARY KEY (`column_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dbcolumn
 -- ----------------------------
-INSERT INTO `sys_dbcolumn` VALUES ('1', '1', 'user_id', '用户', '', 'user', '', NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('11', '2', 'title', '标题', NULL, 'text', NULL, NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('12', '2', 'publishtime', '发布时间', NULL, 'datetime', NULL, NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('2', '1', 'department_id', '部门', '', 'department', NULL, NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('3', '1', 'company_id', '公司', '', 'company', NULL, NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('4', '1', 'begintime', '开始时间', '', 'datetime', NULL, NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('5', '1', 'endtime', '结束时间', '', 'datetime', NULL, NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('6', '1', 'spantime', '请假时长(小时)', '', 'number', NULL, NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('7', '1', 'leavetype', '类型', '', 'dataitem', '{\"itemcode\":\"leavetype\"}', NULL, 6, 0);
-INSERT INTO `sys_dbcolumn` VALUES ('8', '1', 'reason', '事由', '', 'text', NULL, NULL, 12, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('1', '1', 'user_id', '用户', '', 'user', '', NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('11', '2', 'title', '标题', NULL, 'text', NULL, NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('12', '2', 'publishtime', '发布时间', NULL, 'datetime', NULL, NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('2', '1', 'department_id', '部门', '', 'department', NULL, NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('3', '1', 'company_id', '公司', '', 'company', NULL, NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('4', '1', 'begintime', '开始时间', '', 'datetime', NULL, NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('5', '1', 'endtime', '结束时间', '', 'datetime', NULL, NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('6', '1', 'spantime', '请假时长(小时)', '', 'number', NULL, NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('7', '1', 'leavetype', '类型', '', 'dataitem', '{\"itemcode\":\"leavetype\"}', NULL, 6, 0, 0);
+INSERT INTO `sys_dbcolumn` VALUES ('8', '1', 'reason', '事由', '', 'text', NULL, NULL, 12, 0, 0);
 
 -- ----------------------------
 -- Table structure for sys_dbtable
@@ -562,6 +618,33 @@ CREATE TABLE `sys_department`  (
 -- ----------------------------
 INSERT INTO `sys_department` VALUES ('1', '1297427797396033536', '0', '01', '技术部', '技术部', '', '', 0, '', '1', '超级管理员', '2020-08-26 23:09:52', '2020-08-26 23:13:58', '1', '超级管理员', 0, '', NULL, '', 1);
 INSERT INTO `sys_department` VALUES ('1298639734708506624', '1297427797396033536', '1', '002', '技术二部', '技术二部', '', '', 0, '', '1', '超级管理员', '2020-08-26 23:13:35', '2020-08-27 22:31:23', '1', '超级管理员', 0, '', NULL, '', 1);
+
+-- ----------------------------
+-- Table structure for sys_departmentmanage
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_departmentmanage`;
+CREATE TABLE `sys_departmentmanage`  (
+  `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `user_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `department_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `departmentname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `relationtype` int(255) NOT NULL COMMENT '1-角色 2-岗位',
+  `object_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `objectname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_userId` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `createtime` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_departmentmanage
+-- ----------------------------
+INSERT INTO `sys_departmentmanage` VALUES ('1379811047581552640', '1', '1', '技术部', 1, '1300803540188532736', '测试角色', NULL, '1', '超级管理员-system', '2021-04-07 22:59:24');
+INSERT INTO `sys_departmentmanage` VALUES ('1379811047581552641', '1', '1298639734708506624', '技术二部', 1, '1300803540188532736', '测试角色', NULL, '1', '超级管理员-system', '2021-04-07 22:59:24');
+INSERT INTO `sys_departmentmanage` VALUES ('1379811047581552642', '1', '1', '技术部', 2, '1299976813929435136', '总经理', NULL, '1', '超级管理员-system', '2021-04-07 22:59:24');
+INSERT INTO `sys_departmentmanage` VALUES ('1379811047581552643', '1', '1298639734708506624', '技术二部', 2, '1299976813929435136', '总经理', NULL, '1', '超级管理员-system', '2021-04-07 22:59:24');
 
 -- ----------------------------
 -- Table structure for sys_group
@@ -718,14 +801,15 @@ CREATE TABLE `sys_post`  (
   `delete_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `deletetime` datetime(0) NULL DEFAULT NULL,
   `is_enable` int(255) NOT NULL,
+  `is_default` int(255) NOT NULL DEFAULT 0,
   PRIMARY KEY (`post_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_post
 -- ----------------------------
-INSERT INTO `sys_post` VALUES ('1299976757956448256', '001', '董事长', 0, '', '1', '超级管理员', '2020-08-30 15:46:26', '2020-08-30 16:00:50', '1', '超级管理员', 0, '', '', NULL, 1);
-INSERT INTO `sys_post` VALUES ('1299976813929435136', '002', '总经理', 0, '', '1', '超级管理员', '2020-08-30 15:46:39', '2020-08-30 16:00:55', '1', '超级管理员', 0, '', '', NULL, 1);
+INSERT INTO `sys_post` VALUES ('1299976757956448256', '001', '董事长', 0, '', '1', '超级管理员', '2020-08-30 15:46:26', '2020-08-30 16:00:50', '1', '超级管理员', 0, '', '', NULL, 1, 0);
+INSERT INTO `sys_post` VALUES ('1299976813929435136', '002', '总经理', 0, '', '1', '超级管理员', '2020-08-30 15:46:39', '2020-08-30 16:00:55', '1', '超级管理员', 0, '', '', NULL, 1, 0);
 
 -- ----------------------------
 -- Table structure for sys_role
@@ -748,13 +832,14 @@ CREATE TABLE `sys_role`  (
   `delete_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `is_enable` int(11) NOT NULL,
   `deletetime` datetime(0) NULL DEFAULT NULL,
+  `is_default` int(255) NOT NULL DEFAULT 0,
   PRIMARY KEY (`role_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_role
 -- ----------------------------
-INSERT INTO `sys_role` VALUES ('1300803540188532736', '001', '测试角色', 1, '测试', NULL, NULL, NULL, '2020-09-01 22:37:54', '1', '超级管理员', 0, NULL, NULL, 1, NULL);
+INSERT INTO `sys_role` VALUES ('1300803540188532736', '001', '测试角色', 1, '测试', NULL, NULL, NULL, '2020-09-01 22:37:54', '1', '超级管理员', 0, NULL, NULL, 1, NULL, 0);
 
 -- ----------------------------
 -- Table structure for sys_user
@@ -796,7 +881,7 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES ('1', '1297427797396033536', '1298639734708506624', 'system', '超级管理员', '超级管理员', 'system', 'abbd26a09cf9b18e41cd7b3aa2b90e4c', 'system', 0, NULL, NULL, NULL, NULL, NULL, 99, 0, NULL, NULL, NULL, '2020-08-15 16:49:25', NULL, NULL, NULL, 0, NULL, NULL, 1, NULL);
+INSERT INTO `sys_user` VALUES ('1', '1297427797396033536', '1298639734708506624', 'system', '超级管理员', '超级管理员', 'system', 'abbd26a09cf9b18e41cd7b3aa2b90e4c', 'system', 0, '', '', NULL, '', NULL, 99, 0, '', NULL, NULL, '2020-08-15 16:49:25', '2021-04-07 22:27:49', '1', '超级管理员-system', 0, NULL, NULL, 1, NULL);
 INSERT INTO `sys_user` VALUES ('1306793709295243264', '1297427797396033536', '1298639734708506624', '', '测试用户', '', 'ceshi', '888', '', 0, '', '', NULL, '', '', 99, 0, '', '1', '超级管理员', '2020-09-18 11:14:34', NULL, '', '', 0, '', '', 1, NULL);
 INSERT INTO `sys_user` VALUES ('1306793948387348480', '1297427797396033536', '1298639734708506624', '', '测试用户2', '', 'ceshi2', '888', '', 0, '', '', NULL, '', '', 99, 0, '', '1', '超级管理员', '2020-09-18 11:15:31', NULL, '', '', 0, '', '', 1, NULL);
 
@@ -819,10 +904,10 @@ CREATE TABLE `sys_userrelation`  (
 -- ----------------------------
 -- Records of sys_userrelation
 -- ----------------------------
-INSERT INTO `sys_userrelation` VALUES ('1302619651561361408', '1', 4, '1', '', '1', '超级管理员', '2020-09-06 22:48:21');
-INSERT INTO `sys_userrelation` VALUES ('1302619651561361409', '1', 4, '1298639734708506624', '', '1', '超级管理员', '2020-09-06 22:48:21');
-INSERT INTO `sys_userrelation` VALUES ('1302619888023638016', '1', 2, '1299976813929435136', '', '1', '超级管理员', '2020-09-06 22:49:17');
-INSERT INTO `sys_userrelation` VALUES ('1302626926044778496', '1', 1, '1300803540188532736', '', '1', '超级管理员', '2020-09-06 23:17:15');
+INSERT INTO `sys_userrelation` VALUES ('1379802531911307264', '1', 2, '1299976813929435136', '', '1', '超级管理员-system', '2021-04-07 22:25:34');
+INSERT INTO `sys_userrelation` VALUES ('1379802531911307265', '1', 2, '1299976757956448256', '', '1', '超级管理员-system', '2021-04-07 22:25:34');
+INSERT INTO `sys_userrelation` VALUES ('1379802575850835968', '1', 1, '1300803540188532736', '', '1', '超级管理员-system', '2021-04-07 22:25:44');
+INSERT INTO `sys_userrelation` VALUES ('1379802846165340160', '1', 3, '1300441145863704576', '', '1', '超级管理员-system', '2021-04-07 22:26:49');
 
 -- ----------------------------
 -- Table structure for wf_delegate

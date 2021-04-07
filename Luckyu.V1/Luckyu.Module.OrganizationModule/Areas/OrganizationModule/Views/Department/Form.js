@@ -15,7 +15,6 @@ var bootstrap = function (layui) {
             var loading = luckyu.layer.loading();
             $("#company_id").initCompany({
                 select: function (xmdata) {
-                    debugger;
                     $("#parent_id").initDepartment({
                         companyId: xmdata.arr[0].value
                     });

@@ -299,8 +299,9 @@ var bootstrap = function () {
                 colModel: [
                     { name: 'formname', label: "名称", width: 100, editable: true, },
                     { name: 'formurl', label: '地址', width: 400, editable: true, },
+                    { name: 'mobileformurl', label: '移动端地址', width: 400, editable: true, },
                     {
-                        name: 'canedit', label: '可编辑', width: 150, editable: true,
+                        name: 'canedit', label: '可编辑', width: 100, editable: true,
                         edittype: 'custom',
                         editoptions: {
                             dataInit: function (ele, options) {

@@ -23,8 +23,8 @@ var bootstrap = function (layui) {
                     { name: 'instance_id', hidden: true },
                     { name: 'process_id', hidden: true },
                     { name: 'nodetype', hidden: true },
-                    { name: 'flowname', label: "流程名称", width: 120 },
-                    { name: 'processname', label: "实例信息", width: 150 },
+                    { name: 'flowname', label: "流程名称", width: 80 },
+                    { name: 'processname', label: "实例信息", width: 200 },
                     {
                         name: 'is_finished', label: "是否完结", width: 60, search: false, align: "center",
                         formatter: function (cellvalue, options, row) {
@@ -36,8 +36,10 @@ var bootstrap = function (layui) {
                             }
                         }
                     },
+                    { name: 'submit_username', label: "提交人", width: 80, },
                     {
-                        name: 'submit_username', label: "提交人", width: 80,
+                        name: 'department_id', label: "部门", width: 80,
+                        stype: "department_id"
                     },
                     {
                         name: 'createtime', label: "提交时间", width: 100, align: "right",
@@ -71,12 +73,6 @@ var bootstrap = function (layui) {
             };
         },
         initBtn: function () {
-            $("#searchfilter").click(function () {
-                grid.toggleSearchBar();
-            });
-            $("#reset").click(function () {
-                grid.clearSearchBar();
-            });
 
             $("#aduit").click(function () {
                 var rowid = grid.getGridParam("selrow");

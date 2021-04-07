@@ -24,7 +24,7 @@ var bootstrap = function (layui) {
                     { name: 'group_id', hidden: true, key: true },
                     { name: 'groupcode', label: "小组编码", width: 60, },
                     { name: 'groupname', label: "小组名称", width: 120, },
-                    { name: 'sort', label: "排序", width: 40, search: false },
+                    //{ name: 'sort', label: "排序", width: 40, search: false },
                     { name: 'remark', label: "备注", width: 80, },
                 ],
                 rownumbers: true,
@@ -32,9 +32,14 @@ var bootstrap = function (layui) {
                 sortname: "sort",
                 sortorder: "ASC",
                 multiselect: true,
-                beforeSelectRow: function () {
+                beforeSelectRow: function (rowId, evnet) {
                     if (!multiple) {
-                        grid.jqGrid('resetSelection');
+                        var jqGridRowid = grid.jqGrid("getGridParam", "selarrrow");
+                        for (var i = jqGridRowid.length - 1; i > -1; i--) {
+                            if (rowId !== jqGridRowid[i]) {
+                                grid.setSelection(jqGridRowid[i], false);
+                            }
+                        }
                     }
                 },
                 loadComplete: function () {

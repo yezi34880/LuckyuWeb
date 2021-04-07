@@ -19,6 +19,8 @@ namespace Luckyu.App.Workflow
         public int is_finished { get; set; }
         public string submit_user_id { get; set; }
         public string submit_username { get; set; }
+        public string department_id { get; set; }
+        public string company_id { get; set; }
         public string createtime { get; set; }
 
 

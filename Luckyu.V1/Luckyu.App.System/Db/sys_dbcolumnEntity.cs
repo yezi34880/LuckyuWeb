@@ -53,12 +53,16 @@ namespace Luckyu.App.System
         /// <summary>
         /// laylength
         /// </summary>
-        public string laylength { get; set; }
+        public int laylength { get; set; }
 
         /// <summary>
         /// is_hidden
         /// </summary>
-        public string is_hidden { get; set; }
+        public int is_hidden { get; set; }
 
+        /// <summary>
+        /// is_ext
+        /// </summary>
+        public int is_ext { get; set; }
     }
 }

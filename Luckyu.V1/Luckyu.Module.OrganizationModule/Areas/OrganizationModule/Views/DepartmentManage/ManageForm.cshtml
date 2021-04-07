@@ -1,0 +1,27 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+
+}
+<div lay-filter="DepartmentManage">
+    <div class="layui-col-xs12">
+        <div class="layui-btn-group">
+            <button type="button" id="addRow" class="layui-btn layui-btn-sm layui-btn-normal">
+                新增行
+            </button>
+            <button type="button" id="deleteRow" class="layui-btn layui-btn-sm layui-btn-normal">
+                删除行
+            </button>
+        </div>
+    </div>
+    <div class="layui-col-xs12">
+        <table id="gridManage"></table>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/OrganizationModule/Views/DepartmentManage/ManageForm.js")
+}

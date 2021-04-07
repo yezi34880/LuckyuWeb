@@ -28,6 +28,7 @@ namespace Luckyu.App.Organization
         private CompanyBLL companyBLL = new CompanyBLL();
         private DepartmentBLL deptBLL = new DepartmentBLL();
         private UserRelationBLL relationBLL = new UserRelationBLL();
+        private DepartmentManageBLL manageBLL = new DepartmentManageBLL();
         #endregion
 
         #region cache
@@ -154,10 +155,12 @@ namespace Luckyu.App.Organization
                             userInfo.token = token;
 
                             var relations = relationBLL.GetListByUser(user.user_id);
-                            userInfo.post_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Post).Select(r => r.object_id).ToList();
-                            userInfo.role_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Role).Select(r => r.object_id).ToList();
-                            userInfo.group_ids = relations.Where(r => r.relationtype == (int)UserRelationType.Group).Select(r => r.object_id).ToList();
-                            userInfo.manage_dept_ids = relations.Where(r => r.relationtype == (int)UserRelationType.DeptManager).Select(r => r.object_id).ToList();
+                            userInfo.post_ids = relations.Where(r => r.relationtype == (int)UserRelationEnum.Post).Select(r => r.object_id).ToList();
+                            userInfo.role_ids = relations.Where(r => r.relationtype == (int)UserRelationEnum.Role).Select(r => r.object_id).ToList();
+                            userInfo.group_ids = relations.Where(r => r.relationtype == (int)UserRelationEnum.Group).Select(r => r.object_id).ToList();
+
+                            var managers = manageBLL.GetAllByCache();
+                            userInfo.managedepartments = managers.Where(r => r.user_id == user.user_id).ToList();
 
                             var company = companyBLL.GetEntityByCache(r => r.company_id == user.company_id);
                             userInfo.companyname = company.IsEmpty() ? "未设公司" : (company.shortname.Trim().IsEmpty() ? company.fullname : company.shortname);

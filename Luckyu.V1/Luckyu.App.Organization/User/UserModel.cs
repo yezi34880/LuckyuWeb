@@ -22,7 +22,7 @@ namespace Luckyu.App.Organization
 
         public List<string> post_ids { get; set; }
 
-        public List<string> manage_dept_ids { get; set; }
+        public List<sys_departmentmanageEntity> managedepartments { get; set; }
 
         public List<sys_moduleEntity> modules { get; set; }
 

@@ -72,13 +72,6 @@ var bootstrap = function (layui) {
             };
         },
         initBtn: function () {
-            $("#searchfilter").click(function () {
-                grid.toggleSearchBar();
-            });
-            $("#reset").click(function () {
-                grid.clearSearchBar();
-            });
-
             $("#show").click(function () {
                 var rowid = grid.getGridParam("selrow");
                 if (!rowid) {

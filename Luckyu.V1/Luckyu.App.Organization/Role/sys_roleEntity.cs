@@ -95,6 +95,10 @@ namespace Luckyu.App.Organization
 		/// </summary>
 		public int is_enable { get; set; }
 
+		/// <summary>
+		///  is_default   
+		/// </summary>
+		public int is_default { get; set; }
 		#endregion
 
 		#region 方法

@@ -15,6 +15,7 @@ namespace Luckyu.App.Organization
         #region Var
         private sys_userService userService = new sys_userService();
         private DepartmentBLL deptBLL = new DepartmentBLL();
+        private DepartmentManageBLL manageBLL = new DepartmentManageBLL();
         private PostBLL postBLL = new PostBLL();
         private GroupBLL groupBLL = new GroupBLL();
         private RoleBLL roleBLL = new RoleBLL();
@@ -39,13 +40,14 @@ namespace Luckyu.App.Organization
                 var posts = postBLL.GetAllByCache();
                 var groups = groupBLL.GetAllByCache();
                 var depts = deptBLL.GetAllByCache();
+                var allmanages = manageBLL.GetAllByCache();
                 foreach (var row in page.rows)
                 {
                     var relations = userrelationBLL.GetListByUser(row.user_id);
-                    row.np_roles = string.Join(",", rolws.Where(t => relations.Where(r => r.relationtype == (int)UserRelationType.Role).Select(r => r.object_id).Contains(t.role_id)).Select(t => t.rolename));
-                    row.np_posts = string.Join(",", posts.Where(t => relations.Where(r => r.relationtype == (int)UserRelationType.Post).Select(r => r.object_id).Contains(t.post_id)).Select(t => t.postname));
-                    row.np_groups = string.Join(",", groups.Where(t => relations.Where(r => r.relationtype == (int)UserRelationType.Group).Select(r => r.object_id).Contains(t.group_id)).Select(t => t.groupname));
-                    row.np_depts = string.Join(",", depts.Where(t => relations.Where(r => r.relationtype == (int)UserRelationType.DeptManager).Select(r => r.object_id).Contains(t.department_id)).Select(t => t.fullname));
+                    row.np_roles = string.Join(",", rolws.Where(t => relations.Where(r => r.relationtype == (int)UserRelationEnum.Role).Select(r => r.object_id).Contains(t.role_id)).Select(t => t.rolename));
+                    row.np_posts = string.Join(",", posts.Where(t => relations.Where(r => r.relationtype == (int)UserRelationEnum.Post).Select(r => r.object_id).Contains(t.post_id)).Select(t => t.postname));
+                    row.np_groups = string.Join(",", groups.Where(t => relations.Where(r => r.relationtype == (int)UserRelationEnum.Group).Select(r => r.object_id).Contains(t.group_id)).Select(t => t.groupname));
+                    row.np_depts = string.Join(",", depts.Where(t => allmanages.Where(r => r.user_id == row.user_id).Select(r => r.department_id).Contains(t.department_id)).Select(t => t.fullname));
                 }
             }
             return page;

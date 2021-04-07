@@ -59,12 +59,6 @@ var bootstrap = function (layui) {
             };
         },
         initBtn: function () {
-            $("#searchfilter").click(function () {
-                grid.toggleSearchBar();
-            });
-            $("#reset").click(function () {
-                grid.clearSearchBar();
-            });
 
             layui.form.on('radio(is_finished)', function (data) {
                 if (data.value == 0) {

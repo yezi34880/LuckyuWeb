@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Luckyu.App.Organization
 {
-    public enum UserRelationType
+    public enum UserRelationEnum
     {
         Role = 1,
         Post = 2,
         Group = 3,
-        DeptManager = 4,
     }
 }

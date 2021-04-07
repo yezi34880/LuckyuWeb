@@ -60,6 +60,15 @@ namespace Luckyu.Utility
             return false;
         }
 
+        public static bool IsEmpty(this DateTime value)
+        {
+            return value <= LuckyuHelper.MinDate;
+        }
+        public static bool IsEmpty(this DateTime? value)
+        {
+            return !value.HasValue || value.Value <= LuckyuHelper.MinDate;
+        }
+
         /// <summary>
         /// 是否为空
         /// </summary>

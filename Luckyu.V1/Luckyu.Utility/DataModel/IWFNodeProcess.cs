@@ -11,13 +11,13 @@ namespace Luckyu.Utility
         /// <summary>
         /// 审批前验证
         /// </summary>
-        public ResponseResult CheckApprove(int result, string opinion);
+        public ResponseResult CheckApprove(string instanceId, string processId, int result, string opinion);
 
         /// <summary>
         /// 审批后执行
         /// </summary>
         /// <param name="result"></param>
         /// <param name="opinion"></param>
-        public void Approve(int result, string opinion);
+        public void Approve(string instanceId, string processId, int result, string opinion);
     }
 }

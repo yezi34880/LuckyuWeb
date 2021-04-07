@@ -13,14 +13,14 @@ namespace Luckyu.App.OA
     /// </summary>
     public class WFLeaveNode : IWFNodeProcess
     {
-        public void Approve(int result, string opinion)
+        public void Approve(string instanceId, string processId, int result, string opinion)
         {
-            var str = $"result {result}  opinion  {opinion}";
-            var logger = NLog.LogManager.GetCurrentClassLogger();
-            logger.Debug(str);
+            //var str = $"result {result}  opinion  {opinion}";
+            //var logger = NLog.LogManager.GetCurrentClassLogger();
+            //logger.Debug(str);
         }
 
-        public ResponseResult CheckApprove(int result, string opinion)
+        public ResponseResult CheckApprove(string instanceId, string processId, int result, string opinion)
         {
             return ResponseResult.Success();
         }
