@@ -188,6 +188,15 @@ var bootstrap = function (layui) {
                     url: luckyu.rootUrl + "/WorkflowModule/Task/LogFormByProcessId?processId=" + rowid,
                 });
             });
+
+            $("#print").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                window.open("/PrintModule/Print/Leave?keyValue=" + rowid);
+            });
         },
         search: function () {
             slectRowId = '';

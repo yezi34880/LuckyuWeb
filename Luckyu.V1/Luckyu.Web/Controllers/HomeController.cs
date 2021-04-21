@@ -28,11 +28,10 @@ namespace Luckyu.Web.Controllers
             ViewBag.CompanyName = loginInfo.companyname;
 
             List<sys_moduleEntity> listSelfModule;
-            var modules = moduleBLL.GetModuleTreeByUser(loginInfo, out listSelfModule);
+            var modules = moduleBLL.GetModuleTreeByUser(loginInfo, 0, out listSelfModule);
             loginInfo.modules = listSelfModule;
 
             LoginUserInfo.Instance.UpdateLoginUser(HttpContext, loginInfo);
-
             ViewBag.Modules = modules;
             return View();
         }

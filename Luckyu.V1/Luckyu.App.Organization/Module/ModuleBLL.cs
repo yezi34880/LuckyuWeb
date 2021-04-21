@@ -65,10 +65,10 @@ namespace Luckyu.App.Organization
         }
 
 
-        public List<CommonTree<sys_moduleEntity>> GetModuleTreeByUser(UserModel user, out List<sys_moduleEntity> listSelfModule)
+        public List<CommonTree<sys_moduleEntity>> GetModuleTreeByUser(UserModel user, int moduletype, out List<sys_moduleEntity> listSelfModule)
         {
             var listModule = GetAllByCache();
-            listModule = listModule.Where(r => r.is_enable == 1).ToList();
+            listModule = listModule.Where(r => r.is_enable == 1 && r.moduletype == moduletype).ToList();
             listSelfModule = new List<sys_moduleEntity>();
             if (user.level == 99)
             {

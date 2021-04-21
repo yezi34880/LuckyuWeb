@@ -65,9 +65,8 @@ namespace Luckyu.Web
                 var assembly = Assembly.LoadFile(name);
                 builder.AddApplicationPart(assembly);
             }
-            if (LuckyuHelper.IsDebug())
+            if (LuckyuHelper.IsDebug()) // 调试事不编译视图，方便调试
             {
-                // 视图运行时编译  方便调试
                 builder.AddRazorRuntimeCompilation(options =>
                 {
                     foreach (var name in fileNames)
@@ -81,6 +80,10 @@ namespace Luckyu.Web
                         options.FileProviders.Add(new PhysicalFileProvider(libraryPath));
                     }
                 });
+            }
+            else  // 发布时也有部分视图不用编译
+            {
+
             }
 
             var fileNames1 = Directory.GetFiles(AppContext.BaseDirectory, "Luckyu.App.*.dll");
@@ -183,7 +186,7 @@ namespace Luckyu.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Login}/{action=Index}/{keyValue?}");
+                    pattern: "{controller=Home}/{action=Index}/{keyValue?}");
 
                 endpoints.MapControllerRoute(
                     name: "areas",

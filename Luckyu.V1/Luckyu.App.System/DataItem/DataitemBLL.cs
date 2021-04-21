@@ -66,6 +66,7 @@ namespace Luckyu.App.System
         public List<xmSelectTree> GetSelectTree()
         {
             var all = GetAllClassifyByCache();
+            all = all.Where(r => r.is_enable == 1).ToList();
             var tree = ToSelectTree("0", all);
             return tree;
         }
@@ -88,6 +89,7 @@ namespace Luckyu.App.System
         public List<eleTree> GetTree(int isSystem)
         {
             var all = GetAllClassifyByCache();
+            all = all.Where(r => r.is_enable == 1).ToList();
             if (isSystem == 0)
             {
                 all = all.Where(r => r.is_system == 0).ToList();
@@ -209,6 +211,13 @@ namespace Luckyu.App.System
                 cache.Write(cacheKeyDetail + "dic", dic);
             }
             return dic;
+        }
+
+        public string GetDetailNameByValue(string itemCode, string value)
+        {
+            var list = GetDetailByCache(itemCode);
+            var name = list.Where(r => r.itemvalue == value).Select(r => r.showname).FirstOrDefault();
+            return name ?? "";
         }
         #endregion
 

@@ -35,9 +35,19 @@ namespace Luckyu.App.OA
         public string department_id { get; set; }
 
         /// <summary>
+        ///  departmentname   
+        /// </summary>
+        public string departmentname { get; set; }
+       
+        /// <summary>
         ///  company_id   
         /// </summary>
         public string company_id { get; set; }
+
+        /// <summary>
+        ///  companyname   
+        /// </summary>
+        public string companyname { get; set; }
 
         /// <summary>
         ///  begintime   
@@ -138,8 +148,11 @@ namespace Luckyu.App.OA
             this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
 
             this.user_id = loginInfo.user_id;
+            this.username = loginInfo.realname;
             this.department_id = loginInfo.department_id;
+            this.departmentname = loginInfo.departmentname;
             this.company_id = loginInfo.company_id;
+            this.companyname = loginInfo.companyname;
         }
         public void Modify(string keyValue, UserModel loginInfo)
         {

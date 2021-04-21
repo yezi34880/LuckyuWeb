@@ -27,7 +27,7 @@ namespace Luckyu.Utility
         {
             get
             {
-                return (records / count + (records % count > 0 ? 1 : 0));
+                return count == 0 ? 0 : (records / count + (records % count > 0 ? 1 : 0));
             }
         }
 

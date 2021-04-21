@@ -31,7 +31,7 @@ namespace Luckyu.Web
             {
                 if (context.HttpContext.Request.Path.ToString().Contains("MobileModule"))
                 {
-                    context.Result = new RedirectResult("~/MobileModule/Login/Index");
+                    context.Result = new RedirectResult("~/MobileModule/MLogin/Index");
                 }
                 else
                 {

@@ -34,6 +34,8 @@ namespace Luckyu.App.Organization
 
         public string loginname { get; set; }
 
+        public int sex { get; set; }
+
         public string mobile { get; set; }
 
         public string email { get; set; }
@@ -47,8 +49,6 @@ namespace Luckyu.App.Organization
         public int level { get; set; }
 
         public string remark { get; set; }
-
-        public int is_enable { get; set; }
 
         /// <summary>
         /// 记录用户登录信息

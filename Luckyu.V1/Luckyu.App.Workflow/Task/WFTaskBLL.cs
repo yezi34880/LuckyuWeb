@@ -60,6 +60,11 @@ namespace Luckyu.App.Workflow
             var entity = taskhistoryService.GetEntity(condition);
             return entity;
         }
+        public List<wf_taskhistoryEntity> GetHistoryEnttity(Expression<Func<wf_taskhistoryEntity, bool>> condition, Expression<Func<wf_taskhistoryEntity, object>> orderby)
+        {
+            var list = taskhistoryService.GetList(condition, orderby);
+            return list;
+        }
         public wf_flow_instanceEntity GetInstanceEnttity(Expression<Func<wf_flow_instanceEntity, bool>> condition)
         {
             var entity = instanceService.GetEntity(condition);
@@ -85,7 +90,7 @@ namespace Luckyu.App.Workflow
             {
                 exp1 = exp1.LinqAnd(r => r.instance_id == instanceId);
             }
-            var listTask = taskService.GetList(exp1);
+            var listTask = taskService.GetList(exp1, r => r.createtime);
 
             foreach (var item in listTask)
             {
@@ -507,7 +512,7 @@ namespace Luckyu.App.Workflow
                 historyCurrent.opinion += "【审批】" + opinion;
             }
             historyCurrent.authorize_user_id = loginInfo.user_id;
-            historyCurrent.authorizen_userame = loginInfo.realname;
+            historyCurrent.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
             historyCurrent.Create(loginInfo);
             listHistory.Add(historyCurrent);
             var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, result, opinion);
@@ -711,7 +716,7 @@ namespace Luckyu.App.Workflow
                     historyCurrent.nodetype = nodeCurrent.type;
                     historyCurrent.opinion = $"【流程监控】{loginInfo.realname} 强制生效流程";
                     historyCurrent.authorize_user_id = loginInfo.user_id;
-                    historyCurrent.authorizen_userame = loginInfo.realname;
+                    historyCurrent.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
                     historyCurrent.Create(loginInfo);
                     listHistory.Add(historyCurrent);
                     var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, 1, "");
@@ -995,7 +1000,7 @@ namespace Luckyu.App.Workflow
                             historySelf.previous_id = nodeCurrent.id;
                             historySelf.previousname = nodeCurrent.name;
                             historySelf.authorize_user_id = loginInfo.user_id;
-                            historySelf.authorizen_userame = loginInfo.realname;
+                            historySelf.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
                             historySelf.Create(loginInfo);
                             historySelf.opinion = "审批人包含本人，自动通过";
                             listHistory.Add(historySelf);
@@ -1262,6 +1267,16 @@ namespace Luckyu.App.Workflow
         }
 
         #endregion
+
+        public static Dictionary<int, string> ApproveResult = new Dictionary<int, string>
+        {
+            {1,"通过" },
+            {2,"驳回" },
+            {3,"申请加签" },
+            {4,"已阅" },
+            {-1,"正在审批" },
+            {0,"" },
+        };
 
     }
 }

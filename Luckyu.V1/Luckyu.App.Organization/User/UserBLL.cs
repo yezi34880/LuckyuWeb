@@ -141,7 +141,7 @@ namespace Luckyu.App.Organization
             if (entity == null || entity.is_delete == 1)
             {
                 res.code = 500;
-                res.info = "用户名不存在";
+                res.info = "该用户不存在";
                 return res;
             }
             var encrypPwd = EncrypPassword(loginpwd, entity.loginsecret);

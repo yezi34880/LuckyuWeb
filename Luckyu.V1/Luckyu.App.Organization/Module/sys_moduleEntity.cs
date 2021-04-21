@@ -47,6 +47,11 @@ namespace Luckyu.App.Organization
         public string moduleicon { get; set; }
 
         /// <summary>
+        ///  moduletype 0 桌面 1 手机   
+        /// </summary>
+        public int moduletype { get; set; }
+
+        /// <summary>
         ///  sort   
         /// </summary>
         public int sort { get; set; }

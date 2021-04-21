@@ -28,8 +28,8 @@ var bootstrap = function (layui) {
                         $('[lay-filter="Leave"]').setFormValue(data.Leave);
                         $("#statename").val(luckyu.clientdata.getDataitemName(data.Leave.state, "state"));
                         //$("#username").val(luckyu.clientdata.getUserName(data.Leave.user_id));
-                        $("#deptname").val(luckyu.clientdata.getDepartmentName(data.Leave.department_id));
-                        $("#companyname").val(luckyu.clientdata.getCompanyName(data.Leave.company_id));
+                        //$("#departmentname").val(luckyu.clientdata.getDepartmentName(data.Leave.department_id));
+                        //$("#companyname").val(luckyu.clientdata.getCompanyName(data.Leave.company_id));
 
                         $('#AnnexName').initFileInput({
                             initialPreview: data.Annex.initialPreview,
@@ -41,7 +41,7 @@ var bootstrap = function (layui) {
                 $("#statename").val("起草");
                 var loginInfo = luckyu.clientdata.get(['userinfo']);
                 $("#username").val(luckyu.clientdata.getUserName(loginInfo.user_id));
-                $("#deptname").val(luckyu.clientdata.getDepartmentName(loginInfo.department_id));
+                $("#departmentname").val(luckyu.clientdata.getDepartmentName(loginInfo.department_id));
                 $("#companyname").val(luckyu.clientdata.getCompanyName(loginInfo.company_id));
             }
         },

@@ -78,8 +78,10 @@
                     $(this).find("input,select,textarea,.xm-select,.luckyu-editor").each(function () {
                         var self = $(this);
                         if (self.parents(".ui-jqgrid").length > 0) {
+                            debugger;
                             return;
                         }
+                        debugger;
                         var id = self.attr('id');
                         var name = self.attr('name');
                         name = !!name ? name : id;
@@ -100,7 +102,7 @@
                                 case "checkbox":
                                     if (self.is(":checked")) {
                                         var val = self.val();
-                                        objData[name] = !val || val === "on" ? 1 : self.val();
+                                        objData[name] = !val || val === "on" ? 1 : val;
                                     } else {
                                         objData[name] = 0;
                                     }
