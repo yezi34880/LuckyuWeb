@@ -1,0 +1,115 @@
+﻿@using Luckyu.App.Organization;
+@{
+    Layout = "~/Views/Shared/_LayoutMobile.cshtml";
+
+    var loginInfo = ViewBag.UserInfo as UserModel;
+}
+
+<div class="bui-page bui-box-vertical">
+    <header>
+        <div class="bui-bar">
+            <div class="bui-bar-left">
+                @*<div class="bui-btn" onclick="bui.back();"><i class="icon-back"></i></div>*@
+            </div>
+            <div class="bui-bar-main">
+                @AppSettingsHelper.GetAppSetting("SoftName")  @AppSettingsHelper.GetAppSetting("SoftVersion")
+            </div>
+            <div class="bui-bar-right">
+            </div>
+        </div>
+    </header>
+    <main>
+        <div id="tabFoot" class="bui-tab bui-box-vertical">
+            <div class="bui-tab-main">
+                <ul>
+                    <!-- 内容必须在li里面 -->
+                    <li>
+                        <!-- 控件结构 -->
+                        <dl id="accordion" class="bui-accordion">
+                            <dt class="bui-btn bui-box">
+                                <div class="span1">流程信息</div>
+                                <i class="icon-accordion"></i>
+                            </dt>
+                            <dd>
+                                <ul class="bui-nav-icon bui-fluid-3">
+                                    <li class="bui-btn" href="/MobileModule/MWorkflow/Index?tasktype=1">
+                                        <div class="bui-icon round warning"><i class="fa fa-info-circle"></i></div>
+                                        <div class="item-title"> 待办工作 </div>
+                                    </li>
+                                    <li class="bui-btn" href="/MobileModule/MWorkflow/Index?tasktype=2">
+                                        <div class="bui-icon round success"><i class="fa fa-check-circle"></i></div>
+                                        <div class="item-title"> 已办工作 </div>
+                                        @*<div class="item-text"> 描述信息 </div>*@
+                                    </li>
+                                    <li class="bui-btn" href="/MobileModule/MWorkflow/Index?tasktype=3">
+                                        <div class="bui-icon round primary"><i class="fa fa-plus-circle"></i></div>
+                                        <div class="item-title"> 我的提交 </div>
+                                    </li>
+                                </ul>
+                            </dd>
+                            <dt class="bui-btn bui-box">
+                                <div class="span1">消息通知</div>
+                                <i class="icon-accordion"></i>
+                            </dt>
+                            <dd>
+                                <ul class="bui-nav-icon bui-fluid-2">
+                                    <li class="bui-btn">
+                                        <div class="icon"><i class="fa fa-newspaper-o"></i></div>
+                                        <div class="item-title"> 公告通知 </div>
+                                    </li>
+                                    <li class="bui-btn">
+                                        <div class="icon"><i class="fa fa-envelope-o"></i><span class="bui-badges"></span></div>
+                                        <div class="item-title"> 我的消息 </div>
+                                    </li>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li style="display: none;">
+                        <ul class="bui-list bui-list-thumbnail">
+                            <li class="bui-btn bui-box">
+                                <div class="bui-thumbnail"><img src="~/image/UserCard0@(loginInfo.sex==2?"1":"2").png" alt=""></div>
+                                <div class="span1">
+                                    <h3 class="item-title">@loginInfo.realname</h3>
+                                    <p class="item-text">@loginInfo.companyname</p>
+                                    <p class="item-text">@loginInfo.departmentname</p>
+                                </div>
+                                <i class="icon-listright"></i>
+                            </li>
+                        </ul>
+                        <ul class="bui-list">
+                            <li class="bui-btn bui-box">
+                                <div class="icon"><i class="fa fa-key"></i></div>
+                                <div class="span1">修改密码</div>
+                                @*<div class="item-text">详细信息</div>*@
+                                <i class="icon-listright"></i>
+                            </li>
+                            <li class="bui-btn bui-box" id="signout">
+                                <div class="icon"><i class="fa fa-sign-out "></i></div>
+                                <div class="span1">退出</div>
+                                <i class="icon-listright"></i>
+                            </li>
+                        </ul>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <ul id="tabFootNav" class="bui-nav">
+            <li class="bui-btn bui-box-vertical active">
+                <i class="fa fa-briefcase"></i>
+                <div class="span1">工作台</div>
+            </li>
+            <li class="bui-btn bui-box-vertical">
+                <i class="fa fa-user-o"></i>
+                <div class="span1">我的</div>
+            </li>
+        </ul>
+    </footer>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/MobileModule/Views/MHome/Index.js")
+}

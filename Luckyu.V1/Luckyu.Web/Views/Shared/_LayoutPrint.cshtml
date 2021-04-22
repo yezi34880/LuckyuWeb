@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <style>
+        .header {
+            top: 0;
+            left: 0;
+            padding: 5px;
+            height: 30px;
+            /*border-bottom: 1px solid black;*/
+        }
+    </style>
+    <style media="print">
+        @@page {
+            size: auto; /* auto is the initial value */
+            margin: 0mm; /* this affects the margin in the printer settings */
+        }
+    </style>
+
+    @RenderSection("Header", false)
+}
+
+<div class="header">
+    <button type="button" id="print" class="layui-btn layui-btn-sm"><i class="fa fa-print"></i>&nbsp;打印</button>
+    <button type="button" id="excel" class="layui-btn layui-btn-sm"><i class="fa fa-table"></i>&nbsp;导出Excel</button>
+</div>
+<div id="printContent">
+    <!--startprint-->
+    @RenderBody()
+    <!--endprint-->
+</div>
+@section Footer{
+    <script src="~/lib/jquery/jquery.print.min.js"></script>
+    <script src="~/lib/tableExport/libs/js-xlsx/xlsx.core.min.js"></script>
+    <script src="~/lib/tableExport/libs/FileSaver/FileSaver.min.js"></script>
+    <script src="~/lib/tableExport/tableExport.min.js"></script>
+    @RenderSection("Footer", false)
+    <script>
+        $(function () {
+            if (!!window.printCallback) {
+                $("#print").click(window.printCallback);
+            }
+            else {
+                $("#print").click(function () {
+                    $("#printContent").print();
+                });
+            }
+
+            if (!!window.excelCallback) {
+                $("#excel").click(window.excelCallback);
+            }
+            else {
+                $("#excel").click(function () {
+                    $('#printContent table').tableExport({
+                        type: 'excel',
+                        fileName: new Date().getTime(),
+                        mso: {
+                            styles: ["text-align", "height", "width", "line-height", "min-height", "font-size", "font-weight",
+                                "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+                                "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+                                "border", "border-style", "border-width", "border-color", "background-color", "color"]
+                        }
+                    });
+                });
+            }
+
+            if (!!window.bootstrap) {
+                window.bootstrap();
+            }
+        });
+    </script>
+}

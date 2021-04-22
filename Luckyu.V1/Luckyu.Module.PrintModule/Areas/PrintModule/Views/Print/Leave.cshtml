@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPrint.cshtml";
+
+    var keyValue = Context.Request.Query["keyValue"].ToString() ?? "";
+    var entity = new LeaveBLL().GetEntity(r => r.leave_id == keyValue) ?? new oa_leaveEntity();
+
+    var flowhistory = new WFTaskBLL().GetHistoryTaskList(keyValue);
+}
+
+@functions{
+    private string GetFlowString(wf_taskhistoryEntity his)
+    {
+        var str = $"{his.createtime.Value.ToString("yyyy-MM-dd HH:mm")} {his.create_username} {WFTaskBLL.ApproveResult[his.result]} {his.opinion}";
+        return str;
+    }
+}
+<style>
+    table td {
+        border: 1px solid black;
+        padding: 0 5px 0 5px;
+        line-height: 30px;
+    }
+</style>
+
+<table style="width:95%;margin:auto;margin-top:20px;">
+    <tr>
+        <td colspan="6" style="text-align:center;font-size:x-large;font-weight:bold; line-height:45px;">请假申请</td>
+    </tr>
+    <tr>
+        <td>公司</td>
+        <td>@entity.companyname</td>
+        <td>部门</td>
+        <td>@entity.departmentname</td>
+        <td>申请人</td>
+        <td>@entity.username</td>
+    </tr>
+    <tr>
+        <td>开始时间</td>
+        <td>@entity.begintime.ToString("yyyy-MM-dd HH:mm")</td>
+        <td>结束时间</td>
+        <td>@entity.endtime.ToString("yyyy-MM-dd HH:mm")</td>
+        <td>时长（小时）</td>
+        <td>@entity.spantime</td>
+    </tr>
+    <tr>
+        <td>请假类型</td>
+        <td>@(new DataitemBLL().GetDetailNameByValue("leavetype",entity.leavetype.ToString()))</td>
+        <td>事由</td>
+        <td colspan="3">@entity.reason</td>
+    </tr>
+    <tr>
+        <td rowspan="@flowhistory.Count">审批流程</td>
+        <td colspan="5">@GetFlowString(flowhistory[0])</td>
+    </tr>
+    @for (int i = 1; i < flowhistory.Count; i++)
+    {
+        <tr><td colspan="5">@GetFlowString(flowhistory[i])</td></tr>
+    }
+</table>
+

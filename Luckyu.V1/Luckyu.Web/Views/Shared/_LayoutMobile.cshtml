@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.HTMLTitle = ViewBag.HTMLTitle ?? AppSettingsHelper.GetAppSetting("SoftName");
+}
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.HTMLTitle</title>
+    <meta name="keywords" content="@AppSettingsHelper.GetAppSetting("KeyWords")">
+    <meta name="description" content="@AppSettingsHelper.GetAppSetting("Description")" />
+    <meta name="author" content="@AppSettingsHelper.GetAppSetting("Author")">
+
+    <link rel="icon" href="~/image/favicon.ico">
+    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/lib/bui/css/bui.css" rel="stylesheet" />
+    @Html.AppendCss("~/css/luckyu-mobile.css")
+    <script src="~/lib/bui/js/zepto.js"></script>
+    <script src="~/lib/bui/js/bui.js"></script>
+    @RenderSection("Header", false)
+</head>
+<body>
+    @RenderBody()
+    <script src="~/lib/bui/js/plugins/fastclick.js"></script>
+    @Html.AppendJs("~/js/luckyu-mobile.js")
+    @RenderSection("Footer", false)
+    <script>
+        $.validateToken = $('@Html.AntiForgeryToken()').val();
+        bui.ready(function () {
+
+            if (!!window.bootstrap) {
+                bootstrap();
+            }
+
+        });
+    </script>
+</body>
+</html>
