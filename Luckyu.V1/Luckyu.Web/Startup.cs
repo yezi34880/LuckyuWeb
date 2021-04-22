@@ -83,6 +83,18 @@ namespace Luckyu.Web
             }
             else  // 发布时也有部分视图不用编译
             {
+                builder.AddRazorRuntimeCompilation(options =>
+                {
+                    foreach (var name in fileNames)
+                    {
+                        if (name.EndsWith("Luckyu.Module.PrintModule.dll"))
+                        {
+                            var file = new FileInfo(name);
+                            var libraryPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", file.Name.Remove(file.Name.Length - 4)));
+                            options.FileProviders.Add(new PhysicalFileProvider(libraryPath));
+                        }
+                    }
+                });
 
             }
 
