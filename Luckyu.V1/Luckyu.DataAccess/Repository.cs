@@ -1282,7 +1282,10 @@ namespace Luckyu.DataAccess
             {
                 foreach (var filter in filters)
                 {
-                    query = query.WhereDynamicFilter(filter);
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+                    }
                 }
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
@@ -1306,7 +1309,11 @@ namespace Luckyu.DataAccess
             {
                 foreach (var filter in filters)
                 {
-                    query = query.WhereDynamicFilter(filter);
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+
+                    }
                 }
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
@@ -1329,7 +1336,11 @@ namespace Luckyu.DataAccess
             {
                 foreach (var filter in filters)
                 {
-                    query = query.WhereDynamicFilter(filter);
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+
+                    }
                 }
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
@@ -1353,7 +1364,12 @@ namespace Luckyu.DataAccess
             {
                 foreach (var filter in filters)
                 {
-                    query = query.WhereDynamicFilter(filter);
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+
+                    }
+
                 }
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
@@ -1384,7 +1400,11 @@ namespace Luckyu.DataAccess
             {
                 foreach (var filter in filters)
                 {
-                    query = query.WhereDynamicFilter(filter);
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+
+                    }
                 }
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
@@ -1412,7 +1432,11 @@ namespace Luckyu.DataAccess
             {
                 foreach (var filter in filters)
                 {
-                    query = query.WhereDynamicFilter(filter);
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+
+                    }
                 }
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
@@ -1457,7 +1481,11 @@ namespace Luckyu.DataAccess
             {
                 foreach (var filter in filters)
                 {
-                    query = query.WhereDynamicFilter(filter);
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+
+                    }
                 }
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
@@ -1525,22 +1553,24 @@ namespace Luckyu.DataAccess
                     {
                         continue;
                     }
-                    if (rule.stype.IsEmpty() || rule.stype == "text")
+                    if (rule.ltype.IsEmpty() || rule.ltype == "text")
                     {
                         filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
                     }
                     else
                     {
-                        switch (rule.stype)
+                        switch (rule.ltype)
                         {
                             case "user_id":
                             case "department_id":
                             case "company_id":
                                 filters.Add(SearchConditionHelper.GetStringContainCondition(rule.field, rule.data));
                                 break;
+                            case "datasource":
                             case "dataitem":
                                 filters.Add(SearchConditionHelper.GetStringEqualCondition(rule.field, rule.data, "-1"));
                                 break;
+                            case "datasources":
                             case "dataitems":
                                 {
                                     if (rule.data != "-1")

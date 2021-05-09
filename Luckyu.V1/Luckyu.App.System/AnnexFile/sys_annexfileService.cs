@@ -17,7 +17,7 @@ namespace Luckyu.App.System
         }
         public void Delete(sys_annexfileEntity entity)
         {
-            BaseRepository().db.Delete<sys_annexfileEntity>().Where(entity).ExecuteAffrows();
+            BaseRepository().db.Update<sys_annexfileEntity>().SetSource(entity).Set(r => r.is_delete == 1).ExecuteAffrows();
         }
         public void Update(List<sys_annexfileEntity> list)
         {

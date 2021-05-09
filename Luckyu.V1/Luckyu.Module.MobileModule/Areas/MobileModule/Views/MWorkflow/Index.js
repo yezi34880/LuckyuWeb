@@ -56,7 +56,7 @@
                     //生成html
                     var html = template(res.rows);
                     $("#scrollList")[command](html);
-                    //bui.btn({ id: "#scrollList", handle: ".bui-btn" }).load();
+                    bui.btn({ id: "#scrollList", handle: ".bui-btn" }).load();
 
                     // 更新分页信息,如果高度不足会自动请求下一页
                     _self.updatePage(page, res.rows);
@@ -73,7 +73,7 @@
                 for (var i = 0; i < data.length; i++) {
                     var row = data[i];
                     html += '\
-<li class="bui-btn bui-box" href="/MobileModule/MWorkflow/ApproveForm?taskId=' + row.task_id + '&instanceId=' + row.instance_id + '&processId=' + row.process_id + '&historyId=' + row.history_id + '">\
+<li class="bui-btn bui-box" href="/MobileModule/MWorkflow/Form?taskId=' + row.task_id + '&instanceId=' + row.instance_id + '&processId=' + row.process_id + '&historyId=' + row.history_id + '">\
     <div class="span1">\
         <h3 class="item-title"><span>【'+ row.flowname + '】</span>' + row.processname + '</h3>\
         <p class="item-text">'+ row.submit_username + ' ' + row.createtime + '</p>\

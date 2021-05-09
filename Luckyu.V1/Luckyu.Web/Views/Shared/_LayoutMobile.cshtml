@@ -29,6 +29,11 @@
     @Html.AppendJs("~/js/luckyu-mobile.js")
     @RenderSection("Footer", false)
     <script>
+        function request(name) {
+            return luckyumobile.utility.getUrlParam(name);
+        }
+    </script>
+    <script>
         $.validateToken = $('@Html.AntiForgeryToken()').val();
         bui.ready(function () {
 

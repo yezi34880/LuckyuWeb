@@ -462,6 +462,10 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("该任务不存在");
             }
+            if (task.is_done == 1)
+            {
+                return ResponseResult.Fail("该任务已被其他人审批，请关闭当前页");
+            }
             var instance = instanceService.GetEntity(r => r.instance_id == task.instance_id);
             if (instance == null)
             {
@@ -987,7 +991,7 @@ namespace Luckyu.App.Workflow
                         listTask.Add(taskEntity);
 
                         bool isContainSelf = turple.Item2;  // 下一步审批人是否包含自己
-                        if (isContainSelf)  // 如果下一步包含自己 则 递归
+                        if (isContainSelf && !nodeNext.forms.Exists(r => r.canedit == 1))  // 如果下一步包含自己 则 递归  必须表单不可编辑
                         {
                             listSql.Add(nodeNext.sqlsuccess);
                             ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "");
@@ -1268,6 +1272,7 @@ namespace Luckyu.App.Workflow
 
         #endregion
 
+        #region 翻译Result
         public static Dictionary<int, string> ApproveResult = new Dictionary<int, string>
         {
             {1,"通过" },
@@ -1275,8 +1280,20 @@ namespace Luckyu.App.Workflow
             {3,"申请加签" },
             {4,"已阅" },
             {-1,"正在审批" },
-            {0,"" },
         };
 
+        public static string ApproveResultName(int result)
+        {
+            if (ApproveResult.ContainsKey(result))
+            {
+                return $"【{ApproveResult[result]}】"; ;
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        #endregion
     }
 }

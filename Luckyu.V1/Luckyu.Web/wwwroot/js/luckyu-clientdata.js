@@ -481,17 +481,19 @@
                 var data = clientData[op.url] || [];
                 if (!!data) {
                     var keyList = op.key.split(',');
-                    var _text = []
-                    $.each(keyList, function (_index, _item) {
-                        var _item = clientAsyncData.commonData.find(op.key, op.keyId, data) || {};
-                        if (_item[op.textId]) {
-                            _text.push(_item[op.textId]);
+                    var list = []
+                    $.each(keyList, function (_index, key) {
+                        if (!key) {
+                            return;
                         }
-
+                        var item = clientAsyncData.commonData.find(key, op.keyId, data) || {};
+                        if (!!item) {
+                            list.push(item);
+                        }
                     });
-                    op.callback(String(_text), op);
+                    op.callback(list, op);
                 } else {
-                    op.callback('', op);
+                    op.callback([], op);
                 }
             }
         },

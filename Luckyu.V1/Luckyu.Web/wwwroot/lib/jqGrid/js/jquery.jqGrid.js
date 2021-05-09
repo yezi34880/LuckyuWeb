@@ -3866,7 +3866,7 @@
                         str = '',
                         stre = "</ul>",
                         strl = '',
-                        cm = ts.p.colModel[index], op = $.extend({ sorting: true, columns: true, filtering: true, seraching: true, grouping: true, freeze: true }, cm.coloptions),
+                        cm = ts.p.colModel[index], op = $.extend({ sorting: true, columns: true, filtering: false, seraching: true, grouping: true, freeze: true }, cm.coloptions),
                         texts = $.jgrid.getRegional(ts, "colmenu"),
                         label = ts.p.colNames[index],
                         isgroup,

@@ -77,6 +77,11 @@ namespace Luckyu.App.System
         public int sort { get; set; }
 
         /// <summary>
+        ///  is_delete   
+        /// </summary>
+        public int is_delete { get; set; }
+
+        /// <summary>
         ///  createtime   
         /// </summary>
         public DateTime? createtime { get; set; }

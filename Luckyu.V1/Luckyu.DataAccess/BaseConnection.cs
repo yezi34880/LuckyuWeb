@@ -46,57 +46,54 @@ namespace Luckyu.DataAccess
                           .UseAutoSyncStructure(false) //自动同步实体结构到数据库
                                                        //.UseGenerateCommandParameterWithLambda(LuckyuHelper.IsDebug() ? false : true)
                                                        //.UseNoneCommandParameter(LuckyuHelper.IsDebug() ? true : false)
-                          .UseGenerateCommandParameterWithLambda(true)
-                          .UseNoneCommandParameter(false)
+                                                       // 参数化时候有问题，超长字符串会背截断，还没找到原因，有空来找
+                                                       // 找到原因了 使用参数时，默认长度255 ，除非手动指定   [Column(Name = "Name", StringLength = -1)]
+                          .UseGenerateCommandParameterWithLambda(false)
+                          .UseNoneCommandParameter(true)
                           .UseMonitorCommand((command) =>
                           {
-                              var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
-                              var sql = command.CommandText;
-                              foreach (var keyword in keywords)
-                              {
-                                  if (sql.ToLower().Trim().StartsWith(keyword))
-                                  {
-                                      var dic = new Dictionary<string, string>();
-                                      foreach (DbParameter para in command.Parameters)
-                                      {
-                                          dic.Add(para.ParameterName, para.Value.ToString());
-                                      }
-                                      var log = new sys_logEntity();
-                                      log.log_type = (int)LogType.Sql;
-                                      log.app_name = LuckyuHelper.AppID;
-                                      log.log_content = sql;
-                                      log.log_json = JsonConvert.SerializeObject(dic);
-                                      logService.Insert(log);
-                                      break;
-                                  }
-                              }
-
                           }, (command, result) =>
                           {
-                              // result 包含 执行 sql语句 和返回结果 执行时间
-                              var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
-                              var sql = command.CommandText;
-                              foreach (var keyword in keywords)
-                              {
-                                  if (sql.ToLower().Trim().StartsWith(keyword))
-                                  {
-                                      var dic = new Dictionary<string, string>();
-                                      foreach (DbParameter para in command.Parameters)
-                                      {
-                                          dic.Add(para.ParameterName, para.Value.ToString());
-                                      }
-                                      var log = new sys_logEntity();
-                                      log.log_type = (int)LogType.Sql;
-                                      log.app_name = LuckyuHelper.AppID;
-                                      log.log_content = result;
-                                      log.log_json = JsonConvert.SerializeObject(dic);
-                                      logService.Insert(log);
-                                      break;
-                                  }
-                              }
+                              //// result 包含 执行 sql语句 和返回结果 执行时间
+                              //var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
+                              //var sql = command.CommandText;
+                              //foreach (var keyword in keywords)
+                              //{
+                              //    if (sql.ToLower().Trim().StartsWith(keyword))
+                              //    {
+                              //        var dic = new Dictionary<string, string>();
+                              //        foreach (DbParameter para in command.Parameters)
+                              //        {
+                              //            dic.Add(para.ParameterName, para.Value.ToString());
+                              //        }
+                              //        var log = new sys_logEntity();
+                              //        log.log_type = (int)LogType.Sql;
+                              //        log.app_name = LuckyuHelper.AppID;
+                              //        log.log_content = result;
+                              //        log.log_json = JsonConvert.SerializeObject(dic);
+                              //        logService.Insert(log);
+                              //        break;
+                              //    }
+                              //}
                           })
                           .Build(); //请务必定义成 Singleton 单例模式
+
+                db.Aop.CurdAfter += (s, e) =>
+                {
+                    if (e.CurdType != FreeSql.Aop.CurdType.Select)
+                    {
+                        var log = new sys_logEntity();
+                        log.log_type = (int)LogType.Sql;
+                        log.op_type = e.CurdType.ToString();
+                        log.app_name = LuckyuHelper.AppID;
+                        log.log_content = $"SQL  {e.Sql}   RESULT  {e.ExecuteResult.ToJson()}";
+                        log.log_json = e.DbParms.ToJson();
+                        log.module = e.Table.DbName;
+                        logService.Insert(log);
+                    }
+                };
             }
+
             return db;
         }
 

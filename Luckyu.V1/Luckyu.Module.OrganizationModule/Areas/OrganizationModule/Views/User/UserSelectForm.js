@@ -161,6 +161,15 @@ var bootstrap = function (layui) {
                     return false;
                 }
             });
+
+            $("#selectall").click(function () {
+                $("#user_list div.card-box").each(function (item, index) {
+                    var that = $(this);
+                    if (!that.hasClass("active")) {
+                        that.click();
+                    }
+                });
+            });
         },
         search: function () {
             var keyword = $.trim($("#keyword").val());

@@ -12,6 +12,8 @@ namespace Luckyu.App.Workflow
 
         public string formurl { get; set; }
 
+        public string mobileformurl { get; set; }
+
         public int canedit { get; set; }
 
     }

@@ -27,7 +27,6 @@ var bootstrap = function (layui) {
             window.onresize = function () {
                 $('#flow').height(window.innerHeight - 120);
             };
-
         },
         initLogGrid: function (data) {
             var gridLog = $("#gridLog").jqGrid({

@@ -75,6 +75,6 @@ namespace Luckyu.Utility
 
         public string data { get; set; }
 
-        public string stype { get; set; }
+        public string ltype { get; set; }
     }
 }

@@ -97,13 +97,10 @@
                                 var val2 = $ele.attr("_realValue");
                                 rule.data = val2 || val1;
 
-                                rule.stype = "";
+                                rule.ltype = "";
                                 var model = colModel.filter(r => r.name === rule.field);
                                 if (!!model && model.length > 0) {
-                                    rule.stype = model[0].stype;
-                                    if (!!model[0].dataitemcode) {
-                                        rule.stype = "dataitem";
-                                    }
+                                    rule.ltype = model[0].ltype;
                                 }
                             }
                         }
@@ -112,13 +109,9 @@
                 },
                 beforeClear: function (a, b, c, d) {
                     this.p.postData._search = false;
-                    if (!!this.p.postData.filters) {
-                        this.p.postData.filters = [];
-                    }
+                    this.p.postData.filters = null;
                 },
-                onClearSearchValue: function (elem, colIndex, s, d) {
-                    $(elem).attr("_realValue", "").val("");
-                },
+
             });
             var refrash_id = "gsh_" + grid_id + "_rn";
             $("#" + refrash_id).css("vertical-align", "middle");
@@ -432,8 +425,8 @@
                     var self = $(this);
                     for (var i = 0; i < op.colModel.length; i++) {
                         var col = op.colModel[i];
+                        col.ltype = col.stype;
                         if (col.stype === "dataitem") {  // 数据字典 单选
-                            col.ltype = col.stype;
                             col.stype = "select";
                             if (!col.formatter) {
                                 if (!!col.formatterdataitem) {
@@ -489,7 +482,6 @@
                             };
                         }
                         else if (col.stype === "dataitems") {  // 数据字典 多选
-                            col.ltype = col.stype;
                             col.stype = "select";
                             if (!col.formatter) {
                                 if (!!col.formatterdataitem) {
@@ -544,7 +536,6 @@
                             };
                         }
                         else if (col.stype === "datasource") {
-                            col.ltype = col.stype;
                             col.stype = "select";
                             if (!col.formatter) {
                                 col.formatter = function (cellvalue, options, rowObject) {
@@ -579,6 +570,48 @@
                                 },
                                 defaultValue: "-1"
                             };
+                        }
+                        else if (col.stype === "datasources") {
+                            col.ltype = col.stype;
+                            col.stype = "select";
+                            if (!col.formatter) {
+                                col.formatter = function (cellvalue, options, rowObject) {
+                                    var result = '';
+                                    luckyu.clientdata.getsAsync('commonData', {
+                                        url: options.colModel.datasourceurl,
+                                        key: cellvalue,
+                                        keyId: options.colModel.datasourcekey,
+                                        callback: function (list, op) {
+                                            if (!!list && list.length > 0) {
+                                                result = list.map(function (t) {
+                                                    return t[options.colModel.datasourcename]
+                                                }).join(",");
+                                            }
+                                        }
+                                    });
+                                    return result;
+                                };
+                            }
+                            col.searchoptions = {
+                                value: function () {
+                                    var selectoption = { "-1": "全部" };
+                                    var thiscolname = this.name;
+                                    var thiscol = op.colModel.filter(z => z.name === thiscolname);
+                                    luckyu.clientdata.getAllAsync('commonData', {
+                                        url: thiscol[0].datasourceurl,
+                                        callback: function (list, op) {
+                                            if (!!list && list.length > 0) {
+                                                for (var i = 0; i < list.length; i++) {
+                                                    selectoption[list[i][thiscol[0].datasourcekey]] = list[i][thiscol[0].datasourcename];
+                                                }
+                                            }
+                                        }
+                                    });
+                                    return selectoption;
+                                },
+                                defaultValue: "-1"
+                            };
+
                         }
                         else if (col.stype === "user_id") {
                             col.formatter = function (cellvalue, options, rowObject) {
@@ -693,13 +726,6 @@
                             };
                         }
                         else if (col.stype === "daterange") {
-                            col.formatter = function (cellvalue, options, rowObject) {
-                                var result = "";
-                                if (cellvalue > '1900-1-1') {
-                                    result = cellvalue;
-                                }
-                                return result;
-                            };
                             col.searchoptions = {
                                 dataInit: function (elem) {
                                     $(elem).luckyurangedate({
@@ -741,13 +767,20 @@
                                     footerData[m.name] += value;
                                 }
                             }
+                            for (var key in footerData) {
+                                var mo = models.filter(r => r.name === key);
+                                if (mo.length > 0 && mo[0].footerSummaryRound !== undefined) {
+                                    footerData[key] = footerData[key].toFixed(mo[0].footerSummaryRound);
+                                }
+                            }
                             self.jqGrid("footerData", "set", footerData);
                         };
                         if (!!op.gridComplete) {
+                            var gridCompleteOrigin = op.gridComplete;
                             op.gridComplete = function () {
-                                op.gridComplete();
+                                gridCompleteOrigin();
                                 gridComplete();
-                            }
+                            };
                         }
                         else {
                             op.gridComplete = gridComplete;

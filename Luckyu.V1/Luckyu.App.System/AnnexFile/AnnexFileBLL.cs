@@ -38,11 +38,13 @@ namespace Luckyu.App.System
 
         public List<sys_annexfileEntity> GetList(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
         {
+            condition = condition.And(r => r.is_delete == 0);
             var list = annexService.GetList(condition, orderby);
             return list;
         }
         public List<sys_annexfileEntity> GetList(Expression<Func<sys_annexfileEntity, bool>> condition, Expression<Func<sys_annexfileEntity, object>> orderby, bool isDesc = false)
         {
+            condition = condition.And(r => r.is_delete == 0);
             var list = annexService.GetList(condition, orderby, isDesc);
             return list;
         }
@@ -100,13 +102,14 @@ namespace Luckyu.App.System
             var entity = GetEntity(r => r.annex_id == fileId);
             if (entity != null)
             {
+                // 逻辑删除
                 annexService.Delete(entity);
-                var basepath = GetBasePath();
-                string realPath = FileHelper.Combine(basepath.Item2, entity.filepath);
-                if (File.Exists(realPath))
-                {
-                    File.Delete(realPath);
-                }
+                //var basepath = GetBasePath();
+                //string realPath = FileHelper.Combine(basepath.Item2, entity.filepath);
+                //if (File.Exists(realPath))
+                //{
+                //    File.Delete(realPath);
+                //}
             }
         }
         public void DeleteAnnexs(List<string> fileIds)

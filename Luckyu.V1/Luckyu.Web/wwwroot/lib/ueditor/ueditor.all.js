@@ -17283,7 +17283,7 @@ UE.plugin.register('autolink',function(){
                             a.appendChild(range.extractContents());
                             a.href = a.innerHTML = a.innerHTML.replace(/<[^>]+>/g,'');
                             href = a.getAttribute("href").replace(new RegExp(domUtils.fillChar,'g'),'');
-                            href = /^(?:https?:\/\/)/ig.test(href) ? href : "http://"+ href;
+                            //href = /^(?:https?:\/\/)/ig.test(href) ? href : "http://"+ href;
                             a.setAttribute('_src',utils.html(href));
                             a.href = utils.html(href);
 

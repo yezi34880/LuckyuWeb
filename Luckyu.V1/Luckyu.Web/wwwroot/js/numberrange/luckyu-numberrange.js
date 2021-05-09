@@ -8,6 +8,7 @@
         var defaultOp = {
             done: null
         };
+        $.extend(defaultOp, op);
         var $self = $(this);
         $self.addClass("luckyu_numberrange_input");
         $self.attr("readonly", "readonly");

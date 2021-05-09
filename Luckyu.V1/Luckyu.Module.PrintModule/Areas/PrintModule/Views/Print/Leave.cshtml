@@ -10,7 +10,7 @@
 @functions{
     private string GetFlowString(wf_taskhistoryEntity his)
     {
-        var str = $"{his.createtime.Value.ToString("yyyy-MM-dd HH:mm")} {his.create_username} {WFTaskBLL.ApproveResult[his.result]} {his.opinion}";
+        var str = $"{his.createtime.Value.ToString("yyyy-MM-dd HH:mm")} {his.create_username} {WFTaskBLL.ApproveResultName(his.result)} {his.opinion}";
         return str;
     }
 }

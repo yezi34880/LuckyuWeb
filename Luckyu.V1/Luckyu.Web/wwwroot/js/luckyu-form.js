@@ -327,6 +327,7 @@
                 */
                 setGridValue: function (data) {
                     var $grid = $(this);
+                    $grid.clearGridData();
                     $grid.setGridParam({ data: data }).trigger('reloadGrid');
                     if (!!data && data.length > 0) {
                         var colModel = $grid.getGridParam("colModel");

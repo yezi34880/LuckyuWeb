@@ -3,22 +3,36 @@
         window.luckyumobile = {};
     }
     luckyumobile = {
-        inputWarm: function (ele) {
-            var $ele = $(ele);
-            var warmCount = 0;
-            var warmTimer = setInterval(function () {
-                if ($ele.hasClass("input-warming")) {
-                    $ele.removeClass("input-warming");
-                }
-                else {
-                    $ele.addClass("input-warming");
-                }
-                if (warmCount >= 4) {
-                    clearInterval(warmTimer);
-                }
-                warmCount++;
-            }, 300);
-            $ele.addClass("input-warming");
+        form: {
+            inputWarm: function (ele) {
+                var $ele = $(ele);
+                var warmCount = 0;
+                var warmTimer = setInterval(function () {
+                    if ($ele.hasClass("input-warming")) {
+                        $ele.removeClass("input-warming");
+                    }
+                    else {
+                        $ele.addClass("input-warming");
+                    }
+                    if (warmCount >= 4) {
+                        clearInterval(warmTimer);
+                    }
+                    warmCount++;
+                }, 300);
+                $ele.addClass("input-warming");
+            },
+
+        },
+        utility: {
+            /**
+             * 获取Url参数
+             * @param {any} name
+             */
+            getUrlParam: function (name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                return (r != null) ? unescape(r[2]) : "";
+            },
         },
         ajax: {
             get: function (url, postData, successCallback) {
@@ -244,7 +258,7 @@
                                 var msg = (!!$elename ? ($elename + " ") : "") + "必填项不能为空";
                                 bui.hint({ content: msg, position: "top", skin: 'danger', showClose: true, autoClose: true, timeout: 3000 });
                                 flag = false;
-                                luckyumobile.inputWarm($ele);
+                                luckyumobile.form.inputWarm($ele);
                                 $ele.focus();
                                 return false;
                             }

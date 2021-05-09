@@ -78,7 +78,7 @@ var bootstrap = function () {
                 datatype: "local",
                 colModel: [
                     {
-                        name: 'objecttype', label: "类型", width: 60, editable: true,
+                        name: 'objecttype', label: "类型", width: 80, editable: true,
                         edittype: 'custom',
                         editoptions: {
                             dataInit: function (ele, options) {
@@ -122,7 +122,7 @@ var bootstrap = function () {
                     },
                     { label: 'objectids', name: 'objectids', editable: true, hidden: true },
                     {
-                        name: 'objectnames', label: "明细", width: 200, editable: true,
+                        name: 'objectnames', label: "明细", width: 150, editable: true,
                         edittype: 'text',
                         editoptions: {
                             readonly: true,
@@ -297,11 +297,9 @@ var bootstrap = function () {
                 altRows: true,//隔行换色
                 datatype: "local",
                 colModel: [
-                    { name: 'formname', label: "名称", width: 100, editable: true, },
-                    { name: 'formurl', label: '地址', width: 400, editable: true, },
-                    { name: 'mobileformurl', label: '移动端地址', width: 400, editable: true, },
+                    { name: 'formname', label: "名称", width: 60, editable: true, },
                     {
-                        name: 'canedit', label: '可编辑', width: 100, editable: true,
+                        name: 'canedit', label: '可编辑', width: 80, editable: true,
                         edittype: 'custom',
                         editoptions: {
                             dataInit: function (ele, options) {
@@ -327,6 +325,8 @@ var bootstrap = function () {
                             }
                         },
                     },
+                    { name: 'formurl', label: '地址', width: 150, editable: true, },
+                    { name: 'mobileformurl', label: '移动端地址', width: 150, editable: true, },
                 ],
                 rownumbers: true,
                 viewrecords: true,

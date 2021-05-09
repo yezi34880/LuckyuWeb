@@ -16,24 +16,28 @@ var bootstrap = function (layui) {
                 datatype: "json",
                 altRows: true,//隔行换色
                 postData: {},
+                colMenu: true,
                 colModel: [
+                    { name: 'leave_id', hidden: true, key: true, hidedlg: true, },
                     {
-                        name: 'state', label: "状态", width: 60, align: "center",
+                        name: 'state', label: "状态", width: 60, align: "center", 
                         stype: "dataitem", dataitemcode: "state", formatterdataitem: "stateshow"
                     },
-                    { name: 'leave_id', hidden: true, key: true },
-                    {
-                        name: 'user_id', label: "用户", width: 80,
-                        stype: "user_id",
-                    },
-                    {
-                        name: 'department_id', label: "部门", width: 80,
-                        stype: "department_id"
-                    },
-                    {
-                        name: 'company_id', label: "公司", width: 80,
-                        stype: "company_id"
-                    },
+                    //{
+                    //    name: 'user_id', label: "用户", width: 80,
+                    //    stype: "user_id",
+                    //},
+                    //{
+                    //    name: 'department_id', label: "部门", width: 80,
+                    //    stype: "department_id"
+                    //},
+                    //{
+                    //    name: 'company_id', label: "公司", width: 80,
+                    //    stype: "company_id"
+                    //},
+                    { name: 'username', label: "用户", width: 80, },
+                    { name: 'departmentname', label: "部门", width: 80, },
+                    { name: 'companyname', label: "公司", width: 100, },
                     {
                         name: 'begintime', label: "开始时间", width: 100, align: "right",
                         formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },

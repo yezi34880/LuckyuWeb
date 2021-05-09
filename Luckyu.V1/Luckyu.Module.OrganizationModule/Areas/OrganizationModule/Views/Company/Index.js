@@ -27,16 +27,7 @@ var bootstrap = function (layui) {
                     {
                         name: 'foundeddate', label: "成立时间", width: 60,
                         formatter: "date", formatoptions: { newformat: 'Y-m-d' },
-                        searchoptions: {
-                            dataInit: function (elem) {
-                                $(elem).luckyurangedate({
-                                    dfvalue: false,
-                                    select: function (begin, end) {
-                                        grid[0].triggerToolbar();
-                                    }
-                                });
-                            }
-                        }
+                        stype: "daterange"
                     },
                     { name: 'sort', label: "排序", width: 40, search: false },
                     { name: 'remark', label: "备注", width: 80, },
