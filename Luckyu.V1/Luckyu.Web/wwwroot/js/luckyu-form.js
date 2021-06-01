@@ -78,10 +78,8 @@
                     $(this).find("input,select,textarea,.xm-select,.luckyu-editor").each(function () {
                         var self = $(this);
                         if (self.parents(".ui-jqgrid").length > 0) {
-                            debugger;
                             return;
                         }
-                        debugger;
                         var id = self.attr('id');
                         var name = self.attr('name');
                         name = !!name ? name : id;

@@ -1,8 +1,9 @@
 ﻿(function () {
-    if (!window.luckyumobile) {
-        window.luckyumobile = {};
-    }
+
+    var luckyumobile = !window.luckyumobile ? {} : window.luckyumobile;
+
     luckyumobile = {
+        rootUrl: '',
         form: {
             inputWarm: function (ele) {
                 var $ele = $(ele);
@@ -21,7 +22,6 @@
                 }, 300);
                 $ele.addClass("input-warming");
             },
-
         },
         utility: {
             /**
@@ -144,6 +144,46 @@
                     },
                     error: function (xhr, type) {
                         uiLoading.hide();
+                        console.log("========= ajax error start ==========");
+                        console.log(url);
+                        console.log(postData);
+                        console.log(xhr);
+                        console.log(type);
+                        console.log("========= ajax error end ==========");
+                    }
+                });
+            },
+            getNoloading: function (url, postData, successCallback) {
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    async: true,
+                    data: postData,
+                    dataType: 'json',
+                    success: function (res) {
+                        successCallback(res);
+                    },
+                    error: function (xhr, type) {
+                        console.log("========= ajax error start ==========");
+                        console.log(url);
+                        console.log(postData);
+                        console.log(xhr);
+                        console.log(type);
+                        console.log("========= ajax error end ==========");
+                    }
+                });
+            },
+            postNoloading: function (url, postData, successCallback) {
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    async: true,
+                    data: postData,
+                    dataType: 'json',
+                    success: function (res) {
+                        successCallback(res);
+                    },
+                    error: function (xhr, type) {
                         console.log("========= ajax error start ==========");
                         console.log(url);
                         console.log(postData);
@@ -302,7 +342,26 @@
                 });
                 return data;
             }
+            /**
+             * 填充表单数据
+             */
+            $.fn.setFormValue = function (data) {
+                var $this = $(this);
+                for (var key in data) {
+                    var ele = $this.find("#" + key);
+                    if (!ele || ele.length < 1) {
+                        continue;
+                    }
+                    var value = data[key];
+                    ele.val(value);
+                }
+            }
         }
     };
     luckyumobile.init();
+
+    window.luckyumobile = luckyumobile;
+    if (!!top.luckyumobile.clientdata) {
+        window.luckyumobile.clientdata = top.luckyumobile.clientdata;
+    }
 })();

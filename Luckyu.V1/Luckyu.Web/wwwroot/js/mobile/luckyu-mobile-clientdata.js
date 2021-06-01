@@ -1,7 +1,7 @@
 ﻿/*
  * 描 述：获取客户端数据
  */
-(function ($, luckyu) {
+(function ($, luckyumobile) {
     "use strict";
 
     var loadSate = {
@@ -68,7 +68,7 @@
         init: function () {
             //初始化加载数据
             clientDataFn.userinfo.state = loadSate.ing;
-            luckyu.ajax.getNoloading(luckyu.rootUrl + '/Home/GetUserInfo', {}, function (res) {
+            luckyumobile.ajax.getNoloading(luckyumobile.rootUrl + '/Home/GetUserInfo', {}, function (res) {
                 if (res.code == 200) {
                     clientData.userinfo = res.data;
                     clientDataFn.userinfo.state = loadSate.yes;
@@ -106,7 +106,7 @@
             if (clientAsyncData.company.states == loadSate.no) {
                 clientAsyncData.company.states = loadSate.ing;
                 var ver = storage.get("companyData").ver || "";
-                luckyu.ajax.getNoloading(top.luckyu.rootUrl + '/OrganizationModule/Company/GetMap', { ver: ver }, function (res) {
+                luckyumobile.ajax.getNoloading(top.luckyumobile.rootUrl + '/OrganizationModule/Company/GetMap', { ver: ver }, function (res) {
                     var data = res.data;
                     if (!data) {
                         clientAsyncData.company.states = loadSate.fail;
@@ -157,7 +157,7 @@
             if (clientAsyncData.department.states == loadSate.no) {
                 clientAsyncData.department.states = loadSate.ing;
                 var ver = storage.get("departmentData").ver || "";
-                luckyu.ajax.getNoloading(top.luckyu.rootUrl + '/OrganizationModule/Department/GetMap', { ver: ver }, function (res) {
+                luckyumobile.ajax.getNoloading(top.luckyumobile.rootUrl + '/OrganizationModule/Department/GetMap', { ver: ver }, function (res) {
                     var data = res.data;
                     if (!data) {
                         clientAsyncData.department.states = loadSate.fail;
@@ -226,7 +226,7 @@
             if (clientAsyncData.user.states == loadSate.no) {
                 clientAsyncData.user.states = loadSate.ing;
                 var ver = storage.get("userData").ver || "";
-                luckyu.ajax.getNoloading(top.luckyu.rootUrl + '/OrganizationModule/User/GetMap', { ver: ver }, function (res) {
+                luckyumobile.ajax.getNoloading(top.luckyumobile.rootUrl + '/OrganizationModule/User/GetMap', { ver: ver }, function (res) {
                     var data = res.data;
                     if (!data) {
                         clientAsyncData.user.states = loadSate.fail;
@@ -296,7 +296,7 @@
             if (clientAsyncData.group.states == loadSate.no) {
                 clientAsyncData.group.states = loadSate.ing;
                 var ver = storage.get("groupData").ver || "";
-                luckyu.ajax.getNoloading(top.luckyu.rootUrl + '/OrganizationModule/Group/GetMap', { ver: ver }, function (res) {
+                luckyumobile.ajax.getNoloading(top.luckyumobile.rootUrl + '/OrganizationModule/Group/GetMap', { ver: ver }, function (res) {
                     var data = res.data;
                     if (!data) {
                         clientAsyncData.group.states = loadSate.fail;
@@ -347,7 +347,7 @@
             if (clientAsyncData.dataItem.states == loadSate.no) {
                 clientAsyncData.dataItem.states = loadSate.ing;
                 var ver = storage.get("dataItemData").ver || "";
-                luckyu.ajax.getNoloading(top.luckyu.rootUrl + '/SystemModule/DataItem/GetMap', { ver: ver }, function (res) {
+                luckyumobile.ajax.getNoloading(top.luckyumobile.rootUrl + '/SystemModule/DataItem/GetMap', { ver: ver }, function (res) {
                     var data = res.data;
                     if (!data) {
                         clientAsyncData.dataItem.states = loadSate.fail;
@@ -428,7 +428,7 @@
     };
     // 获取自定义数据 url key keyId
     //调用方式：
-    /* luckyu.clientdata.getAsync('commonData', {
+    /* luckyumobile.clientdata.getAsync('commonData', {
          url: url,
          key: value,
          keyId: valueId,
@@ -437,7 +437,7 @@
          }
      });
      调用示例：
-     luckyu.clientdata.getAsync('commonData', {
+     luckyumobile.clientdata.getAsync('commonData', {
                                  url: "/SystemModule/ExchangeRate/GetExchangeEntity",
                                  key: cellvalue,
                                  keyId: "ErCode",
@@ -517,7 +517,7 @@
             }
         },
         load: function (url) {
-            luckyu.ajax.getNoloading(top.luckyu.rootUrl + url, {}, function (res) {
+            luckyumobile.ajax.getNoloading(top.luckyumobile.rootUrl + url, {}, function (res) {
                 var data = res.data;
                 if (!!data) {
                     clientData[url] = data;
@@ -537,7 +537,7 @@
         }
     };
 
-    luckyu.clientdata = {
+    luckyumobile.clientdata = {
         init: function (callback) {
             initLoad(function (res) {
                 callback(res);
@@ -591,4 +591,4 @@
 
     };
 
-})(window.jQuery, top.luckyu);
+})(window.$, top.luckyumobile);

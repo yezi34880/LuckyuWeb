@@ -38,6 +38,7 @@ var bootstrap = function () {
                     //$("#tabUser").show();
                     //$("#tabForm").show();
                     $("#tabSQLSuccess").show();
+                    $("#tabSQLFail").show();
                     $("#tabProgram").show();
                     $("#divConfluence").show();
                     break;

@@ -673,7 +673,7 @@ namespace Luckyu.App.Workflow
 
             var history = new wf_taskhistoryEntity();
             history = firsttask.Adapt<wf_taskhistoryEntity>();
-            history.result = 2;
+            history.result = 5;
             history.opinion = $"【流程监控】{loginInfo.realname} 强制结束流程";
             history.Create(loginInfo);
 
@@ -716,7 +716,7 @@ namespace Luckyu.App.Workflow
                     var nodeCurrent = nodeModel.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
                     var historyCurrent = new wf_taskhistoryEntity();
                     historyCurrent = task.Adapt<wf_taskhistoryEntity>();
-                    historyCurrent.result = 1;
+                    historyCurrent.result = 5;
                     historyCurrent.nodetype = nodeCurrent.type;
                     historyCurrent.opinion = $"【流程监控】{loginInfo.realname} 强制生效流程";
                     historyCurrent.authorize_user_id = loginInfo.user_id;
@@ -805,7 +805,7 @@ namespace Luckyu.App.Workflow
 
             var history = new wf_taskhistoryEntity();
             history = oldTasks[0].Adapt<wf_taskhistoryEntity>();
-            history.result = 0;
+            history.result = 5;
             history.opinion = isLast ? $"{loginInfo.realname} 通过流程监控调整该流程至最新版本 调整后为【{nodeNext.name}】" : $"{loginInfo.realname} 通过流程监控调整 当前待办任务为【{ oldTasks[0].nodename}】 调整后为【{nodeNext.name}】";
             history.Create(loginInfo);
 

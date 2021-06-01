@@ -39,7 +39,7 @@ namespace Luckyu.App.Workflow
                 || (loginInfo.role_ids.Contains(ta.role_id) && !string.IsNullOrEmpty(ta.manage_dept_id) && roledepts.Contains(ta.role_id, ta.manage_dept_id))
             );
 
-            if (!string.IsNullOrEmpty(jqPage.sidx))
+            if (!jqPage.sidx.IsEmpty())
             {
                 switch (jqPage.sidx)
                 {
@@ -49,6 +49,12 @@ namespace Luckyu.App.Workflow
                 }
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
+            else
+            {
+                jqPage.sidx = "a.createtime";
+                jqPage.sord = "DESC";
+            }
+
             var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
             var page = new JqgridPageResponse<WFTaskModel>
             {

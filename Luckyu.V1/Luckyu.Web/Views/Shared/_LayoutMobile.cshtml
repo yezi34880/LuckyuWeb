@@ -22,17 +22,18 @@
     <script src="~/lib/bui/js/zepto.js"></script>
     <script src="~/lib/bui/js/bui.js"></script>
     @RenderSection("Header", false)
-</head>
-<body>
-    @RenderBody()
-    <script src="~/lib/bui/js/plugins/fastclick.js"></script>
-    @Html.AppendJs("~/js/luckyu-mobile.js")
-    @RenderSection("Footer", false)
     <script>
         function request(name) {
             return luckyumobile.utility.getUrlParam(name);
         }
     </script>
+</head>
+<body>
+    @RenderBody()
+    <script src="~/lib/bui/js/plugins/fastclick.js"></script>
+    @Html.AppendJs("~/js/mobile/luckyu-mobile.js")
+    @Html.AppendJs("~/js/mobile/luckyu-mobile-clientdata.js")
+    @RenderSection("Footer", false)
     <script>
         $.validateToken = $('@Html.AntiForgeryToken()').val();
         bui.ready(function () {

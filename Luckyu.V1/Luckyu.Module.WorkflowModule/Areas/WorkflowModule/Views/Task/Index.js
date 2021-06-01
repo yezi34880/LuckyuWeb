@@ -118,7 +118,7 @@ var bootstrap = function (layui) {
                 }
                 luckyu.layer.layerFormTop({
                     id: "Form",
-                    title: "审核/查看",
+                    title: "审核/查看【" + row.flowname + "】" + row.processname,
                     width: 1300,
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id + "&historyId=" + row.history_id,

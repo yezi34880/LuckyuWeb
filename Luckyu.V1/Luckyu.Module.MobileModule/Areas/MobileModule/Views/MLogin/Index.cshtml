@@ -6,7 +6,7 @@
     <style>
         .login-page main {
             background-size: 100% auto;
-         /*   background-image: url(/image/login.jpg);*/
+            /*   background-image: url(/image/login.jpg);*/
         }
 
         .login-page .logo h1 {
@@ -109,19 +109,20 @@
                 </li>
                 <li class="bui-btn bui-box clearactive">
                     <label class="bui-label" for="verifycode"><i class="icon-pic"></i></label>
-                    <div class="span2">
+                    <div class="span1">
                         <div class="bui-input vcode-input">
                             <input id="verifycode" type="text" placeholder="验证码" luckyu-verify="required" />
                         </div>
                     </div>
-                    <div class="span1">
-                        <img src="/MobileModule/MLogin/VerifyCode" onclick="javascript: this.src = this.src + '?random=' +Math.random();" style="width:100%;" />
+                    <div style="width: 90px;">
+                        <img id="verifycode_img" src="/MobileModule/MLogin/VerifyCode" />
                     </div>
                 </li>
             </ul>
             <div class="bui-btn round primary" id="btnLogin">登录</div>
             @*<div class="bui-btn-text" href="pages/register/register.html">注册</div>
                 <div class="bui-btn-text">忘记密码</div>*@
+            <div class="bui-btn-text" onclick="javascript: window.location.href='/Login/Index'">电脑版</div>
         </div>
     </main>
 </div>

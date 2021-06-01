@@ -14,6 +14,14 @@
     };
 
     luckyu.workflowapi = {
+        resultshow: [
+            { value: 1, name: '<span class="label label-success">通过</span>' },
+            { value: 2, name: '<span class="label label-error">驳回</span>' },
+            { value: 3, name: '<span class="label label-primary">申请加签</span>' },
+            { value: 4, name: '<span class="label label-success">已阅</span>' },
+            { value: 5, name: '<span class="label label-primary">调整</span>' },
+            { value: -1, name: '<span class="label label-info">正在审批</span>' },
+        ],
         /**
          * 创建流程
          * @param {any} op

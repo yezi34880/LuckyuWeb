@@ -19,13 +19,7 @@ var bootstrap = function (layui) {
                     {
                         label: "结果", name: "result", width: 60, align: "center",
                         formatter: function (cellvalue, options, rowObject) {
-                            var result = luckyu.utility.toEnum(cellvalue,
-                                [
-                                    { value: 1, name: '<span class="label label-success">通过</span>' },
-                                    { value: 2, name: '<span class="label label-error">驳回</span>' },
-                                    { value: -1, name: '<span class="label label-info">正在审批</span>' },
-                                ]
-                            );
+                            var result = luckyu.utility.toEnum(cellvalue, luckyu.workflowapi.resultshow);
                             return result;
                         }
                     },

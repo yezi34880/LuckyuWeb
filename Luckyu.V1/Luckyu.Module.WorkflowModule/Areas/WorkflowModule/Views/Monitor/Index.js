@@ -79,7 +79,7 @@ var bootstrap = function (layui) {
                 var row = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
                     id: "Form",
-                    title: "查看",
+                    title: "查看【" + row.flowname + "】" + row.processname,
                     width: 1300,
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Task/Form?instanceId=" + row.instance_id + "&processId=" + row.process_id

@@ -20,6 +20,12 @@
                 id: "#tabForm",
             });
 
+            $("#ulForm iframe").each(function () {
+                var that = $(this);
+                var parent = that.parent();
+                that.width(parent.width()).height(parent.height());
+            });
+
             $("#btnApprove").click(function () {
                 var result = $("input[name=result]:checked").val();
                 var resultname = result == 1 ? "通过" : "驳回";

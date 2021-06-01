@@ -50,7 +50,7 @@
     </tr>
     <tr>
         <td rowspan="@flowhistory.Count">审批流程</td>
-        <td colspan="5">@GetFlowString(flowhistory[0])</td>
+        <td colspan="5">@(flowhistory.Count>0?GetFlowString(flowhistory[0]):"")</td>
     </tr>
     @for (int i = 1; i < flowhistory.Count; i++)
     {

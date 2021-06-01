@@ -23,7 +23,7 @@ namespace Luckyu.App.Workflow
                 .InnerJoin((fi, th) => th.instance_id == fi.instance_id)
                 .Where((fi, th) => th.authorize_user_id == loginInfo.user_id);
 
-            if (!string.IsNullOrEmpty(jqPage.sidx))
+            if (!jqPage.sidx.IsEmpty())
             {
                 switch (jqPage.sidx)
                 {
@@ -32,6 +32,11 @@ namespace Luckyu.App.Workflow
                         break;
                 }
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
+            }
+            else
+            {
+                jqPage.sidx = "b.createtime";
+                jqPage.sord = "DESC";
             }
             var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
             var page = new JqgridPageResponse<WFTaskModel>

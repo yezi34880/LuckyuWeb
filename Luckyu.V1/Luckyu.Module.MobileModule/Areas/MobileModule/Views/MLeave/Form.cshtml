@@ -2,4 +2,114 @@
     Layout = "~/Views/Shared/_LayoutMobile.cshtml";
 }
 
-请假手机页面
+<div class="bui-page bui-box-vertical">
+    @*<header>
+        <div class="bui-bar">
+            <div class="bui-bar-left">
+                <div class="bui-btn" onclick="bui.back();"><i class="icon-back"></i></div>
+            </div>
+            <div class="bui-bar-main">
+                请假申请
+            </div>
+            <div class="bui-bar-right">
+            </div>
+        </div>
+    </header>*@
+    <main>
+        <ul class="bui-list" id="formLeave">
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="statename">状态</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="statename" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="username">用户</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="username" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="departmentname">部门:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="departmentname" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="departmentname">部门:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="departmentname" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="departmentname">部门:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="departmentname" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="companyname">公司:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="companyname" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="leavetype">类型:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="leavetype" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="spantime">时长(小时):</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="spantime" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="begintime">开始时间:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="begintime" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="endtime">结束时间:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="endtime" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+            <li class="bui-btn bui-box clearactive">
+                <label class="bui-label" for="leavetype">事由:</label>
+                <div class="span1">
+                    <div class="bui-input user-input">
+                        <input id="reason" type="text" class="bui-input" readonly />
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/MobileModule/Views/MLeave/Form.js")
+}

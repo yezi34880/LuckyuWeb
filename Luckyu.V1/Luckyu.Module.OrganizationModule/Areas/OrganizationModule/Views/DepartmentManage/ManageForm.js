@@ -147,7 +147,6 @@ var bootstrap = function (layui) {
         initData: function () {
             if (!!userId) {
                 luckyu.ajax.getv2("/OrganizationModule/DepartmentManage/GetFormData", { userId: userId }, function (data) {
-                    debugger;
                     $("#gridManage").setGridValue(data.DepartmentManage);
                 });
             }

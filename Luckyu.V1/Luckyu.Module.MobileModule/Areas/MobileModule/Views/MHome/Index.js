@@ -3,6 +3,7 @@
 
     var page = {
         init: function () {
+            top.luckyumobile.clientdata.init(function () { });
             page.bind();
         },
         bind: function () {

@@ -6,6 +6,14 @@
             page.bind();
         },
         bind: function () {
+            bui.btn({ id: ".bui-page", handle: ".bui-btn" }).load();
+
+            $("#verifycode_img").click(function () {
+                $("#verifycode").val('');
+                $("#verifycode_img").attr("src", "/MobileModule/MLogin/VerifyCode?v=" + Math.random());
+            });
+
+
             $("#btnLogin").click(function () {
                 if (!$(".login-form").verifyForm()) {
                     return;
