@@ -24,7 +24,7 @@ namespace Luckyu.App.Organization
 
         public List<sys_departmentmanageEntity> managedepartments { get; set; }
 
-        public List<sys_moduleEntity> modules { get; set; }
+        public List<string> module_ids { get; set; }
 
         public string usercode { get; set; }
 

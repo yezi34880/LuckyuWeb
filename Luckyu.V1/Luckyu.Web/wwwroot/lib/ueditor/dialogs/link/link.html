@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -72,9 +72,9 @@
     function handleDialogOk(){
         var href =$G('href').value.replace(/^\s+|\s+$/g, '');
         if(href){
-            if(!hrefStartWith(href,["http","/","ftp://",'#'])) {
-                href  = "http://" + href;
-            }
+            //if(!hrefStartWith(href,["http","/","ftp://",'#'])) {
+            //    href  = "http://" + href;
+            //}
             var obj = {
                 'href' : href,
                 'target' : $G("target").checked ? "_blank" : '_self',
@@ -103,11 +103,11 @@
         }
     };
     $G('href').onblur = function(){
-        if(!hrefStartWith(this.value,["http","/","ftp://",'#'])){
-            $G("msg").innerHTML = "<span style='color: red'>"+lang.httpPrompt+"</span>";
-        }else{
-            $G("msg").innerHTML = "";
-        }
+        //if(!hrefStartWith(this.value,["http","/","ftp://",'#'])){
+        //    $G("msg").innerHTML = "<span style='color: red'>"+lang.httpPrompt+"</span>";
+        //}else{
+        //    $G("msg").innerHTML = "";
+        //}
     };
 
     function hrefStartWith(href,arr){

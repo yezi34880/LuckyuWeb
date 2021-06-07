@@ -14,17 +14,17 @@ var bootstrap = function (layui) {
         bind: function () {
             var loading = luckyu.layer.loading();
 
-            $("#to_username,#touserSelect").click(function myfunction() {
+            $("#to_username,#touserSelect").click(function () {
                 luckyu.layer.userSelectForm({
                     multiple: false,
                     callback: function (list) {
                         if (!!list && list.length > 0) {
                             $("#to_username").val(list[0].realname);
-                            $("#to_userid").val(list[0].userId);
+                            $("#to_user_id").val(list[0].userId);
                         }
                         else {
                             $("#to_username").val("");
-                            $("#to_userid").val("");
+                            $("#to_user_id").val("");
                         }
                     }
                 });
@@ -52,7 +52,7 @@ var bootstrap = function (layui) {
             }
             else {
                 var loginInfo = luckyu.clientdata.get(['userinfo']);
-                $("#username").val(luckyu.clientdata.getUserName(loginInfo.user_id));
+                $("#username").val(loginInfo.realname);
             }
         },
     };

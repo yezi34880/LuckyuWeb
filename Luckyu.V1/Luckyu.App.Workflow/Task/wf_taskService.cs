@@ -21,8 +21,9 @@ namespace Luckyu.App.Workflow
 
             var roledepts = loginInfo.managedepartments.Where(r => r.relationtype == 1).Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
             var postdepts = loginInfo.managedepartments.Where(r => r.relationtype == 2).Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
+
             var query = db.Select<wf_flow_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
-                .Where((fi, t, ta) => t.is_done == 0 &&
+                .Where((fi, t, ta) => fi.is_finished == 0 && t.is_done == 0 && (
                 ta.user_id == loginInfo.user_id  // 用户
                 || loginInfo.group_ids.Contains(ta.group_id)   // 小组
                 || (string.IsNullOrEmpty(ta.post_id) && string.IsNullOrEmpty(ta.role_id) && ta.department_id == loginInfo.department_id)    // 按部门审批
@@ -37,7 +38,17 @@ namespace Luckyu.App.Workflow
                 || (loginInfo.role_ids.Contains(ta.role_id) && !string.IsNullOrEmpty(ta.department_id) && ta.department_id == loginInfo.department_id)
                 || (loginInfo.role_ids.Contains(ta.role_id) && !string.IsNullOrEmpty(ta.company_id) && ta.company_id == loginInfo.company_id)
                 || (loginInfo.role_ids.Contains(ta.role_id) && !string.IsNullOrEmpty(ta.manage_dept_id) && roledepts.Contains(ta.role_id, ta.manage_dept_id))
+                )
             );
+
+            var filters = BaseRepository().ContructJQCondition(jqPage);
+            if (!filters.IsEmpty())
+            {
+                foreach (var filter in filters)
+                {
+                    query = query.WhereDynamicFilter(filter);
+                }
+            }
 
             if (!jqPage.sidx.IsEmpty())
             {
@@ -66,6 +77,130 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
+        /// <summary>
+        /// 委托待办 列表
+        /// </summary>
+        public JqgridPageResponse<WFTaskModel> DelegatePage(JqgridPageRequest jqPage, UserModel loginInfo)
+        {
+            var db = BaseRepository().db;
+            var now = DateTime.Now;
+            var delegates = db.Select<wf_delegateEntity>().Where(r => r.is_delete == 0 && r.is_enable == 1 && now >= r.starttime && now < r.endtime && r.to_user_id == loginInfo.user_id).ToList();
+
+            var delegate_userIds = delegates.Select(r => r.user_id).ToList();
+            var roledepts = db.Select<sys_departmentmanageEntity>().Where(r => delegate_userIds.Contains(r.user_id) && r.relationtype == 1).ToList().Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
+            var postdepts = db.Select<sys_departmentmanageEntity>().Where(r => delegate_userIds.Contains(r.user_id) && r.relationtype == 2).ToList().Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
+
+            // 分流程的委托好难写 要考虑许多
+            //  比如 两个流程 分别分给两个人，这两个人对应的 公司 部门 角色 岗位 组 都要和 流程关联起来，好好理一理
+            var delegate_flow_user = delegates.Select(r => new ValueTuple<string, string>(r.flowcode.Trim(','), r.user_id)).ToList();
+            var grouprelations = db.Select<sys_userrelationEntity>().Where(r => r.relationtype == 3 && delegate_userIds.Contains(r.user_id)).ToList();
+            var delegate_flow_group = grouprelations.Select(r =>
+            {
+                var value = new ValueTuple<string, string>();
+                var allcodeStr = string.Join(",", delegates.Where(t => t.user_id == r.user_id).Select(t => t.flowcode).ToList());
+                var allcodeList = allcodeStr.SplitNoEmpty(',').Distinct();
+                value.Item1 = string.Join(",", allcodeList);
+                value.Item2 = r.object_id;
+                return value;
+            }).ToList();
+            var rolerelations = db.Select<sys_userrelationEntity>().Where(r => r.relationtype == 1 && delegate_userIds.Contains(r.user_id)).ToList();
+            var delegate_flow_role = rolerelations.Select(r =>
+            {
+                var value = new ValueTuple<string, string>();
+                var allcodeStr = string.Join(",", delegates.Where(t => t.user_id == r.user_id).Select(t => t.flowcode).ToList());
+                var allcodeList = allcodeStr.SplitNoEmpty(',').Distinct();
+                value.Item1 = string.Join(",", allcodeList);
+                value.Item2 = r.object_id;
+                return value;
+            }).ToList();
+            var postrelations = db.Select<sys_userrelationEntity>().Where(r => r.relationtype == 2 && delegate_userIds.Contains(r.user_id)).ToList();
+            var delegate_flow_post = postrelations.Select(r =>
+            {
+                var value = new ValueTuple<string, string>();
+                var allcodeStr = string.Join(",", delegates.Where(t => t.user_id == r.user_id).Select(t => t.flowcode).ToList());
+                var allcodeList = allcodeStr.SplitNoEmpty(',').Distinct();
+                value.Item1 = string.Join(",", allcodeList);
+                value.Item2 = r.object_id;
+                return value;
+            }).ToList();
+
+            var users = db.Select<sys_userEntity>().Where(r => delegate_userIds.Contains(r.user_id)).ToList();
+            var delegate_flow_dept = delegates.Select(r =>
+            {
+                var value = new ValueTuple<string, string>();
+                value.Item1 = r.flowcode.Trim(',');
+                value.Item2 = users.Where(t => t.user_id == r.user_id).Select(t => t.department_id).FirstOrDefault();
+                return value;
+            }).ToList();
+            var delegate_flow_company = delegates.Select(r =>
+            {
+                var value = new ValueTuple<string, string>();
+                value.Item1 = r.flowcode.Trim(',');
+                value.Item2 = users.Where(t => t.user_id == r.user_id).Select(t => t.company_id).FirstOrDefault();
+                return value;
+            }).ToList();
+
+
+
+            var query = db.Select<wf_flow_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
+                .Where((fi, t, ta) => fi.is_finished == 0 && t.is_done == 0 && (
+                delegate_flow_user.Contains(fi.flowcode, ta.user_id)
+
+                || delegate_flow_group.Contains(fi.flowcode, ta.group_id)   // 小组
+                || (string.IsNullOrEmpty(ta.post_id) && string.IsNullOrEmpty(ta.role_id) && delegate_flow_dept.Contains(fi.flowcode, ta.department_id))    // 按部门审批
+                || (string.IsNullOrEmpty(ta.post_id) && string.IsNullOrEmpty(ta.role_id) && delegate_flow_company.Contains(fi.flowcode, ta.company_id))    // 按公司审批
+
+                || (delegate_flow_post.Contains(fi.flowcode, ta.post_id) && string.IsNullOrEmpty(ta.department_id) && string.IsNullOrEmpty(ta.company_id) && string.IsNullOrEmpty(ta.manage_dept_id))   // 岗位   不仅判断 下面的人员 还需要判断 同公司 同部门 分管
+                || (delegate_flow_post.Contains(fi.flowcode, ta.post_id) && !string.IsNullOrEmpty(ta.department_id) && delegate_flow_dept.Contains(fi.flowcode, ta.department_id))
+                || (delegate_flow_post.Contains(fi.flowcode, ta.post_id) && !string.IsNullOrEmpty(ta.company_id) && delegate_flow_company.Contains(fi.flowcode, ta.company_id))
+                || (delegate_flow_post.Contains(fi.flowcode, ta.post_id) && !string.IsNullOrEmpty(ta.manage_dept_id) && postdepts.Contains(ta.post_id, ta.manage_dept_id))
+
+                || (delegate_flow_role.Contains(fi.flowcode, ta.role_id) && string.IsNullOrEmpty(ta.department_id) && string.IsNullOrEmpty(ta.company_id) && string.IsNullOrEmpty(ta.manage_dept_id))   //   角色 不仅判断 下面的人员 还需要判断 同公司 同部门 分管
+                || (delegate_flow_role.Contains(fi.flowcode, ta.role_id) && !string.IsNullOrEmpty(ta.department_id) && delegate_flow_dept.Contains(fi.flowcode, ta.department_id))
+                || (delegate_flow_role.Contains(fi.flowcode, ta.role_id) && !string.IsNullOrEmpty(ta.company_id) && delegate_flow_company.Contains(fi.flowcode, ta.company_id))
+                || (delegate_flow_role.Contains(fi.flowcode, ta.role_id) && !string.IsNullOrEmpty(ta.manage_dept_id) && roledepts.Contains(ta.role_id, ta.manage_dept_id))
+                )
+            );
+
+            var filters = BaseRepository().ContructJQCondition(jqPage);
+            if (!filters.IsEmpty())
+            {
+                foreach (var filter in filters)
+                {
+                    query = query.WhereDynamicFilter(filter);
+                }
+            }
+
+            if (!jqPage.sidx.IsEmpty())
+            {
+                switch (jqPage.sidx)
+                {
+                    case "createtime":
+                        jqPage.sidx = "a.createtime";
+                        break;
+                }
+                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
+            }
+            else
+            {
+                jqPage.sidx = "a.createtime";
+                jqPage.sord = "DESC";
+            }
+
+            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
+            var page = new JqgridPageResponse<WFTaskModel>
+            {
+                count = jqPage.rows,
+                page = jqPage.page,
+                records = (int)total,
+                rows = list,
+            };
+            return page;
+        }
+
+        /// <summary>
+        /// 流程监控 列表
+        /// </summary>
         public JqgridPageResponse<WFTaskModel> MonitorPage(JqgridPageRequest jqPage, int is_finished)
         {
             //Expression<Func<wf_flow_instanceEntity, bool>> exp = r => r.is_finished == is_finished;
@@ -77,7 +212,7 @@ namespace Luckyu.App.Workflow
                 .InnerJoin((fi, t) => t.instance_id == fi.instance_id)
                 .Where((fi, t) => fi.is_finished == is_finished);
 
-            if (!string.IsNullOrEmpty(jqPage.sidx))
+            if (!jqPage.sidx.IsEmpty())
             {
                 switch (jqPage.sidx)
                 {
@@ -87,6 +222,21 @@ namespace Luckyu.App.Workflow
                 }
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
+            else
+            {
+                jqPage.sidx = "a.createtime";
+                jqPage.sord = "DESC";
+            }
+
+            var filters = BaseRepository().ContructJQCondition(jqPage);
+            if (!filters.IsEmpty())
+            {
+                foreach (var filter in filters)
+                {
+                    query = query.WhereDynamicFilter(filter);
+                }
+            }
+
             var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
             var page = new JqgridPageResponse<WFTaskModel>
             {

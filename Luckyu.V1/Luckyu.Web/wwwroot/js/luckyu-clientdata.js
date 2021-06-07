@@ -589,6 +589,56 @@
             clientAsyncData.dataItem.update();
         },
 
+        getUserName: function (userId) {
+            var result = "";
+            luckyu.clientdata.getAsync('user', {
+                key: userId,
+                callback: function (_data) {
+                    if (!!_data.name) {
+                        result = _data.name;
+                    }
+                }
+            });
+            return result;
+        },
+        getUserInfo: function (userId) {
+            var result = {};
+            luckyu.clientdata.getAsync('user', {
+                key: userId,
+                callback: function (_data) {
+                    if (!!_data.name) {
+                        result = _data;
+                    }
+                }
+            });
+            return result;
+        },
+        getDepartmentName: function (departmentId) {
+            var result = "";
+            luckyu.clientdata.getAsync('department', {
+                key: departmentId,
+                callback: function (_data) {
+                    if (!!_data.name) {
+                        result = _data.name;
+                    }
+                }
+            });
+            return result;
+        },
+        getCompanyName: function (companyId) {
+            var result = "";
+            luckyu.clientdata.getAsync('company', {
+                key: companyId,
+                callback: function (_data) {
+                    if (!!_data.name) {
+                        result = _data.name;
+                    }
+                }
+            });
+            return result;
+
+        }
+
     };
 
 })(window.jQuery, top.luckyu);

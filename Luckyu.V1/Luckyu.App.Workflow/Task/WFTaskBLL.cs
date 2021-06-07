@@ -47,6 +47,10 @@ namespace Luckyu.App.Workflow
                 var page1 = instanceService.Page(jqPage, loginInfo);
                 page = page1.Adapt<JqgridPageResponse<WFTaskModel>>();
             }
+            else if (tasktype == 4)  // 待办
+            {
+                page = taskService.DelegatePage(jqPage, loginInfo);
+            }
             return page;
         }
 

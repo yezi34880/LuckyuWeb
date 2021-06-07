@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DeviceDetectorNET;
 using Luckyu.App.Organization;
 using Luckyu.App.System;
@@ -29,7 +30,7 @@ namespace Luckyu.Web.Controllers
 
             List<sys_moduleEntity> listSelfModule;
             var modules = moduleBLL.GetModuleTreeByUser(loginInfo, 0, out listSelfModule);
-            loginInfo.modules = listSelfModule;
+            loginInfo.module_ids = listSelfModule.Select(r => r.module_id).ToList();
 
             LoginUserInfo.Instance.UpdateLoginUser(HttpContext, loginInfo);
             ViewBag.Modules = modules;

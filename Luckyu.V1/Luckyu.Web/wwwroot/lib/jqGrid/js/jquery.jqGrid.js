@@ -5482,6 +5482,11 @@
                         $t.grid.footers[lvc].style.width = cw + "px";
                     }
                 }
+
+                if ($t.p.tblwidth > $t.p.width) {   // 修改 bug，不然列头 和 数据不对其
+                    $t.p.tblwidth = $t.p.width;
+                }
+
                 if ($t.p.tblwidth) {
                     $('table:first', $t.grid.bDiv).css("width", $t.p.tblwidth + "px");
                     $('table:first', $t.grid.hDiv).css("width", $t.p.tblwidth + "px");

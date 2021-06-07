@@ -42,6 +42,7 @@
                 var $that = $("#gs_" + name);
                 if (!!$that && $that.length > 0) {
                     $that.attr("_realValue", "");
+                    $that.val("");
                 }
             }
             $grid[0].clearToolbar();

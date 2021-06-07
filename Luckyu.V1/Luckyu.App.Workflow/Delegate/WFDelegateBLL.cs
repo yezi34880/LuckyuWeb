@@ -71,7 +71,7 @@ namespace Luckyu.App.Workflow
                 entity.flowcode = "ALL";
             }
             delegateService.SaveForm(keyValue, entity, strEntity, loginInfo);
-            return ResponseResult.Success<wf_delegateEntity>();
+            return ResponseResult.Success(entity);
         }
         #endregion
     }

@@ -1542,7 +1542,7 @@ namespace Luckyu.DataAccess
 
         #endregion
 
-        private List<DynamicFilterInfo> ContructJQCondition(JqgridPageRequest jqPage)
+        public List<DynamicFilterInfo> ContructJQCondition(JqgridPageRequest jqPage)
         {
             var filters = new List<DynamicFilterInfo>();
             if (jqPage.isSearch)

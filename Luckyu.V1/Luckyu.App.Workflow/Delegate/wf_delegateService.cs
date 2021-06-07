@@ -15,8 +15,7 @@ namespace Luckyu.App.Workflow
     {
         public JqgridPageResponse<wf_delegateEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
-            Expression<Func<wf_delegateEntity, bool>> exp = r => r.create_userid == loginInfo.user_id;
-
+            Expression<Func<wf_delegateEntity, bool>> exp = r => r.is_delete == 0 && r.create_userid == loginInfo.user_id;
             var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }

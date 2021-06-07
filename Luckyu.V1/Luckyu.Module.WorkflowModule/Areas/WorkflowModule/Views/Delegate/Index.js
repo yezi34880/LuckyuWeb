@@ -17,7 +17,7 @@ var bootstrap = function (layui) {
                 altRows: true,//隔行换色
                 postData: {},
                 colModel: [
-                    { name: 'id', hidden: true, key: true },
+                    { name: 'delegate_id', hidden: true, key: true },
                     { name: 'username', label: "委托人", width: 80, },
                     { name: 'to_username', label: "被委托人", width: 100, },
                     {
