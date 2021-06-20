@@ -67,7 +67,7 @@ namespace Luckyu.App.Workflow
         public string previousname { get; set; }
 
         /// <summary>
-        ///  result   1同意 2拒绝 3加签
+        ///  result   1同意 2拒绝 3代办
         /// </summary>
         public int result { get; set; }
 

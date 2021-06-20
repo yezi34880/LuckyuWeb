@@ -24,13 +24,16 @@
                 top.layui.index.openTabsPage('/WorkflowModule/Task/Index', '我的任务');
             });
             $("#newsMore").click(function () {
-                top.layui.index.openTabsPage('/OAModule/News/ShowIndex', '消息中心');
+                top.layui.index.openTabsPage('/OAModule/News/ShowIndex', '公告通知');
+            });
+            $("#moretaskDelegate").click(function () {
+                top.layui.index.openTabsPage('/WorkflowModule/Task/Index?tasktype=4', '我的任务');
             });
         },
         refrash: function () {
-            luckyu.ajax.getNoloading('/WorkflowModule/Task/HomeShow', {}, function (res) {
-                if (res.code === 200) {
-                    var html = template("templeteNews", res.data);
+            luckyu.ajax.getNoloading('/WorkflowModule/Task/Page', { page: 1, rows: 5, tasktype: 1 }, function (res) {
+                if (res.records > 0) {
+                    var html = template("templeteTask", res);
                     $("#task").html(html);
                     $("#task div.ahoit-msg-line a").click(function () {
                         var self = $(this);
@@ -61,7 +64,16 @@
                                 }
                             });
                             btns.push({
-                                name: "加签",
+                                name: "协办",
+                                callback: function (index, layero) {
+                                    layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
+                                        page.searchInCurrentPage();
+                                    });
+                                    return false;
+                                }
+                            });
+                            btns.push({
+                                name: "代办",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
                                         page.refrash();
@@ -77,14 +89,95 @@
                             width: 1300,
                             height: 850,
                             url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + task_id + "&instanceId=" + instance_id + "&processId=" + process_id,
-                            btn: btns
+                            btn: btns,
+                            success: function (layero, index) {
+                                var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
+                                $("div.layui-layer-btn", layero).prepend(html);
+                                $("#questionBtn", layero).click(function () {
+                                    top.layui.layer.alert('【协办】选择其他用户协助审批，其他用户审批后流程节点不会移动，后续审批人仅仅能够看到协办用户审批意见<br />【代办】选择其他用户代办审批，其他用户审批后节点会移动，相当于把当前步审批让渡给代办人<br />注：协办、代办选择用户后自己扔可以自行处理，或者等待选择人处理');
+                                });
+
+                            }
+
                         });
                     });
                 }
             });
-            luckyu.ajax.getNoloading('/OAModule/News/HomeShow', {}, function (res) {
-                if (res.code === 200) {
-                    var html = template("templeteNews", res.data);
+            luckyu.ajax.getNoloading('/WorkflowModule/Task/Page', { page: 1, rows: 5, tasktype: 4 }, function (res) {
+                if (res.records > 0) {
+                    var html = template("templeteTask", res);
+                    $("#taskDelegate").html(html);
+                    $("#taskDelegate div.ahoit-msg-line a").click(function () {
+                        var self = $(this);
+                        var btns = [];
+                        var nodetype = self.attr("luckyu-nodetype");
+                        var task_id = self.attr("luckyu-taskId");
+                        var instance_id = self.attr("luckyu-instanceId");
+                        var process_id = self.attr("luckyu-processId");
+                        if (nodetype === "auditornode") {
+                            btns.push({
+                                name: "已阅",
+                                callback: function (index, layero) {
+                                    layero.find("iframe")[0].contentWindow.readClick(index, function () {
+                                        page.refrash();
+                                    });
+                                    return false;
+                                }
+                            });
+                        }
+                        else {
+                            btns.push({
+                                name: "审核",
+                                callback: function (index, layero) {
+                                    layero.find("iframe")[0].contentWindow.approveClick(index, function () {
+                                        page.refrash();
+                                    });
+                                    return false;
+                                }
+                            });
+                            btns.push({
+                                name: "协办",
+                                callback: function (index, layero) {
+                                    layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
+                                        page.searchInCurrentPage();
+                                    });
+                                    return false;
+                                }
+                            });
+                            btns.push({
+                                name: "代办",
+                                callback: function (index, layero) {
+                                    layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
+                                        page.refrash();
+                                    });
+                                    return false;
+                                }
+                            });
+                        }
+
+                        luckyu.layer.layerFormTop({
+                            id: "Form",
+                            title: "审核",
+                            width: 1300,
+                            height: 850,
+                            url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + task_id + "&instanceId=" + instance_id + "&processId=" + process_id,
+                            btn: btns,
+                            success: function (layero, index) {
+                                var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
+                                $("div.layui-layer-btn", layero).prepend(html);
+                                $("#questionBtn", layero).click(function () {
+                                    top.layui.layer.alert('【协办】选择其他用户协助审批，其他用户审批后流程节点不会移动，后续审批人仅仅能够看到协办用户审批意见<br />【代办】选择其他用户代办审批，其他用户审批后节点会移动，相当于把当前步审批让渡给代办人<br />注：协办、代办选择用户后自己扔可以自行处理，或者等待选择人处理');
+                                });
+
+                            }
+
+                        });
+                    });
+                }
+            });
+            luckyu.ajax.getNoloading('/OAModule/News/ShowPage', { page: 1, rows: 5 }, function (res) {
+                if (res.records > 0) {
+                    var html = template("templeteNews", res);
                     $("#news").html(html);
                     $("#news div.ahoit-msg-line a").click(function () {
                         var self = $(this);

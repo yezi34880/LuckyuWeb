@@ -144,5 +144,58 @@ namespace Luckyu.DataAccess
             return filter;
         }
         #endregion
+
+        #region 分页构造条件
+        public static List<DynamicFilterInfo> ContructJQCondition(JqgridPageRequest jqPage)
+        {
+            var filters = new List<DynamicFilterInfo>();
+            if (jqPage.isSearch)
+            {
+                foreach (var rule in jqPage.fitersObj.rules)
+                {
+                    if (rule.field.IsEmpty() || rule.data.IsEmpty())
+                    {
+                        continue;
+                    }
+                    if (rule.ltype.IsEmpty() || rule.ltype == "text")
+                    {
+                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                    }
+                    else
+                    {
+                        switch (rule.ltype)
+                        {
+                            case "user_id":
+                            case "department_id":
+                            case "company_id":
+                                filters.Add(SearchConditionHelper.GetStringContainCondition(rule.field, rule.data));
+                                break;
+                            case "datasource":
+                            case "dataitem":
+                                filters.Add(SearchConditionHelper.GetStringEqualCondition(rule.field, rule.data, "-1"));
+                                break;
+                            case "datasources":
+                            case "dataitems":
+                                {
+                                    if (rule.data != "-1")
+                                    {
+                                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                                    }
+                                    break;
+                                }
+                            case "daterange":
+                                filters.Add(SearchConditionHelper.GetDateCondition(rule.field, rule.data));
+                                break;
+                            case "numberrange":
+                                filters.Add(SearchConditionHelper.GetNumberCondition(rule.field, rule.data));
+                                break;
+                        }
+                    }
+                }
+            }
+            return filters;
+        }
+
+        #endregion
     }
 }

@@ -1041,7 +1041,7 @@ namespace Luckyu.DataAccess
         public List<T> GetList<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition) where T : class, new()
         {
             var query = db.Select<T>().Where(condition);
-            var filters = ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
                 foreach (var filter in filters)
@@ -1091,7 +1091,7 @@ namespace Luckyu.DataAccess
         public List<T> GetList<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, Dictionary<string, Func<DynamicFilterInfo>> dicCondition) where T : class, new()
         {
             var query = db.Select<T>().Where(condition);
-            var filters = ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (dicCondition.Count > 0)
             {
                 foreach (var item in dicCondition)
@@ -1277,7 +1277,7 @@ namespace Luckyu.DataAccess
         public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition) where T : class, new()
         {
             var query = db.Select<T>().Where(condition);
-            var filters = ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
                 foreach (var filter in filters)
@@ -1304,7 +1304,7 @@ namespace Luckyu.DataAccess
         }
         public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, ISelect<T> query) where T : class, new()
         {
-            var filters = ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
                 foreach (var filter in filters)
@@ -1460,7 +1460,7 @@ namespace Luckyu.DataAccess
             {
                 query = query.Where(condition);
             }
-            var filters = ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (jqPage.isSearch && dicModels.Count > 0)
             {
                 var rules = jqPage.fitersObj.rules;
@@ -1542,55 +1542,6 @@ namespace Luckyu.DataAccess
 
         #endregion
 
-        public List<DynamicFilterInfo> ContructJQCondition(JqgridPageRequest jqPage)
-        {
-            var filters = new List<DynamicFilterInfo>();
-            if (jqPage.isSearch)
-            {
-                foreach (var rule in jqPage.fitersObj.rules)
-                {
-                    if (rule.field.IsEmpty() || rule.data.IsEmpty())
-                    {
-                        continue;
-                    }
-                    if (rule.ltype.IsEmpty() || rule.ltype == "text")
-                    {
-                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
-                    }
-                    else
-                    {
-                        switch (rule.ltype)
-                        {
-                            case "user_id":
-                            case "department_id":
-                            case "company_id":
-                                filters.Add(SearchConditionHelper.GetStringContainCondition(rule.field, rule.data));
-                                break;
-                            case "datasource":
-                            case "dataitem":
-                                filters.Add(SearchConditionHelper.GetStringEqualCondition(rule.field, rule.data, "-1"));
-                                break;
-                            case "datasources":
-                            case "dataitems":
-                                {
-                                    if (rule.data != "-1")
-                                    {
-                                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
-                                    }
-                                    break;
-                                }
-                            case "daterange":
-                                filters.Add(SearchConditionHelper.GetDateCondition(rule.field, rule.data));
-                                break;
-                            case "numberrange":
-                                filters.Add(SearchConditionHelper.GetNumberCondition(rule.field, rule.data));
-                                break;
-                        }
-                    }
-                }
-            }
-            return filters;
-        }
 
         #endregion
     }

@@ -34,7 +34,7 @@
 }
 
 <div class="layui-row" style="margin:5px;">
-    <div class="layui-col-xs6" style="padding-bottom: 10px;">
+    <div class="layui-col-xs6" style="padding-bottom: 5px;">
         <div class="layui-card">
             <div class="layui-card-header">
                 <i class="fa fa-coffee"></i>&nbsp;&nbsp;待办任务
@@ -45,7 +45,18 @@
             </div>
         </div>
     </div>
-    <div class="layui-col-xs6" style="padding-bottom: 10px;">
+    <div class="layui-col-xs6" style="padding-bottom: 5px;">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <i class="fa fa-coffee"></i>&nbsp;&nbsp;委托待办
+                <span class="pull-right"><a id="moretaskDelegate" style="cursor:pointer;">更多&nbsp;>>&nbsp;</a></span>
+            </div>
+            <div class="layui-card-body" id="taskDelegate" style="min-height:200px;">
+
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs12" style="padding-bottom: 5px;">
         <div class="layui-card">
             <div class="layui-card-header">
                 <i class="fa fa-bullhorn"></i>&nbsp;&nbsp;公告通知
@@ -60,7 +71,7 @@
 </div>
 
 <script id="templeteNews" type="text/html">
-    {{each News item index}}
+    {{each rows item index}}
     <div class="ahoit-msg-line">
         <a style="text-decoration: none;" luckyu-id="{{item.news_id}}" title="{{item.title}}">
             ●&nbsp;&nbsp; {{if item.sort  > 0}}  <i class="fa fa-star"></i>  {{/if}}【{{item.category}}】{{item.title}}
@@ -71,7 +82,7 @@
 </script>
 
 <script id="templeteTask" type="text/html">
-    {{each Task item index}}
+    {{each rows item index}}
     <div class="ahoit-msg-line">
         <a style="text-decoration: none;" luckyu-nodetype="{{item.nodetype}}" luckyu-taskId="{{item.task_id}}" luckyu-instanceId="{{item.instance_id}}" luckyu-processId="{{item.process_id}}" title="{{item.processname}}">
             ●&nbsp;&nbsp;【{{item.flowname}}】{{item.processname}}

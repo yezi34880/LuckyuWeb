@@ -1,7 +1,7 @@
 ﻿/**
  * 审批
  */
-var approveClick, adduserClick, readClick;
+var approveClick, adduserClick, readClick, helpmeClick;
 var bootstrap = function (layui) {
 
     var taskId = request("taskId");
@@ -37,18 +37,18 @@ var bootstrap = function (layui) {
                 data: data,
                 colModel: [
                     { label: "节点名称", name: "nodename", width: 80, },
+                    { label: "操作用户", name: "create_username", width: 80, },
+                    {
+                        label: "操作时间", name: "createtime", width: 100, align: "right",
+                        formatter: "date",
+                        formatoptions: { newformat: 'Y-m-d H:i:s' },
+                    },
                     {
                         label: "结果", name: "result", width: 60, align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             var result = luckyu.utility.toEnum(cellvalue, luckyu.workflowapi.resultshow);
                             return result;
                         }
-                    },
-                    { label: "操作用户", name: "create_username", width: 80, },
-                    {
-                        label: "操作时间", name: "createtime", width: 100, align: "right",
-                        formatter: "date",
-                        formatoptions: { newformat: 'Y-m-d H:i:s' },
                     },
                     { label: "备注", name: "opinion", width: 350, },
                 ],
@@ -194,7 +194,12 @@ var bootstrap = function (layui) {
                     name: "确定",
                     callback: function (index, layero) {
                         var res = layero.find("iframe")[0].contentWindow.saveClick(index);
-                        luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: res.result, opinion: res.opinion }, function (data) {
+                        luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', {
+                            taskId: taskId,
+                            result: res.result,
+                            opinion: res.opinion,
+                            returnType: res.returnType
+                        }, function (data) {
                             if (!!callBack) {
                                 callBack();
                             }
@@ -216,7 +221,7 @@ var bootstrap = function (layui) {
             callback: function (userlist) {
                 var userIds = userlist.map(r => r.userId);
                 var usernames = userlist.map(r => r.realname).join(",");
-                luckyu.layer.layerConfirm("确定邀请以下用户加签审批？<br />" + usernames, function () {
+                luckyu.layer.layerConfirm("确定邀请以下用户代办审批？<br />" + usernames, function () {
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds }, function (data) {
                         if (!!callBack) {
                             callBack();
@@ -227,6 +232,24 @@ var bootstrap = function (layui) {
             }
         });
     };
+    helpmeClick = function (layerIndex, callBack) {
+        luckyu.layer.userSelectForm({
+            multiple: true,
+            callback: function (userlist) {
+                var userIds = userlist.map(r => r.userId);
+                var usernames = userlist.map(r => r.realname).join(",");
+                luckyu.layer.layerConfirm("确定邀请以下用户协办审批？<br />" + usernames, function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/HelpMe', { taskId: taskId, userIds: userIds }, function (data) {
+                        if (!!callBack) {
+                            callBack();
+                        }
+                        parent.layui.layer.close(layerIndex);
+                    });
+                });
+            }
+        });
+
+    }
     readClick = function (layerIndex, callBack) {
         luckyu.layer.layerFormTop({
             id: "FormRead",

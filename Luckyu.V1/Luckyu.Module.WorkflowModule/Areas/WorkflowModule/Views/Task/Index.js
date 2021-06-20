@@ -3,10 +3,17 @@
  */
 var bootstrap = function (layui) {
     "use strict";
+
+    var tasktype = request("tasktype");
+
     var grid = $("#grid");
     var slectRowId = '';
     var page = {
         init: function () {
+            if (!!tasktype) {
+                $('input[name=tasktype][value="' + tasktype + '"]').click();
+                layui.form.render();
+            }
             page.initBtn();
             page.initGrid();
         },
@@ -105,7 +112,16 @@ var bootstrap = function (layui) {
                             }
                         });
                         btns.push({
-                            name: "加签",
+                            name: "协办",
+                            callback: function (index, layero) {
+                                layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
+                                    page.searchInCurrentPage();
+                                });
+                                return false;
+                            }
+                        });
+                        btns.push({
+                            name: "代办",
                             callback: function (index, layero) {
                                 layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
                                     page.searchInCurrentPage();
@@ -122,7 +138,15 @@ var bootstrap = function (layui) {
                     width: 1300,
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id + "&historyId=" + row.history_id,
-                    btn: btns
+                    btn: btns,
+                    success: function (layero, index) {
+                        var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
+                        $("div.layui-layer-btn", layero).prepend(html);
+                        $("#questionBtn", layero).click(function () {
+                            top.layui.layer.alert('【协办】选择其他用户协助审批，其他用户审批后流程节点不会移动，后续审批人仅仅能够看到协办用户审批意见<br />【代办】选择其他用户代办审批，其他用户审批后节点会移动，相当于把当前步审批让渡给代办人<br />注：协办、代办选择用户后自己扔可以自行处理，或者等待选择人处理');  
+                        });
+
+                    }
                 });
             });
 

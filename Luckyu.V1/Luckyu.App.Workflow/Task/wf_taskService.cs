@@ -41,7 +41,7 @@ namespace Luckyu.App.Workflow
                 )
             );
 
-            var filters = BaseRepository().ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
                 foreach (var filter in filters)
@@ -162,7 +162,7 @@ namespace Luckyu.App.Workflow
                 )
             );
 
-            var filters = BaseRepository().ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
                 foreach (var filter in filters)
@@ -228,7 +228,7 @@ namespace Luckyu.App.Workflow
                 jqPage.sord = "DESC";
             }
 
-            var filters = BaseRepository().ContructJQCondition(jqPage);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
                 foreach (var filter in filters)
@@ -329,6 +329,7 @@ namespace Luckyu.App.Workflow
                 if (instance.is_finished == 1)
                 {
                     trans.UpdateOnlyColumns(instance, r => new { r.is_finished });
+                    trans.db.Update<wf_taskEntity>().Where(r => r.instance_id == instance.instance_id).Set(r => r.is_done == 1).ExecuteAffrows();
                 }
 
                 trans.Commit();
@@ -346,6 +347,26 @@ namespace Luckyu.App.Workflow
             try
             {
                 trans.Insert(auths);
+                trans.Insert(history);
+                trans.Commit();
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                throw ex;
+            }
+        }
+
+        public void HelpMe(wf_taskEntity task, wf_taskhistoryEntity history)
+        {
+            var trans = BaseRepository().BeginTrans();
+            try
+            {
+                trans.Insert(task);
+                if (!task.authrizes.IsEmpty())
+                {
+                    trans.Insert(task.authrizes);
+                }
                 trans.Insert(history);
                 trans.Commit();
             }

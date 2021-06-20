@@ -26,11 +26,15 @@ var bootstrap = function (layui) {
                 luckyu.ajax.getv2(luckyu.rootUrl + "/OAModule/Leave/GetFormData", { keyValue: keyValue }
                     , function (data) {
                         $('[lay-filter="Leave"]').setFormValue(data.Leave);
-                        $("#statename").val(luckyu.clientdata.getDataitemName(data.Leave.state, "state"));
-                        //$("#username").val(luckyu.clientdata.getUserName(data.Leave.user_id));
-                        //$("#departmentname").val(luckyu.clientdata.getDepartmentName(data.Leave.department_id));
-                        //$("#companyname").val(luckyu.clientdata.getCompanyName(data.Leave.company_id));
-
+                        luckyu.clientdata.getAsync('dataItem', {
+                            key: data.Leave.state,
+                            code: "state",
+                            callback: function (_data) {
+                                if (!!_data) {
+                                    $("#statename").val(_data.name);
+                                }
+                            }
+                        });
                         $('#AnnexName').initFileInput({
                             initialPreview: data.Annex.initialPreview,
                             initialPreviewConfig: data.Annex.initialPreviewConfig
@@ -40,9 +44,9 @@ var bootstrap = function (layui) {
             else {
                 $("#statename").val("起草");
                 var loginInfo = luckyu.clientdata.get(['userinfo']);
-                $("#username").val(luckyu.clientdata.getUserName(loginInfo.user_id));
-                $("#departmentname").val(luckyu.clientdata.getDepartmentName(loginInfo.department_id));
-                $("#companyname").val(luckyu.clientdata.getCompanyName(loginInfo.company_id));
+                $("#username").val(loginInfo.realname);
+                $("#departmentname").val(loginInfo.departmentname);
+                $("#companyname").val(loginInfo.companyname);
             }
         },
     };

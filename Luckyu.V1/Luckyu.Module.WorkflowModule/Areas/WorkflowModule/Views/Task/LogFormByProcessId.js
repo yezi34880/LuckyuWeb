@@ -16,18 +16,18 @@ var bootstrap = function (layui) {
                 data: data,
                 colModel: [
                     { label: "节点名称", name: "nodename", width: 80, },
+                    { label: "操作用户", name: "create_username", width: 80, },
+                    {
+                        label: "操作时间", name: "createtime", width: 100, align: "right",
+                        formatter: "date",
+                        formatoptions: { newformat: 'Y-m-d H:i:s' },
+                    },
                     {
                         label: "结果", name: "result", width: 60, align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             var result = luckyu.utility.toEnum(cellvalue, luckyu.workflowapi.resultshow);
                             return result;
                         }
-                    },
-                    { label: "操作用户", name: "create_username", width: 80, },
-                    {
-                        label: "操作时间", name: "createtime", width: 100, align: "right",
-                        formatter: "date",
-                        formatoptions: { newformat: 'Y-m-d H:i:s' },
                     },
                     { label: "备注", name: "opinion", width: 350, },
                 ],

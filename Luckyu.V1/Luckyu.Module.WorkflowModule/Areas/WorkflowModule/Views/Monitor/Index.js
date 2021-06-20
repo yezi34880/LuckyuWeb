@@ -134,7 +134,7 @@ var bootstrap = function (layui) {
                 });
             });
 
-            // 加签人员
+            // 代办人员
             $("#adduser").click(function () {
                 var rowid = grid.getGridParam("selrow");
                 if (!rowid) {
@@ -147,7 +147,7 @@ var bootstrap = function (layui) {
                     callback: function (userlist) {
                         var userIds = userlist.map(r => r.userId);
                         var usernames = userlist.map(r => r.realname).join(",");
-                        luckyu.layer.layerConfirm("确定邀请以下用户加签审批？<br />" + usernames, function () {
+                        luckyu.layer.layerConfirm("确定邀请以下用户代办审批？<br />" + usernames, function () {
                             luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: row.task_id, userIds: userIds }, function (data) {
                                 layui.notice.success("操作成功");
                             });

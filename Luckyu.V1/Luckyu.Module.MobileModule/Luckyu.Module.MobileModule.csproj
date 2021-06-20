@@ -36,6 +36,9 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Areas\MobileModule\Views\MOrganization\" />
+	</ItemGroup>
 	<!--复制Areas下的资源文件-->
 
 

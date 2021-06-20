@@ -124,10 +124,10 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
 
         [AjaxOnly, HttpPost]
-        public async Task<IActionResult> Approve(string taskId, int result, string opinion)
+        public async Task<IActionResult> Approve(string taskId, int result, string opinion, int returnType)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = await taskBLL.Approve(taskId, result, opinion, loginInfo, _hubContext);
+            var res = await taskBLL.Approve(taskId, result, opinion, returnType, loginInfo, _hubContext);
             return Json(res);
         }
 
@@ -138,23 +138,12 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             var res = taskBLL.AddUser(taskId, userIds, loginInfo);
             return Json(res);
         }
-        #endregion
-
-        #region Home 展示
-        public IActionResult HomeShow()
+        [AjaxOnly, HttpPost]
+        public IActionResult HelpMe(string taskId, List<string> userIds)
         {
-            var jqPage = new JqgridPageRequest
-            {
-                page = 1,
-                rows = 5,
-                sidx = "createtime",
-                sord = "DESC"
-            };
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var page = taskBLL.Page(jqPage, 1, loginInfo);
-            var dic = new Dictionary<string, object>();
-            dic.Add("Task", page.rows);
-            return Success(dic);
+            var res = taskBLL.HelpMe(taskId, userIds, loginInfo);
+            return Json(res);
         }
         #endregion
 

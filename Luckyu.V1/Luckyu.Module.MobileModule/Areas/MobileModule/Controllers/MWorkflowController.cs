@@ -64,7 +64,7 @@ namespace Luckyu.Module.MobileModule.Controllers
             }
             else if (formType == "task")
             {
-                var task = taskBLL.GetTaskEnttity(r => r.task_id == taskId);
+                var task = taskBLL.GetTaskEntitty(r => r.task_id == taskId);
                 node = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
             }
             else if (formType == "history")

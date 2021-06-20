@@ -36,6 +36,11 @@ namespace Luckyu.Utility
         /// </summary>
         public int records { get; set; }
 
+        /// <summary>
+        /// footer 合计
+        /// </summary>
+        public object footer { get; set; }
+
         protected IEnumerable<T> OrderChilds<T>(IEnumerable<T> enumerable, IEnumerable<T> all, PropertyInfo id, PropertyInfo parentId) where T : class, new()
         {
             foreach (var tempTable in enumerable)
@@ -57,6 +62,11 @@ namespace Luckyu.Utility
     public class JqgridPageResponse<T> : JqgridPageResponseBase where T : class, new()
     {
         public List<T> rows { get; set; }
+
+        /// <summary>
+        /// footer 合计
+        /// </summary>
+        public new T footer { get; set; }
 
         public JObject ToTreeGrid(string IdFeild, string parentIdFeild)
         {

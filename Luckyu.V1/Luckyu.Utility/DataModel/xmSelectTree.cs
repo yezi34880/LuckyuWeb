@@ -18,6 +18,8 @@ namespace Luckyu.Utility
 
         public bool disabled { get; set; }
 
+        Dictionary<string, string> ext { get; set; }
+
         public List<xmSelectTree> children { get; set; }
     }
 }
