@@ -78,7 +78,6 @@ var bootstrap = function (layui) {
                 }
                 var row = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: row.title,
                     width: 1300,
                     height: 850,

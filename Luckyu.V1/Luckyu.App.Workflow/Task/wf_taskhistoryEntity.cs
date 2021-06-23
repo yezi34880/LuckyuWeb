@@ -117,6 +117,9 @@ namespace Luckyu.App.Workflow
 
         [Column(IsIgnore = true)]
         public string flowname { get; set; }
+
+        [Column(IsIgnore = true)]
+        public string annex { get; set; }
         #endregion
 
         #region 方法

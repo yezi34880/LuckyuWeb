@@ -201,50 +201,15 @@ namespace Luckyu.App.Workflow
         /// <summary>
         /// 流程监控 列表
         /// </summary>
-        public JqgridPageResponse<WFTaskModel> MonitorPage(JqgridPageRequest jqPage, int is_finished)
+        public JqgridPageResponse<wf_flow_instanceEntity> MonitorPage(JqgridPageRequest jqPage, int is_finished)
         {
-            //Expression<Func<wf_flow_instanceEntity, bool>> exp = r => r.is_finished == is_finished;
-            //var page = BaseRepository().GetPage(jqPage, exp);
-            //return page;
-
-            var db = BaseRepository().db;
-            var query = db.Select<wf_flow_instanceEntity, wf_taskEntity>()
-                .InnerJoin((fi, t) => t.instance_id == fi.instance_id)
-                .Where((fi, t) => fi.is_finished == is_finished);
-
-            if (!jqPage.sidx.IsEmpty())
+            Expression<Func<wf_flow_instanceEntity, bool>> exp = r => r.is_finished == is_finished;
+            if (jqPage.sidx.IsEmpty())
             {
-                switch (jqPage.sidx)
-                {
-                    case "createtime":
-                        jqPage.sidx = "a.createtime";
-                        break;
-                }
-                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
-            }
-            else
-            {
-                jqPage.sidx = "a.createtime";
+                jqPage.sidx = "createtime";
                 jqPage.sord = "DESC";
             }
-
-            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
-            if (!filters.IsEmpty())
-            {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
-            }
-
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
-            var page = new JqgridPageResponse<WFTaskModel>
-            {
-                count = jqPage.rows,
-                page = jqPage.page,
-                records = (int)total,
-                rows = list,
-            };
+            var page = BaseRepository().GetPage(jqPage, exp);
             return page;
         }
 

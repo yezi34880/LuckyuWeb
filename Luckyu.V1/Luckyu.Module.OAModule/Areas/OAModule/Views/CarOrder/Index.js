@@ -82,7 +82,6 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "新增",
                     width: 800,
                     height: 650,
@@ -113,7 +112,6 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "修改/查看-" + rowid,
                     width: 800,
                     height: 650,
@@ -176,7 +174,6 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "审批查看",
                     width: 1300,
                     height: 850,

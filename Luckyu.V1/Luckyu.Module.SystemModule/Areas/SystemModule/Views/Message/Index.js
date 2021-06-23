@@ -58,7 +58,6 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "新增",
                     width: 600,
                     height: 250,

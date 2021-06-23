@@ -17,11 +17,9 @@ var bootstrap = function (layui) {
                 altRows: true,//隔行换色
                 postData: { is_finished: $("input[name=is_finished]:checked").val() },
                 colModel: [
-                    { name: 'task_id', hidden: true, key: true },
+                    { name: 'instance_id', hidden: true, key: true },
                     { name: 'flow_id', hidden: true },
-                    { name: 'instance_id', hidden: true },
                     { name: 'process_id', hidden: true },
-                    { name: 'nodetype', hidden: true },
                     { name: 'flowname', label: "流程名称", width: 120 },
                     { name: 'processname', label: "实例信息", width: 150 },
                     {
@@ -78,7 +76,6 @@ var bootstrap = function (layui) {
                 }
                 var row = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "查看【" + row.flowname + "】" + row.processname,
                     width: 1300,
                     height: 850,
@@ -110,7 +107,6 @@ var bootstrap = function (layui) {
                 }
                 var row = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "调整流程-双击选中要调整的节点",
                     width: 1300,
                     height: 850,
@@ -134,28 +130,6 @@ var bootstrap = function (layui) {
                 });
             });
 
-            // 代办人员
-            $("#adduser").click(function () {
-                var rowid = grid.getGridParam("selrow");
-                if (!rowid) {
-                    layui.notice.error("没有选中任何行数据");
-                    return;
-                }
-                var row = grid.getRowData(rowid);
-                luckyu.layer.userSelectForm({
-                    multiple: true,
-                    callback: function (userlist) {
-                        var userIds = userlist.map(r => r.userId);
-                        var usernames = userlist.map(r => r.realname).join(",");
-                        luckyu.layer.layerConfirm("确定邀请以下用户代办审批？<br />" + usernames, function () {
-                            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: row.task_id, userIds: userIds }, function (data) {
-                                layui.notice.success("操作成功");
-                            });
-                        });
-                    }
-                });
-
-            });
         },
         search: function () {
             var is_finished = $("input[name=is_finished]:checked").val();

@@ -30,51 +30,31 @@ var bootstrap = function (layui) {
                         }
                     },
                     { label: "备注", name: "opinion", width: 350, },
+                    {
+                        label: "附件", name: "annex", width: 100,
+                        formatter: function (cellvalue, options, rowobject) {
+                            var result = '';
+                            if (!!cellvalue) {
+                                var list = JSON.parse(cellvalue);
+                                for (var i = 0; i < list.length; i++) {
+                                    result += ' <a style="color:blue;cursor:pointer;text-decoration:underline;" href="/SystemModule/Annex/ShowFile?keyValue=' + list[i].Key + '" target="_blank"> ' + list[i].Value + '</a>';
+                                }
+                            }
+                            return result;
+                        }
+                    },
                 ],
                 rownumbers: true,
                 viewrecords: true,
                 altRows: true,//隔行换色
-                gridComplete: function () {
-                    var rows = this.p.rawData;
-                    var html = '';
-                    for (var i = 0; i < rows.length; i++) {
-                        var row = rows[i];
-                        var style = luckyu.utility.toEnum(row.result,
-                            [
-                                { value: 1, name: 'color:green;' },
-                                { value: 2, name: 'color:red;' },
-                                { value: -1, name: 'color:rgb(91, 192, 222);' },
-                            ]
-                        );
-                        var result = luckyu.utility.toEnum(row.result,
-                            [
-                                { value: 1, name: '通过' },
-                                { value: 2, name: '驳回' },
-                                { value: -1, name: '正在审批' },
-                            ]
-                        );
-                        html += ' \
-<li class="layui-timeline-item">\
-    <i class="layui-icon layui-timeline-axis" style="'+ style + '">&#xe63f;</i>\
-    <div class="layui-timeline-content layui-text">\
-        <h3 class="layui-timeline-title">'+ (row.nodename + ' ' + new Date(row.createtime).format("yyyy-MM-dd HH:mm:ss")) + '</h3>\
-        <p>\
-         '+ (result + ' ' + row.create_username) + '<br />\
-        '+ row.opinion + '\
-        </p>\
-    </div>\
-</li>';
-                    }
-                    $('#timeline_' + instanceId).html(html);
-                }
             });
 
             gridLog.setGridHeight(window.innerHeight - 120);
-            gridLog.setGridWidth((window.innerWidth - 70) / 12 * 9 - 60);
+            gridLog.setGridWidth(window.innerWidth - 60);
             $(".divline").height(window.innerHeight - 80);
             $(window).resize(function () {
                 gridLog.setGridHeight(window.innerHeight - 120);
-                gridLog.setGridWidth((window.innerWidth - 70) / 12 * 9 - 60);
+                gridLog.setGridWidth(window.innerWidth  - 60);
                 $(".divline").height(window.innerHeight - 80);
             });
         },

@@ -114,7 +114,6 @@ var bootstrap = function (layui) {
                 var dataitem_id = node.id;
                 var itemcode = node.ext.code;
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "新增",
                     width: 800,
                     height: 550,
@@ -137,7 +136,6 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "修改",
                     width: 800,
                     height: 550,

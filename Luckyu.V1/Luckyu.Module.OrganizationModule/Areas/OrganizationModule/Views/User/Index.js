@@ -113,7 +113,6 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "新增",
                     width: 800,
                     height: 550,
@@ -136,7 +135,6 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "修改",
                     width: 800,
                     height: 550,
@@ -183,7 +181,6 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "修改",
                     width: 800,
                     height: 550,
@@ -205,7 +202,6 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "功能授权",
                     width: 400,
                     height: 550,
@@ -234,7 +230,6 @@ var bootstrap = function (layui) {
                     }
                     top.alreadyselect = alreadyselect;
                     luckyu.layer.layerFormTop({
-                        id: "Form",
                         title: "设置角色",
                         width: 800,
                         height: 550,
@@ -271,7 +266,6 @@ var bootstrap = function (layui) {
                     }
                     top.alreadyselect = alreadyselect;
                     luckyu.layer.layerFormTop({
-                        id: "Form",
                         title: "设置岗位",
                         width: 800,
                         height: 550,
@@ -308,7 +302,6 @@ var bootstrap = function (layui) {
                     }
                     top.alreadyselect = alreadyselect;
                     luckyu.layer.layerFormTop({
-                        id: "Form",
                         title: "设置小组",
                         width: 800,
                         height: 550,
@@ -341,7 +334,6 @@ var bootstrap = function (layui) {
                 }
 
                 luckyu.layer.layerFormTop({
-                    id: "Form",
                     title: "设置分管",
                     width: 800,
                     height: 550,

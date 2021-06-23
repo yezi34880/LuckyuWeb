@@ -84,7 +84,6 @@
                         }
 
                         luckyu.layer.layerFormTop({
-                            id: "Form",
                             title: "审核",
                             width: 1300,
                             height: 850,
@@ -92,7 +91,7 @@
                             btn: btns,
                             success: function (layero, index) {
                                 var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
-                                $("div.layui-layer-btn", layero).prepend(html);
+                                $("div.layui-layer-btn", layero).append(html);
                                 $("#questionBtn", layero).click(function () {
                                     top.layui.layer.alert('【协办】选择其他用户协助审批，其他用户审批后流程节点不会移动，后续审批人仅仅能够看到协办用户审批意见<br />【代办】选择其他用户代办审批，其他用户审批后节点会移动，相当于把当前步审批让渡给代办人<br />注：协办、代办选择用户后自己扔可以自行处理，或者等待选择人处理');
                                 });
@@ -139,7 +138,7 @@
                                 name: "协办",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
-                                        page.searchInCurrentPage();
+                                        page.refrash();
                                     });
                                     return false;
                                 }
@@ -156,7 +155,6 @@
                         }
 
                         luckyu.layer.layerFormTop({
-                            id: "Form",
                             title: "审核",
                             width: 1300,
                             height: 850,
@@ -164,7 +162,7 @@
                             btn: btns,
                             success: function (layero, index) {
                                 var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
-                                $("div.layui-layer-btn", layero).prepend(html);
+                                $("div.layui-layer-btn", layero).append(html);
                                 $("#questionBtn", layero).click(function () {
                                     top.layui.layer.alert('【协办】选择其他用户协助审批，其他用户审批后流程节点不会移动，后续审批人仅仅能够看到协办用户审批意见<br />【代办】选择其他用户代办审批，其他用户审批后节点会移动，相当于把当前步审批让渡给代办人<br />注：协办、代办选择用户后自己扔可以自行处理，或者等待选择人处理');
                                 });
@@ -184,7 +182,6 @@
                         var id = self.attr("luckyu-id");
                         var title = self.attr("title");
                         luckyu.layer.layerFormTop({
-                            id: "Form",
                             title: title,
                             width: 1300,
                             height: 850,

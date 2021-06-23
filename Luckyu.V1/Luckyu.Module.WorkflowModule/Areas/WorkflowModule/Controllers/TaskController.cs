@@ -66,17 +66,6 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
         #endregion
 
-        #region 对话框
-        public IActionResult ApproveForm()
-        {
-            return View();
-        }
-        public IActionResult ReadForm()
-        {
-            return View();
-        }
-        #endregion
-
         #region 调整流程位置
         public IActionResult ModifyForm()
         {

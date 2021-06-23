@@ -28,6 +28,7 @@ namespace Luckyu.App.Workflow
         private UserRelationBLL userrelationBLL = new UserRelationBLL();
         private DepartmentManageBLL manageBLL = new DepartmentManageBLL();
         private MessageBLL messageBLL = new MessageBLL();
+        private AnnexFileBLL annexBLL = new AnnexFileBLL();
         #endregion
 
         #region Get
@@ -126,7 +127,7 @@ namespace Luckyu.App.Workflow
             return list;
         }
 
-        public JqgridPageResponse<WFTaskModel> MonitorPage(JqgridPageRequest jqPage, int is_finished)
+        public JqgridPageResponse<wf_flow_instanceEntity> MonitorPage(JqgridPageRequest jqPage, int is_finished)
         {
             var page = taskService.MonitorPage(jqPage, is_finished);
             return page;
@@ -190,6 +191,15 @@ namespace Luckyu.App.Workflow
 
             }
             var historys = GetHistoryTaskList(instance.process_id, instance.instance_id);
+            foreach (var his in historys)
+            {
+                var annex = annexBLL.GetList(r => r.external_id == his.history_id);
+                his.annex = Newtonsoft.Json.JsonConvert.SerializeObject(annex.Select(r => new KeyValue
+                {
+                    Key = r.annex_id,
+                    Value = r.filename
+                }).ToList());
+            }
             var dic = new Dictionary<string, object>
             {
                 {"Instance",instance },
@@ -638,7 +648,7 @@ namespace Luckyu.App.Workflow
             }
 
             taskService.Approve(instance, task, listTask, listHistory, listSql);
-            var data = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>>(instance, listTask);
+            var data = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
             return ResponseResult.Success((object)data);
         }
 
@@ -647,7 +657,7 @@ namespace Luckyu.App.Workflow
             var res = Approve(taskId, result, opinion, returnType, loginInfo);
             if (res.code == (int)ResponseCode.Success)
             {
-                var data = res.data as Tuple<wf_flow_instanceEntity, List<wf_taskEntity>>;
+                var data = res.data as Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>;
                 foreach (var task in data.Item2)
                 {
                     var instance = data.Item1;
@@ -792,6 +802,10 @@ namespace Luckyu.App.Workflow
                 return ResponseResult.Fail("该流程已结束");
             }
             var tasks = taskService.GetList(r => r.instance_id == instance.instance_id && r.is_done == 0);
+            if (tasks.IsEmpty())
+            {
+                return ResponseResult.Fail("该流程没有活动中的任务");
+            }
             var schemeModel = instance.schemejson.ToObject<WFSchemeModel>();
             var firsttask = tasks.Select(r => r).FirstOrDefault();
             var firstnode = schemeModel.nodes.Where(r => r.id == firsttask.node_id).Select(r => r).FirstOrDefault();

@@ -88,13 +88,51 @@
         </div>
         <!--审批日志-->
         <div class="layui-tab-item">
-            <div class="layui-col-xs3" id="divLine" style="overflow:auto;">
-                <ul class="layui-timeline" id="timeline">
-                </ul>
-            </div>
-            <div class="layui-col-xs9">
+            <div class="layui-col-xs12">
                 <table id="gridLog"></table>
             </div>
+        </div>
+    </div>
+</div>
+
+<div id="divApprove" lay-filter="Approve" style="display:none;">
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">审批结果</label>
+        <div class="layui-input-block">
+            <input name="result" lay-filter="result" type="radio" class="layui-input" title="通过" value="1" checked />
+            <input name="result" lay-filter="result" type="radio" class="layui-input" title="驳回" value="2" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12" id="divReturn" style="display:none;">
+        <label class="layui-form-label">驳回规则</label>
+        <div class="layui-input-block">
+            <input name="returnType" type="radio" class="layui-input" title="至起始" value="0" checked />
+            <input name="returnType" type="radio" class="layui-input" title="至上一步" value="1" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">审批意见</label>
+        <div class="layui-input-block">
+            <textarea id="opinion" class="layui-textarea" rows="4"></textarea>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <div style="padding:10px;">
+            <input id="AnnexName" name="AnnexName" multiple type="file" />
+        </div>
+    </div>
+</div>
+
+<div id="divRead" lay-filter="Read" style="display:none;">
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">意见</label>
+        <div class="layui-input-block">
+            <textarea id="opinion" class="layui-textarea" rows="4"></textarea>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12">
+        <div style="padding:10px;">
+            <input id="AnnexName1" name="AnnexName1" multiple type="file" />
         </div>
     </div>
 </div>

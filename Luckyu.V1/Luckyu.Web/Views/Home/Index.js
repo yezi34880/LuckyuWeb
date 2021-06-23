@@ -67,7 +67,6 @@
             // 修改密码
             $("#modifypwd").click(function () {
                 luckyu.layer.layerForm({
-                    id: "Form",
                     title: "修改密码",
                     width: 450,
                     height: 300,

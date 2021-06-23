@@ -461,7 +461,7 @@
                         exCode: "",
                         callback: null,
                     };
-                    $.extend(defaultOption, option);
+                    $.extend(defaultOp, option);
                     var $self = $(this);
                     var files = $self.fileinput('getFileList');
                     if (!!files && files.length > 0) {
@@ -475,16 +475,16 @@
                         });
                         $self.on('filebatchuploadsuccess', function (data, previewId, index) {
                             luckyu.layer.closeLoading(loading);
-                            if (!!defaultOption.callback) {
-                                defaultOption.callback();
+                            if (!!defaultOp.callback) {
+                                defaultOp.callback();
                             }
                         });
                         var loading = luckyu.layer.loading();
                         $self.fileinput('upload');
                     }
                     else {
-                        if (!!defaultOption.callback) {
-                            defaultOption.callback();
+                        if (!!defaultOp.callback) {
+                            defaultOp.callback();
                         }
                     }
                 }

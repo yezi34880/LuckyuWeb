@@ -96,7 +96,14 @@
                 cancel: option.cancel || null,  // 点击右上角关闭按钮时回调 
                 end: option.end || null,  // 弹出层销毁时回调
                 btn: null,
-                btnDisabledAtFirst: option.btnDisabledAtFirst || false,   // 打开页面时 按钮是否不可点击  注意 一旦为true 需要手动结束loading 否则按钮无法点击 $("div.layui-layer-btn.layui-layer-btn-", parent.document).loading("hide");
+                min: function (layero) {
+                    var index = $(layero).attr("times");
+                    $("#layui-layer-shade" + index, top.window.document).hide();
+                },
+                restore: function (layero) {
+                    var index = $(layero).attr("times");
+                    $("#layui-layer-shade" + index, top.window.document).show();
+                },
             };
             if (defaultOp.closeComfirm === true) {
                 defaultOp.cancel = function (index, layero) {
@@ -122,11 +129,7 @@
                     }
                 }
             }
-
             top.layui.layer.open(defaultOp);
-            if (defaultOp.btnDisabledAtFirst === true) {
-                $("div.layui-layer-btn.layui-layer-btn-", top.document).loading("show", { opacity: 1 });
-            }
         },
         openTab: function (href, title, fromTabId) {
             //执行跳转
@@ -156,7 +159,6 @@
                 initValue: defaultOption.initValue
             };
             luckyu.layer.layerFormTop({
-                id: "UserSelectForm",
                 title: "成员管理",
                 width: 850,
                 height: 550,
@@ -184,7 +186,6 @@
             $.extend(defaultOption, option);
             top.alreadyselect = defaultOption.initValue;
             luckyu.layer.layerFormTop({
-                id: "GroupSelectForm",
                 title: "小组选择",
                 width: 650,
                 height: 460,
@@ -211,7 +212,6 @@
             $.extend(defaultOption, option);
             top.alreadyselect = defaultOption.initValue;
             luckyu.layer.layerFormTop({
-                id: "RoleSelectForm",
                 title: "角色选择",
                 width: 650,
                 height: 460,
@@ -238,7 +238,6 @@
             $.extend(defaultOption, option);
             top.alreadyselect = defaultOption.initValue;
             luckyu.layer.layerFormTop({
-                id: "PostSelectForm",
                 title: "岗位选择",
                 width: 650,
                 height: 460,
@@ -266,7 +265,6 @@
             $.extend(defaultOption, option);
             top.alreadyselect = defaultOption.initValue;
             luckyu.layer.layerFormTop({
-                id: "DepartmentSelectForm",
                 title: "部门选择",
                 width: 450,
                 height: 660,
@@ -293,7 +291,6 @@
             $.extend(defaultOption, option);
             top.alreadyselect = defaultOption.initValue;
             luckyu.layer.layerFormTop({
-                id: "CompanySelectForm",
                 title: "公司选择",
                 width: 450,
                 height: 660,

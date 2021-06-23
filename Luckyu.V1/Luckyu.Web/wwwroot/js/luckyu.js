@@ -376,12 +376,14 @@
                         successCallback(res.data, res.info);
                     }
                     else {
-                        layui.notice.error(res.info);
+                        layui.layer.alert(res.info, { icon: 2 });
+                        //layui.notice.error(res.info);
                     }
                 },
                 error: function (XMLHttpRequest, errorMsg, exception) {
                     layui.layer.closeAll();
-                    layui.notice.error(exception);
+                    layui.layer.alert(res.info, { icon: 2 });
+                    //layui.notice.error(res.info);
                     console.log("========= ajax error start ==========");
                     console.log(url);
                     console.log(postData);
@@ -426,11 +428,14 @@
                         successCallback(res.data, res.info);
                     }
                     else {
-                        layui.notice.error(res.info);
+                        layui.layer.alert(res.info, { icon: 2 });
+                        //layui.notice.error(res.info);
                     }
                 },
                 error: function (XMLHttpRequest, errorMsg, exception) {
                     luckyu.layer.closeLoading(loadid);
+                    layui.layer.alert(errorMsg, { icon: 2 });
+                    //layui.notice.error(res.info);
                     console.log("========= ajax error start ==========");
                     console.log(url);
                     console.log(postData);
@@ -479,8 +484,14 @@
                 async: false,
                 dataType: "json",
                 success: function (res) {
-                    layui.layer.close(loadid);
-                    successCallbacck(res.data, res.info);
+                    luckyu.layer.closeLoading(loadid);
+                    if (res.code == 200) {
+                        successCallback(res.data, res.info);
+                    }
+                    else {
+                        layui.layer.alert(res.info, { icon: 2 });
+                        //layui.notice.error(res.info);
+                    }
                 },
                 error: function (XMLHttpRequest, errorMsg, exception) {
                     layui.layer.close(loadid);
@@ -526,8 +537,14 @@
                 async: false,
                 dataType: "json",
                 success: function (res) {
-                    layui.layer.close(loadid);
-                    successCallback(res.data, res.info);
+                    luckyu.layer.closeLoading(loadid);
+                    if (res.code == 200) {
+                        successCallback(res.data, res.info);
+                    }
+                    else {
+                        layui.layer.alert(res.info, { icon: 2 });
+                        //layui.notice.error(res.info);
+                    }
                 },
                 error: function (XMLHttpRequest, errorMsg, exception) {
                     layui.layer.close(loadid);
