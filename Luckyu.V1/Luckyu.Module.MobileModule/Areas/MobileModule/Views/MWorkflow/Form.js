@@ -120,6 +120,28 @@
                 });
             });
 
+            $("#btnRead").click(function () {
+                if (!$("#readform").verifyForm()) {
+                    return;
+                }
+                var opinion = $("#readopinion").val();
+                var formData = {
+                    taskId: taskId,
+                    result: 4,
+                    opinion: opinion,
+                }
+                bui.confirm("确认【已阅】吗？", function (e) {
+                    //this 是指点击的按钮
+                    var text = $(e.target).text();
+                    if (text == "确定") {
+                        luckyumobile.ajax.postv2("/WorkflowModule/Task/Approve", formData, function (data) {
+                            bui.back();
+                        });
+                    }
+                    this.close()
+                });
+            });
+
         }
     };
     page.init();

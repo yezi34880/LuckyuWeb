@@ -119,7 +119,7 @@ namespace Luckyu.App.Workflow
                 var auths = taskauthService.GetList(r => r.task_id == item.task_id);
                 var users = GetUserByAuth(auths);
                 item1.opinion = string.Join(",", users.Select(r => $"{r.realname} { r.loginname}"));
-                item1.result = -1;
+                item1.result = 100;
                 item1.createtime = null;
                 item1.create_username = "";
                 list.Add(item1);
@@ -397,7 +397,7 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail(res.info, res.data);
             }
-            var lines = nodeModel.lines.Where(r => r.from == nodeStart.id).ToList();
+            var lines = nodeModel.lines.Where(r => r.from == nodeStart.id && (r.wftype == 1 || r.wftype == 0)).ToList();
             if (lines.IsEmpty())
             {
                 return ResponseResult.Fail("该流程的流程图开始节点没有连线，请联系管理员");
@@ -773,7 +773,7 @@ namespace Luckyu.App.Workflow
             history = task.Adapt<wf_taskhistoryEntity>();
             var struser = string.Join(",", users.Select(r => $"{r.realname}-{r.loginname}"));
             history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请  {struser} 【协办】";
-            history.result = 5;
+            history.result = 6;
             history.Create(loginInfo);
 
             taskService.HelpMe(taskHelp, history);
@@ -862,7 +862,7 @@ namespace Luckyu.App.Workflow
                     historyCurrent = task.Adapt<wf_taskhistoryEntity>();
                     historyCurrent.result = 5;
                     historyCurrent.nodetype = nodeCurrent.type;
-                    historyCurrent.opinion = $"【流程监控】{loginInfo.realname} 强制生效流程";
+                    historyCurrent.opinion = $"{loginInfo.realname} 强制生效流程";
                     historyCurrent.authorize_user_id = loginInfo.user_id;
                     historyCurrent.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
                     historyCurrent.Create(loginInfo);
@@ -950,7 +950,7 @@ namespace Luckyu.App.Workflow
             var history = new wf_taskhistoryEntity();
             history = oldTasks[0].Adapt<wf_taskhistoryEntity>();
             history.result = 5;
-            history.opinion = isLast ? $"{loginInfo.realname} 通过流程监控调整该流程至最新版本 调整后为【{nodeNext.name}】" : $"{loginInfo.realname} 通过流程监控调整 当前待办任务为【{ oldTasks[0].nodename}】 调整后为【{nodeNext.name}】";
+            history.opinion = isLast ? $"{loginInfo.realname} 调整该流程至最新版本 调整后为【{nodeNext.name}】" : $"{loginInfo.realname} 调整 当前待办任务为【{ oldTasks[0].nodename}】 调整后为【{nodeNext.name}】";
             history.Create(loginInfo);
 
             taskService.Modify((isLast ? instance : null), oldTasks, newTask, history);
@@ -1132,11 +1132,13 @@ namespace Luckyu.App.Workflow
 
                         var turple = GetNextAuth(nodeNext, instance, taskEntity.task_id, loginInfo);
                         taskEntity.authrizes = turple.Item1; // 下一步审批人
-                        listTask.Add(taskEntity);
 
                         bool isContainSelf = turple.Item2;  // 下一步审批人是否包含自己
                         if (isContainSelf && !nodeNext.forms.Exists(r => r.canedit == 1))  // 如果下一步包含自己 则 递归  必须表单不可编辑
                         {
+                            // 如果包含自己，则刚刚的待审批置为已完成
+                            taskEntity.is_done = 1;
+
                             listSql.Add(nodeNext.sqlsuccess);
                             ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "");
 
@@ -1150,10 +1152,10 @@ namespace Luckyu.App.Workflow
                             historySelf.authorize_user_id = loginInfo.user_id;
                             historySelf.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
                             historySelf.Create(loginInfo);
-                            historySelf.opinion = "审批人包含本人，自动通过";
+                            historySelf.opinion = "【审批】审批人包含本人，自动通过";
                             listHistory.Add(historySelf);
 
-                            var nextLines = alllines.Where(r => r.from == nodeNext.id).ToList();
+                            var nextLines = alllines.Where(r => r.from == nodeNext.id && (r.wftype == 1 || r.wftype == 0)).ToList();
 
                             var result = FindNextNode(nextLines, alllines, allnodes, instance, nodeNext, loginInfo);
 
@@ -1161,6 +1163,9 @@ namespace Luckyu.App.Workflow
                             listHistory.AddRange(result.Item2);
                             listSql.AddRange(result.Item3);
                         }
+
+                        listTask.Add(taskEntity);
+
                     }
                 }
             }
@@ -1423,8 +1428,9 @@ namespace Luckyu.App.Workflow
             {2,"驳回" },
             {3,"申请代办" },
             {4,"已阅" },
-            {5,"申请协办" },
-            {-1,"正在审批" },
+            {5,"调整" },
+            {6,"申请协办" },
+            {100,"当前待办" },
         };
 
         public static string ApproveResultName(int result)

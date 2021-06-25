@@ -234,8 +234,7 @@ namespace Luckyu.App.System
             {
                 return ResponseResult.Fail(MessageString.Fail);
             }
-            //var primaryName = entityInfo.Primarys[0].Attribute.Name;
-            var keyValue = entityInfo.Primarys[0].GetValue(entity).ToString();
+            //var keyValue =( entityInfo.Primarys[0].GetValue(entity)??"").ToString();
             var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbName);
             if (tableInfo == null)
             {

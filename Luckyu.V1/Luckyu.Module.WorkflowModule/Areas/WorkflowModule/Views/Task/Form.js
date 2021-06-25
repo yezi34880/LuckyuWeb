@@ -31,11 +31,11 @@ var bootstrap = function (layui) {
             layui.form.on('radio(result)', function (data) {
                 if (data.value == 2) {
                     $("#divReturn").show();
-                    $("#opinion").attr("luckyu-verify", "required");
+                    $("#opinion").attr("lay-verify", "required");
                 }
                 else {
                     $("#divReturn").hide();
-                    $("#opinion").removeAttr("luckyu-verify", "required");
+                    $("#opinion").removeAttr("lay-verify");
                 }
             });
 
@@ -202,7 +202,6 @@ var bootstrap = function (layui) {
                         opinion: opinion,
                         returnType: returnType,
                     }, function (data) {
-                        debugger;
                         if (!!callBack) {
                             callBack();
                         }
@@ -222,38 +221,6 @@ var bootstrap = function (layui) {
                     $("div.layui-layer-btn", parent.document).show();
                 }
             });
-            //luckyu.layer.layerFormTop({
-            //    id: "FormApp",
-            //    title: "审核",
-            //    width: 800,
-            //    height: 600,
-            //    url: luckyu.rootUrl + "/WorkflowModule/Task/ApproveForm",
-            //    btn: [{
-            //        name: "确定",
-            //        callback: function (index, layero) {
-            //            var res = layero.find("iframe")[0].contentWindow.saveClick(index);
-            //            debugger;
-            //            return;
-            //            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', {
-            //                taskId: taskId,
-            //                result: res.result,
-            //                opinion: res.opinion,
-            //                returnType: res.returnType,
-            //                annex: res.annex
-            //            }, function (data) {
-            //                if (!!callBack) {
-            //                    callBack();
-            //                }
-            //                parent.layui.layer.close(layerIndex);
-            //            });
-            //        }
-            //    }, {
-            //        name: "取消",
-            //        callback: function (index, layero) {
-
-            //        }
-            //    }]
-            //});
         }
     };
     adduserClick = function (layerIndex, callBack) {
@@ -301,7 +268,7 @@ var bootstrap = function (layui) {
                 if (!$("#divRead").verifyForm()) {
                     return false;
                 }
-                var opinion = $("#opinion").val();
+                var opinion = $("#opinion1").val();
                 luckyu.ajax.postv2('/WorkflowModule/Task/Approve', {
                     taskId: taskId,
                     result: 4,
@@ -328,29 +295,5 @@ var bootstrap = function (layui) {
             }
         });
 
-        //luckyu.layer.layerFormTop({
-        //    id: "FormRead",
-        //    title: "已阅",
-        //    width: 600,
-        //    height: 400,
-        //    url: luckyu.rootUrl + "/WorkflowModule/Task/ReadForm",
-        //    btn: [{
-        //        name: "确定",
-        //        callback: function (index, layero) {
-        //            var res = layero.find("iframe")[0].contentWindow.saveClick(index);
-        //            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/Approve', { taskId: taskId, result: 4, opinion: res.opinion }, function (data) {
-        //                if (!!callBack) {
-        //                    callBack();
-        //                }
-        //                parent.layui.layer.close(layerIndex);
-        //            });
-        //        }
-        //    }, {
-        //        name: "取消",
-        //        callback: function (index, layero) {
-
-        //        }
-        //    }]
-        //});
     };
 };

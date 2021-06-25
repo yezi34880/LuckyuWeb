@@ -177,7 +177,7 @@ namespace Luckyu.App.System
                 {
                     type = type,
                     size = r.filesize.ToInt(),
-                    downloadUrl = "/SystemModule/Annex/ShowFile?fileId=" + r.annex_id,
+                    downloadUrl = "/SystemModule/Annex/ShowFile?keyValue=" + r.annex_id,
                     caption = r.filename,
                     key = r.annex_id
                 };

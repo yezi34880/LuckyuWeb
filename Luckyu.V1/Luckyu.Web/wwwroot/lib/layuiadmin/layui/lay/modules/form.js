@@ -674,7 +674,7 @@ layui.define('layer', function (exports) {
                     errorText = errorText || verify[thisVer][1];
 
                     // 隐藏元素不判断
-                    if (!othis.is(":visible")) {   
+                    if (othis.is("input") && othis.attr("type") === "hidden") {
                         othis = false;
                     }
 

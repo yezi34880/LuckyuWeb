@@ -50,12 +50,10 @@ var bootstrap = function (layui) {
             });
 
             gridLog.setGridHeight(window.innerHeight - 120);
-            gridLog.setGridWidth(window.innerWidth - 60);
-            $(".divline").height(window.innerHeight - 80);
+            gridLog.setGridWidth(window.innerWidth - 150);
             $(window).resize(function () {
                 gridLog.setGridHeight(window.innerHeight - 120);
-                gridLog.setGridWidth(window.innerWidth  - 60);
-                $(".divline").height(window.innerHeight - 80);
+                gridLog.setGridWidth(window.innerWidth  - 150);
             });
         },
         initData: function () {
@@ -93,9 +91,9 @@ var bootstrap = function (layui) {
                         }
                     });
 
-                    $('#flow_' + instanceId).parent().height(window.innerHeight - 120).width(window.innerWidth - 170);
+                    $('#flow_' + instanceId).parent().height(window.innerHeight - 105).width(window.innerWidth - 155);
                     $(window).resize(function () {
-                        $('#flow_' + instanceId).parent().height(window.innerHeight - 120).width(window.innerWidth - 170);
+                        $('#flow_' + instanceId).parent().height(window.innerHeight - 105).width(window.innerWidth - 155);
                     });
                     $('#flow_' + instanceId).dfworkflowSet('set', { data: shceme });
                 });

@@ -56,13 +56,13 @@ namespace Luckyu.App.Organization
         public DataAuthorizeModel GetDataAuthByUser(string moduleName, UserModel loginInfo)
         {
             var listdata = GetList(r => r.modulename.Contains(moduleName) && (r.object_id == loginInfo.user_id || loginInfo.role_ids.Contains(r.object_id) || loginInfo.post_ids.Contains(r.object_id)));
+            var data = new DataAuthorizeModel();
+            data.edittype = 0;
             if (listdata.IsEmpty())
             {
-                return null;
+                return data;
             }
-            var data = new DataAuthorizeModel();
             data.staterange = listdata.Exists(r => r.staterange == 1) ? 1 : 0;
-            data.edittype = 0;
             if (listdata.Exists(r => r.staterange == 2))
             {
                 data.edittype = 2;

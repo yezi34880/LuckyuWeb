@@ -66,6 +66,11 @@ namespace Luckyu.Module.MobileModule.Controllers
             {
                 var task = taskBLL.GetTaskEntitty(r => r.task_id == taskId);
                 node = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+
+                if (task.nodetype == "auditornode")
+                {
+                    ViewBag.FormType = "read";
+                }
             }
             else if (formType == "history")
             {

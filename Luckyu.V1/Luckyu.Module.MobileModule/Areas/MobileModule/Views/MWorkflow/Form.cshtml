@@ -6,7 +6,7 @@
     var loginInfo = ViewBag.UserInfo as UserModel;
     var instance = ViewBag.Instance as wf_flow_instanceEntity;
     var forms = ViewBag.Forms as List<WFFormModel>;
-
+    var formType = ViewBag.FormType.ToString();
 }
 
 <div class="bui-page bui-box-vertical">
@@ -52,7 +52,7 @@
                         }
                     </li>
                     <li style="display: none;">
-                        @if (ViewBag.FormType == "task")
+                        @if (formType == "task")
                         {
                             <div class="bui-fluid" id="appform">
                                 <div class="span12">
@@ -120,14 +120,31 @@
                                 </div>
                             </div>
                         }
+                        else if (formType == "read")
+                        {
+                            <div class="bui-fluid" id="readform">
+                                <div class="span12">
+                                    <div class="bui-input">
+                                        <textarea placeholder="审批意见" id="readopinion" rows="4"></textarea>
+                                    </div>
+                                </div>
+                                <div class="span12">
+                                    <div class="bui-box-space">
+                                        <div class="span1" id="btnRead">
+                                            <div class="bui-btn round primary">已阅</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
 
                         <div class="section-title">流程日志</div>
                         <ul class="bui-list">
                             @foreach (var item in ViewBag.Historys as List<wf_taskhistoryEntity>)
                             {
                                 <li class="bui-btn">
-                                    <h3 class="item-title">@(WFTaskBLL.ApproveResultName(item.result)) @item.create_username @item.opinion</h3>
-                                    <p class="item-text">@(item.createtime.HasValue?item.createtime.Value.ToString("yyyy-MM-dd HH:mm:ss"):"")</p>
+                                    <h3 class="item-title">@item.create_username @item.opinion @(WFTaskBLL.ApproveResultName(item.result)) </h3>
+                                    <p class="item-text">@item.nodename @(item.createtime.HasValue?item.createtime.Value.ToString("yyyy-MM-dd HH:mm:ss"):"")</p>
                                 </li>
                             }
                         </ul>

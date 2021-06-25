@@ -67,7 +67,7 @@
                                 name: "协办",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
-                                        page.searchInCurrentPage();
+                                        page.refrash();
                                     });
                                     return false;
                                 }
@@ -100,6 +100,9 @@
 
                         });
                     });
+                }
+                else {
+                    $("#task").html('');
                 }
             });
             luckyu.ajax.getNoloading('/WorkflowModule/Task/Page', { page: 1, rows: 5, tasktype: 4 }, function (res) {
@@ -172,6 +175,9 @@
                         });
                     });
                 }
+                else {
+                    $("#taskDelegate").html('');
+                }
             });
             luckyu.ajax.getNoloading('/OAModule/News/ShowPage', { page: 1, rows: 5 }, function (res) {
                 if (res.records > 0) {
@@ -188,6 +194,9 @@
                             url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + id,
                         });
                     });
+                }
+                else {
+                    $("#news").html('');
                 }
             });
         }

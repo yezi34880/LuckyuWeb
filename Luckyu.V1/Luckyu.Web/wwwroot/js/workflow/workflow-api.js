@@ -20,7 +20,8 @@
             { value: 3, name: '<span class="label label-primary">申请代办</span>' },
             { value: 4, name: '<span class="label label-success">已阅</span>' },
             { value: 5, name: '<span class="label label-primary">调整</span>' },
-            { value: -1, name: '<span class="label label-info">正在审批</span>' },
+            { value: 6, name: '<span class="label label-primary">申请协办</span>' },
+            { value: 100, name: '<span class="label label-info">当前待办</span>' },
         ],
         /**
          * 创建流程

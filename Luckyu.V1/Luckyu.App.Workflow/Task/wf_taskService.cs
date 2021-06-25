@@ -260,9 +260,17 @@ namespace Luckyu.App.Workflow
             var trans = BaseRepository().BeginTrans();
             try
             {
-                if (currentTask.is_done == 1)
+                if (instance.is_finished == 1)
                 {
-                    trans.UpdateOnlyColumns(currentTask, r => new { r.is_done });
+                    trans.UpdateOnlyColumns(instance, r => new { r.is_finished });
+                    trans.db.Update<wf_taskEntity>().Where(r => r.instance_id == instance.instance_id).Set(r => r.is_done == 1).ExecuteAffrows();
+                }
+                else
+                {
+                    if (currentTask.is_done == 1)
+                    {
+                        trans.UpdateOnlyColumns(currentTask, r => new { r.is_done });
+                    }
                 }
                 if (!listTask.IsEmpty())
                 {
@@ -290,11 +298,6 @@ namespace Luckyu.App.Workflow
                             trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
                         }
                     }
-                }
-                if (instance.is_finished == 1)
-                {
-                    trans.UpdateOnlyColumns(instance, r => new { r.is_finished });
-                    trans.db.Update<wf_taskEntity>().Where(r => r.instance_id == instance.instance_id).Set(r => r.is_done == 1).ExecuteAffrows();
                 }
 
                 trans.Commit();
