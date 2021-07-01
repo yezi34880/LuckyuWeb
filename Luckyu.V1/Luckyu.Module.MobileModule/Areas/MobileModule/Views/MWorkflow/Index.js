@@ -75,8 +75,9 @@
                     html += '\
 <li class="bui-btn bui-box" href="/MobileModule/MWorkflow/Form?taskId=' + row.task_id + '&instanceId=' + row.instance_id + '&processId=' + row.process_id + '&historyId=' + row.history_id + '">\
     <div class="span1">\
-        <h3 class="item-title"><span>【'+ row.flowname + '】</span>' + row.processname + '</h3>\
-        <p class="item-text">'+ row.submit_username + ' ' + row.createtime + '</p>\
+        <h3 class="item-title"><span>【'+ row.flowname + '】</span><span>' + (row.nodename == null ? "" : row.nodename) + ' </span></h3>\
+        <h3 class="item-title">' + row.processname + '</h3>\
+        <p class="item-text" > '+ row.submit_username + ' ' + row.createtime + '</p >\
      </div >\
      <i class="icon-listright"></i>\
 </li>';

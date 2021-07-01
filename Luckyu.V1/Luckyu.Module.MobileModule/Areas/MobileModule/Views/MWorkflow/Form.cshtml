@@ -52,89 +52,88 @@
                         }
                     </li>
                     <li style="display: none;">
-                        @if (formType == "task")
+                        @if (formType == "task" || formType == "read")
                         {
                             <div class="bui-fluid" id="appform">
-                                <div class="span12">
-                                    <div class="section-title">审批结果</div>
-                                    <ul class="bui-list">
-                                        <li class="bui-btn bui-box">
-                                            <div class="span1">
-                                                <label for="result1">通过</label>
-                                            </div>
-                                            <input id="result1" type="radio" class="bui-choose" name="result" value="1" checked="checked" />
-                                        </li>
-                                        <li class="bui-btn bui-box bui-btn-line">
-                                            <div class="span1">
-                                                <label for="result2">驳回</label>
-                                            </div>
-                                            <input id="result2" type="radio" class="bui-choose" name="result" value="2" />
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="span12" id="divReturn" style="display:none;">
-                                    <div class="section-title">驳回规则</div>
-                                    <ul class="bui-list">
-                                        <li class="bui-btn bui-box">
-                                            <div class="span1">
-                                                <label for="returnType0">至起始</label>
-                                            </div>
-                                            <input id="returnType0" type="radio" class="bui-choose" name="returnType" value="0" checked="checked" />
-                                        </li>
-                                        <li class="bui-btn bui-box bui-btn-line">
-                                            <div class="span1">
-                                                <label for="returnType1">至上一步</label>
-                                            </div>
-                                            <input id="returnType1" type="radio" class="bui-choose" name="returnType" value="1" />
-                                        </li>
-                                    </ul>
-                                </div>
+                                @if (formType == "task")
+                                {
+                                    <div class="span12">
+                                        <div class="section-title">审批结果</div>
+                                        <ul class="bui-list">
+                                            <li class="bui-btn bui-box">
+                                                <div class="span1">
+                                                    <label for="result1">通过</label>
+                                                </div>
+                                                <input id="result1" type="radio" class="bui-choose" name="result" value="1" checked="checked" />
+                                            </li>
+                                            <li class="bui-btn bui-box bui-btn-line">
+                                                <div class="span1">
+                                                    <label for="result2">驳回</label>
+                                                </div>
+                                                <input id="result2" type="radio" class="bui-choose" name="result" value="2" />
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="span12" id="divReturn" style="display:none;">
+                                        <div class="section-title">驳回规则</div>
+                                        <ul class="bui-list">
+                                            <li class="bui-btn bui-box">
+                                                <div class="span1">
+                                                    <label for="returnType0">至起始</label>
+                                                </div>
+                                                <input id="returnType0" type="radio" class="bui-choose" name="returnType" value="0" checked="checked" />
+                                            </li>
+                                            <li class="bui-btn bui-box bui-btn-line">
+                                                <div class="span1">
+                                                    <label for="returnType1">至上一步</label>
+                                                </div>
+                                                <input id="returnType1" type="radio" class="bui-choose" name="returnType" value="1" />
+                                            </li>
+                                        </ul>
+                                    </div>
+                                }
 
                                 <div class="span12">
                                     <div class="bui-input">
-                                        <textarea placeholder="审批意见" id="opinion" rows="4"></textarea>
+                                        <textarea placeholder="意见" id="opinion" rows="4"></textarea>
                                     </div>
                                 </div>
                                 <div class="span12">
-                                    <div class="bui-box-space">
-                                        <div class="span1" id="btnApprove">
-                                            <div class="bui-btn round primary">审批</div>
+                                    <div id="buiPhoto" class="bui-upload bui-fluid-space-4">
+                                        <div class="span1">
+                                            <div id="btnUpload" class="bui-btn">
+                                                <i class="icon-plus large"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="span12" style="margin-top:5px;">
-                                    <div class="bui-box-space">
-                                        <div class="span1" id="btnHelpme">
-                                            <div class="bui-btn round">协办</div>
-                                        </div>
-                                        <div class="span1" id="btnAddUser">
-                                            <div class="bui-btn round">代办</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="span12" style="margin-top:5px;">
-                                    <div class="bui-btn-text" id="help">
-                                        <i class="fa fa-question-circle"></i>
-                                        说明
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        else if (formType == "read")
-                        {
-                            <div class="bui-fluid" id="readform">
-                                <div class="span12">
-                                    <div class="bui-input">
-                                        <textarea placeholder="审批意见" id="readopinion" rows="4"></textarea>
-                                    </div>
-                                </div>
+
                                 <div class="span12">
                                     <div class="bui-box-space">
-                                        <div class="span1" id="btnRead">
-                                            <div class="bui-btn round primary">已阅</div>
+                                        <div class="span1">
+                                            <div class="bui-btn round primary" id="btnApprove">@(formType == "task"?"审批":"确认")</div>
                                         </div>
                                     </div>
                                 </div>
+                                @if (formType == "task")
+                                {
+                                    <div class="span12" style="margin-top:5px;">
+                                        <div class="bui-box-space">
+                                            <div class="span1" id="btnHelpme">
+                                                <div class="bui-btn round">协办</div>
+                                            </div>
+                                            <div class="span1" id="btnAddUser">
+                                                <div class="bui-btn round">代办</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span12" style="margin-top:5px;">
+                                        <div class="bui-btn-text" id="help">
+                                            <i class="fa fa-question-circle"></i>
+                                            说明
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         }
 

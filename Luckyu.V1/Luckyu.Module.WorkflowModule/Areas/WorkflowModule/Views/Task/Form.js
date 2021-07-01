@@ -49,7 +49,7 @@ var bootstrap = function (layui) {
         },
         initLogGrid: function (data) {
             var gridLog = $("#gridLog").jqGrid({
-                url: luckyu.rootUrl + '/WorkFlowModule/Task/GetWorkflowLog',
+                //url: luckyu.rootUrl + '/WorkFlowModule/Task/GetWorkflowLog',
                 //datatype: "json",
                 //postData: { processId: processId, instanceId: instanceId },
                 datatype: "local",
@@ -65,7 +65,7 @@ var bootstrap = function (layui) {
                     {
                         label: "结果", name: "result", width: 60, align: "center",
                         formatter: function (cellvalue, options, rowObject) {
-                            var result = luckyu.utility.toEnum(cellvalue, luckyu.workflowapi.resultshow);
+                            var result = luckyu.utility.toEnum(cellvalue, luckyu_staticdata.wf_resultshow);
                             return result;
                         }
                     },
@@ -90,12 +90,10 @@ var bootstrap = function (layui) {
             });
 
             gridLog.setGridHeight(window.innerHeight - 120);
-            gridLog.setGridWidth(window.innerWidth  - 40);
-            $("#divLine").height(window.innerHeight - 80);
+            gridLog.setGridWidth(window.innerWidth - 40);
             $(window).resize(function () {
                 gridLog.setGridHeight(window.innerHeight - 120);
                 gridLog.setGridWidth(window.innerWidth - 40);
-                $("#divLine").height(window.innerHeight - 80);
             });
         },
         initData: function () {
@@ -126,8 +124,9 @@ var bootstrap = function (layui) {
                     var iframeWindow = this.contentWindow;
                     this.onload = !!iframeWindow.loaded ? iframeWindow.loaded() : function () {
                         $("input[type!='file'],textarea", iframeWindow.document).attr("disabled", "disabled");
-                        $("button[title=删除文件]").attr("disabled", "disabled");
                         setTimeout(function () {
+                            $("button[title=删除文件]", iframeWindow.document).hide();
+                            $("div.input-group.file-caption-main", iframeWindow.document).hide();
                             $(".xm-select", iframeWindow.document).each(function () {
                                 var id = $(this).attr("id");
                                 var xm = iframeWindow.xmSelect.get("#" + id, true);
@@ -274,6 +273,7 @@ var bootstrap = function (layui) {
                     result: 4,
                     opinion: opinion,
                 }, function (data) {
+                    debugger;
                     if (!!callBack) {
                         callBack();
                     }

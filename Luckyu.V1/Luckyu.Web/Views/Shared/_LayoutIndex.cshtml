@@ -52,6 +52,7 @@
     @Html.AppendJs("~/js/luckyu-select.js")
     @Html.AppendJs("~/js/luckyu-form.js")
     @Html.AppendJs("~/js/workflow/workflow-api.js")
+    @Html.AppendJs("~/js/luckyu-staticdata.js")
     @RenderSection("Footer", false)
     <script>
         $.validateToken = $('@Html.AntiForgeryToken()').val();

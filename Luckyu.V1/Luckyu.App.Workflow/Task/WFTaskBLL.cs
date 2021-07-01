@@ -1,5 +1,6 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.App.System;
+using Luckyu.Log;
 using Luckyu.Utility;
 using Mapster;
 using Microsoft.AspNetCore.SignalR;
@@ -99,12 +100,25 @@ namespace Luckyu.App.Workflow
 
         public List<wf_taskhistoryEntity> GetHistoryTaskList(string processId, string instanceId = "")
         {
-            Expression<Func<wf_taskhistoryEntity, bool>> exp = r => r.process_id == processId;
+            Expression<Func<wf_taskhistoryEntity, bool>> exp = r => true;
+            if (!processId.IsEmpty())
+            {
+                exp = exp.LinqAnd(r => r.process_id == processId);
+            }
             if (!instanceId.IsEmpty())
             {
                 exp = exp.LinqAnd(r => r.instance_id == instanceId);
             }
             var list = taskhistoryService.GetList(exp, r => r.createtime);
+            foreach (var his in list)
+            {
+                var annex = annexBLL.GetList(r => r.external_id == his.history_id);
+                his.annex = Newtonsoft.Json.JsonConvert.SerializeObject(annex.Select(r => new KeyValue
+                {
+                    Key = r.annex_id,
+                    Value = r.filename
+                }).ToList());
+            }
 
             Expression<Func<wf_taskEntity, bool>> exp1 = r => r.is_done == 0 && r.process_id == processId;
             if (!instanceId.IsEmpty())
@@ -118,12 +132,14 @@ namespace Luckyu.App.Workflow
                 var item1 = item.Adapt<wf_taskhistoryEntity>();
                 var auths = taskauthService.GetList(r => r.task_id == item.task_id);
                 var users = GetUserByAuth(auths);
+                item1.history_id = "";
                 item1.opinion = string.Join(",", users.Select(r => $"{r.realname} { r.loginname}"));
                 item1.result = 100;
                 item1.createtime = null;
                 item1.create_username = "";
                 list.Add(item1);
             }
+
             return list;
         }
 
@@ -191,15 +207,6 @@ namespace Luckyu.App.Workflow
 
             }
             var historys = GetHistoryTaskList(instance.process_id, instance.instance_id);
-            foreach (var his in historys)
-            {
-                var annex = annexBLL.GetList(r => r.external_id == his.history_id);
-                his.annex = Newtonsoft.Json.JsonConvert.SerializeObject(annex.Select(r => new KeyValue
-                {
-                    Key = r.annex_id,
-                    Value = r.filename
-                }).ToList());
-            }
             var dic = new Dictionary<string, object>
             {
                 {"Instance",instance },
@@ -239,6 +246,38 @@ namespace Luckyu.App.Workflow
             };
             return ResponseResult.Success(dic);
 
+        }
+
+        /// <summary>
+        /// 获取当前流程所有协办步骤
+        /// </summary>
+        public List<wf_taskEntity> GetHelpMePage(JqgridPageRequest jqPage, string instanceId)
+        {
+            var list = GetTaskList(r => r.instance_id == instanceId && r.is_done == 0 && r.nodetype == "helpme");
+            foreach (var task in list)
+            {
+                var auths = GetTaskAuthorizeList(r => r.task_id == task.task_id);
+                foreach (var auth in auths)
+                {
+                    var user = userBLL.GetEntityByCache(r => r.user_id == auth.user_id);
+                    task.create_username = string.Join(",", user.realname);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取当前流程所有代办、加签用户
+        /// </summary>
+        public List<WFTaskAuthModel> GetAddUserPage(JqgridPageRequest jqPage, string instanceId)
+        {
+            var list = taskauthService.GetAddUserPage(jqPage, instanceId);
+            foreach (var auth in list)
+            {
+                var user = userBLL.GetEntityByCache(r => r.user_id == auth.user_id);
+                auth.username = string.Join(",", user.realname);
+            }
+            return list;
         }
         #endregion
 
@@ -568,10 +607,11 @@ namespace Luckyu.App.Workflow
             historyCurrent.Create(loginInfo);
             listHistory.Add(historyCurrent);
 
+            task.is_done = 1;
             if (task.nodetype == "helpme") // 协办 不管同意 还是驳回 都不往下进行
             {
                 taskService.Approve(instance, task, listTask, listHistory, listSql);
-                var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>>(instance, listTask);
+                var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
                 return ResponseResult.Success((object)data1);
             }
 
@@ -581,9 +621,7 @@ namespace Luckyu.App.Workflow
                 return ResponseResult.Fail(res.info, res.data);
             }
 
-            task.is_done = 1;
             var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
-
             if (result == 2) // 拒绝
             {
                 // 这里有问题，退回上一步其实有两种可能，如果上一步是其他审批，不用执行驳回SQL与程序，否则直接就是起草了，而且这里后期可能需要针对这里把 驳回SQL 再次拆分为两个，暂时先不弄
@@ -609,7 +647,7 @@ namespace Luckyu.App.Workflow
                         }
                     }
                     taskService.Approve(instance, task, listTask, listHistory, listSql);
-                    var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>>(instance, listTask);
+                    var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
                     return ResponseResult.Success((object)data1);
                 }
                 else  // 退回至初始（箭头否连线下一步）
@@ -658,21 +696,23 @@ namespace Luckyu.App.Workflow
             if (res.code == (int)ResponseCode.Success)
             {
                 var data = res.data as Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>;
-                foreach (var task in data.Item2)
+                if (data != null)
                 {
-                    var instance = data.Item1;
-                    var msg = $"{instance.submit_username} 提交了【{instance.flowname}】{task.processname}审批流程";
-                    var authrizes = task.authrizes;
-                    var nextUsers = GetUserByAuth(authrizes);
-                    foreach (var user in nextUsers)
+                    foreach (var task in data.Item2)
                     {
-                        var sendRes = new ResponseResult();
-                        sendRes.info = res.info;
-                        sendRes.data = "审批通知";
-                        await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
+                        var instance = data.Item1;
+                        var msg = $"{instance.submit_username} 提交了【{instance.flowname}】{task.processname}审批流程";
+                        var authrizes = task.authrizes;
+                        var nextUsers = GetUserByAuth(authrizes);
+                        foreach (var user in nextUsers)
+                        {
+                            var sendRes = new ResponseResult();
+                            sendRes.info = res.info;
+                            sendRes.data = "审批通知";
+                            await SignalRHelper.SendMessageToUser(hubContext, user.loginname, sendRes);
+                        }
                     }
                 }
-
             }
             return res;
         }
@@ -745,20 +785,22 @@ namespace Luckyu.App.Workflow
                 return ResponseResult.Fail("该流程实例不存在");
             }
 
-            var taskHelp = task.Adapt<wf_taskEntity>();
-            taskHelp.Create(loginInfo);
-            taskHelp.process_id = task.node_id;
-            taskHelp.processname = task.nodename;
-            taskHelp.node_id = "";
-            taskHelp.nodetype = "helpme";
-            taskHelp.nodename = "协办";
-
-            var auths = new List<wf_task_authorizeEntity>();
+            var listTask = new List<wf_taskEntity>();
             var users = new List<sys_userEntity>();
             foreach (var userId in userIds)
             {
+                var taskHelp = task.Adapt<wf_taskEntity>();
+                taskHelp.Create(loginInfo);
+                taskHelp.task_id = SnowflakeHelper.NewCode();
+                taskHelp.previous_id = "";
+                taskHelp.previousname = "";
+                taskHelp.node_id = task.node_id;
+                taskHelp.nodetype = "helpme";
+                taskHelp.nodename = "【协办】" + task.nodename;
+                var auths = new List<wf_task_authorizeEntity>();
+
                 var auth = new wf_task_authorizeEntity();
-                auth.task_id = task.task_id;
+                auth.task_id = taskHelp.task_id;
                 auth.user_id = userId;
                 auth.is_add = 3;  // 协办
                 auth.Create(loginInfo);
@@ -766,8 +808,10 @@ namespace Luckyu.App.Workflow
 
                 var user = userBLL.GetEntityByCache(r => r.user_id == userId);
                 users.Add(user);
+
+                taskHelp.authrizes = auths;
+                listTask.Add(taskHelp);
             }
-            taskHelp.authrizes = auths;
 
             var history = new wf_taskhistoryEntity();
             history = task.Adapt<wf_taskhistoryEntity>();
@@ -776,16 +820,13 @@ namespace Luckyu.App.Workflow
             history.result = 6;
             history.Create(loginInfo);
 
-            taskService.HelpMe(taskHelp, history);
+            taskService.HelpMe(listTask, history);
             return ResponseResult.Success();
         }
 
         /// <summary>
         /// 强制结束流程
         /// </summary>
-        /// <param name="instanceId"></param>
-        /// <param name="loginInfo"></param>
-        /// <returns></returns>
         public ResponseResult Finish(string instanceId, UserModel loginInfo)
         {
             //if (loginInfo.modules.IsEmpty() || !loginInfo.modules.Exists(r => r.moduleurl.Contains("/WorkflowModule/Monitor/Index")))
@@ -828,9 +869,6 @@ namespace Luckyu.App.Workflow
         /// <summary>
         /// 模拟完成审批
         /// </summary>
-        /// <param name="instanceId"></param>
-        /// <param name="loginInfo"></param>
-        /// <returns></returns>
         public ResponseResult Complete(string instanceId, UserModel loginInfo)
         {
             var instance = instanceService.GetEntity(r => r.instance_id == instanceId);
@@ -899,9 +937,6 @@ namespace Luckyu.App.Workflow
         /// <summary>
         /// 调整流程, 设置运行中流程到任意节点
         /// </summary>
-        /// <param name="instanceId"></param>
-        /// <param name="nodeId"></param>
-        /// <param name="loginInfo"></param>
         /// <returns></returns>
         public ResponseResult Modify(string instanceId, string schemeId, string nodeId, UserModel loginInfo)
         {
@@ -957,6 +992,56 @@ namespace Luckyu.App.Workflow
             return ResponseResult.Success();
         }
 
+        /// <summary>
+        /// 删除任务
+        /// </summary>
+        public ResponseResult DeleteTask(string taskId)
+        {
+            var task = taskService.GetEntity(r => r.task_id == taskId);
+            if (task == null)
+            {
+                return ResponseResult.Fail("该任务不存在");
+            }
+            if (task.is_done == 1)
+            {
+                return ResponseResult.Fail("该任务已被其他人审批，不能删除");
+            }
+            taskService.DeleteTask(task);
+            return ResponseResult.Success();
+        }
+
+        /// <summary>
+        /// 删除任务中的用户
+        /// </summary>
+        public ResponseResult DeleteTaskAuth(string authId)
+        {
+            var auth = taskauthService.GetEntity(r => r.auth_id == authId);
+            if (auth == null)
+            {
+                return ResponseResult.Fail("该用户审批不存在");
+            }
+            var task = taskService.GetEntity(r => r.task_id == auth.task_id);
+            if (task == null)
+            {
+                return ResponseResult.Fail("该任务不存在");
+            }
+            taskauthService.DeleteTaskAuth(authId);
+            return ResponseResult.Success();
+        }
+
+        /// <summary>
+        /// 删除审批历史
+        /// </summary>
+        public ResponseResult DeleteHistory(string historyId)
+        {
+            var auth = taskhistoryService.GetEntity(r => r.history_id == historyId);
+            if (auth == null)
+            {
+                return ResponseResult.Fail("该审批记录不存在");
+            }
+            taskhistoryService.DeleteHistory(historyId);
+            return ResponseResult.Success();
+        }
         #endregion
 
         #region Private

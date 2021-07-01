@@ -325,15 +325,18 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void HelpMe(wf_taskEntity task, wf_taskhistoryEntity history)
+        public void HelpMe(List<wf_taskEntity> listTask, wf_taskhistoryEntity history)
         {
             var trans = BaseRepository().BeginTrans();
             try
             {
-                trans.Insert(task);
-                if (!task.authrizes.IsEmpty())
+                foreach (var task in listTask)
                 {
-                    trans.Insert(task.authrizes);
+                    trans.Insert(task);
+                    if (!task.authrizes.IsEmpty())
+                    {
+                        trans.Insert(task.authrizes);
+                    }
                 }
                 trans.Insert(history);
                 trans.Commit();
@@ -435,6 +438,22 @@ namespace Luckyu.App.Workflow
                     trans.UpdateOnlyColumns(instance, r => r.is_finished);
                 }
 
+                trans.Commit();
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                throw ex;
+            }
+        }
+
+        public void DeleteTask(wf_taskEntity task)
+        {
+            var trans = BaseRepository().BeginTrans();
+            try
+            {
+                trans.db.Delete<wf_taskEntity>().Where(r => r.task_id == task.task_id).ExecuteAffrows();
+                trans.db.Delete<wf_task_authorizeEntity>().Where(r => r.task_id == task.task_id).ExecuteAffrows();
                 trans.Commit();
             }
             catch (Exception ex)

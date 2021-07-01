@@ -16,6 +16,8 @@
     <ul class="layui-tab-title">
         <li class="layui-this">当前版本</li>
         <li>最新流程</li>
+        <li>待办人员调整</li>
+        <li>审批历史调整</li>
     </ul>
     <div class="layui-tab-content">
         <!--当前版本-->
@@ -23,14 +25,34 @@
             <div id="flow"></div>
             <div style="position:relative;left:0px;bottom:0;width:100%;height:40px;border-top:1px solid #ddd;line-height:39px;text-align:right;padding-right:10px;font-size:16px;">
                 <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#5bc0de;" class="fa fa-square"></i><span>正在审批</span></div>
-                @*<div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#5cb85c;" class="fa fa-square"></i><span>通过</span></div>
-                <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#d9534f;" class="fa fa-square"></i><span>不通过</span></div>
-                <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#999;" class="fa fa-square"></i><span>未处理</span></div>*@
             </div>
         </div>
         <!--最新流程-->
         <div class="layui-tab-item">
             <div id="flowLast"></div>
+        </div>
+        <!--协办/代办人员-->
+        <div class="layui-tab-item">
+            <blockquote class="layui-elem-quote">只能调整新加入协办、代办用户，如果修改节点本身，请调整流程节点 </blockquote>
+            <div class="layui-col-xs12">
+                <label>当前协办用户</label>
+            </div>
+            <div class="layui-col-xs12">
+                <table id="gridHelpMe"></table>
+            </div>
+            <div class="layui-col-xs12">
+                <label>当前代办用户</label>
+            </div>
+            <div class="layui-col-xs12">
+                <table id="gridAddUser"></table>
+            </div>
+        </div>
+        <!--审批历史调整-->
+        <div class="layui-tab-item">
+            <blockquote class="layui-elem-quote">删除审批历史记录 </blockquote>
+            <div class="layui-col-xs12">
+                <table id="gridHistory"></table>
+            </div>
         </div>
     </div>
 </div>

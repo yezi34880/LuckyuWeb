@@ -8,6 +8,9 @@ var bootstrap = function (layui) {
         init: function () {
             page.bind();
             page.initData();
+            page.initGridHelpMe();
+            page.initGridAddUser();
+            page.initGridHistory();
         },
         bind: function () {
 
@@ -81,6 +84,136 @@ var bootstrap = function (layui) {
                 $('#flow').height(window.innerHeight - 120);
                 $('#flowLast').height(window.innerHeight - 80);
             });
+
+        },
+        initGridHelpMe: function () {
+            var gridHelpMe = $("#gridHelpMe").jqGrid({
+                url: luckyu.rootUrl + '/WorkFlowModule/Task/GetHelpMePage',
+                datatype: "json",
+                postData: { instanceId: instanceId },
+                colModel: [
+                    { name: "task_id", hidden: true, key: true },
+                    { label: "节点名称", name: "nodename", width: 80, },
+                    { label: "操作用户", name: "create_username", width: 80, },
+                    {
+                        label: "操作", name: "_action", width: 100, formatter: function (cellvalue, option, rowObject) {
+                            var html = '<a style="cursor:pointer;color:red;" onclick="deleteHelpMe(\'' + rowObject.task_id + '\')">删除</a>';
+                            return html;
+                        }
+                    },
+                ],
+                rownumbers: true,
+                viewrecords: true,
+                altRows: true,//隔行换色
+            });
+
+            window.deleteHelpMe = function (taskId) {
+                luckyu.layer.layerConfirm("确定删除该协办任务？", function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/DeleteTask', { taskId: taskId }, function (data) {
+                        layui.notice.success("操作成功");
+                        gridHelpMe.trigger("reloadGrid");
+                        //var layerIndex = parent.layer.getFrameIndex(window.name);
+                        //parent.layer.close(layerIndex);
+                    });
+                });
+            };
+
+            gridHelpMe.setGridWidth(window.innerWidth - 40);
+            $(window).resize(function () {
+                gridHelpMe.setGridWidth(window.innerWidth - 40);
+            });
+        },
+        initGridAddUser: function () {
+            var gridAddUser = $("#gridAddUser").jqGrid({
+                url: luckyu.rootUrl + '/WorkFlowModule/Task/GetAddUserPage',
+                datatype: "json",
+                postData: { instanceId: instanceId },
+                colModel: [
+                    { name: "auth_id", hidden: true, key: true },
+                    { name: "task_id", hidden: true, },
+                    { label: "节点名称", name: "nodename", width: 80, },
+                    { label: "操作用户", name: "username", width: 80, },
+                    {
+                        label: "操作", name: "_action", width: 100, formatter: function (cellvalue, option, rowObject) {
+                            var html = '<a style="cursor:pointer;color:red;" onclick="deleteAddUser(\'' + rowObject.auth_id + '\')">删除</a>';
+                            return html;
+                        }
+                    },
+                ],
+                rownumbers: true,
+                viewrecords: true,
+                altRows: true,//隔行换色
+            });
+
+            window.deleteAddUser = function (authId) {
+                luckyu.layer.layerConfirm("确定删除该代办用户 ？", function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/DeleteTaskAuth', { authId: authId }, function (data) {
+                        layui.notice.success("操作成功");
+                        gridAddUser.trigger("reloadGrid");
+                        //var layerIndex = parent.layer.getFrameIndex(window.name);
+                        //parent.layer.close(layerIndex);
+                    });
+                });
+            };
+
+            gridAddUser.setGridWidth(window.innerWidth - 40);
+            $(window).resize(function () {
+                gridAddUser.setGridWidth(window.innerWidth - 40);
+            });
+        },
+        initGridHistory: function () {
+            var gridHistory = $("#gridHistory").jqGrid({
+                url: luckyu.rootUrl + '/WorkFlowModule/Task/GetTaskLog',
+                datatype: "json",
+                postData: { instanceId: instanceId },
+                colModel: [
+                    { name: "history_id", hidden: true },
+                    { label: "节点名称", name: "nodename", width: 80, },
+                    { label: "操作用户", name: "create_username", width: 80, },
+                    {
+                        label: "操作时间", name: "createtime", width: 100, align: "right",
+                        formatter: "date",
+                        formatoptions: { newformat: 'Y-m-d H:i:s' },
+                    },
+                    {
+                        label: "结果", name: "result", width: 60, align: "center",
+                        formatter: function (cellvalue, options, rowObject) {
+                            var result = luckyu.utility.toEnum(cellvalue, luckyu_staticdata.wf_resultshow);
+                            return result;
+                        }
+                    },
+                    { label: "备注", name: "opinion", width: 350, },
+                    {
+                        label: "操作", name: "_action", width: 100, formatter: function (cellvalue, option, rowObject) {
+                            var html = '';
+                            if (!!rowObject.history_id) {
+                                html = '<a style="cursor:pointer;color:red;" onclick="deleteHistory(\'' + rowObject.history_id + '\')">删除</a>';
+                            }
+                            return html;
+                        }
+                    },
+                ],
+                rownumbers: true,
+                viewrecords: true,
+                altRows: true,//隔行换色
+            });
+
+            window.deleteHistory = function (history_id) {
+                luckyu.layer.layerConfirm("确定删除该审批记录吗 ？", function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/DeleteHistory', { historyId: history_id }, function (data) {
+                        layui.notice.success("操作成功");
+                        gridHistory.trigger("reloadGrid");
+                        //var layerIndex = parent.layer.getFrameIndex(window.name);
+                        //parent.layer.close(layerIndex);
+                    });
+                });
+            };
+            gridHistory.setGridHeight(window.innerHeight - 200);
+            gridHistory.setGridWidth(window.innerWidth - 40);
+            $(window).resize(function () {
+                gridHistory.setGridWidth(window.innerWidth - 40);
+                gridHistory.setGridHeight(window.innerHeight - 200);
+        });
 
         },
         initData: function () {

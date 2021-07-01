@@ -85,7 +85,7 @@
     {{each rows item index}}
     <div class="ahoit-msg-line">
         <a style="text-decoration: none;" luckyu-nodetype="{{item.nodetype}}" luckyu-taskId="{{item.task_id}}" luckyu-instanceId="{{item.instance_id}}" luckyu-processId="{{item.process_id}}" title="{{item.processname}}">
-            ●&nbsp;&nbsp;【{{item.flowname}}】{{item.processname}}
+            ●&nbsp;&nbsp;【{{item.flowname}}】{{item.nodename}}  {{item.processname}}
         </a>
         <label>{{item.createtime | dateFormat 'yyyy-MM-dd'}}</label>
     </div>
@@ -99,5 +99,6 @@
             return new Date(date).format(format);
         };
     </script>
+    @Html.AppendJs("~/js/luckyu-staticdata.js")
     @Html.AppendJs("~/Views/Home/Home.js")
 }

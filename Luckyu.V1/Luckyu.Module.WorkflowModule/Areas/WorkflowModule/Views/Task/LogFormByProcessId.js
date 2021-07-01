@@ -9,7 +9,7 @@ var bootstrap = function (layui) {
         },
         initLogGrid: function (instanceId, data) {
             var gridLog = $('#gridLog_' + instanceId).jqGrid({
-                url: luckyu.rootUrl + '/WorkFlowModule/Task/GetWorkflowLog',
+                //url: luckyu.rootUrl + '/WorkFlowModule/Task/GetWorkflowLog',
                 //datatype: "json",
                 //postData: { processId: processId, instanceId: instanceId },
                 datatype: "local",
@@ -25,7 +25,7 @@ var bootstrap = function (layui) {
                     {
                         label: "结果", name: "result", width: 60, align: "center",
                         formatter: function (cellvalue, options, rowObject) {
-                            var result = luckyu.utility.toEnum(cellvalue, luckyu.workflowapi.resultshow);
+                            var result = luckyu.utility.toEnum(cellvalue, luckyu_staticdata.wf_resultshow);
                             return result;
                         }
                     },

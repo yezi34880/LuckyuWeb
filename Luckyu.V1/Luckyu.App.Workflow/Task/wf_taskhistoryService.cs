@@ -49,5 +49,11 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
+        public void DeleteHistory(string historyId)
+        {
+            var db = BaseRepository().db;
+            db.Delete<wf_taskhistoryEntity>().Where(r => r.history_id == historyId).ExecuteAffrows();
+        }
+
     }
 }

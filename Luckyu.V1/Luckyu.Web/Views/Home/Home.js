@@ -42,9 +42,9 @@
                         var task_id = self.attr("luckyu-taskId");
                         var instance_id = self.attr("luckyu-instanceId");
                         var process_id = self.attr("luckyu-processId");
-                        if (nodetype === "auditornode") {
+                        if (nodetype === "auditornode" || nodetype === "helpme") {
                             btns.push({
-                                name: "已阅",
+                                name: "确认",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.readClick(index, function () {
                                         page.refrash();
@@ -93,9 +93,8 @@
                                 var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
                                 $("div.layui-layer-btn", layero).append(html);
                                 $("#questionBtn", layero).click(function () {
-                                    top.layui.layer.alert('【协办】选择其他用户协助审批，其他用户审批后流程节点不会移动，后续审批人仅仅能够看到协办用户审批意见<br />【代办】选择其他用户代办审批，其他用户审批后节点会移动，相当于把当前步审批让渡给代办人<br />注：协办、代办选择用户后自己扔可以自行处理，或者等待选择人处理');
+                                    top.layui.layer.alert(luckyu_staticdata.wf_description);
                                 });
-
                             }
 
                         });
@@ -116,9 +115,9 @@
                         var task_id = self.attr("luckyu-taskId");
                         var instance_id = self.attr("luckyu-instanceId");
                         var process_id = self.attr("luckyu-processId");
-                        if (nodetype === "auditornode") {
+                        if (nodetype === "auditornode" || nodetype === "helpme") {
                             btns.push({
-                                name: "已阅",
+                                name: "确认",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.readClick(index, function () {
                                         page.refrash();

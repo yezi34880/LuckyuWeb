@@ -18,7 +18,7 @@ namespace Luckyu.App.Workflow
         public JqgridPageResponse<wf_flow_instanceEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             Expression<Func<wf_flow_instanceEntity, bool>> exp = r => r.submit_user_id == loginInfo.user_id;
-            if (jqPage.IsEmpty())
+            if (jqPage.sidx.IsEmpty())
             {
                 jqPage.sidx = "createtime";
                 jqPage.sord = "DESC";
