@@ -51,6 +51,10 @@ namespace Luckyu.Module.OrganizationModule.Controllers
         public IActionResult SetRelations(int relationType, string userId, List<string> objectIds)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            if (userId.IsEmpty() || objectIds.IsEmpty())
+            {
+                return Fail("没有选择数据");
+            }
             userrelationBLL.SetRelationByUser(relationType, userId, objectIds, loginInfo);
             return Success();
         }

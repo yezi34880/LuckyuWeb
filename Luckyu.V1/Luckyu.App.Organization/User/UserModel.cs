@@ -16,15 +16,19 @@ namespace Luckyu.App.Organization
 
         public string departmentname { get; set; }
 
+        public Dictionary<string, string> other_departments { get; set; }
+
+        public Dictionary<string, string> other_companys { get; set; }
+
         public List<string> group_ids { get; set; }
 
         public List<string> role_ids { get; set; }
 
         public List<string> post_ids { get; set; }
 
-        public List<sys_departmentmanageEntity> managedepartments { get; set; }
-
         public List<string> module_ids { get; set; }
+
+        public List<sys_departmentmanageEntity> managedepartments { get; set; }
 
         public string usercode { get; set; }
 

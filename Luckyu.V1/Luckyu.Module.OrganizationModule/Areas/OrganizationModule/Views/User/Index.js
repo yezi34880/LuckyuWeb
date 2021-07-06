@@ -113,7 +113,7 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: "用户新增",
                     width: 800,
                     height: 550,
                     url: luckyu.rootUrl + "/OrganizationModule/User/Form",
@@ -135,7 +135,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改",
+                    title: "用户修改",
                     width: 800,
                     height: 550,
                     url: luckyu.rootUrl + "/OrganizationModule/User/Form?keyValue=" + rowid,
@@ -347,6 +347,81 @@ var bootstrap = function (layui) {
                             return false;
                         }
                     }]
+                });
+
+            });
+
+            $("#setdepartment").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                luckyu.ajax.get(luckyu.rootUrl + '/OrganizationModule/UserRelation/GetRelations', { relationType: 6, userId: rowid }, function (res) {
+                    var alreadyselect = [];
+                    if (!!res.data && res.data.length > 0) {
+                        alreadyselect = res.data.map(r => r.object_id);
+                    }
+                    top.alreadyselect = alreadyselect;
+                    luckyu.layer.layerFormTop({
+                        title: "设置部门",
+                        width: 500,
+                        height: 600,
+                        url: luckyu.rootUrl + "/OrganizationModule/Department/DepartmentSelectForm?multiple=true",
+                        btn: [{
+                            name: "确定",
+                            callback: function (index, layero) {
+                                var depts = layero.find("iframe")[0].contentWindow.saveClick(index);
+                                var objectIds = depts.map(r => r.id);
+                                var requestData = {
+                                    relationType: 6,
+                                    userId: rowid,
+                                    objectIds: objectIds
+                                };
+                                luckyu.ajax.postv2(luckyu.rootUrl + '/OrganizationModule/UserRelation/SetRelations', requestData, function (data, info) {
+                                    layui.notice.success(info);
+                                    page.searchInCurrentPage();
+                                });
+                            }
+                        }]
+                    });
+                });
+
+            });
+            $("#setcompany").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                luckyu.ajax.get(luckyu.rootUrl + '/OrganizationModule/UserRelation/GetRelations', { relationType: 5, userId: rowid }, function (res) {
+                    var alreadyselect = [];
+                    if (!!res.data && res.data.length > 0) {
+                        alreadyselect = res.data.map(r => r.object_id);
+                    }
+                    top.alreadyselect = alreadyselect;
+                    luckyu.layer.layerFormTop({
+                        title: "设置公司",
+                        width: 500,
+                        height: 600,
+                        url: luckyu.rootUrl + "/OrganizationModule/Company/CompanySelectForm?multiple=true",
+                        btn: [{
+                            name: "确定",
+                            callback: function (index, layero) {
+                                var companys = layero.find("iframe")[0].contentWindow.saveClick(index);
+                                var objectIds = companys.map(r => r.id);
+                                var requestData = {
+                                    relationType: 5,
+                                    userId: rowid,
+                                    objectIds: objectIds
+                                };
+                                luckyu.ajax.postv2(luckyu.rootUrl + '/OrganizationModule/UserRelation/SetRelations', requestData, function (data, info) {
+                                    layui.notice.success(info);
+                                    page.searchInCurrentPage();
+                                });
+                            }
+                        }]
+                    });
                 });
 
             });

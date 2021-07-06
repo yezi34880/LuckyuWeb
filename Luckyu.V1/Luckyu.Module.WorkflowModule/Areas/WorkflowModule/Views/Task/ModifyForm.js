@@ -78,11 +78,11 @@ var bootstrap = function (layui) {
                 }
             });
 
-            $('#flow').height(window.innerHeight - 120);
-            $('#flowLast').height(window.innerHeight - 80);
+            $('#flow').height(window.innerHeight - 185);
+            $('#flowLast').height(window.innerHeight - 145);
             $(window).resize(function () {
-                $('#flow').height(window.innerHeight - 120);
-                $('#flowLast').height(window.innerHeight - 80);
+                $('#flow').height(window.innerHeight - 185);
+                $('#flowLast').height(window.innerHeight - 145);
             });
 
         },

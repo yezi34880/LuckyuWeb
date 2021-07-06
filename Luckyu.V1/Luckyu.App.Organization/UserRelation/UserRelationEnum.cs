@@ -11,5 +11,8 @@ namespace Luckyu.App.Organization
         Role = 1,
         Post = 2,
         Group = 3,
+
+        OtherCompany = 5,
+        OtherDepartment = 6,
     }
 }

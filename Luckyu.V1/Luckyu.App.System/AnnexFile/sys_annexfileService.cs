@@ -19,7 +19,13 @@ namespace Luckyu.App.System
         {
             BaseRepository().db.Update<sys_annexfileEntity>().SetSource(entity).Set(r => r.is_delete == 1).ExecuteAffrows();
         }
-        public void Update(List<sys_annexfileEntity> list)
+
+        public void Update(sys_annexfileEntity entity)
+        {
+            var db = BaseRepository().db;
+            db.Update<sys_annexfileEntity>().SetSource(entity).ExecuteAffrows();
+        }
+        public void UpdateSort(List<sys_annexfileEntity> list)
         {
             var db = BaseRepository().db;
             db.Transaction(() =>
@@ -29,7 +35,6 @@ namespace Luckyu.App.System
                     db.Update<sys_annexfileEntity>().SetSource(item).UpdateColumns(r => new
                     {
                         r.sort,
-                        //r.externalcode
                     }).ExecuteAffrows();
                 }
             });

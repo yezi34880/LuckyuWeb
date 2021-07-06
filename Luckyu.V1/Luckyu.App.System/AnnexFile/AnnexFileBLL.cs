@@ -122,7 +122,8 @@ namespace Luckyu.App.System
                 }
             }
         }
-        public void UpdateAnnex(List<initialPreviewConfig> previewAnnex)
+
+        public void UpdateAnnexSort(List<initialPreviewConfig> previewAnnex)
         {
             var list = new List<sys_annexfileEntity>();
             for (int i = 0; i < previewAnnex.Count; i++)
@@ -134,9 +135,12 @@ namespace Luckyu.App.System
                     sort = (i + 1)
                 });
             }
-            annexService.Update(list);
+            annexService.UpdateSort(list);
         }
-
+        public void Update(sys_annexfileEntity entity)
+        {
+            annexService.Update(entity);
+        }
         #endregion
 
         #region bootstrap fileinput 预览

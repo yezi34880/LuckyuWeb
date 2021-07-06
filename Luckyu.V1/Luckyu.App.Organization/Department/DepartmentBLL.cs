@@ -136,9 +136,18 @@ namespace Luckyu.App.Organization
         /// <summary>
         /// 树形结构（下拉框）
         /// </summary>
-        public List<xmSelectTree> GetSelectTree(string companyId)
+        public List<xmSelectTree> GetSelectTree(string companyId, UserModel loginInfo = null)
         {
             var all = GetAllByCache(companyId);
+            if (loginInfo != null)
+            {
+                var deptids = loginInfo.other_departments.Select(r => r.Key).ToList();
+                if (!deptids.Contains(loginInfo.department_id))
+                {
+                    deptids.Add(loginInfo.department_id);
+                }
+                all = all.Where(r => deptids.Contains(r.department_id)).ToList();
+            }
             var tree = ToSelectTree("0", all);
             return tree;
         }

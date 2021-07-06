@@ -189,9 +189,10 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             return Json(data);
         }
 
-        public IActionResult GetSelectTree(string companyId)
+        public IActionResult GetSelectTree(string companyId, bool onlyMyself)
         {
-            var treeData = deptBLL.GetSelectTree(companyId);
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var treeData = deptBLL.GetSelectTree(companyId, onlyMyself ? loginInfo : null);
             return Json(treeData);
         }
 

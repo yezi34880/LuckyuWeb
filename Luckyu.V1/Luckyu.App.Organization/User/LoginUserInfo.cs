@@ -154,19 +154,26 @@ namespace Luckyu.App.Organization
 
                             userInfo.token = token;
 
+                            var managers = manageBLL.GetAllByCache();
+                            userInfo.managedepartments = managers.Where(r => r.user_id == user.user_id).ToList();
+
                             var relations = relationBLL.GetListByUser(user.user_id);
                             userInfo.post_ids = relations.Where(r => r.relationtype == (int)UserRelationEnum.Post).Select(r => r.object_id).ToList();
                             userInfo.role_ids = relations.Where(r => r.relationtype == (int)UserRelationEnum.Role).Select(r => r.object_id).ToList();
                             userInfo.group_ids = relations.Where(r => r.relationtype == (int)UserRelationEnum.Group).Select(r => r.object_id).ToList();
 
-                            var managers = manageBLL.GetAllByCache();
-                            userInfo.managedepartments = managers.Where(r => r.user_id == user.user_id).ToList();
+                            var allcompany = companyBLL.GetAllByCache();
+                            var othercompanys = relations.Where(r => r.relationtype == (int)UserRelationEnum.OtherCompany).Select(r => r.object_id).ToList();
+                            userInfo.other_companys = allcompany.Where(r => othercompanys.Contains(r.company_id)).ToDictionary(r => r.company_id, r => r.fullname);
 
-                            var company = companyBLL.GetEntityByCache(r => r.company_id == user.company_id);
+                            var company = allcompany.Where(r => r.company_id == user.company_id).FirstOrDefault();
                             userInfo.companyname = company.IsEmpty() ? "未设公司" : (company.shortname.Trim().IsEmpty() ? company.fullname : company.shortname);
 
-                            var companyid = company.IsEmpty() ? "" : company.company_id;
-                            var dept = deptBLL.GetEntityByCache(r => r.department_id == user.department_id, companyid);
+                            var alldept = deptBLL.GetAllByCache();
+                            var otherdepts = relations.Where(r => r.relationtype == (int)UserRelationEnum.OtherDepartment).Select(r => r.object_id).ToList();
+                            userInfo.other_departments = alldept.Where(r => otherdepts.Contains(r.department_id)).ToDictionary(r => r.department_id, r => r.fullname);
+
+                            var dept = alldept.Where(r => r.department_id == user.department_id).FirstOrDefault();
                             userInfo.departmentname = dept.IsEmpty() ? "未设部门" : (dept.shortname.Trim().IsEmpty() ? dept.fullname : dept.shortname);
 
                             if (httpContext != null && !httpContext.Items.ContainsKey("LoginUserInfo"))

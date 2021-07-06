@@ -974,8 +974,8 @@ namespace Luckyu.App.Workflow
             newTask = instance.Adapt<wf_taskEntity>();
             newTask.node_id = nodeNext.id;
             newTask.nodename = nodeNext.name;
-            newTask.previous_id = oldTasks[0].node_id;
             newTask.nodetype = nodeNext.type;
+            newTask.previous_id = oldTasks[0].node_id;
             newTask.previousname = oldTasks[0].nodename;
             newTask.Create(loginInfo);
 
@@ -1034,12 +1034,18 @@ namespace Luckyu.App.Workflow
         /// </summary>
         public ResponseResult DeleteHistory(string historyId)
         {
-            var auth = taskhistoryService.GetEntity(r => r.history_id == historyId);
-            if (auth == null)
+            var his = taskhistoryService.GetEntity(r => r.history_id == historyId);
+            if (his == null)
             {
                 return ResponseResult.Fail("该审批记录不存在");
             }
             taskhistoryService.DeleteHistory(historyId);
+            var annexs = annexBLL.GetList(r => r.external_id == historyId);
+            foreach (var annex in annexs)
+            {
+                annex.externalcode = his.task_id;
+                annexBLL.Update(annex);
+            }
             return ResponseResult.Success();
         }
         #endregion

@@ -428,11 +428,12 @@
                         initValue: null,
                         direction: "auto", //方向 auto / up / down
                         multiple: false, // 是否多选
+                        onlyMyself: false,
                         select: null, // 选中事件 function (data){}
                     };
                     $.extend(defaultOption, option);
                     luckyu.ajax.getSync(luckyu.rootUrl + "/OrganizationModule/Department/GetSelectTree",
-                        { companyId: defaultOption.companyId },
+                        { companyId: defaultOption.companyId, onlyMyself: defaultOption.onlyMyself},
                         function (res) {
                             var xmData = res;
                             var op = {

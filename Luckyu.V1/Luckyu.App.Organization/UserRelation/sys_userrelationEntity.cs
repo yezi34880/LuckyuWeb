@@ -26,7 +26,7 @@ namespace Luckyu.App.Organization
         public string user_id { get; set; }
 
         /// <summary>
-        ///  relationtype   1-角色2-岗位3-用户组
+        ///  relationtype   1-角色2-岗位3-用户组  5-从属公司 6-从属部门
         /// </summary>
         public int relationtype { get; set; }
 

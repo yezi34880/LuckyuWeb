@@ -273,7 +273,6 @@ var bootstrap = function (layui) {
                     result: 4,
                     opinion: opinion,
                 }, function (data) {
-                    debugger;
                     if (!!callBack) {
                         callBack();
                     }
