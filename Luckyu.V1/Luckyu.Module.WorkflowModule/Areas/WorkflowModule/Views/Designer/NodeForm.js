@@ -91,6 +91,7 @@ var bootstrap = function () {
                                     { value: "4", name: "岗位" },
                                     { value: "5", name: "角色" },
                                     { value: "6", name: "小组" },
+                                    { value: "9", name: "提交人自己" },
                                 ];
                                 select.initLocal({
                                     data: data,
@@ -100,7 +101,10 @@ var bootstrap = function () {
                                         var xm = xmSelect.get("#objectrange_" + rowid, true);
                                         if (res.arr.length > 0) {
                                             // 只有 岗位 角色 可以选择 同公司 同部门 分管 附加条件
-                                            if (res.arr[0].value !== "4" && res.arr[0].value !== "5") {
+                                            if (res.arr[0].value !== "9") {
+                                                xm.update({ disabled: true });
+                                            }
+                                            else if (res.arr[0].value !== "4" && res.arr[0].value !== "5") {
                                                 xm.setValue([], null, true);
                                                 xm.update({ disabled: true });
                                             }

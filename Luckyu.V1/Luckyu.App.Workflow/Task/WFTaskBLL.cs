@@ -1368,6 +1368,13 @@ namespace Luckyu.App.Workflow
                                 isContainSelf = true;
                             }
                             break;
+                        case 9:   // 提交人自己
+                            auth.user_id = instance.create_userId;
+                            //if (loginInfo.user_id == auth.user_id)   // 提交人自己不要跳过
+                            //{
+                            //    isContainSelf = true;
+                            //}
+                            break;
                     }
                     auth.task_id = task_id;
                     auth.Create(loginInfo);
@@ -1376,27 +1383,28 @@ namespace Luckyu.App.Workflow
             }
 
             // 添加 委托任务
-            var allAuthUsers = GetUserByAuth(listAuth);
-            var dateNow = DateTime.Now;
-            foreach (var user in allAuthUsers)
-            {
-                var delegates = delegateBLL.GetList(r => r.user_id == loginInfo.user_id && r.starttime >= dateNow && r.endtime < dateNow);
-                foreach (var dele in delegates)
-                {
-                    if (dele.flowcode == "ALL" && dele.flowcode.SplitNoEmpty(",").Contains(instance.flowcode))
-                    {
-                        listAuth.Add(new wf_task_authorizeEntity
-                        {
-                            user_id = dele.to_user_id,
-                            is_add = 2,  // 委托任务
-                        });
-                        if (dele.to_user_id == loginInfo.user_id)
-                        {
-                            isContainSelf = true;
-                        }
-                    }
-                }
-            }
+            // 委托代办不要放在这里面，通过查询来，写成记录很不灵活
+            //var allAuthUsers = GetUserByAuth(listAuth);
+            //var dateNow = DateTime.Now;
+            //foreach (var user in allAuthUsers)
+            //{
+            //    var delegates = delegateBLL.GetList(r => r.user_id == loginInfo.user_id && r.starttime >= dateNow && r.endtime < dateNow);
+            //    foreach (var dele in delegates)
+            //    {
+            //        if (dele.flowcode == "ALL" && dele.flowcode.SplitNoEmpty(",").Contains(instance.flowcode))
+            //        {
+            //            listAuth.Add(new wf_task_authorizeEntity
+            //            {
+            //                user_id = dele.to_user_id,
+            //                is_add = 2,  // 委托任务
+            //            });
+            //            if (dele.to_user_id == loginInfo.user_id)
+            //            {
+            //                isContainSelf = true;
+            //            }
+            //        }
+            //    }
+            //}
 
             return new Tuple<List<wf_task_authorizeEntity>, bool>(listAuth, isContainSelf);
         }

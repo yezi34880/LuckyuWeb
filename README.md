@@ -37,6 +37,7 @@
 基于 Layui 后台框架, 整合了许多第三方插件如 jqgrid eletree xmselect等
 仅作为学习尝试, 如有侵权, 可联系删除
 
+![数据库分表](./mdimage/db.jpg)  
 数据库 MySql  日志库与业务主库分离, 日志库自动分表
 ORM FreeSql  
 前台框架 Layui   
@@ -46,8 +47,8 @@ ORM FreeSql
 ## 分模块开发
 采取分项目,分模块开发
 Luckyu.Web为主启动项目
-各功能模块以 Luckyu.Module 开头
-![输入图片说明](./mdimage/4.jpeg)
+各功能模块以 Luckyu.Module 开头 
+![开发项目分模块](./mdimage/4.jpeg)
 
 ★★★重点★★★
 各项目模块 新建项目类型为 RCL (Razor Class Library)
@@ -109,7 +110,7 @@ Luckyu.Web为主启动项目
 请假管理 - 目前用于测试流程   
 
 ### 下一步任务
-表单自定义字段
+表单自定义字段,新建一个商品管理，用这一块想想自定义表单怎么做
 
 ### 再下一步
 表单多模板不同字段展示

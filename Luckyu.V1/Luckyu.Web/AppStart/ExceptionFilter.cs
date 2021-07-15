@@ -52,6 +52,10 @@ namespace Luckyu.Web
                 };
                 context.Result = new JsonResult(json);
             }
+            else
+            {
+                context.Result = new ContentResult() { Content  = context.Exception.Message };
+            }
 
         }
 
