@@ -162,17 +162,17 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
 
         [AjaxOnly, HttpPost]
-        public IActionResult AddUser(string taskId, List<string> userIds)
+        public IActionResult AddUser(string taskId, List<string> userIds, string remark)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = taskBLL.AddUser(taskId, userIds, loginInfo);
+            var res = taskBLL.AddUser(taskId, userIds, remark, loginInfo);
             return Json(res);
         }
         [AjaxOnly, HttpPost]
-        public IActionResult HelpMe(string taskId, List<string> userIds)
+        public IActionResult HelpMe(string taskId, List<string> userIds, string remark)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = taskBLL.HelpMe(taskId, userIds, loginInfo);
+            var res = taskBLL.HelpMe(taskId, userIds, remark, loginInfo);
             return Json(res);
         }
         #endregion

@@ -267,7 +267,7 @@ namespace Luckyu.App.Workflow
         }
 
         /// <summary>
-        /// 获取当前流程所有代办、加签用户
+        /// 获取当前流程所有加签、加签用户
         /// </summary>
         public List<WFTaskAuthModel> GetAddUserPage(JqgridPageRequest jqPage, string instanceId)
         {
@@ -579,16 +579,13 @@ namespace Luckyu.App.Workflow
             var currentAuth = auths.Where(r => r.user_id == loginInfo.user_id).FirstOrDefault();
             if (currentAuth != null && currentAuth.is_add == 1)
             {
-                historyCurrent.opinion = "【代办】 ";
-            }
-            else if (currentAuth != null && currentAuth.is_add == 2)
-            {
-                historyCurrent.opinion = "【任务委托】 ";
+                historyCurrent.opinion = "【加签】 ";
             }
             else if (currentAuth != null && currentAuth.is_add == 3)
             {
                 historyCurrent.opinion = "【协办】 ";
             }
+
             if (nodeCurrent.type == "confluencenode")
             {
                 historyCurrent.opinion = "【会签】 ";
@@ -608,11 +605,30 @@ namespace Luckyu.App.Workflow
             listHistory.Add(historyCurrent);
 
             task.is_done = 1;
-            if (task.nodetype == "helpme") // 协办 不管同意 还是驳回 都不往下进行
+            task.result = result;
+            if (task.nodetype == "helpme") // 协办 不往下进行
             {
                 taskService.Approve(instance, task, listTask, listHistory, listSql);
                 var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
                 return ResponseResult.Success((object)data1);
+            }
+
+            //  加签 任务，查询是否为多人加签，如果是多人等同于会签，必须所有都饿哦听一才能往下走
+            if (task.nodetype == "adduser")
+            {
+                // 加签 只有一种情况需要中断，即，多人加签，且只有部分人批完，这时候节点停住不动
+                // 如果拒绝，则相当于原节点拒绝，根据选择回到上一步或是起始
+                // 如果所有人都同意，在继续往下走
+                if (result == 1)
+                {
+                    var countTaskAdd = taskService.GetCount(r => r.instance_id == instance.instance_id && r.nodetype == "adduser" && r.node_id == task.node_id);
+                    var countHistoryAdd = taskhistoryService.GetCount(r => r.instance_id == instance.instance_id && r.nodetype == "adduser" && r.node_id == task.node_id);
+                    if (countHistoryAdd < countTaskAdd)
+                    {
+                        var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
+                        return ResponseResult.Success((object)data1);
+                    }
+                }
             }
 
             var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, result, opinion);
@@ -720,13 +736,13 @@ namespace Luckyu.App.Workflow
         #endregion
 
         /// <summary>
-        /// 代办
+        /// 加签（注意 ：如果加签选择多人，必须多人全部同意才会继续）
         /// </summary>
         /// <param name="taskId">当前流程</param>
-        /// <param name="userId">代办人员</param>
+        /// <param name="userId">加签人员</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
-        public ResponseResult AddUser(string taskId, List<string> userIds, UserModel loginInfo)
+        public ResponseResult AddUser(string taskId, List<string> userIds, string remark, UserModel loginInfo)
         {
             var task = taskService.GetEntity(r => r.task_id == taskId);
             if (task == null)
@@ -739,29 +755,47 @@ namespace Luckyu.App.Workflow
                 return ResponseResult.Fail("该流程实例不存在");
             }
 
-            var auths = new List<wf_task_authorizeEntity>();
+            var listTask = new List<wf_taskEntity>();
             var users = new List<sys_userEntity>();
             foreach (var userId in userIds)
             {
+                var taskHelp = task.Adapt<wf_taskEntity>();
+                taskHelp.Create(loginInfo);
+                taskHelp.task_id = SnowflakeHelper.NewCode();
+                taskHelp.previous_id = task.previous_id;
+                taskHelp.previousname = task.previousname;
+                taskHelp.node_id = task.node_id;
+                taskHelp.nodetype = "adduser";
+                taskHelp.nodename = "【加签】" + task.nodename;
+                var auths = new List<wf_task_authorizeEntity>();
+
                 var auth = new wf_task_authorizeEntity();
-                auth.task_id = task.task_id;
+                auth.task_id = taskHelp.task_id;
                 auth.user_id = userId;
-                auth.is_add = 1;  // 代办审批
+                auth.is_add = 1;  // 加签
                 auth.Create(loginInfo);
                 auths.Add(auth);
 
                 var user = userBLL.GetEntityByCache(r => r.user_id == userId);
                 users.Add(user);
+
+                taskHelp.authrizes = auths;
+                listTask.Add(taskHelp);
             }
 
             var history = new wf_taskhistoryEntity();
             history = task.Adapt<wf_taskhistoryEntity>();
             var struser = string.Join(",", users.Select(r => $"{r.realname}-{r.loginname}"));
-            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请  {struser} 【代办】";
+            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请  {struser} 【加签】";
+            if (!remark.IsEmpty())
+            {
+                history.opinion += " " + remark;
+            }
             history.result = 3;
             history.Create(loginInfo);
 
-            taskService.AddUser(auths, history);
+            task.is_done = 1;
+            taskService.AddUser(task, listTask, history);
             return ResponseResult.Success();
         }
 
@@ -769,10 +803,10 @@ namespace Luckyu.App.Workflow
         /// 协办（邀请别人协助，之后再回到自己）
         /// </summary>
         /// <param name="taskId">当前流程</param>
-        /// <param name="userId">代办人员</param>
+        /// <param name="userId">加签人员</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
-        public ResponseResult HelpMe(string taskId, List<string> userIds, UserModel loginInfo)
+        public ResponseResult HelpMe(string taskId, List<string> userIds, string remark, UserModel loginInfo)
         {
             var task = taskService.GetEntity(r => r.task_id == taskId);
             if (task == null)
@@ -817,6 +851,10 @@ namespace Luckyu.App.Workflow
             history = task.Adapt<wf_taskhistoryEntity>();
             var struser = string.Join(",", users.Select(r => $"{r.realname}-{r.loginname}"));
             history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请  {struser} 【协办】";
+            if (!remark.IsEmpty())
+            {
+                history.opinion += " " + remark;
+            }
             history.result = 6;
             history.Create(loginInfo);
 
@@ -1383,7 +1421,7 @@ namespace Luckyu.App.Workflow
             }
 
             // 添加 委托任务
-            // 委托代办不要放在这里面，通过查询来，写成记录很不灵活
+            // 委托加签不要放在这里面，通过查询来，写成记录很不灵活
             //var allAuthUsers = GetUserByAuth(listAuth);
             //var dateNow = DateTime.Now;
             //foreach (var user in allAuthUsers)
@@ -1525,7 +1563,7 @@ namespace Luckyu.App.Workflow
         {
             {1,"通过" },
             {2,"驳回" },
-            {3,"申请代办" },
+            {3,"申请加签" },
             {4,"已阅" },
             {5,"调整" },
             {6,"申请协办" },

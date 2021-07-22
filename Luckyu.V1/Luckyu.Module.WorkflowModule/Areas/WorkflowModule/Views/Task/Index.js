@@ -122,7 +122,7 @@ var bootstrap = function (layui) {
                             }
                         });
                         btns.push({
-                            name: "代办",
+                            name: "加签",
                             callback: function (index, layero) {
                                 layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
                                     page.searchInCurrentPage();

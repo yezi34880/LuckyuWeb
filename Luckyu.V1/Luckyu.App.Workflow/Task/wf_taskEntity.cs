@@ -62,9 +62,14 @@ namespace Luckyu.App.Workflow
         public string authorize_user_id { get; set; }
 
         /// <summary>
-        ///  authorizen_userame   
+        ///  authorize_userame   
         /// </summary>
-        public string authorizen_userame { get; set; }
+        public string authorize_userame { get; set; }
+
+        /// <summary>
+        /// 结果 1-同意 2-拒绝
+        /// </summary>
+        public int result { get; set; }
 
         /// <summary>
         ///  previous_id   

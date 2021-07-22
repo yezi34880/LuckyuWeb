@@ -192,7 +192,7 @@
                         if (!!userlist && userlist.length > 0) {
                             var userIds = userlist.map(r => r.userId);
                             var usernames = userlist.map(r => r.realname).join(",");
-                            bui.confirm("确定邀请以下用户代办审批？<br />" + usernames, function (e) {
+                            bui.confirm("确定邀请以下用户加签审批？<br />" + usernames, function (e) {
                                 //this 是指点击的按钮
                                 var text = $(e.target).text();
                                 if (text == "确定") {

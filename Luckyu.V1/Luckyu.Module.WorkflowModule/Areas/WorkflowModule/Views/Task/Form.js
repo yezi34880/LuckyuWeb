@@ -186,7 +186,7 @@ var bootstrap = function (layui) {
                 type: 1,
                 title: '审核',
                 content: $('#divApprove'),
-                area: ['800px', '580px'], //宽高
+                area: ['800px', '500px'], //宽高
                 btn: ['确定'],
                 yes: function (index, layero) {
                     if (!$("#divApprove").verifyForm()) {
@@ -222,46 +222,12 @@ var bootstrap = function (layui) {
             });
         }
     };
-    adduserClick = function (layerIndex, callBack) {
-        luckyu.layer.userSelectForm({
-            multiple: true,
-            callback: function (userlist) {
-                var userIds = userlist.map(r => r.userId);
-                var usernames = userlist.map(r => r.realname).join(",");
-                luckyu.layer.layerConfirm("确定邀请以下用户代办审批？<br />" + usernames, function () {
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds }, function (data) {
-                        if (!!callBack) {
-                            callBack();
-                        }
-                        parent.layui.layer.close(layerIndex);
-                    });
-                });
-            }
-        });
-    };
-    helpmeClick = function (layerIndex, callBack) {
-        luckyu.layer.userSelectForm({
-            multiple: true,
-            callback: function (userlist) {
-                var userIds = userlist.map(r => r.userId);
-                var usernames = userlist.map(r => r.realname).join(",");
-                luckyu.layer.layerConfirm("确定邀请以下用户协办审批？<br />" + usernames, function () {
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/HelpMe', { taskId: taskId, userIds: userIds }, function (data) {
-                        if (!!callBack) {
-                            callBack();
-                        }
-                        parent.layui.layer.close(layerIndex);
-                    });
-                });
-            }
-        });
-    }
     readClick = function (layerIndex, callBack) {
         layui.layer.open({
             type: 1,
             title: '审核',
             content: $('#divRead'),
-            area: ['800px', '580px'], //宽高
+            area: ['800px', '500px'], //宽高
             btn: ['确定'],
             yes: function (index, layero) {
                 if (!$("#divRead").verifyForm()) {
@@ -295,4 +261,38 @@ var bootstrap = function (layui) {
         });
 
     };
+    adduserClick = function (layerIndex, callBack) {
+        luckyu.layer.userSelectForm({
+            multiple: true,
+            callback: function (userlist) {
+                var userIds = userlist.map(r => r.userId);
+                var usernames = userlist.map(r => r.realname).join(",");
+                luckyu.layer.layerConfirm("确定邀请以下用户加签审批？<br />" + usernames, function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds, remark: '' }, function (data) {
+                        if (!!callBack) {
+                            callBack();
+                        }
+                        parent.layui.layer.close(layerIndex);
+                    });
+                });
+            }
+        });
+    };
+    helpmeClick = function (layerIndex, callBack) {
+        luckyu.layer.userSelectForm({
+            multiple: true,
+            callback: function (userlist) {
+                var userIds = userlist.map(r => r.userId);
+                var usernames = userlist.map(r => r.realname).join(",");
+                luckyu.layer.layerConfirm("确定邀请以下用户协办审批？<br />" + usernames, function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/HelpMe', { taskId: taskId, userIds: userIds, remark: '' }, function (data) {
+                        if (!!callBack) {
+                            callBack();
+                        }
+                        parent.layui.layer.close(layerIndex);
+                    });
+                });
+            }
+        });
+    }
 };

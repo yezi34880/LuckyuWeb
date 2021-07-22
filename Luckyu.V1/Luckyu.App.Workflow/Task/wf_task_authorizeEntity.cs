@@ -60,7 +60,7 @@ namespace Luckyu.App.Workflow
         public string manage_dept_id { get; set; }
 
         /// <summary>
-        ///  is_add   1 代办、加签   2 委托  3  协办
+        ///  is_add   1 加签  3  协办
         /// </summary>
         public int is_add { get; set; }
 

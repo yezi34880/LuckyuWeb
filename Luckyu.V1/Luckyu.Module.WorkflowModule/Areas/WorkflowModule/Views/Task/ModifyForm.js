@@ -146,7 +146,7 @@ var bootstrap = function (layui) {
             });
 
             window.deleteAddUser = function (authId) {
-                luckyu.layer.layerConfirm("确定删除该代办用户 ？", function () {
+                luckyu.layer.layerConfirm("确定删除该加签用户 ？", function () {
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/DeleteTaskAuth', { authId: authId }, function (data) {
                         layui.notice.success("操作成功");
                         gridAddUser.trigger("reloadGrid");
