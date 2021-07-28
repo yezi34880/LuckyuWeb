@@ -148,6 +148,8 @@
         userSelectForm: function (option) {
             var defaultOption = {
                 companyId: null, // 公司范围，为空则在所有公司中选择
+                postId: null,
+                roleId: null,
                 multiple: true, //多选，为false，选择一个替换上一个
                 initValue: [], // 初始选中数据
                 callback: null // 返回值
@@ -305,8 +307,6 @@
                 }]
             });
         },
-
-
 
     };
 })(window.layui);

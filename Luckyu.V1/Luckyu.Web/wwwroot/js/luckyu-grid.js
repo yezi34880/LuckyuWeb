@@ -419,6 +419,38 @@
                 },
 
                 /**
+                 * 导出Excel
+                 */
+                toExcel: function (option) {
+                    var defaultOp = {
+
+                    };
+                    //$("#grid tr.jqgfirstrow").hide();
+                    //$("div.ui-jqgrid-hdiv table,div.ui-jqgrid-bdiv table").tableExport({
+                    //    type: "excel",
+                    //    //escape: false,
+                    //    fileName: "发运统计",
+                    //    mso: {
+                    //        styles: ['border'],
+                    //        onMsoNumberFormat: function (cell, row, col) {
+                    //            //if (row < 1) {
+                    //            //    return "";
+                    //            //}
+                    //            //if (col == 4 || col == 5 || col == 6 || col == 7) {  // 合同号 订单号 发票号 报关单号 转文本
+                    //            //    return '\\@';
+                    //            //}
+                    //            //if (col == 10 || col == 12 || col == 14 || col == 15 || col == 16 || col == 17 || col == 18 || col == 19) {
+                    //            //    return '0\\.00';
+                    //            //}
+                    //            return "";
+                    //        },
+                    //        worksheetName: '发运统计'
+                    //    },
+                    //});
+                    //$("#grid tr.jqgfirstrow").show();
+
+                },
+                /**
                  * 自定义初始化 jqgrid
                  * @param {any} op
                  */

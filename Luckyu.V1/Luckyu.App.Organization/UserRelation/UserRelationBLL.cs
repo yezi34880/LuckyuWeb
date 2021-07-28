@@ -46,6 +46,12 @@ namespace Luckyu.App.Organization
             var list = all.Where(r => r.relationtype == relationType && r.object_id == objectId).ToList();
             return list;
         }
+        public List<sys_userrelationEntity> GetListByType(UserRelationEnum relationType, string objectId)
+        {
+            var all = GetAllByCache();
+            var list = all.Where(r => r.relationtype == (int)relationType && r.object_id == objectId).ToList();
+            return list;
+        }
 
         public List<sys_userrelationEntity> GetListByUser(string userId)
         {
@@ -59,6 +65,12 @@ namespace Luckyu.App.Organization
             var list = all.Where(r => r.relationtype == relationType).ToList();
             return list;
         }
+        public List<sys_userrelationEntity> GetListByUser(UserRelationEnum relationType, string userId)
+        {
+            var all = GetListByUser(userId);
+            var list = all.Where(r => r.relationtype == (int)relationType).ToList();
+            return list;
+        }
 
         #endregion
         public void SetRelationByObject(int objectType, string objectId, List<string> userIds, UserModel loginInfo)
@@ -67,6 +79,11 @@ namespace Luckyu.App.Organization
             cache.Remove(cacheKey);
         }
 
+        public void SetRelationByUser(UserRelationEnum relationType, string userId, List<string> objectIds, UserModel loginInfo)
+        {
+            relationService.SetRelationByUser((int)relationType, userId, objectIds, loginInfo);
+            cache.Remove(cacheKey);
+        }
         public void SetRelationByUser(int relationType, string userId, List<string> objectIds, UserModel loginInfo)
         {
             relationService.SetRelationByUser(relationType, userId, objectIds, loginInfo);

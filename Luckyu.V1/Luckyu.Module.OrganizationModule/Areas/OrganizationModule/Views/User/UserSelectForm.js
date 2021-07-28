@@ -9,6 +9,8 @@ var bootstrap = function (layui) {
     var userlist = {};
     var userlistselected = [];
     var multiple = true;
+    var postId = '';
+    var roleId = '';
 
     if (!!top._UserSelectFormOption.initValue) {
         if (typeof (top._UserSelectFormOption.initValue) === 'string') {
@@ -20,6 +22,12 @@ var bootstrap = function (layui) {
     }
     if (!!top._UserSelectFormOption.companyId) {
         companyId = top._UserSelectFormOption.companyId;
+    }
+    if (!!top._UserSelectFormOption.postId) {
+        postId = top._UserSelectFormOption.postId;
+    }
+    if (!!top._UserSelectFormOption.roleId) {
+        roleId = top._UserSelectFormOption.roleId;
     }
     if (top._UserSelectFormOption.multiple === false) {
         multiple = top._UserSelectFormOption.multiple;
@@ -122,7 +130,9 @@ var bootstrap = function (layui) {
                 var tag = d.data.currentData.ext.tag;
                 var requestParam = {
                     organizationId: id,
-                    organizationTag: tag
+                    organizationTag: tag,
+                    postId: postId,
+                    roleId: roleId,
                 };
                 if (!!userlist[id]) {
                     renderUserlist(userlist[id]);

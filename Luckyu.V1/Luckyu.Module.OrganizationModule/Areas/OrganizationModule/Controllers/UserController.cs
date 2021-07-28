@@ -16,6 +16,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
     {
         #region Var
         private UserBLL userBLL = new UserBLL();
+        private UserRelationBLL userrelationBLL = new UserRelationBLL();
         #endregion
 
         #region Index
@@ -120,7 +121,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             return View();
         }
         [HttpGet, AjaxOnly]
-        public IActionResult GetUserByCompanyDept(string organizationTag, string organizationId)
+        public IActionResult GetUserByCompanyDept(string organizationTag, string organizationId, string postId, string roleId)
         {
             var list = new List<sys_userEntity>();
             if (!organizationId.IsEmpty() && organizationId != "-1")
@@ -139,6 +140,19 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             {
                 list = userBLL.GetAllByCache();
             }
+            if (!postId.IsEmpty())
+            {
+                var relations = userrelationBLL.GetListByType(UserRelationEnum.Post, postId);
+                var userids = relations.Select(r => r.user_id).ToList();
+                list = list.Where(r => userids.Contains(r.user_id)).ToList();
+            }
+            if (!roleId.IsEmpty())
+            {
+                var relations = userrelationBLL.GetListByType(UserRelationEnum.Role, roleId);
+                var userids = relations.Select(r => r.user_id).ToList();
+                list = list.Where(r => userids.Contains(r.user_id)).ToList();
+            }
+
             return Success(list);
         }
         #endregion

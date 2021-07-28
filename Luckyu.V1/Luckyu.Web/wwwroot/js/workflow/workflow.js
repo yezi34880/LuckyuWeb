@@ -1067,7 +1067,7 @@
         var DefaultOption = {
             openNode: function () { },
             openLine: function () { },
-            toolBtns: ["startround", "endround", "stepnode", "confluencenode", "conditionnode", "switchnode", "auditornode", "processnode"],//"childwfnode"
+            toolBtns: ["startround", "endround", "stepnode", "confluencenode", "conditionnode",  "auditornode", "processnode"],
             nodeRemarks: {
                 cursor: "选择",
                 direct: "连接线",
@@ -1076,10 +1076,8 @@
                 stepnode: "审批",
                 confluencenode: "会签",
                 conditionnode: "条件判断",
-                switchnode: "多条件选择",
                 auditornode: "传阅",
                 processnode: "执行"
-                //childwfnode: "子流程节点"
             },
             node: [],
             line: [],
