@@ -82,7 +82,7 @@ var bootstrap = function (layui) {
                 rowNum: 30,
                 rowList: [30, 50, 100],
                 pager: "#gridPager",
-                sortname: "sort",
+                sortname: "--sort",
                 sortorder: "ASC",
                 onSelectRow: function (rowid, status) {
                     if (status) {

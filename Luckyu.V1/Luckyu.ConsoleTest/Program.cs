@@ -57,9 +57,9 @@ namespace Luckyu.ConsoleTest
             trans.BeginTrans();
             try
             {
-                trans.Insert<sys_configEntity>(new sys_configEntity { id = "111" });
+                trans.Insert<sys_configEntity>(new sys_configEntity { config_id = "111" });
                 int.Parse("");
-                trans.Delete(new sys_configEntity { id = "111" });
+                trans.Delete(new sys_configEntity { config_id = "111" });
                 trans.Commit();
             }
             catch (Exception)

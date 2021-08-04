@@ -21,12 +21,68 @@ namespace Luckyu.Utility
         /// <summary>
         /// 排序字段字段名
         /// </summary>
-        public string sidx { get; set; }
+        //public string sidx { get; set; }
+        private string _sidx;
+        public string sidx
+        {
+            get
+            {
+                return _sidx;
+            }
+            set
+            {
+                if (!value.IsEmpty())  // 增加验证 防止 SQL注入
+                {
+                    if (value.Contains("-"))
+                    {
+                        value = value.Replace("-", "");
+                    }
+                    if (value.Contains("\'"))
+                    {
+                        value = value.Replace("\'", "");
+                    }
+                    if (value.Contains("\""))
+                    {
+                        value = value.Replace("\"", "");
+                    }
+                }
+
+                _sidx = value;
+            }
+        }
 
         /// <summary>
         /// 正序倒序 asc / desc
         /// </summary>
-        public string sord { get; set; }
+        //public string sord { get; set; }
+        private string _sord;
+        public string sord
+        {
+            get
+            {
+                return _sord;
+            }
+            set
+            {
+                if (!value.IsEmpty())  // 增加验证 防止 SQL注入
+                {
+                    if (value.Contains("-"))
+                    {
+                        value = value.Replace("-", "");
+                    }
+                    if (value.Contains("\'"))
+                    {
+                        value = value.Replace("\'", "");
+                    }
+                    if (value.Contains("\""))
+                    {
+                        value = value.Replace("\"", "");
+                    }
+                }
+
+                _sord = value;
+            }
+        }
 
         /// <summary>
         /// 搜索

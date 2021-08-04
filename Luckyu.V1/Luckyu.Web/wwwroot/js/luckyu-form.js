@@ -86,6 +86,10 @@
                         if (!name) {
                             return;
                         }
+                        var disabled = self.attr('disabled');
+                        if (!!disabled && disabled == "disabled") {
+                            return;
+                        }
                         if (self.is("input") || self.is("textarea") || self.is("select")) {
                             var type = $(this).attr('type');
                             if (self.hasClass("xm-select-default")) {

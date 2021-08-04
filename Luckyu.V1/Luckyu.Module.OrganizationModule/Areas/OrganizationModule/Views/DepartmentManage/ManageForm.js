@@ -32,8 +32,8 @@ var bootstrap = function (layui) {
                                     initValue: select.attr("_value"),
                                     select: function (res) {
                                         var rowid = options.rowId;
-                                        $("#objectnames_" + rowid).val('');
-                                        $("#objectids_" + rowid).val('');
+                                        $("#objectname_" + rowid).val('');
+                                        $("#object_id_" + rowid).val('');
                                     }
                                 });
                             },

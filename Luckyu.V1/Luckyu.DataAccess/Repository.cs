@@ -967,7 +967,7 @@ namespace Luckyu.DataAccess
         {
             var dbType = db.Ado.DataType;
             strSql = strSql.Trim().TrimEnd(';');
-            if (!string.IsNullOrEmpty(jqPage.sidx))
+            if (!jqPage.sidx.IsEmpty())
             {
                 strSql += $" ORDER BY {jqPage.sidx} {jqPage.sord}";
             }

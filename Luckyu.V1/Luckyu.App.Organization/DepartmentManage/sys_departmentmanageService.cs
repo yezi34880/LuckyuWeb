@@ -9,8 +9,6 @@ namespace Luckyu.App.Organization
 {
     public class sys_departmentmanageService : RepositoryFactory<sys_departmentmanageEntity>
     {
-        private DepartmentBLL deptBLL = new DepartmentBLL();
-
         public void SaveForm(string userId, List<sys_departmentmanageEntity> list, UserModel loginInfo)
         {
             var trans = BaseRepository().BeginTrans();
