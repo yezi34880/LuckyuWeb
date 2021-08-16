@@ -3,7 +3,7 @@
     window.luckyu_staticdata = {
         wf_resultshow: [
             { value: 1, name: '<span class="label label-success">通过</span>' },
-            { value: 2, name: '<span class="label label-error">驳回</span>' },
+            { value: 2, name: '<span class="label label-error">退回</span>' },
             { value: 3, name: '<span class="label label-primary">申请加签</span>' },
             { value: 4, name: '<span class="label label-success">已阅</span>' },
             { value: 5, name: '<span class="label label-primary">调整</span>' },

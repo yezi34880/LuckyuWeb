@@ -110,7 +110,7 @@ var bootstrap = function (layui) {
                     title: "调整流程",
                     width: 1300,
                     height: 850,
-                    url: luckyu.rootUrl + "/WorkflowModule/Task/ModifyForm?instanceId=" + row.instance_id + "&processId=" + row.process_id,
+                    url: luckyu.rootUrl + "/WorkflowModule/Monitor/ModifyForm?instanceId=" + row.instance_id + "&processId=" + row.process_id,
                 });
             });
 

@@ -9,6 +9,7 @@ using Luckyu.Utility;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Reflection;
+using FreeSql.DatabaseModel;
 
 namespace Luckyu.App.System
 {
@@ -259,7 +260,6 @@ namespace Luckyu.App.System
             return ResponseResult.Success();
         }
 
-
         private string GetRealValue(sys_dbcolumnEntity col, string value)
         {
             string realvalue = "";
@@ -364,6 +364,23 @@ namespace Luckyu.App.System
             }
             return realvalue;
         }
+
+        public List<KeyValue> GetAllDBTable()
+        {
+            var list = tableService.GetAllDBTable();
+            return list.Select(r => new KeyValue
+            {
+                Key = r.Name,
+                Value = r.Comment.IsEmpty() ? r.Name : $"{r.Comment} { r.Name}"
+            }).ToList();
+        }
+
+        public DbTableInfo GetTableInfoByName(string tablename)
+        {
+            var tb = tableService.GetTableInfoByName(tablename);
+            return tb;
+        }
+
 
     }
 }

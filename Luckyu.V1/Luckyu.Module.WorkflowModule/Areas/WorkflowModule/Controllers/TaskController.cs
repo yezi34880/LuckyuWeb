@@ -66,60 +66,6 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
         #endregion
 
-        #region 调整流程位置
-        public IActionResult ModifyForm()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult GetTaskScheme(string instanceId)
-        {
-            var res = taskBLL.GetTaskScheme(instanceId);
-            return Json(res);
-        }
-
-        public IActionResult GetHelpMePage(JqgridPageRequest jqPage, string instanceId)
-        {
-            var res = taskBLL.GetHelpMePage(jqPage, instanceId);
-            return Json(res);
-        }
-
-        /// <summary>
-        /// 删除任务
-        /// </summary>
-        public IActionResult DeleteTask(string taskId)
-        {
-            var res = taskBLL.DeleteTask(taskId);
-            return Json(res);
-        }
-
-        public IActionResult GetAddUserPage(JqgridPageRequest jqPage, string instanceId)
-        {
-            var res = taskBLL.GetAddUserPage(jqPage, instanceId);
-            return Json(res);
-        }
-        /// <summary>
-        /// 删除任务下用户
-        /// </summary>
-        public IActionResult DeleteTaskAuth(string authId)
-        {
-            var res = taskBLL.DeleteTaskAuth(authId);
-            return Json(res);
-        }
-
-        /// <summary>
-        /// 删除审批历史
-        /// </summary>
-        /// <param name="authId"></param>
-        /// <returns></returns>
-        public IActionResult DeleteHistory(string historyId)
-        {
-            var res = taskBLL.DeleteHistory(historyId);
-            return Json(res);
-        }
-        #endregion
-
         #region 通用单据查看自身审批日志页面（包括多次流程实例信息）
 
         public IActionResult LogFormByProcessId(string processId)
