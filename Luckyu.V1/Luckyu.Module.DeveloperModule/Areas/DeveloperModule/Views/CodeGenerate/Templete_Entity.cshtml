@@ -1,0 +1,66 @@
+﻿@using Luckyu.App.OA;
+@using FreeSql.DatabaseModel;
+@model DbTableInfo;
+
+using Luckyu.App.Organization;
+using Luckyu.Log;
+using Luckyu.Utility;
+using FreeSql.DataAnnotations;
+using System;
+
+namespace Luckyu.App.OA
+{
+    /// <summary>
+    ///  @Model.Name @Html.Raw(Model.Comment)
+    /// </summary>
+    [Table(Name = "@Model.Name.ToUpper()")]
+    public class @(Model.Name)Entity : ExtensionEntityBase
+    {
+        #region 属性
+        @foreach (var col in Model.Columns)
+        {
+        @:/// <summary>
+        @:///  @col.Name @Html.Raw(col.Coment)
+        @:/// </summary>
+        if (col.IsPrimary)
+        {
+        @:[Column(IsPrimary = true)]
+        }
+        @:public @col.CsType @col.Name { get; set; }
+        @:
+        }
+        #endregion
+
+        #region 扩展
+
+        #endregion
+
+        #region 方法
+        public void Create(UserModel loginInfo)
+        {
+            if (this.id.IsEmpty())
+            {
+                this.id = SnowflakeHelper.NewCode();
+            }
+            this.createtime = DateTime.Now;
+            this.create_userid = loginInfo.user_id;
+            this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
+        }
+        public void Modify(string keyValue, UserModel loginInfo)
+        {
+            this.id = keyValue;
+            this.edittime = DateTime.Now;
+            this.edit_userid = loginInfo.user_id;
+            this.edit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
+        }
+        public void Remove(UserModel loginInfo)
+        {
+            this.is_delete = 1;
+            this.deletetime = DateTime.Now;
+            this.delete_userid = loginInfo.user_id;
+            this.delete_username = $"{loginInfo.realname}-{loginInfo.loginname}";
+        }
+        #endregion
+
+    }
+}

@@ -1,0 +1,40 @@
+﻿@using FreeSql.DatabaseModel;
+@model DbTableInfo;
+
+using FreeSql.Internal.Model;
+using Luckyu.App.Organization;
+using Luckyu.App.System;
+using Luckyu.DataAccess;
+using Luckyu.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Luckyu.App.OA
+{
+    public class  @(Model.Name)BLL
+    {
+        #region Var
+        private @(Model.Name)Service service = new @(Model.Name)Service();
+
+        #endregion
+
+        #region Get
+        public JqgridPageResponse<@(Model.Name)Entity> Page(JqgridPageRequest jqpage, UserModel loginInfo)
+        {
+            var page = service.Page(jqpage, loginInfo);
+            return page;
+        }
+
+        public @(Model.Name)Entity GetEntity(Expression<Func<@(Model.Name)Entity, bool>> condition)
+        {
+            var entity = service.GetEntity(condition);
+            return entity;
+        }
+
+        #endregion
+    }
+}

@@ -1,0 +1,39 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Header{
+
+}
+<div>
+    <div class="form-item layui-col-xs4">
+        <label class="layui-form-label">数据库表</label>
+        <div class="layui-input-block">
+            <div id="dbtablename" class="xm-select" luckyu-type="datasource" luckyu-url="/DeveloperModule/CodeGenerate/GetAllDbTableSelect"></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs2">
+
+    </div>
+    <div class="form-item layui-col-xs6">
+        <div class="layui-btn-group">
+            <button type="button" id="entity" class="layui-btn layui-btn-sm">Entity</button>
+            <button type="button" id="service" class="layui-btn layui-btn-sm">Service</button>
+            <button type="button" id="bll" class="layui-btn layui-btn-sm">BLL</button>
+        </div>
+        <div class="layui-btn-group">
+            <button type="button" id="downloadtemplete" class="layui-btn layui-btn-sm"><i class="fa fa-download"></i>&nbsp;一键下载全部</button>
+        </div>
+
+    </div>
+    <div class="form-item layui-col-xs12">
+        <label class="layui-form-label">代码</label>
+        <div class="layui-input-block">
+            <textarea id="contents" class="layui-textarea" rows="28"></textarea>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/DeveloperModule/Views/CodeGenerate/Form.js")
+}
