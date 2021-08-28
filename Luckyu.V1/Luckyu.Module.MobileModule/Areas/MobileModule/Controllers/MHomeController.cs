@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DeviceDetectorNET;
 using Luckyu.App.Organization;
 using Luckyu.Cache;
@@ -16,11 +18,21 @@ namespace Luckyu.Module.MobileModule.Controllers
     [Area("MobileModule")]
     public class MHomeController : MvcControllerBase
     {
+        #region Var
+        private ModuleBLL moduleBLL = new ModuleBLL();
+
+        #endregion
+
         #region Index
         public IActionResult Index()
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             ViewBag.UserInfo = loginInfo;
+
+            List<sys_moduleEntity> listSelfModule;
+            var modules = moduleBLL.GetModuleTreeByUser(loginInfo, 1, out listSelfModule);
+            loginInfo.module_ids = listSelfModule.Select(r => r.module_id).ToList();
+
             return View();
         }
         #endregion

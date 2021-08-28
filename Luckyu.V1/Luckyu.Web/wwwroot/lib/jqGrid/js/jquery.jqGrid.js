@@ -6453,6 +6453,10 @@
                     if (!cm.edittype) { cm.edittype = "text"; }
                     $t.p.savedRow.push({ id: iRow, ic: iCol, name: nm, v: tmp, rowId: $t.rows[iRow].id });
                     if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ''; }
+                    // 修改时 替换空格，Bug
+                    tmp = tmp.replace(/&nbsp;/g, ' ');
+                    tmp = tmp.replace(/&#160;/g, ' ');
+
                     if ($.isFunction($t.p.formatCell)) {
                         var tmp2 = $t.p.formatCell.call($t, $t.rows[iRow].id, nm, tmp, iRow, iCol);
                         if (tmp2 !== undefined) { tmp = tmp2; }
@@ -13255,6 +13259,10 @@
                                 var opt = $.extend({}, cm[i].editoptions || {}, { id: nm + "_" + rowid, name: nm, rowId: rowid, oper: 'edit' });
                                 if (!cm[i].edittype) { cm[i].edittype = "text"; }
                                 if (tmp === "&nbsp;" || tmp === "&#160;" || (tmp.length === 1 && tmp.charCodeAt(0) === 160)) { tmp = ''; }
+                                // 修改时 替换空格，Bug
+                                tmp = tmp.replace(/&nbsp;/g, ' ');
+                                tmp = tmp.replace(/&#160;/g, ' ');
+
                                 var elc = $.jgrid.createEl.call($t, cm[i].edittype, opt, tmp, true, $.extend({}, $.jgrid.ajaxOptions, $t.p.ajaxSelectOptions || {}));
                                 $(elc).addClass("editable inline-edit-cell");
                                 if ($.inArray(cm[i].edittype, ['text', 'textarea', 'password', 'select']) > -1) {

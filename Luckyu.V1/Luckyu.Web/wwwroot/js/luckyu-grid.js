@@ -177,6 +177,11 @@
                                         val = "";
                                     }
                                     tmp[nm] = val;
+
+                                    var strName = $(xmselect).attr("selectname");
+                                    if (!!strName) {
+                                        tmp[strName] = xmsel.getValue("nameStr");
+                                    }
                                 }
                                 break;
                         }

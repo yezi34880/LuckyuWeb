@@ -42,19 +42,45 @@ namespace Luckyu.Module.SystemModule.Controllers
             return File(bytes, annex.contexttype);
         }
 
+        public IActionResult ShowFileThumb(string keyValue)
+        {
+            //var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
+            //if (annex == null)
+            //{
+            //    return new EmptyResult();
+            //}
+            var thumb = annexBLL.GetEntity(r => r.externalcode == "[thumb]" && r.external_id == keyValue, r => r.createtime);
+            if (thumb == null)
+            {
+                return new EmptyResult();
+            }
+
+            var basepath = configBLL.GetValueByCache(thumb.basepath);
+            var filePath = FileHelper.Combine(basepath, thumb.filepath);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return new EmptyResult();
+            }
+            Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(thumb.filename, Encoding.UTF8));
+            Response.ContentType = thumb.contexttype;
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+            return File(bytes, thumb.contexttype);
+        }
+
         public IActionResult DownloadFile(string keyValue)
         {
             var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
             if (annex == null)
             {
-                return new EmptyResult();
+                return Redirect("/Error/NotFoundPage");
             }
             var basepath = configBLL.GetValueByCache(annex.basepath);
             var filePath = FileHelper.Combine(basepath, annex.filepath);
             if (!System.IO.File.Exists(filePath))
             {
-                return new EmptyResult();
+                return Redirect("/Error/NotFoundPage");
             }
+            annexBLL.DownLoad(annex);
             Response.Headers.Append("Content-Disposition", "attachment; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
             Response.ContentType = annex.contexttype;
             var bytes = System.IO.File.ReadAllBytes(filePath);

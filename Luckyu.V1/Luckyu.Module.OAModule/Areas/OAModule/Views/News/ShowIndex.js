@@ -63,12 +63,6 @@ var bootstrap = function (layui) {
             };
         },
         initBtn: function () {
-            $("#searchfilter").click(function () {
-                grid.toggleSearchBar();
-            });
-            $("#reset").click(function () {
-                grid.clearSearchBar();
-            });
 
             $("#show").click(function () {
                 var rowid = grid.getGridParam("selrow");
@@ -81,7 +75,7 @@ var bootstrap = function (layui) {
                     title: row.title,
                     width: 1300,
                     height: 850,
-                    url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + rowid,
+                    url: luckyu.rootUrl + "/OAModule/News/ShowForm?keyValue=" + rowid,
                 });
             });
 

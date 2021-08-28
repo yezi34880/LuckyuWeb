@@ -94,6 +94,32 @@ namespace Luckyu.App.System
             annex.contexttype = contentType;
 
             annexService.Insert(annex);
+
+            // 如果是图片类型，自动生成缩略图
+            var images = new List<string> { ".jpg", ".jpeg", ".png", ".ico", ".bmp" };
+            if (images.Contains(annex.fileextenssion.ToLower()))
+            {
+                var virtualPaththumb = virtualPath.Replace(FileEextension, $"_thumb{FileEextension}");
+                string thumbpaht = FileHelper.Combine(basepath.Item2, virtualPaththumb);
+                var thumbWidth = AppSettingsHelper.GetAppSetting("ThumbWidth").ToInt();
+                FileHelper.ThumbImage(realPath, thumbpaht, thumbWidth);
+
+                // 缩略图 关联ID 为 主图 ID,缩略图 附加字段  [thumb]
+                var thumb = new sys_annexfileEntity();
+                thumb.Create(userInfo);
+                thumb.external_id = annex.annex_id;
+                thumb.externalcode = "[thumb]";
+
+                annex.downloadcount = 0;
+                annex.basepath = basepath.Item1;
+                annex.fileextenssion = FileEextension;
+                annex.filename = fileName;
+                annex.filepath = virtualPaththumb;
+                annex.filesize = buffer.Length;
+                annex.contexttype = contentType;
+
+                annexService.Insert(annex);
+            }
             return annex;
         }
 
@@ -140,6 +166,10 @@ namespace Luckyu.App.System
         public void Update(sys_annexfileEntity entity)
         {
             annexService.Update(entity);
+        }
+        public void DownLoad(sys_annexfileEntity entity)
+        {
+            annexService.DownLoad(entity);
         }
         #endregion
 

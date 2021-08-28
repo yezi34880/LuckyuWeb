@@ -91,7 +91,7 @@ namespace Luckyu.Module.OAModule.Controllers
             var page = newsBLL.ShowPage(jqPage, loginInfo);
             return Json(page);
         }
-        public IActionResult Show(string keyValue)
+        public IActionResult ShowForm(string keyValue)
         {
             var news = newsBLL.GetEntity(r => r.news_id == keyValue) ?? new oa_newsEntity();
             return View(news);

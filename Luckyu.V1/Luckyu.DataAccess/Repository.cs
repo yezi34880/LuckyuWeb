@@ -1302,6 +1302,34 @@ namespace Luckyu.DataAccess
             };
             return page;
         }
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, Expression<Func<T, T>> select) where T : class, new()
+        {
+            var query = db.Select<T>().Where(condition);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
+            if (!filters.IsEmpty())
+            {
+                foreach (var filter in filters)
+                {
+                    if (filter != null)
+                    {
+                        query = query.WhereDynamicFilter(filter);
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(jqPage.sidx))
+            {
+                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
+            }
+            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList(select);
+            var page = new JqgridPageResponse<T>
+            {
+                count = jqPage.rows,
+                page = jqPage.page,
+                records = (int)total,
+                rows = list,
+            };
+            return page;
+        }
         public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, ISelect<T> query) where T : class, new()
         {
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);

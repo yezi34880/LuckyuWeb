@@ -28,6 +28,8 @@ namespace Luckyu.App.Organization
 
         public List<string> module_ids { get; set; }
 
+        public List<string> mobile_module_ids { get; set; }
+
         public List<sys_departmentmanageEntity> managedepartments { get; set; }
 
         public string usercode { get; set; }

@@ -40,5 +40,10 @@ namespace Luckyu.App.System
             });
         }
 
+        public void DownLoad(sys_annexfileEntity entity)
+        {
+            BaseRepository().db.Update<sys_annexfileEntity>().SetSource(entity).Set(r => r.downloadcount == r.downloadcount + 1).ExecuteAffrows();
+        }
+
     }
 }

@@ -231,8 +231,14 @@
                 default:
                     var rowid = parseInt(value);
                     var data = DefaultOption.dfdata[rowid];
-                    DefaultOption._begindate = data.begin();
-                    DefaultOption._enddate = data.end();
+                    if (!!data) {
+                        DefaultOption._begindate = data.begin();
+                        DefaultOption._enddate = data.end();
+                    }
+                    else {
+                        DefaultOption._begindate = '';
+                        DefaultOption._enddate = '';
+                    }
                     break;
             }
             $container.hide();
@@ -290,9 +296,9 @@
         var DefaultOption = {
             dfdata: [
                 { name: '今天', begin: function () { return luckyu.utility.getDate('yyyy-MM-dd 00:00:00') }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
-                { name: '近7天', begin: function () { return luckyu.utility.getDate('yyyy-MM-dd 00:00:00', 'd', -6) }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
-                { name: '近1个月', begin: function () { return luckyu.utility.getDate('yyyy-MM-dd 00:00:00', 'm', -1) }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
-                { name: '近3个月', begin: function () { return luckyu.utility.getDate('yyyy-MM-dd 00:00:00', 'm', -3) }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
+                { name: '本月', begin: function () { return new Date().format("yyyy-MM") + "-01 00:00:00"  }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
+                { name: '本季度', begin: function () { return luckyu.utility.getCurrentQuarter().begin }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
+                { name: '本年度', begin: function () { return new Date().format("yyyy") + "-01-01 00:00:00" }, end: function () { return ahoit.utility.getDate('yyyy-MM-dd 23:59:59') } },
             ],
             // 月
             mShow: false,

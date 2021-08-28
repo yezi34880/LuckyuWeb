@@ -20,9 +20,10 @@
                         var verify = self.attr("lay-verify");
                         if (verify.indexOf("required") > -1) {
                             var label = self.parent().prev();
-                            if (label.find("i.redstar").length < 1) {
-                                label.prepend('<i class="redstar">*</i>');
-                            }
+                            label.css("color", "red");
+                            //if (label.find("i.redstar").length < 1) {
+                            //    label.prepend('<i class="redstar">*</i>');
+                            //}
                         }
                         if (verify.indexOf("number") > -1 && !self.hasClass("numeric")) {
                             self.numeric();
@@ -125,6 +126,11 @@
                                 val = "";
                             }
                             objData[name] = val;
+
+                            var strName = self.attr("selectname");
+                            if (!!strName) {
+                                objData[strName] = xmselect.getValue("nameStr");
+                            }
                         }
                         else if (self.hasClass("luckyu-editor")) {
                             var ue = UE.getEditor(id);
@@ -171,7 +177,7 @@
                                     layui.form.render("radio");
                                     break;
                                 case "checkbox":
-                                    $obj.prop("checked", !(value === 0));
+                                    $obj.prop("checked", (value == 1 || value == $obj.val()));
                                     layui.form.render("checkbox");
                                     break;
                                 case "datetime":
@@ -262,7 +268,7 @@
                                     layui.form.render("radio");
                                     break;
                                 case "checkbox":
-                                    $obj.prop("checked", value === 1);
+                                    $obj.prop("checked", (value == 1 || value == $obj.val()));
                                     layui.form.render("checkbox");
                                     break;
                                 case "datetime":
@@ -400,7 +406,7 @@
      * 文件上传组件
      * */
     luckyu.fileinput = {
-        init: function (op) {
+        init: function () {
             $.fn.extend({
                 /**
                  * 初始化文件上传控件
@@ -412,7 +418,7 @@
                         $self.fileinput("destroy").off();
                     }
                     $self[0].deleteAnnex = [];
-                    if (!!option.folderPre) {
+                    if (!!option && !!option.folderPre) {
                         $self.attr("luckyu-folderPre", option.folderPre);
                     }
                     var defaultOption = {

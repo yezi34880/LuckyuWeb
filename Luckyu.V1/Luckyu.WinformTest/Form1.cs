@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Luckyu.Utility;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,6 +19,7 @@ namespace Luckyu.WinformTest
             InitializeComponent();
         }
 
+        #region 转语音
         private void btnSpeak_Click(object sender, EventArgs e)
         {
             var txt = textBox1.Text;
@@ -55,5 +57,38 @@ namespace Luckyu.WinformTest
                 synthesizer.SetOutputToDefaultAudioDevice();
             }
         }
+
+
+        #endregion
+
+
+        #region 缩略图
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int width = 200;
+            using (var imgBmp = new Bitmap(@"C:\Users\YY\Downloads\1111.jpeg"))
+            {
+                //找到新尺寸
+                int oWidth = imgBmp.Width;
+                int oHeight = imgBmp.Height;
+                int height = oHeight;
+                if (width > oWidth)
+                {
+                    width = oWidth;
+                }
+                else
+                {
+                    height = width * oHeight / oWidth;
+                }
+                var newImg = new Bitmap(imgBmp, width, height);
+                //保存到本地
+                newImg.Save(@"C:\Users\YY\Downloads\2222.jpeg");
+                newImg.Dispose();
+            }
+        }
+
+
+        #endregion
+
     }
 }

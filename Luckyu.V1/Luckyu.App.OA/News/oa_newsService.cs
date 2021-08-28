@@ -38,7 +38,14 @@ namespace Luckyu.App.OA
                 jqPage.sord = "";
                 jqPage.sidx = "sort DESC,publishtime DESC";
             }
-            var page = BaseRepository().GetPage(jqPage, exp);
+            var page = BaseRepository().GetPage(jqPage, exp, r => new oa_newsEntity
+            {
+                news_id = r.news_id,
+                category = r.category,
+                source = r.source,
+                keywords = r.keywords,
+                publishtime = r.publishtime
+            });
             return page;
         }
 

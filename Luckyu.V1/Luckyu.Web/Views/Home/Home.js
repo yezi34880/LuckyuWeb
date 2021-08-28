@@ -166,7 +166,7 @@
                                 var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
                                 $("div.layui-layer-btn", layero).append(html);
                                 $("#questionBtn", layero).click(function () {
-                                    top.layui.layer.alert('【协办】选择其他用户协助审批，其他用户审批后流程节点不会移动，后续审批人仅仅能够看到协办用户审批意见<br />【加签】选择其他用户加签审批，其他用户审批后节点会移动，相当于把当前步审批让渡给加签人<br />注：协办、加签选择用户后自己扔可以自行处理，或者等待选择人处理');
+                                    top.layui.layer.alert(luckyu_staticdata.wf_description);
                                 });
 
                             }
