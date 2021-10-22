@@ -335,6 +335,9 @@
 
     $.fn.ahoitdatevalue = function () {
         var $self = $(this);
+        if (!$self[0]._ahoitdate) {
+            return {};
+        }
         var DefaultOption = $self[0]._ahoitdate.DefaultOption;
         if (!DefaultOption) {
             return {};

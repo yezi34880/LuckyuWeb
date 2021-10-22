@@ -325,13 +325,6 @@
             res.end = year + '-12-31 23:59:59';
             return res;
         },
-        xmSplit: function (source, splitChar) { //XmSelect赋值格式化
-            if (source == undefined)
-                return [];
-            else if (typeof (source) != 'string')
-                return [];
-            return source.split(splitChar);
-        }
         // #endregion
     };
 
@@ -610,6 +603,10 @@
 
         String.prototype.trim = function (char) {
             return this.replace(new RegExp('^\\' + char + '+|\\' + char + '+$', 'g'), '');
+        };
+
+        String.prototype.splieNoEmpty = function (s) {
+            return this.split(s).filter(t => t != '');
         };
 
         Date.prototype.DateAdd = function (strInterval, Number) {

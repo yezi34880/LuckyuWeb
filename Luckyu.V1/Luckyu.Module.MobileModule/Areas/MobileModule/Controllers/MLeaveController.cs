@@ -16,6 +16,11 @@ namespace Luckyu.Module.MobileModule.Controllers
     [Area("MobileModule")]
     public class MLeaveController : MvcControllerBase
     {
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         public IActionResult Form(string keyValue)
         {
             return View();

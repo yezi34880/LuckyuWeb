@@ -25,17 +25,24 @@
         <!--基本信息-->
         <div class="layui-tab-item layui-show">
             @*<div class="layui-col-xs12 form-item">
-                <label class="layui-form-label">节点名称</label>
-                <div class="layui-input-block">
-                    <input id="node_id" type="text" class="layui-input" />
-                </div>
-            </div>*@
+            <label class="layui-form-label">节点名称</label>
+            <div class="layui-input-block">
+                <input id="node_id" type="text" class="layui-input" />
+            </div>
+        </div>*@
             <div class="layui-col-xs12 form-item">
                 <label class="layui-form-label">节点名称</label>
                 <div class="layui-input-block">
                     <input id="name" type="text" class="layui-input" />
                 </div>
             </div>
+
+            <div class="layui-col-xs6 form-item">
+                <div class="layui-input-block">
+                    <input type="checkbox" id="checkuser" title="由当前审批人确认下一步审批人" />
+                </div>
+            </div>
+
             <div id="divConfluence" style="display:none;">
                 <div class="layui-col-xs12 form-item">
                     <label class="layui-form-label">会签类型</label>

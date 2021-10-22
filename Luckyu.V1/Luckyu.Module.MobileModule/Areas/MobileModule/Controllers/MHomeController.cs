@@ -43,5 +43,12 @@ namespace Luckyu.Module.MobileModule.Controllers
             return View();
         }
         #endregion
+
+        #region 签到、签退
+        public IActionResult SignForm()
+        {
+            return View();
+        }
+        #endregion
     }
 }

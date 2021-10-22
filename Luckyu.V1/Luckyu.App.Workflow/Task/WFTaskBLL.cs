@@ -568,11 +568,11 @@ namespace Luckyu.App.Workflow
             {
                 if (returnType == 1)
                 {
-                    opinion = "驳回至上一步 " + opinion;
+                    opinion = "退回至上一步 " + opinion;
                 }
                 else
                 {
-                    opinion = "驳回至起始 " + opinion;
+                    opinion = "退回至起始 " + opinion;
                 }
             }
 
@@ -640,31 +640,49 @@ namespace Luckyu.App.Workflow
             var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
             if (result == 2) // 拒绝
             {
-                // 这里有问题，退回上一步其实有两种可能，如果上一步是其他审批，不用执行驳回SQL与程序，否则直接就是起草了，而且这里后期可能需要针对这里把 驳回SQL 再次拆分为两个，暂时先不弄
+                // 这里有问题，退回上一步其实有两种可能，如果上一步是其他审批，不用执行退回SQL与程序，否则直接就是起草了，而且这里后期可能需要针对这里把 退回SQL 再次拆分为两个，暂时先不弄
                 // 还有一个问题，如果上一步为开始，就要执行SQL，相当于退回起草状态了
 
                 if (returnType == 1) // 退回至上一步 
                 {
-                    var preTask = GetTaskEntitty(r => r.instance_id == instance.instance_id && r.node_id == task.previous_id, r => r.createtime, true);
-                    if (preTask != null)
+                    var preTasks = GetTaskList(r => r.instance_id == instance.instance_id && r.node_id == task.previous_id);
+                    if (!preTasks.IsEmpty())
                     {
-                        var taskAuths = GetTaskAuthorizeList(r => r.task_id == preTask.task_id);
-                        preTask.Create(loginInfo);
-                        foreach (var au in taskAuths)
-                        {
-                            au.Create(loginInfo);
-                            au.task_id = preTask.task_id;
-                        }
-                        listTask.Add(preTask);
-
-                        if (preTask.nodetype == "startround")
+                        if (preTasks.Exists(r => r.nodetype == "startround"))
                         {
                             listSql.Add(nodeCurrent.sqlfail);
+                            var historyEnd = new wf_taskhistoryEntity();
+                            historyEnd = instance.Adapt<wf_taskhistoryEntity>();
+                            historyEnd.result = 2;
+                            historyEnd.node_id = "";
+                            historyEnd.nodename = "";
+                            historyEnd.nodetype = "startround";
+                            historyEnd.previous_id = nodeCurrent.id;
+                            historyEnd.previousname = nodeCurrent.name;
+                            historyEnd.opinion = "上一步为起始节点【流程结束】";
+                            historyEnd.Create(loginInfo);
+                            listHistory.Add(historyEnd);
+
+                            instance.is_finished = 1;
                         }
+                        else
+                        {
+                            foreach (var preTask in preTasks)
+                            {
+                                var taskAuths = GetTaskAuthorizeList(r => r.task_id == preTask.task_id);
+                                preTask.Create(loginInfo);
+                                foreach (var au in taskAuths)
+                                {
+                                    au.Create(loginInfo);
+                                    au.task_id = preTask.task_id;
+                                }
+                                listTask.Add(preTask);
+                            }
+                        }
+                        taskService.Approve(instance, task, listTask, listHistory, listSql);
+                        var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
+                        return ResponseResult.Success((object)data1);
                     }
-                    taskService.Approve(instance, task, listTask, listHistory, listSql);
-                    var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
-                    return ResponseResult.Success((object)data1);
                 }
                 else  // 退回至初始（箭头否连线下一步）
                 {
@@ -672,6 +690,26 @@ namespace Luckyu.App.Workflow
                     if (!nodeCurrent.sqlfail.IsEmpty())
                     {
                         listSql.Add(nodeCurrent.sqlfail);
+                    }
+                    if (lines.IsEmpty())  // 如果没有为【否】连线的节点，则回到起始
+                    {
+                        var historyEnd = new wf_taskhistoryEntity();
+                        historyEnd = instance.Adapt<wf_taskhistoryEntity>();
+                        historyEnd.result = 2;
+                        historyEnd.node_id = "";
+                        historyEnd.nodename = "";
+                        historyEnd.nodetype = "endround";
+                        historyEnd.previous_id = nodeCurrent.id;
+                        historyEnd.previousname = nodeCurrent.name;
+                        historyEnd.opinion = "【流程结束】";
+                        historyEnd.Create(loginInfo);
+                        listHistory.Add(historyEnd);
+
+                        instance.is_finished = 1;
+
+                        taskService.Approve(instance, task, listTask, listHistory, listSql);
+                        var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
+                        return ResponseResult.Success((object)data1);
                     }
                 }
             }
@@ -1151,7 +1189,7 @@ namespace Luckyu.App.Workflow
                 var nextNodes = allnodes.Where(r => r.id == currentLine.to).ToList();
                 foreach (var nodeNext in nextNodes)
                 {
-                    if (nodeNext.type == "endround") //结束
+                    if (nodeNext.type == "endround" || nodeNext.type == "startround") //结束
                     {     // 之后直接结束  task 表不插值  history插入结束
                         var historyEnd = new wf_taskhistoryEntity();
                         historyEnd = instance.Adapt<wf_taskhistoryEntity>();
@@ -1562,7 +1600,7 @@ namespace Luckyu.App.Workflow
         public static Dictionary<int, string> ApproveResult = new Dictionary<int, string>
         {
             {1,"通过" },
-            {2,"驳回" },
+            {2,"退回" },
             {3,"申请加签" },
             {4,"已阅" },
             {5,"调整" },

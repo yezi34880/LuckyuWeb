@@ -22,7 +22,6 @@
         <div id="tabFoot" class="bui-tab bui-box-vertical">
             <div class="bui-tab-main">
                 <ul>
-                    <!-- 内容必须在li里面 -->
                     <li>
                         <!-- 控件结构 -->
                         <dl id="accordion" class="bui-accordion">
@@ -57,7 +56,7 @@
                             </dt>
                             <dd>
                                 <ul class="bui-nav-icon bui-fluid-2">
-                                    <li class="bui-btn"  href="/MobileModule/MNews/ShowIndex">
+                                    <li class="bui-btn" href="/MobileModule/MNews/ShowIndex">
                                         <div class="icon"><i class="fa fa-newspaper-o"></i></div>
                                         <div class="item-title"> 公告通知 </div>
                                     </li>
@@ -68,6 +67,15 @@
                                 </ul>
                             </dd>
                         </dl>
+                    </li>
+                    <li style="display:none;">
+                        <ul class="bui-list">
+                            <li class="bui-btn bui-box" href="/MobileModule/MLeave/Index">
+                                <div class="span1">请假</div>
+                                <i class="icon-listright"></i>
+                            </li>
+
+                        </ul>
                     </li>
                     <li style="display: none;">
                         <ul class="bui-list bui-list-thumbnail">
@@ -82,6 +90,11 @@
                             </li>
                         </ul>
                         <ul class="bui-list">
+                            <li class="bui-btn bui-box" href="/MobileModule/MHome/SignForm">
+                                <div class="icon"><i class="fa fa-location-arrow"></i></div>
+                                <div class="span1">签到、签退</div>
+                                <i class="icon-listright"></i>
+                            </li>
                             <li class="bui-btn bui-box">
                                 <div class="icon"><i class="fa fa-key"></i></div>
                                 <div class="span1">修改密码</div>
@@ -102,6 +115,10 @@
     </main>
     <footer>
         <ul id="tabFootNav" class="bui-nav">
+            <li class="bui-btn bui-box-vertical active">
+                <i class="fa fa-home"></i>
+                <div class="span1">首页</div>
+            </li>
             <li class="bui-btn bui-box-vertical active">
                 <i class="fa fa-briefcase"></i>
                 <div class="span1">工作台</div>

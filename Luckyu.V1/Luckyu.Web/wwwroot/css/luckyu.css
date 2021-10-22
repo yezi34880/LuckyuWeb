@@ -7,6 +7,10 @@
     background-color: var(--tn-nav-color);
 }
 
+.layui-textarea {
+    margin-bottom: 5px;
+}
+
 .pace .pace-progress {
     background: var(--tn-nav-color) !important;
 }
@@ -93,10 +97,14 @@
     position: relative;
 }
 
-    .inputselect input[type=text][readonly] {
-        background-color: white !important;
-        cursor: pointer !important;
+    .inputselect input[type=text] {
+        padding-right: 18px;
     }
+
+        .inputselect input[type=text][readonly] {
+            background-color: white !important;
+            cursor: pointer !important;
+        }
 
 .layui-tab {
     margin: 0;

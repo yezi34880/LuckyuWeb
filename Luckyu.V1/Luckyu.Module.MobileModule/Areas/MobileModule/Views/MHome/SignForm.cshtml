@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMobile.cshtml";
+}
+
+<div class="bui-page bui-box-vertical">
+    <header>
+        <div class="bui-bar">
+            <div class="bui-bar-left">
+                <div class="bui-btn" onclick="bui.back();"><i class="icon-back"></i></div>
+            </div>
+            <div class="bui-bar-main">
+                签到、签退
+            </div>
+            <div class="bui-bar-right">
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="bui-btn round success" id="btnSignIn">签到</div>
+        <div class="bui-btn round danger" id="btnSignOut">签退</div>
+    </main>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/MobileModule/Views/MHome/SignForm.js")
+}

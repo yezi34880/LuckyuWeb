@@ -80,7 +80,8 @@
                             successCallback(res.data, res.info);
                         }
                         else {
-                            bui.hint({ content: res.info, position: "top", skin: 'danger', showClose: true, autoClose: true, timeout: 3000 });
+                            bui.alert(res.info);
+                            //bui.hint({ content: res.info, position: "top", skin: 'danger', showClose: true, autoClose: true, timeout: 3000 });
                         }
                     },
                     error: function (xhr, type) {
@@ -139,7 +140,8 @@
                             successCallback(res.data, res.info);
                         }
                         else {
-                            bui.hint({ content: res.info, position: "top", skin: 'danger', showClose: true, autoClose: true, timeout: 3000 });
+                            bui.alert(res.info);
+                            //bui.hint({ content: res.info, position: "top", skin: 'danger', showClose: true, autoClose: true, timeout: 3000 });
                         }
                     },
                     error: function (xhr, type) {

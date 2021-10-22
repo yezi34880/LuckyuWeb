@@ -151,6 +151,14 @@
                 var that = $(this);
                 var parent = that.parent();
                 that.width(parent.width()).height(parent.height());
+                that.ready(function () {
+                    debugger;
+                    that.find("header").hide();
+                    that.find("input").each(function () {
+                        var ele = $(this);
+                        ele.attr("disabled", "disabled");
+                    });
+                });
             });
 
             $("#help").click(function () {
