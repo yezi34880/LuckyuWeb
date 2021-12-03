@@ -41,9 +41,11 @@ namespace Luckyu.App.OA
             var page = BaseRepository().GetPage(jqPage, exp, r => new oa_newsEntity
             {
                 news_id = r.news_id,
+                title = r.title,
                 category = r.category,
                 source = r.source,
                 keywords = r.keywords,
+                sort = r.sort,
                 publishtime = r.publishtime
             });
             return page;

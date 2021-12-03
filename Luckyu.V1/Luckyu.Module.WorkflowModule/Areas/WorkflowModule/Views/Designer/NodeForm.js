@@ -22,6 +22,7 @@ var bootstrap = function () {
                     $("#tabProgram").show();
                     break;
                 case "stepnode":  // 一般审批
+                    $("#divStep").show();
                     $("#tabUser").show();
                     $("#tabForm").show();
                     $("#tabSQLSuccess").show();
@@ -29,6 +30,7 @@ var bootstrap = function () {
                     $("#tabProgram").show();
                     break;
                 case "auditornode":  // 传阅
+                    $("#divStep").show();
                     $("#tabUser").show();
                     $("#tabForm").show();
                     $("#tabSQLSuccess").show();

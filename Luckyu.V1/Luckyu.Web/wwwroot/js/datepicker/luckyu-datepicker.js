@@ -11,6 +11,7 @@
         init: function ($self) {
             var DefaultOption = $self[0]._luckyudate.DefaultOption;
             $self.addClass('luckyu-search-date Wdate layui-input');
+            $self.attr("autocomplete", "off");
             var $container = $('<div class="luckyu-search-date-container" id="search_date_container_' + DefaultOption.id + '"><div class="luckyu-search-date-arrow"><div class="luckyu-search-date-inside"></div></div></div>');
 
             var $btnlist = $('<div class="luckyu-search-date-content-btns" id="search_date_content_btns_' + DefaultOption.id + '"></div>');
@@ -229,8 +230,7 @@
                     DefaultOption._enddate = d.end;
                     break;
                 default:
-                    var rowid = parseInt(value);
-                    var data = DefaultOption.dfdata[rowid];
+                    var data = DefaultOption.dfdata[value];
                     if (!!data) {
                         DefaultOption._begindate = data.begin();
                         DefaultOption._enddate = data.end();
@@ -296,23 +296,20 @@
         var DefaultOption = {
             dfdata: [
                 { name: '今天', begin: function () { return luckyu.utility.getDate('yyyy-MM-dd 00:00:00') }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
-                { name: '本月', begin: function () { return new Date().format("yyyy-MM") + "-01 00:00:00"  }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
-                { name: '本季度', begin: function () { return luckyu.utility.getCurrentQuarter().begin }, end: function () { return luckyu.utility.getDate('yyyy-MM-dd 23:59:59') } },
-                { name: '本年度', begin: function () { return new Date().format("yyyy") + "-01-01 00:00:00" }, end: function () { return ahoit.utility.getDate('yyyy-MM-dd 23:59:59') } },
             ],
             // 月
-            mShow: false,
-            premShow: false,
+            mShow: true,
+            premShow: true,
             // 季度
-            jShow: false,
-            prejShow: false,
+            jShow: true,
+            prejShow: true,
             // 年
-            ysShow: false,
-            yxShow: false,
-            preyShow: false,
-            yShow: false,
+            ysShow: true,
+            yxShow: true,
+            preyShow: true,
+            yShow: true,
             // 默认
-            dfvalue: '3',
+            dfvalue: 0,
         };
         $.extend(DefaultOption, op || {});
         var $self = $(this);

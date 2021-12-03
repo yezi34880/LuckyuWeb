@@ -429,7 +429,7 @@ var bootstrap = function (layui) {
         search: function (postData) {
             if (!postData) {
                 var node = treeCompany.getHighlightNode();
-                if (!!node) {
+                if (!!node.id) {
                     postData = {
                         organizationId: node.id,
                         organizationTag: node.ext.tag
@@ -444,7 +444,7 @@ var bootstrap = function (layui) {
         searchInCurrentPage: function () {
             var postData = {};
             var node = treeCompany.getHighlightNode();
-            if (!!node && node.length > 0) {
+            if (!!node.id) {
                 postData = {
                     organizationId: node.id,
                     organizationTag: node.ext.tag

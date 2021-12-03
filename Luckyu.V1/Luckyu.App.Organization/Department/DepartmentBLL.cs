@@ -195,7 +195,7 @@ namespace Luckyu.App.Organization
             var nodes = list.Where(r => r.parent_id == parentId).ToList();
             if (nodes.IsEmpty())
             {
-                return null;
+                return new List<xmSelectTree>();
             }
             var tree = nodes.Select(r => new xmSelectTree
             {

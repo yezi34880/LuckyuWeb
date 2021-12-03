@@ -135,6 +135,11 @@ namespace Luckyu.Module.SystemModule.Controllers
         public IActionResult UploadAnnex(string exId, string exCode, string folderPre)
         {
             var res = new FileInputResponse();
+            if (exId.IsEmpty())
+            {
+                res.error = "关联字段不能为空";
+                return Json(res);
+            }
             if (HttpContext.Request.Form.Files.Count > 0)
             {
                 var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);

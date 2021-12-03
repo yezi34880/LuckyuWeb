@@ -57,19 +57,24 @@ namespace Luckyu.App.Workflow
         public string nodetype { get; set; }
 
         /// <summary>
-        ///  authorize_user_id   
+        ///  app_userid   
         /// </summary>
-        public string authorize_user_id { get; set; }
+        public string app_userid { get; set; }
 
         /// <summary>
-        ///  authorize_userame   
+        ///  app_username   
         /// </summary>
-        public string authorize_userame { get; set; }
+        public string app_username { get; set; }
 
         /// <summary>
         /// 结果 1-同意 2-拒绝
         /// </summary>
         public int result { get; set; }
+
+        /// <summary>
+        ///  opinion   
+        /// </summary>
+        public string opinion { get; set; }
 
         /// <summary>
         ///  previous_id   

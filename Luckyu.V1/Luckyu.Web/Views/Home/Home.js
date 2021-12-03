@@ -64,7 +64,7 @@
                                 }
                             });
                             btns.push({
-                                name: "协办",
+                                name: "转发查看",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
                                         page.refrash();
@@ -73,7 +73,7 @@
                                 }
                             });
                             btns.push({
-                                name: "加签",
+                                name: "会签办理",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
                                         page.refrash();
@@ -90,11 +90,11 @@
                             url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + task_id + "&instanceId=" + instance_id + "&processId=" + process_id,
                             btn: btns,
                             success: function (layero, index) {
-                                var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
-                                $("div.layui-layer-btn", layero).append(html);
-                                $("#questionBtn", layero).click(function () {
-                                    top.layui.layer.alert(luckyu_staticdata.wf_description);
-                                });
+                                //var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
+                                //$("div.layui-layer-btn", layero).append(html);
+                                //$("#questionBtn", layero).click(function () {
+                                //    top.layui.layer.alert(luckyu_staticdata.wf_description);
+                                //});
                             }
 
                         });
@@ -137,7 +137,7 @@
                                 }
                             });
                             btns.push({
-                                name: "协办",
+                                name: "转发查看",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
                                         page.refrash();
@@ -146,7 +146,7 @@
                                 }
                             });
                             btns.push({
-                                name: "加签",
+                                name: "会签办理",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
                                         page.refrash();
@@ -168,9 +168,7 @@
                                 $("#questionBtn", layero).click(function () {
                                     top.layui.layer.alert(luckyu_staticdata.wf_description);
                                 });
-
                             }
-
                         });
                     });
                 }
@@ -185,12 +183,12 @@
                     $("#news div.ahoit-msg-line a").click(function () {
                         var self = $(this);
                         var id = self.attr("luckyu-id");
-                        var title = self.attr("title");
+                        var title = self.find("span.stitle").html();
                         luckyu.layer.layerFormTop({
                             title: title,
                             width: 1300,
                             height: 850,
-                            url: luckyu.rootUrl + "/OAModule/News/Show?keyValue=" + id,
+                            url: luckyu.rootUrl + "/OAModule/News/ShowForm?keyValue=" + id,
                         });
                     });
                 }

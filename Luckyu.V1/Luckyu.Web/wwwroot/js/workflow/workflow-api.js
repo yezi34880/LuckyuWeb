@@ -83,7 +83,7 @@
         },
 
         /**
-         * 加签
+         * 会签办理
          * @param {any} op
          */
         adduser: function (op) {

@@ -205,12 +205,12 @@ namespace Luckyu.App.Organization
         }
 
         /// <summary>
-        /// 判断通用权限 0 仅查看 1 可编辑起草 驳回 2 可编辑所有
+        /// 判断通用权限 0 仅查看 1 可编辑起草 退回 2 可编辑所有
         /// </summary>
         //public ResponseResult CanOperate(DataAuthorizeModuleEnum module, UserModel loginInfo)
         //{
         //    var dataauth = GetDataAuthByUser(module, loginInfo);
-        //    if (dataauth.edittype == 0)  // 0 仅查看 1 可编辑起草 驳回 2 可编辑所有
+        //    if (dataauth.edittype == 0)  // 0 仅查看 1 可编辑起草 退回 2 可编辑所有
         //    {
         //        if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
         //        {

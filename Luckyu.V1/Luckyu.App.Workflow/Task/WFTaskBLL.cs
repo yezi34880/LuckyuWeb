@@ -26,6 +26,11 @@ namespace Luckyu.App.Workflow
         private wf_task_authorizeService taskauthService = new wf_task_authorizeService();
         private WFDelegateBLL delegateBLL = new WFDelegateBLL();
         private UserBLL userBLL = new UserBLL();
+        private DepartmentBLL deptBLL = new DepartmentBLL();
+        private CompanyBLL companyBLL = new CompanyBLL();
+        private RoleBLL roleBLL = new RoleBLL();
+        private PostBLL postBLL = new PostBLL();
+        private GroupBLL groupBLL = new GroupBLL();
         private UserRelationBLL userrelationBLL = new UserRelationBLL();
         private DepartmentManageBLL manageBLL = new DepartmentManageBLL();
         private MessageBLL messageBLL = new MessageBLL();
@@ -156,7 +161,7 @@ namespace Luckyu.App.Workflow
         /// <param name="taskId">如果taskId不为空, 在表示待审批</param>
         /// <param name="historyId">如果historyId不为空, 则表示已审批</param>
         /// <returns></returns>
-        public ResponseResult<Dictionary<string, object>> GetFormData(string instanceId, string taskId, string historyId)
+        public ResponseResult<Dictionary<string, object>> GetFormData(string instanceId, string taskId, string historyId, UserModel loginInfo)
         {
             var instance = GetInstanceEnttity(r => r.instance_id == instanceId);
             if (instance == null)
@@ -168,6 +173,8 @@ namespace Luckyu.App.Workflow
             WFSchemeNodeModel showNode = new WFSchemeNodeModel();
             // 当前待批节点
             WFSchemeNodeModel currentNode = new WFSchemeNodeModel();
+            // 如果是待办，还要查出下一步
+            List<WFSchemeNodeModel> nextNodes = new List<WFSchemeNodeModel>();
             if (!historyId.IsEmpty())
             {
                 // 已办历史
@@ -194,6 +201,24 @@ namespace Luckyu.App.Workflow
                 }
                 showNode = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
                 currentNode = showNode;
+
+                // 查出下一步节点（可能多个）
+                var lines = scheme.lines.Where(r => r.from == currentNode.id).ToList();
+                var to_nodeids = lines.Where(r => r.wftype == 1 || r.wftype == 0).Select(r => r.to).ToList();
+                nextNodes = scheme.nodes.Where(r => (r.type == "stepnode" || r.type == "auditornode") && to_nodeids.Contains(r.id)).ToList();
+                // 查出下一步节点中 具体的审批人（具体到人）
+                if (!nextNodes.IsEmpty())
+                {
+                    foreach (var nextnode in nextNodes)
+                    {
+                        var users = GetUserByNode(nextnode, instance);
+                        nextnode.authusers = users.Select(r => new WFAuthorizeModel
+                        {
+                            objectids = r.user_id,
+                            objectnames = $"{r.realname}-{r.loginname}"
+                        }).ToList();
+                    }
+                }
             }
             else
             {
@@ -212,6 +237,7 @@ namespace Luckyu.App.Workflow
                 {"Instance",instance },
                 {"ShowNode",showNode },
                 {"CurrentNode",currentNode },
+                {"NextNodes",nextNodes },
                 { "History",historys}
             };
             return ResponseResult.Success(dic);
@@ -249,7 +275,7 @@ namespace Luckyu.App.Workflow
         }
 
         /// <summary>
-        /// 获取当前流程所有协办步骤
+        /// 获取当前流程所有转发查看步骤
         /// </summary>
         public List<wf_taskEntity> GetHelpMePage(JqgridPageRequest jqPage, string instanceId)
         {
@@ -267,7 +293,7 @@ namespace Luckyu.App.Workflow
         }
 
         /// <summary>
-        /// 获取当前流程所有加签、加签用户
+        /// 获取当前流程所有会签办理、会签办理用户
         /// </summary>
         public List<WFTaskAuthModel> GetAddUserPage(JqgridPageRequest jqPage, string instanceId)
         {
@@ -278,6 +304,15 @@ namespace Luckyu.App.Workflow
                 auth.username = string.Join(",", user.realname);
             }
             return list;
+        }
+
+        /// <summary>
+        /// 该单据是否在流程中
+        /// </summary>
+        public bool IsInWorkflow(string processId)
+        {
+            var instance = GetInstanceEnttity(r => r.process_id == processId && r.is_finished == 0);
+            return instance != null;
         }
         #endregion
 
@@ -310,6 +345,10 @@ namespace Luckyu.App.Workflow
             if (processName.IsEmpty())
             {
                 processName = flow.flowname;
+            }
+            if (!processName.Contains(flow.flowname))
+            {
+                processName = $"【{flow.flowname}】" + processName;
             }
 
             var instanceAlready = instanceService.GetEntity(r => r.is_finished == 0 && r.flow_id == flow.flow_id && r.process_id == processId);
@@ -431,7 +470,7 @@ namespace Luckyu.App.Workflow
             {
                 listSql.Add(nodeStart.sqlsuccess);
             }
-            var res = ProcessNodeInject(nodeStart, instance.instance_id, instance.process_id, 1, "");
+            var res = ProcessNodeInject(nodeStart, instance.instance_id, instance.process_id, 1, "", listTask, listHistory, listSql);
             if (res.code == (int)ResponseCode.Fail)
             {
                 return ResponseResult.Fail(res.info, res.data);
@@ -525,7 +564,7 @@ namespace Luckyu.App.Workflow
         /// <param name="opinion">审批意见</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
-        public ResponseResult Approve(string taskId, int result, string opinion, int returnType, UserModel loginInfo)
+        public ResponseResult Approve(string taskId, int result, string opinion, int returnType, Dictionary<string, List<KeyValue>> authors, UserModel loginInfo)
         {
             var task = taskService.GetEntity(r => r.task_id == taskId);
             if (task == null)
@@ -552,13 +591,13 @@ namespace Luckyu.App.Workflow
                 return ResponseResult.Fail("当前用户不是审批人");
             }
 
-            var nodeModel = instance.schemejson.ToObject<WFSchemeModel>();
+            var scheme = instance.schemejson.ToObject<WFSchemeModel>();
 
             var listTask = new List<wf_taskEntity>();
             var listHistory = new List<wf_taskhistoryEntity>();
             var listSql = new List<string>();
 
-            var nodeCurrent = nodeModel.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+            var nodeCurrent = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
             var historyCurrent = new wf_taskhistoryEntity();
             historyCurrent = task.Adapt<wf_taskhistoryEntity>();
             historyCurrent.result = result;
@@ -568,22 +607,22 @@ namespace Luckyu.App.Workflow
             {
                 if (returnType == 1)
                 {
-                    opinion = "退回至上一步 " + opinion;
+                    opinion = "退回上一步 " + opinion;
                 }
                 else
                 {
-                    opinion = "退回至起始 " + opinion;
+                    opinion = "退回 " + opinion;
                 }
             }
 
             var currentAuth = auths.Where(r => r.user_id == loginInfo.user_id).FirstOrDefault();
             if (currentAuth != null && currentAuth.is_add == 1)
             {
-                historyCurrent.opinion = "【加签】 ";
+                historyCurrent.opinion = "【会签办理】 ";
             }
             else if (currentAuth != null && currentAuth.is_add == 3)
             {
-                historyCurrent.opinion = "【协办】 ";
+                historyCurrent.opinion = "【转发查看】 ";
             }
 
             if (nodeCurrent.type == "confluencenode")
@@ -599,24 +638,26 @@ namespace Luckyu.App.Workflow
                 historyCurrent.opinion = "【审批】";
             }
             historyCurrent.opinion += opinion;
-            historyCurrent.authorize_user_id = loginInfo.user_id;
-            historyCurrent.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
+            historyCurrent.app_userid = loginInfo.user_id;
+            historyCurrent.app_username = $"{loginInfo.realname}-{loginInfo.loginname}";
             historyCurrent.Create(loginInfo);
             listHistory.Add(historyCurrent);
 
             task.is_done = 1;
             task.result = result;
-            if (task.nodetype == "helpme") // 协办 不往下进行
+            task.app_userid = loginInfo.user_id;
+            task.app_username = $"{loginInfo.realname}-{loginInfo.loginname}";
+            task.opinion = opinion;
+            if (task.nodetype == "helpme") // 转发查看 不往下进行
             {
                 taskService.Approve(instance, task, listTask, listHistory, listSql);
                 var data1 = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
                 return ResponseResult.Success((object)data1);
             }
-
-            //  加签 任务，查询是否为多人加签，如果是多人等同于会签，必须所有都饿哦听一才能往下走
+            //  会签办理 任务，查询是否为多人会签办理，如果是多人等同于会签，必须所有通过才能往下走
             if (task.nodetype == "adduser")
             {
-                // 加签 只有一种情况需要中断，即，多人加签，且只有部分人批完，这时候节点停住不动
+                // 会签办理 只有一种情况需要中断，即，多人会签办理，且只有部分人批完，这时候节点停住不动
                 // 如果拒绝，则相当于原节点拒绝，根据选择回到上一步或是起始
                 // 如果所有人都同意，在继续往下走
                 if (result == 1)
@@ -631,13 +672,13 @@ namespace Luckyu.App.Workflow
                 }
             }
 
-            var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, result, opinion);
+            var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, result, opinion, listTask, listHistory, listSql);
             if (res.code == (int)ResponseCode.Fail)
             {
                 return ResponseResult.Fail(res.info, res.data);
             }
 
-            var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
+            var lines = scheme.lines.Where(r => r.from == nodeCurrent.id).ToList();
             if (result == 2) // 拒绝
             {
                 // 这里有问题，退回上一步其实有两种可能，如果上一步是其他审批，不用执行退回SQL与程序，否则直接就是起草了，而且这里后期可能需要针对这里把 退回SQL 再次拆分为两个，暂时先不弄
@@ -684,7 +725,7 @@ namespace Luckyu.App.Workflow
                         return ResponseResult.Success((object)data1);
                     }
                 }
-                else  // 退回至初始（箭头否连线下一步）
+                else  // 走到 箭头为【否】连接的下一步，如果没有下一步则回到起始，这里也有问题，其实应该调用 GetNextNode 方法，而不是只是单纯找拒绝的下一步，因为下一步可能会是执行或者会签等按钮，需要递归
                 {
                     lines = lines.Where(r => r.wftype == 2 || r.wftype == 0).ToList();
                     if (!nodeCurrent.sqlfail.IsEmpty())
@@ -721,32 +762,58 @@ namespace Luckyu.App.Workflow
                     listSql.Add(nodeCurrent.sqlsuccess);
                 }
             }
-            if (lines.IsEmpty())
+            if (!lines.IsEmpty())
             {
-                return ResponseResult.Fail("该流程节点没有下一步连线，请联系管理员");
-            }
-            var turple = FindNextNode(lines, nodeModel.lines, nodeModel.nodes, instance, nodeCurrent, loginInfo);
-            if (!turple.Item1.IsEmpty())
-            {
-                listTask = turple.Item1;
-            }
-            if (!turple.Item2.IsEmpty())
-            {
-                listHistory.AddRange(turple.Item2);
-            }
-            if (!turple.Item3.IsEmpty())
-            {
-                listSql.AddRange(turple.Item3);
-            }
+                if (!authors.IsEmpty()) // 如果有选择节点，则从下一步所有节点中删除未选择的节点
+                {
+                    lines.RemoveAll(r => !authors.ContainsKey(r.to));
+                }
 
+                var turple = FindNextNode(lines, scheme.lines, scheme.nodes, instance, nodeCurrent, loginInfo);
+                if (!turple.Item1.IsEmpty()) // 下步任务
+                {
+                    listTask = turple.Item1;
+
+                    if (!authors.IsEmpty()) // 如果有选择节点或用户，则从下一步所有节点中删除未选择的用户，并设置多选用户会签
+                    {
+                        listTask.RemoveAll(r => !authors.ContainsKey(r.node_id));
+                        foreach (var ntask in listTask)
+                        {
+                            ntask.authrizes = new List<wf_task_authorizeEntity>();
+                            var chkAuths = authors[ntask.node_id];
+                            foreach (var chkAuth in chkAuths)
+                            {
+                                var au = new wf_task_authorizeEntity();
+                                au.task_id = ntask.task_id;
+                                au.is_add = 1;
+                                au.user_id = chkAuth.Key;
+                                au.Create(loginInfo);
+                                ntask.authrizes.Add(au);
+                            }
+                        }
+                    }
+                }
+                if (!turple.Item2.IsEmpty())  // 历史记录
+                {
+                    listHistory.AddRange(turple.Item2);
+                }
+                if (!turple.Item3.IsEmpty())   // 执行sql
+                {
+                    listSql.AddRange(turple.Item3);
+                }
+            }
+            //else  // 不用判断，有可能会叉两条线，其中一条没有收尾了
+            //{
+            //    return ResponseResult.Fail("该流程节点没有下一步连线，请联系管理员");
+            //}
             taskService.Approve(instance, task, listTask, listHistory, listSql);
             var data = new Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
             return ResponseResult.Success((object)data);
         }
 
-        public async Task<ResponseResult> Approve(string taskId, int result, string opinion, int returnType, UserModel loginInfo, IHubContext<MessageHub> hubContext)
+        public async Task<ResponseResult> Approve(string taskId, int result, string opinion, int returnType, Dictionary<string, List<KeyValue>> authors, UserModel loginInfo, IHubContext<MessageHub> hubContext)
         {
-            var res = Approve(taskId, result, opinion, returnType, loginInfo);
+            var res = Approve(taskId, result, opinion, returnType, authors, loginInfo);
             if (res.code == (int)ResponseCode.Success)
             {
                 var data = res.data as Tuple<wf_flow_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>;
@@ -774,10 +841,10 @@ namespace Luckyu.App.Workflow
         #endregion
 
         /// <summary>
-        /// 加签（注意 ：如果加签选择多人，必须多人全部同意才会继续）
+        /// 会签办理（注意 ：如果会签办理选择多人，必须多人全部同意才会继续）
         /// </summary>
         /// <param name="taskId">当前流程</param>
-        /// <param name="userId">加签人员</param>
+        /// <param name="userId">会签办理人员</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
         public ResponseResult AddUser(string taskId, List<string> userIds, string remark, UserModel loginInfo)
@@ -804,13 +871,13 @@ namespace Luckyu.App.Workflow
                 taskHelp.previousname = task.previousname;
                 taskHelp.node_id = task.node_id;
                 taskHelp.nodetype = "adduser";
-                taskHelp.nodename = "【加签】" + task.nodename;
+                taskHelp.nodename = task.nodename + "【会签办理】";
                 var auths = new List<wf_task_authorizeEntity>();
 
                 var auth = new wf_task_authorizeEntity();
                 auth.task_id = taskHelp.task_id;
                 auth.user_id = userId;
-                auth.is_add = 1;  // 加签
+                auth.is_add = 1;  // 会签办理
                 auth.Create(loginInfo);
                 auths.Add(auth);
 
@@ -824,7 +891,7 @@ namespace Luckyu.App.Workflow
             var history = new wf_taskhistoryEntity();
             history = task.Adapt<wf_taskhistoryEntity>();
             var struser = string.Join(",", users.Select(r => $"{r.realname}-{r.loginname}"));
-            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请  {struser} 【加签】";
+            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请 【会签办理】，用户： {struser} ";
             if (!remark.IsEmpty())
             {
                 history.opinion += " " + remark;
@@ -834,14 +901,15 @@ namespace Luckyu.App.Workflow
 
             task.is_done = 1;
             taskService.AddUser(task, listTask, history);
-            return ResponseResult.Success();
+            var ohistory_id = (object)history.history_id;
+            return ResponseResult.Success(ohistory_id);
         }
 
         /// <summary>
-        /// 协办（邀请别人协助，之后再回到自己）
+        /// 转发查看（邀请别人协助，之后再回到自己）
         /// </summary>
         /// <param name="taskId">当前流程</param>
-        /// <param name="userId">加签人员</param>
+        /// <param name="userId">会签办理人员</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
         public ResponseResult HelpMe(string taskId, List<string> userIds, string remark, UserModel loginInfo)
@@ -868,13 +936,13 @@ namespace Luckyu.App.Workflow
                 taskHelp.previousname = "";
                 taskHelp.node_id = task.node_id;
                 taskHelp.nodetype = "helpme";
-                taskHelp.nodename = "【协办】" + task.nodename;
+                taskHelp.nodename = task.nodename + "【转发查看】";
                 var auths = new List<wf_task_authorizeEntity>();
 
                 var auth = new wf_task_authorizeEntity();
                 auth.task_id = taskHelp.task_id;
                 auth.user_id = userId;
-                auth.is_add = 3;  // 协办
+                auth.is_add = 3;  // 转发查看
                 auth.Create(loginInfo);
                 auths.Add(auth);
 
@@ -888,7 +956,7 @@ namespace Luckyu.App.Workflow
             var history = new wf_taskhistoryEntity();
             history = task.Adapt<wf_taskhistoryEntity>();
             var struser = string.Join(",", users.Select(r => $"{r.realname}-{r.loginname}"));
-            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请  {struser} 【协办】";
+            history.opinion = $"{loginInfo.realname}-{loginInfo.loginname}  申请【转发查看】，用户：  {struser} ";
             if (!remark.IsEmpty())
             {
                 history.opinion += " " + remark;
@@ -897,7 +965,8 @@ namespace Luckyu.App.Workflow
             history.Create(loginInfo);
 
             taskService.HelpMe(listTask, history);
-            return ResponseResult.Success();
+            var ohistory_id = (object)history.history_id;
+            return ResponseResult.Success(ohistory_id);
         }
 
         /// <summary>
@@ -923,29 +992,24 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("该流程没有活动中的任务");
             }
-            var schemeModel = instance.schemejson.ToObject<WFSchemeModel>();
-            var firsttask = tasks.Select(r => r).FirstOrDefault();
-            var firstnode = schemeModel.nodes.Where(r => r.id == firsttask.node_id).Select(r => r).FirstOrDefault();
-            var res = ProcessNodeInject(firstnode, instance.instance_id, instance.process_id, 2, "");
-            if (res.code == (int)ResponseCode.Fail)
-            {
-                return ResponseResult.Fail(res.info, res.data);
-            }
 
             var history = new wf_taskhistoryEntity();
-            history = firsttask.Adapt<wf_taskhistoryEntity>();
+            history.instance_id = instance.instance_id;
+            history.flow_id = instance.flow_id;
+            history.flowname = instance.flowname;
+            history.process_id = instance.process_id;
             history.result = 5;
             history.opinion = $"【流程监控】{loginInfo.realname} 强制结束流程";
             history.Create(loginInfo);
 
-            taskService.Finish(instance, tasks, history, firstnode.sqlfail);
+            taskService.Finish(instance, tasks, history);
             return ResponseResult.Success();
         }
 
         /// <summary>
-        /// 模拟完成审批
+        /// 挂起（流程实例还在，但是删除所有待办，以后激活时在调整）
         /// </summary>
-        public ResponseResult Complete(string instanceId, UserModel loginInfo)
+        public ResponseResult Sleep(string instanceId, UserModel loginInfo)
         {
             var instance = instanceService.GetEntity(r => r.instance_id == instanceId);
             if (instance == null)
@@ -956,57 +1020,17 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("该流程已结束");
             }
-            var tasks = taskService.GetList(r => r.instance_id == instanceId && r.is_done == 0);
-            if (tasks.IsEmpty())
-            {
-                return ResponseResult.Fail("当前任务不存在");
-            }
-            var listTask = new List<wf_taskEntity>();
-            var listHistory = new List<wf_taskhistoryEntity>();
-            var listSql = new List<string>();
 
-            var nodeModel = instance.schemejson.ToObject<WFSchemeModel>();
+            var history = new wf_taskhistoryEntity();
+            history.instance_id = instanceId;
+            history.flow_id = instance.flow_id;
+            history.flowname = instance.flowname;
+            history.process_id = instance.process_id;
+            history.result = 5;
+            history.opinion = $"【流程监控】{loginInfo.realname} 挂起流程";
+            history.Create(loginInfo);
 
-            do
-            {
-                foreach (var task in tasks)
-                {
-                    var nodeCurrent = nodeModel.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
-                    var historyCurrent = new wf_taskhistoryEntity();
-                    historyCurrent = task.Adapt<wf_taskhistoryEntity>();
-                    historyCurrent.result = 5;
-                    historyCurrent.nodetype = nodeCurrent.type;
-                    historyCurrent.opinion = $"{loginInfo.realname} 强制生效流程";
-                    historyCurrent.authorize_user_id = loginInfo.user_id;
-                    historyCurrent.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
-                    historyCurrent.Create(loginInfo);
-                    listHistory.Add(historyCurrent);
-                    var res = ProcessNodeInject(nodeCurrent, instance.instance_id, instance.process_id, 1, "");
-                    if (res.code == (int)ResponseCode.Fail)
-                    {
-                        return ResponseResult.Fail(res.info, res.data);
-                    }
-
-                    task.is_done = 1;
-                    var lines = nodeModel.lines.Where(r => r.from == nodeCurrent.id).ToList();
-                    lines = lines.Where(r => r.wftype == 1 || r.wftype == 0).ToList();
-                    if (!nodeCurrent.sqlsuccess.IsEmpty())
-                    {
-                        listSql.Add(nodeCurrent.sqlsuccess);
-                    }
-                    var turple = FindNextNode(lines, nodeModel.lines, nodeModel.nodes, instance, nodeCurrent, loginInfo);
-
-                    listTask.AddRange(turple.Item1);
-                    listHistory.AddRange(turple.Item2);
-                    listSql.AddRange(turple.Item3);
-                    tasks = turple.Item1;
-                }
-            }
-            while (!tasks.IsEmpty());
-
-            instance.is_finished = 1;
-
-            taskService.Complete(instance, listTask, listHistory, listSql);
+            taskService.Sleep(instanceId, history);
             return ResponseResult.Success();
         }
 
@@ -1021,23 +1045,22 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("该流程实例不存在");
             }
-            if (instance.is_finished == 1)
-            {
-                return ResponseResult.Fail("该流程已结束, 不能调整");
-            }
+            //if (instance.is_finished == 1)
+            //{
+            //    return ResponseResult.Fail("该流程已结束, 不能调整");
+            //}
+
             var oldTasks = taskService.GetList(r => r.instance_id == instanceId && r.is_done == 0);
             if (oldTasks.IsEmpty())
             {
                 return ResponseResult.Fail("当前任务不存在");
             }
-            var isLast = false;
             if (!schemeId.IsEmpty())
             {
                 var scheme = schemeService.GetEntity(r => r.scheme_id == schemeId);
                 if (scheme != null)
                 {
                     instance.schemejson = scheme.schemejson;
-                    isLast = true;
                 }
             }
             var nodeModel = instance.schemejson.ToObject<WFSchemeModel>();
@@ -1061,10 +1084,10 @@ namespace Luckyu.App.Workflow
             var history = new wf_taskhistoryEntity();
             history = oldTasks[0].Adapt<wf_taskhistoryEntity>();
             history.result = 5;
-            history.opinion = isLast ? $"{loginInfo.realname} 调整该流程至最新版本 调整后为【{nodeNext.name}】" : $"{loginInfo.realname} 调整 当前待办任务为【{ oldTasks[0].nodename}】 调整后为【{nodeNext.name}】";
+            history.opinion = !schemeId.IsEmpty() ? $"{loginInfo.realname} 调整该流程至最新版本 调整后为【{nodeNext.name}】" : $"{loginInfo.realname} 调整 当前待办任务为【{ oldTasks[0].nodename}】 调整后为【{nodeNext.name}】";
             history.Create(loginInfo);
 
-            taskService.Modify((isLast ? instance : null), oldTasks, newTask, history);
+            taskService.Modify(instance.instance_id, (schemeId.IsEmpty() ? "" : instance.schemejson), oldTasks, newTask, history);
             return ResponseResult.Success();
         }
 
@@ -1133,7 +1156,7 @@ namespace Luckyu.App.Workflow
         /// <param name="node">节点</param>
         /// <param name="result">审批结果 1 通过 2 拒绝</param>
         /// <param name="opinion">审批意见</param>
-        private ResponseResult ProcessNodeInject(WFSchemeNodeModel node, string instanceId, string processId, int result, string opinion)
+        private ResponseResult ProcessNodeInject(WFSchemeNodeModel node, string instanceId, string processId, int result, string opinion, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
         {
             if (!node.injectassembly.IsEmpty() && !node.injectclass.IsEmpty())
             {
@@ -1153,7 +1176,7 @@ namespace Luckyu.App.Workflow
                 if (res.code == (int)ResponseCode.Success)
                 {
                     MethodInfo meth = tp.GetMethod("Approve");//加载方法
-                    meth.Invoke(process, new object[] { instanceId, processId, result, opinion });//执行
+                    meth.Invoke(process, new object[] { instanceId, processId, result, opinion, listTask, listHistory, listSql });//执行
                     return ResponseResult.Success();
                 }
                 else
@@ -1236,7 +1259,7 @@ namespace Luckyu.App.Workflow
                     else if (nodeNext.type == "processnode") // 执行
                     {   // 之后为执行节点  task 表不插值  history插入执行  需要递归 , 可能后面都是执行 直到结束    
                         listSql.Add(nodeNext.sqlsuccess);
-                        ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "");
+                        ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "", listTask, listHistory, listSql);
 
                         currentLine = alllines.Where(r => r.from == nodeNext.id).FirstOrDefault();
 
@@ -1301,13 +1324,13 @@ namespace Luckyu.App.Workflow
                         taskEntity.authrizes = turple.Item1; // 下一步审批人
 
                         bool isContainSelf = turple.Item2;  // 下一步审批人是否包含自己
-                        if (isContainSelf && !nodeNext.forms.Exists(r => r.canedit == 1))  // 如果下一步包含自己 则 递归  必须表单不可编辑
+                        if (isContainSelf && nodeCurrent.not_autoskip == 0 && !nodeNext.forms.Exists(r => r.canedit == 1))  // 如果下一步包含自己 则 递归  必须表单不可编辑，且没有设置该步骤不需要自动跳过
                         {
                             // 如果包含自己，则刚刚的待审批置为已完成
                             taskEntity.is_done = 1;
 
                             listSql.Add(nodeNext.sqlsuccess);
-                            ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "");
+                            ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "", listTask, listHistory, listSql);
 
                             var historySelf = new wf_taskhistoryEntity();
                             historySelf = taskEntity.Adapt<wf_taskhistoryEntity>();
@@ -1316,8 +1339,8 @@ namespace Luckyu.App.Workflow
                             historySelf.nodename = nodeNext.name;
                             historySelf.previous_id = nodeCurrent.id;
                             historySelf.previousname = nodeCurrent.name;
-                            historySelf.authorize_user_id = loginInfo.user_id;
-                            historySelf.authorizen_userame = $"{loginInfo.realname}-{loginInfo.loginname}";
+                            historySelf.app_userid = loginInfo.user_id;
+                            historySelf.app_username = $"{loginInfo.realname}-{loginInfo.loginname}";
                             historySelf.Create(loginInfo);
                             historySelf.opinion = "【审批】审批人包含本人，自动通过";
                             listHistory.Add(historySelf);
@@ -1446,10 +1469,10 @@ namespace Luckyu.App.Workflow
                             break;
                         case 9:   // 提交人自己
                             auth.user_id = instance.create_userId;
-                            //if (loginInfo.user_id == auth.user_id)   // 提交人自己不要跳过
-                            //{
-                            //    isContainSelf = true;
-                            //}
+                            if (loginInfo.user_id == auth.user_id)
+                            {
+                                isContainSelf = true;
+                            }
                             break;
                     }
                     auth.task_id = task_id;
@@ -1459,7 +1482,7 @@ namespace Luckyu.App.Workflow
             }
 
             // 添加 委托任务
-            // 委托加签不要放在这里面，通过查询来，写成记录很不灵活
+            // 委托会签办理不要放在这里面，通过查询来，写成记录很不灵活
             //var allAuthUsers = GetUserByAuth(listAuth);
             //var dateNow = DateTime.Now;
             //foreach (var user in allAuthUsers)
@@ -1594,6 +1617,95 @@ namespace Luckyu.App.Workflow
             return listUser;
         }
 
+        /// <summary>
+        /// 查出节点下配置的具体审批人员
+        /// </summary>
+        private List<sys_userEntity> GetUserByNode(WFSchemeNodeModel node, wf_flow_instanceEntity instance)
+        {
+            var listUser = new List<sys_userEntity>();
+            if (!node.authusers.IsEmpty())
+            {
+                var alluser = userBLL.GetAllByCache();
+                var alldept = deptBLL.GetAllByCache();
+                var allcompany = companyBLL.GetAllByCache();
+                var allrolw = roleBLL.GetAllByCache();
+                var allpost = postBLL.GetAllByCache();
+                var allgroup = groupBLL.GetAllByCache();
+
+                var allrelation = userrelationBLL.GetAllByCache();
+                foreach (var auth in node.authusers)
+                {
+                    switch (auth.objecttype)
+                    {
+                        case 1:  // 用户
+                            var users = alluser.Where(r => auth.objectids.Contains(r.user_id)).ToList();
+                            if (!users.IsEmpty())
+                            {
+                                users.RemoveAll(r => listUser.Exists(t => t.user_id == r.user_id));
+                                listUser.AddRange(users);
+                            }
+                            break;
+                        case 2:  // 部门
+                            var depts = alldept.Where(r => auth.objectids.Contains(r.department_id)).ToList();
+                            var users2 = alluser.Where(r => depts.Select(t => t.department_id).Contains(r.department_id)).ToList();
+                            if (!users2.IsEmpty())
+                            {
+                                users2.RemoveAll(r => listUser.Exists(t => t.user_id == r.user_id));
+                                listUser.AddRange(users2);
+                            }
+                            break;
+                        case 3:  // 公司
+                            var companys = allcompany.Where(r => auth.objectids.Contains(r.company_id)).ToList();
+                            var users3 = alluser.Where(r => companys.Select(t => t.company_id).Contains(r.company_id)).ToList();
+                            if (!users3.IsEmpty())
+                            {
+                                users3.RemoveAll(r => listUser.Exists(t => t.user_id == r.user_id));
+                                listUser.AddRange(users3);
+                            }
+                            break;
+                        case 4:  // 岗位
+                            var posts = allpost.Where(r => auth.objectids.Contains(r.post_id)).ToList();
+                            var userids4 = allrelation.Where(r => r.relationtype == 2 && posts.Select(t => t.post_id).Contains(r.object_id)).Select(r => r.user_id).ToList();
+                            var users4 = alluser.Where(r => userids4.Contains(r.user_id)).ToList();
+                            if (!users4.IsEmpty())
+                            {
+                                users4.RemoveAll(r => listUser.Exists(t => t.user_id == r.user_id));
+                                listUser.AddRange(users4);
+                            }
+                            break;
+                        case 5:  // 角色
+                            var roles = allrolw.Where(r => auth.objectids.Contains(r.role_id)).ToList();
+                            var userids5 = allrelation.Where(r => r.relationtype == 1 && roles.Select(t => t.role_id).Contains(r.object_id)).Select(r => r.user_id).ToList();
+                            var users5 = alluser.Where(r => userids5.Contains(r.user_id)).ToList();
+                            if (!users5.IsEmpty())
+                            {
+                                users5.RemoveAll(r => listUser.Exists(t => t.user_id == r.user_id));
+                                listUser.AddRange(users5);
+                            }
+                            break;
+                        case 6:  // 小组
+                            var groups = allgroup.Where(r => auth.objectids.Contains(r.group_id)).ToList();
+                            var userids6 = allrelation.Where(r => r.relationtype == 3 && groups.Select(t => t.group_id).Contains(r.object_id)).Select(r => r.user_id).ToList();
+                            var users6 = alluser.Where(r => userids6.Contains(r.user_id)).ToList();
+                            if (!users6.IsEmpty())
+                            {
+                                users6.RemoveAll(r => listUser.Exists(t => t.user_id == r.user_id));
+                                listUser.AddRange(users6);
+                            }
+                            break;
+                        case 9:  // 提交人自己
+                            var user = alluser.Where(r => r.user_id == instance.create_userId).FirstOrDefault();
+                            if (user != null && !listUser.Exists(t => t.user_id == user.user_id))
+                            {
+                                listUser.Add(user);
+                            }
+                            break;
+                    }
+                }
+            }
+            listUser = listUser.OrderBy(r => r.sort).ToList();
+            return listUser;
+        }
         #endregion
 
         #region 翻译Result
@@ -1601,10 +1713,10 @@ namespace Luckyu.App.Workflow
         {
             {1,"通过" },
             {2,"退回" },
-            {3,"申请加签" },
+            {3,"申请会签办理" },
             {4,"已阅" },
             {5,"调整" },
-            {6,"申请协办" },
+            {6,"申请转发查看" },
             {100,"当前待办" },
         };
 

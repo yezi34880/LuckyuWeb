@@ -85,7 +85,7 @@ namespace Luckyu.App.OA
         public decimal cost { get; set; }
 
         /// <summary>
-        ///  state   0 起草 1 生效 2 报批 -1 驳回
+        ///  state   0 起草 1 生效 2 报批 -1 退回
         /// </summary>
         public int state { get; set; }
 

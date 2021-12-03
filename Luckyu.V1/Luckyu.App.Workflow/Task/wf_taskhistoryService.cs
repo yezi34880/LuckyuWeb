@@ -21,7 +21,7 @@ namespace Luckyu.App.Workflow
             var db = BaseRepository().db;
             var query = db.Select<wf_flow_instanceEntity, wf_taskhistoryEntity>()
                 .InnerJoin((fi, th) => th.instance_id == fi.instance_id)
-                .Where((fi, th) => th.authorize_user_id == loginInfo.user_id);
+                .Where((fi, th) => th.app_userid == loginInfo.user_id);
 
             if (!jqPage.sidx.IsEmpty())
             {

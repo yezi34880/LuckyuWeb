@@ -68,7 +68,7 @@ namespace Luckyu.App.OA
                 return ResponseResult.Fail("只有生效状态才能请求生效撤回");
             }
             var json = JsonConvert.SerializeObject(entity);
-            var res = await taskBLL.Create(FlowEnum.Leave_Revoke, entity.leave_id, $"请假-生效撤回 {entity.username}", json, loginInfo, hubContext);
+            var res = await taskBLL.Create(FlowEnum.Leave_Revoke, entity.leave_id, $"{entity.username}", json, loginInfo, hubContext);
             if (res.code != 200)
             {
                 return ResponseResult.Fail(res.info);
@@ -86,6 +86,11 @@ namespace Luckyu.App.OA
             var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
             if (dataauth.edittype == 0)
             {
+                var inWorkflow = taskBLL.IsInWorkflow(keyValue);
+                if (inWorkflow)
+                {
+                    return ResponseResult.Fail("该单据已提交进入流程，不能删除");
+                }
                 if (entity.state != (int)StateEnum.Draft)
                 {
                     return ResponseResult.Fail("只有起草状态才能删除");
@@ -120,6 +125,11 @@ namespace Luckyu.App.OA
                 var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
                 if (dataauth.edittype == 0)
                 {
+                    var inWorkflow = taskBLL.IsInWorkflow(keyValue);
+                    if (inWorkflow)
+                    {
+                        return ResponseResult.Fail<oa_leaveEntity>("该单据已提交进入流程，不能删除");
+                    }
                     if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
                     {
                         return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能编辑");
@@ -131,6 +141,11 @@ namespace Luckyu.App.OA
                 }
                 else if (dataauth.edittype == 1)
                 {
+                    var inWorkflow = taskBLL.IsInWorkflow(keyValue);
+                    if (inWorkflow)
+                    {
+                        return ResponseResult.Fail<oa_leaveEntity>("该单据已提交进入流程，不能删除");
+                    }
                     if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
                     {
                         return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能删除");
@@ -155,8 +170,8 @@ namespace Luckyu.App.OA
             if (isSubmit > 0)
             {
                 var json = JsonConvert.SerializeObject(entity);
-                // 0 起草  1 生效  2 审批中  3 驳回
-                var res = await taskBLL.Create(FlowEnum.Leave, entity.leave_id, $"请假申请 {entity.username}", json, loginInfo, messageHubContext);
+                // 0 起草  1 生效  2 审批中  3 退回
+                var res = await taskBLL.Create(FlowEnum.Leave, entity.leave_id, $"{entity.username}", json, loginInfo, messageHubContext);
                 if (res.code != 200)
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(res.info);

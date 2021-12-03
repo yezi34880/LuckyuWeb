@@ -7,7 +7,6 @@ var bootstrap = function (layui) {
     var page = {
         init: function () {
             page.bind();
-            page.initData();
         },
         bind: function () {
             var loading = luckyu.layer.loading();

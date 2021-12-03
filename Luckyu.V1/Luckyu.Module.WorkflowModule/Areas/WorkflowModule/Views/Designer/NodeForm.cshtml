@@ -16,20 +16,20 @@
         <li class="layui-this">基本信息</li>
         <li id="tabUser" style="display:none;">审批人</li>
         <li id="tabForm" style="display:none;">表单</li>
-        <li id="tabSQLSuccess" style="display:none;">通过后SQL</li>
-        <li id="tabSQLFail" style="display:none;">驳回后SQL</li>
+        <li id="tabSQLSuccess" style="display:none;">通过执行SQL</li>
+        <li id="tabSQLFail" style="display:none;">退回执行SQL</li>
         <li id="tabProgram" style="display:none;">执行程序</li>
-        <li id="tabSQLCondition"  style="display:none;">SQL条件</li>
+        <li id="tabSQLCondition" style="display:none;">SQL条件</li>
     </ul>
     <div class="layui-tab-content">
         <!--基本信息-->
         <div class="layui-tab-item layui-show">
             @*<div class="layui-col-xs12 form-item">
-            <label class="layui-form-label">节点名称</label>
-            <div class="layui-input-block">
-                <input id="node_id" type="text" class="layui-input" />
-            </div>
-        </div>*@
+                    <label class="layui-form-label">节点名称</label>
+                    <div class="layui-input-block">
+                        <input id="node_id" type="text" class="layui-input" />
+                    </div>
+                </div>*@
             <div class="layui-col-xs12 form-item">
                 <label class="layui-form-label">节点名称</label>
                 <div class="layui-input-block">
@@ -37,9 +37,26 @@
                 </div>
             </div>
 
-            <div class="layui-col-xs6 form-item">
-                <div class="layui-input-block">
-                    <input type="checkbox" id="checkuser" title="由当前审批人确认下一步审批人" />
+            <div id="divStep" style="display:none;">
+                <div class="layui-col-xs12 form-item">
+                    <div class="layui-input-block">
+                        <input type="checkbox" id="not_autoskip" title="相同审批人不自动跳过" lay-skin="primary" />
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <div class="layui-input-block">
+                        <input type="checkbox" id="comfirm_node" title="下步节点多个时是否允许选择" lay-skin="primary" />
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <div class="layui-input-block">
+                        <input type="checkbox" id="comfirm_user" title="当前节点用户是否允许选择" lay-skin="primary" />
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <div class="layui-input-block">
+                        <input type="checkbox" id="user_num" title="仅允许选择一个用户" lay-skin="primary" />
+                    </div>
                 </div>
             </div>
 
@@ -52,8 +69,9 @@
                 </div>
                 <div class="layui-col-xs12 form-item">
                     <label class="layui-form-label">会签比例(%)</label>
-                    <div class="layui-input-block">
+                    <div class="layui-input-block inputselect">
                         <input id="confluence_rate" type="text" class="layui-input" lay-verify="number" readonly />
+                        <span class="luckyu-input-button">%</span>
                     </div>
                 </div>
             </div>
@@ -95,7 +113,7 @@
             <blockquote class="layui-elem-quote">单据ID请用 @@processId 替代 </blockquote>
             <textarea id="sqlsuccess" class="layui-textarea" rows="14"></textarea>
         </div>
-        <!--驳回SQL-->
+        <!--退回SQL-->
         <div class="layui-tab-item">
             <blockquote class="layui-elem-quote">单据ID请用 @@processId 替代</blockquote>
             <textarea id="sqlfail" class="layui-textarea" rows="14"></textarea>

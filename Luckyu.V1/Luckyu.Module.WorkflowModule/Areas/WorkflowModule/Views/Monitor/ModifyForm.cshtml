@@ -33,17 +33,17 @@
             <blockquote class="layui-elem-quote">双击流程节点切换 </blockquote>
             <div id="flowLast"></div>
         </div>
-        <!--协办/加签人员-->
+        <!--转发查看/会签办理人员-->
         <div class="layui-tab-item">
-            <blockquote class="layui-elem-quote">只能调整新加入协办、加签用户，如果修改节点本身，请调整流程节点 </blockquote>
+            <blockquote class="layui-elem-quote">只能调整新加入转发查看、会签办理用户，如果修改节点本身，请调整流程节点 </blockquote>
             <div class="layui-col-xs12">
-                <label>当前协办用户</label>
+                <label>当前转发查看用户</label>
             </div>
             <div class="layui-col-xs12">
                 <table id="gridHelpMe"></table>
             </div>
             <div class="layui-col-xs12">
-                <label>当前加签用户</label>
+                <label>当前会签办理用户</label>
             </div>
             <div class="layui-col-xs12">
                 <table id="gridAddUser"></table>
@@ -63,5 +63,5 @@
     @Html.AppendJs("~/js/workflow/mousewheel.js")
     @Html.AppendJs("~/js/workflow/scroll.js")
     @Html.AppendJs("~/js/workflow/workflow.js")
-    @Html.AppendJs("~/Areas/WorkflowModule/Views/Task/ModifyForm.js")
+    @Html.AppendJs("~/Areas/WorkflowModule/Views/Monitor/ModifyForm.js")
 }

@@ -356,7 +356,7 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Finish(wf_flow_instanceEntity instance, List<wf_taskEntity> listTask, wf_taskhistoryEntity history, string sql)
+        public void Finish(wf_flow_instanceEntity instance, List<wf_taskEntity> listTask, wf_taskhistoryEntity history)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -367,14 +367,8 @@ namespace Luckyu.App.Workflow
                     trans.UpdateOnlyColumns(task, r => new { r.is_done });
                 }
                 trans.Insert(history);
-                if (!sql.IsEmpty())
-                {
-                    var sql1 = sql.Replace("@processId", $"{BaseConnection.ParaPre}processId");
-                    trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
-                }
                 instance.is_finished = 1;
                 trans.UpdateOnlyColumns(instance, r => new { r.is_finished });
-
                 trans.Commit();
             }
             catch (Exception ex)
@@ -384,15 +378,17 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Modify(wf_flow_instanceEntity instance, List<wf_taskEntity> oldTasks, wf_taskEntity newTask, wf_taskhistoryEntity history)
+        public void Modify(string instanceId, string schemejson, List<wf_taskEntity> oldTasks, wf_taskEntity newTask, wf_taskhistoryEntity history)
         {
             var trans = BaseRepository().BeginTrans();
             try
             {
-                if (instance != null)
+                var query = trans.db.Update<wf_flow_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 0);
+                if (!schemejson.IsEmpty())
                 {
-                    trans.UpdateOnlyColumns(instance, r => r.schemejson);
+                    query = query.Set(r => r.schemejson == schemejson);
                 }
+                query.ExecuteAffrows();
                 foreach (var task in oldTasks)
                 {
                     trans.Delete<wf_task_authorizeEntity>(r => r.task_id == task.task_id);
@@ -446,6 +442,23 @@ namespace Luckyu.App.Workflow
                     trans.UpdateOnlyColumns(instance, r => r.is_finished);
                 }
 
+                trans.Commit();
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                throw ex;
+            }
+        }
+
+        public void Sleep(string instanceId, wf_taskhistoryEntity history)
+        {
+            var trans = BaseRepository().BeginTrans();
+            try
+            {
+                trans.db.Update<wf_flow_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 2).ExecuteAffrows();
+                trans.db.Delete<wf_taskEntity>().Where(r => r.is_done == 0 && r.instance_id == instanceId).ExecuteAffrows();
+                trans.db.Insert(history).ExecuteAffrows();
                 trans.Commit();
             }
             catch (Exception ex)

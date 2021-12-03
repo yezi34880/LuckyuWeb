@@ -155,8 +155,8 @@ namespace Luckyu.App.OA
             if (isSubmit > 0)
             {
                 var json = JsonConvert.SerializeObject(entity);
-                // 0 起草  1 生效  2 审批中  3 驳回
-                var res = await taskBLL.Create(FlowEnum.CarOrder, entity.order_id, $"约车申请 {entity.username}", json, loginInfo, messageHubContext);
+                // 0 起草  1 生效  2 审批中  3 退回
+                var res = await taskBLL.Create(FlowEnum.CarOrder, entity.order_id, $"{entity.username}", json, loginInfo, messageHubContext);
                 if (res.code != 200)
                 {
                     return ResponseResult.Fail<oa_carorderEntity>(res.info);

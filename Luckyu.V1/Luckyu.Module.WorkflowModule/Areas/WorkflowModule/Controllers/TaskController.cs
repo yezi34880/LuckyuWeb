@@ -54,7 +54,8 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         [HttpGet]
         public IActionResult GetFormData(string instanceId, string taskId, string historyId)
         {
-            var res = taskBLL.GetFormData(instanceId, taskId, historyId);
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var res = taskBLL.GetFormData(instanceId, taskId, historyId, loginInfo);
             return Json(res);
         }
 
@@ -100,10 +101,11 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
 
         [AjaxOnly, HttpPost]
-        public async Task<IActionResult> Approve(string taskId, int result, string opinion, int returnType)
+        public async Task<IActionResult> Approve(string taskId, int result, string opinion, int returnType, string authors)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = await taskBLL.Approve(taskId, result, opinion, returnType, loginInfo, _hubContext);
+            Dictionary<string, List<KeyValue>> dicAuthor = authors.ToObject<Dictionary<string, List<KeyValue>>>();
+            var res = await taskBLL.Approve(taskId, result, opinion, returnType, dicAuthor, loginInfo, _hubContext);
             return Json(res);
         }
 

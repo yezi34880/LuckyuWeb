@@ -11,6 +11,6 @@ namespace Luckyu.Utility
         Draft = 0,  // 起草
         Effect = 1,  // 生效
         Approval = 2,  // 审批
-        Reject = 4  // 驳回
+        Reject = 4  // 退回
     }
 }

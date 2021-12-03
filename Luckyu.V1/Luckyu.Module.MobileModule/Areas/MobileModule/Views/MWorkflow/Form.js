@@ -177,7 +177,7 @@
                         if (!!userlist && userlist.length > 0) {
                             var userIds = userlist.map(r => r.userId);
                             var usernames = userlist.map(r => r.realname).join(",");
-                            bui.confirm("确定邀请以下用户协办审批？<br />" + usernames, function (e) {
+                            bui.confirm("确定邀请以下用户转发查看审批？<br />" + usernames, function (e) {
                                 //this 是指点击的按钮
                                 var text = $(e.target).text();
                                 if (text == "确定") {
@@ -200,7 +200,7 @@
                         if (!!userlist && userlist.length > 0) {
                             var userIds = userlist.map(r => r.userId);
                             var usernames = userlist.map(r => r.realname).join(",");
-                            bui.confirm("确定邀请以下用户加签审批？<br />" + usernames, function (e) {
+                            bui.confirm("确定邀请以下用户会签办理审批？<br />" + usernames, function (e) {
                                 //this 是指点击的按钮
                                 var text = $(e.target).text();
                                 if (text == "确定") {
@@ -234,7 +234,7 @@
                     return;
                 }
                 var result = $("input[name=result]:checked").val();
-                var resultname = result == 1 ? "通过" : "驳回";
+                var resultname = result == 1 ? "通过" : "退回";
                 var opinion = $("#opinion").val();
                 var returnType = $("input[name=returnType]:checked").val();
                 var formData = {

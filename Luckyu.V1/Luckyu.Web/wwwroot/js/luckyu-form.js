@@ -167,7 +167,7 @@
                                 continue;
                             }
                         }
-                        if ($obj.is("input") || $obj.is("textarea") || $obj.is("select")) {
+                        if ($obj.is("input")) {
                             var type = $obj.attr('type');
                             switch (type) {
                                 case "file":
@@ -191,9 +191,24 @@
                                     }
                                     break;
                                 default:
-                                    $obj.val(value);
+                                    if ($obj.hasClass("Wdate")) {
+                                        if (!!value) {
+                                            var format = 'yyyy-MM-dd';;
+                                            if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
+                                                format = $obj[0].initcfg.dateFmt;
+                                            }
+                                            var val = (new Date(value)).format(format);
+                                            $obj.val(val);
+                                        }
+                                    }
+                                    else {
+                                        $obj.val(value);
+                                    }
                                     break;
                             }
+                        }
+                        else if ($obj.is("textarea") || $obj.is("select")) {
+                            $obj.val(value);
                         }
                         else if ($obj.hasClass("xm-select")) {
                             var xmselect = xmSelect.get("#" + id, true);
@@ -260,7 +275,7 @@
                                 continue;
                             }
                         }
-                        if ($obj.is("input") || $obj.is("textarea") || $obj.is("select")) {
+                        if ($obj.is("input")) {
                             var type = $obj.attr('type');
                             switch (type) {
                                 case "radio":
@@ -282,9 +297,24 @@
                                     }
                                     break;
                                 default:
-                                    $obj.val(value);
+                                    if ($obj.hasClass("Wdate")) {
+                                        if (!!value) {
+                                            var format = 'yyyy-MM-dd';;
+                                            if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
+                                                format = $obj[0].initcfg.dateFmt;
+                                            }
+                                            var val = (new Date(value)).format(format);
+                                            $obj.val(val);
+                                        }
+                                    }
+                                    else {
+                                        $obj.val(value);
+                                    }
                                     break;
                             }
+                        }
+                        else if ($obj.is("textarea") || $obj.is("select")) {
+                            $obj.val(value);
                         }
                         else if ($obj.hasClass("xm-select")) {
                             var xmselect = xmSelect.get("#" + id, true);

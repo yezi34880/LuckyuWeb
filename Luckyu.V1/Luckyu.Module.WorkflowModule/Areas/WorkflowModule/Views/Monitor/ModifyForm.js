@@ -108,7 +108,7 @@ var bootstrap = function (layui) {
             });
 
             window.deleteHelpMe = function (taskId) {
-                luckyu.layer.layerConfirm("确定删除该协办任务？", function () {
+                luckyu.layer.layerConfirm("确定删除该转发查看任务？", function () {
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/DeleteTask', { taskId: taskId }, function (data) {
                         layui.notice.success("操作成功");
                         gridHelpMe.trigger("reloadGrid");
@@ -146,7 +146,7 @@ var bootstrap = function (layui) {
             });
 
             window.deleteAddUser = function (authId) {
-                luckyu.layer.layerConfirm("确定删除该加签用户 ？", function () {
+                luckyu.layer.layerConfirm("确定删除该会签办理用户 ？", function () {
                     luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/DeleteTaskAuth', { authId: authId }, function (data) {
                         layui.notice.success("操作成功");
                         gridAddUser.trigger("reloadGrid");

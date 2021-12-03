@@ -17,7 +17,7 @@ namespace Luckyu.App.Organization
         public int staterange { get; set; }
 
         /// <summary>
-        /// 0 仅查看 1 可编辑起草 驳回 2 可编辑所有
+        /// 0 仅查看 1 可编辑起草 退回 2 可编辑所有
         /// </summary>
         public int edittype { get; set; }
 

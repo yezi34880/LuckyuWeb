@@ -42,10 +42,10 @@ namespace Luckyu.Web.Controllers
         public IActionResult CheckLogin(string username, string password, string verifycode)
         {
             var vcode = HttpContext.Session.GetString("session_verifycode");
-            if (vcode.IsEmpty() || vcode != EncrypHelper.MD5_Encryp(verifycode.ToLower()))
-            {
-                return Fail("验证码错误或过期，请刷新");
-            }
+            //if (vcode.IsEmpty() || vcode != EncrypHelper.MD5_Encryp(verifycode.ToLower()))
+            //{
+            //    return Fail("验证码错误或过期，请刷新");
+            //}
             var res = userBLL.CheckLogin(username, password);
             var log = new sys_logEntity();
             var request = HttpContext.Request;

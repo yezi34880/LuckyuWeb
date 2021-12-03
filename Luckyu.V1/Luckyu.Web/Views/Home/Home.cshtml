@@ -74,7 +74,7 @@
     {{each rows item index}}
     <div class="ahoit-msg-line">
         <a style="text-decoration: none;" luckyu-id="{{item.news_id}}" title="{{item.title}}">
-            ●&nbsp;&nbsp; {{if item.sort  > 0}}  <i class="fa fa-star"></i>  {{/if}}【{{item.category}}】{{item.title}}
+            ●&nbsp;&nbsp; 【{{item.category}}】<span class="stitle">{{if item.sort  > 0}} <i class="fa fa-star"></i>  {{/if}}{{item.title}}</span>
         </a>
         <label>{{item.publishtime | dateFormat 'yyyy-MM-dd'}}</label>
     </div>
@@ -85,7 +85,7 @@
     {{each rows item index}}
     <div class="ahoit-msg-line">
         <a style="text-decoration: none;" luckyu-nodetype="{{item.nodetype}}" luckyu-taskId="{{item.task_id}}" luckyu-instanceId="{{item.instance_id}}" luckyu-processId="{{item.process_id}}" title="{{item.processname}}">
-            ●&nbsp;&nbsp;【{{item.flowname}}】{{item.nodename}}  {{item.processname}}
+            ●&nbsp;&nbsp;【{{item.flowname}}】{{item.nodename}}  <span class="stitle">{{item.processname}}</span>
         </a>
         <label>{{item.createtime | dateFormat 'yyyy-MM-dd'}}</label>
     </div>

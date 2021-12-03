@@ -133,6 +133,8 @@ namespace Luckyu.App.Workflow
             this.createtime = DateTime.Now;
             this.create_userId = loginInfo.user_id;
             this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
+            this.submit_user_id = loginInfo.user_id;
+            this.submit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
             this.department_id = loginInfo.department_id;
             this.company_id = loginInfo.company_id;
             this.is_finished = 0;

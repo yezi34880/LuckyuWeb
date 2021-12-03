@@ -87,6 +87,14 @@ namespace Luckyu.Module.WorkflowModule.Controllers
 
         #region Interface
         [AjaxOnly, HttpPost]
+        public IActionResult Sleep(string instanceId)
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var res = taskBLL.Sleep(instanceId, loginInfo);
+            return Json(res);
+        }
+
+        [AjaxOnly, HttpPost]
         public IActionResult Finish(string instanceId)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
@@ -99,14 +107,6 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             var res = taskBLL.Modify(instanceId, schemeId, nodeId, loginInfo);
-            return Json(res);
-        }
-
-        [AjaxOnly, HttpPost]
-        public IActionResult Complete(string instanceId)
-        {
-            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = taskBLL.Complete(instanceId, loginInfo);
             return Json(res);
         }
         #endregion

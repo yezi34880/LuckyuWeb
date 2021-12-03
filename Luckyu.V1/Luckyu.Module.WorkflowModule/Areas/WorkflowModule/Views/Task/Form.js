@@ -46,6 +46,18 @@ var bootstrap = function (layui) {
                 folderPre: "WFApprove"
             });
 
+            // 选择用户
+            $("#usernames,#spanuserselect").click(function () {
+                luckyu.layer.userSelectForm({
+                    multiple: true,
+                    callback: function (userlist) {
+                        var userids = userlist.map(r => r.userId).join(",");
+                        var usernames = userlist.map(r => r.realname).join(",");
+                        $("#userids").val(userids);
+                        $("#usernames").val(usernames);
+                    }
+                });
+            });
         },
         initLogGrid: function (data) {
             var gridLog = $("#gridLog").jqGrid({
@@ -100,6 +112,7 @@ var bootstrap = function (layui) {
             luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId, taskId: taskId, historyId: historyId }, function (data) {
                 var htmlTab = '';
                 var htmlIframe = '';
+                // 表单
                 for (var i = 0; i < data.ShowNode.forms.length; i++) {
                     var form = data.ShowNode.forms[i];
                     var formurl = form.formurl;
@@ -138,8 +151,10 @@ var bootstrap = function (layui) {
                     };
                 });
 
+                // 历史记录
                 page.initLogGrid(data.History);
 
+                // 流程图
                 var shceme = JSON.parse(data.Instance.schemejson);
                 for (var i = 0, l = shceme.nodes.length; i < l; i++) {
                     var node = shceme.nodes[i];
@@ -161,16 +176,46 @@ var bootstrap = function (layui) {
                     }
                 }
                 $('#flow').dfworkflowSet('set', { data: shceme });
-            });
 
+                // 下一步
+                if (!!data.NextNodes) {
+                    var html = '';
+                    for (var i = 0; i < data.NextNodes.length; i++) {
+                        var nextnode = data.NextNodes[i];
+                        var html_nodename = nextnode.name;
+                        if (data.CurrentNode.comfirm_node == 1) {
+                            html_nodename = '<input type="radio" id="node_' + nextnode.id + '" name="nextnode" lay-filter="nextnode" value="' + nextnode.id + '" title="' + nextnode.name + '"  />';
+                        }
+                        html += '<div class="layui-card"><div class="layui-card-header">' + html_nodename + '</div>';
+                        html += '<div class="layui-card-body">';
+                        for (var j = 0; j < nextnode.authusers.length; j++) {
+                            var authuser = nextnode.authusers[j];
+                            var html_username = authuser.objectnames;
+                            if (nextnode.comfirm_user == 1) {
+                                html_username = '<input type="' + (nextnode.user_num == 1 ? "radio" : "checkbox") + '" id="user_' + authuser.objectids + '" name="nodeuser_' + nextnode.id + '" nodeid="' + nextnode.id + '" lay-filter="nodeuser" value="' + authuser.objectids + '" title="' + authuser.objectnames + '" lay-skin="primary" disabled  />';
+                            }
+                            html += '<div class="layui-col-xs4">' + html_username + '</div>';
+                        }
+                        html += '</div></div>';
+                    }
+                    $("#divNext").html(html);
+                    layui.form.render();
+
+                    layui.form.on('radio(nextnode)', function (data) {
+                        $('input[lay-filter=nodeuser]').prop('checked', false).attr("disabled", "disabled");
+                        $('input[name=' + "nodeuser_" + data.value + ']').removeAttr("disabled");
+                        layui.form.render();
+                    });
+                }
+            });
         }
     };
     page.init();
 
     approveClick = function (layerIndex, callBack) {
 
-        // 这里有个难点 ，可能有多个iframe页，但每个页面save方法也可能是异步的，必须每个都验证通过最后材质执行审批动作，
-        // 例如一个页面必填项未填写，则不走审批
+        // 这里有个难点 ，可能有多个iframe页，但每个页面save方法也可能是异步的，必须每个都验证通过最后才执行审批动作，
+        // 例如后台验证一个页面必填项未填写，则不走审批
         // 暂时没想好
         var flag = true;
         $("#tabForms>.layui-tab-content iframe").each(function () {
@@ -192,6 +237,48 @@ var bootstrap = function (layui) {
                     if (!$("#divApprove").verifyForm()) {
                         return false;
                     }
+                    debugger;
+                    var nextnode = $("input[type=radio][name=nextnode]");
+                    var authors = [];
+                    if (nextnode.length > 0) {
+                        var checknodes = nextnode.filter(function (t) {
+                            return $(t).is("checked");
+                        });
+                        if (checknodes.length < 1) {
+                            $("#tabNext").click();
+                            layui.layer.alert("请选择下一步节点", { icon: 2 });
+                        }
+                        authors[checknodes[0].val()] = [];
+                    }
+                    var nextusers = $("input[type=checkbox][lay-filter=nodeuser]");
+                    if (nextusers.length > 0) {
+                        var checkusers = nextusers.filter(function (t) {
+                            return $(t).is("checked");
+                        });
+                        if (checkusers.length < 1) {
+                            $("#tabNext").click();
+                            layui.layer.alert("请选择下一步用户", { icon: 2 });
+                        }
+                        for (var i = 0; i < checkusers.length; i++) {
+                            var $chk = $(checkusers);
+                            var nodeid = $chk.attr("nodeid");
+                            if (!authors[nodeid]) {
+                                authors[nodeid] = [];
+                                authors[nodeid].push({
+                                    Key: chk.val(),
+                                    Value: chk.attr("title")
+                                });
+                            }
+                            else {
+                                authors[nodeid].push({
+                                    Key: chk.val(),
+                                    Value: chk.attr("title")
+                                });
+                            }
+                        }
+                    }
+
+                    return false;
                     var result = $("input[name=result]:checked").val();
                     var opinion = $("#opinion").val();
                     var returnType = $("input[name=returnType]:checked").val();
@@ -200,6 +287,8 @@ var bootstrap = function (layui) {
                         result: result,
                         opinion: opinion,
                         returnType: returnType,
+                        nextNodeId: nextNodeId,
+                        authors: authors,
                     }, function (data) {
                         if (!!callBack) {
                             callBack();
@@ -223,17 +312,19 @@ var bootstrap = function (layui) {
         }
     };
     readClick = function (layerIndex, callBack) {
+        $("#divResult").hide();
+
         layui.layer.open({
             type: 1,
-            title: '审核',
-            content: $('#divRead'),
+            title: '查阅',
+            content: $('#divApprove'),
             area: ['800px', '500px'], //宽高
             btn: ['确定'],
             yes: function (index, layero) {
-                if (!$("#divRead").verifyForm()) {
+                if (!$("#divApprove").verifyForm()) {
                     return false;
                 }
-                var opinion = $("#opinion1").val();
+                var opinion = $("#opinion").val();
                 luckyu.ajax.postv2('/WorkflowModule/Task/Approve', {
                     taskId: taskId,
                     result: 4,
@@ -243,7 +334,7 @@ var bootstrap = function (layui) {
                         callBack();
                     }
                     var history_id = data.Item3[0].history_id;
-                    $("#AnnexName1").uploadFile({
+                    $("#AnnexName").uploadFile({
                         exId: history_id,
                         callback: function () {
                             parent.layui.layer.close(layerIndex);
@@ -259,39 +350,98 @@ var bootstrap = function (layui) {
                 $("div.layui-layer-btn", parent.document).show();
             }
         });
-
     };
     adduserClick = function (layerIndex, callBack) {
-        luckyu.layer.userSelectForm({
-            multiple: true,
-            callback: function (userlist) {
-                var userIds = userlist.map(r => r.userId);
-                var usernames = userlist.map(r => r.realname).join(",");
-                luckyu.layer.layerConfirm("确定邀请以下用户加签审批？<br />" + usernames, function () {
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds, remark: '' }, function (data) {
+        layui.layer.open({
+            type: 1,
+            title: '会签办理',
+            content: $('#divAddUser'),
+            area: ['800px', '500px'], //宽高
+            btn: ['确定'],
+            yes: function (index, layero) {
+                if (!$("#divAddUser").verifyForm()) {
+                    return false;
+                }
+
+                var remark = $("#opinion1").val();
+                var userIds = $("#userids").val();
+                var usernames = $("#usernames").val();
+
+                luckyu.layer.layerConfirm("确定邀请以下用户会签办理审批？<br />" + usernames, function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds.split(','), remark: remark }, function (data) {
                         if (!!callBack) {
                             callBack();
                         }
-                        parent.layui.layer.close(layerIndex);
+                        var history_id = data;
+                        $("#AnnexName1").uploadFile({
+                            exId: history_id,
+                            callback: function () {
+                                parent.layui.layer.close(layerIndex);
+                            }
+                        });
                     });
                 });
+            },
+            success: function (layero, index) {
+                $("div.layui-layer-btn", parent.document).hide();
+            },
+            cancel: function (index, layero) {
+                $("div.layui-layer-btn", parent.document).show();
             }
         });
+
+        //luckyu.layer.userSelectForm({
+        //    multiple: true,
+        //    callback: function (userlist) {
+        //        var userIds = userlist.map(r => r.userId);
+        //        var usernames = userlist.map(r => r.realname).join(",");
+        //        luckyu.layer.layerConfirm("确定邀请以下用户会签办理？<br />" + usernames, function () {
+        //            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds, remark: '' }, function (data) {
+        //                if (!!callBack) {
+        //                    callBack();
+        //                }
+        //                parent.layui.layer.close(layerIndex);
+        //            });
+        //        });
+        //    }
+        //});
     };
     helpmeClick = function (layerIndex, callBack) {
-        luckyu.layer.userSelectForm({
-            multiple: true,
-            callback: function (userlist) {
-                var userIds = userlist.map(r => r.userId);
-                var usernames = userlist.map(r => r.realname).join(",");
-                luckyu.layer.layerConfirm("确定邀请以下用户协办审批？<br />" + usernames, function () {
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/HelpMe', { taskId: taskId, userIds: userIds, remark: '' }, function (data) {
+        layui.layer.open({
+            type: 1,
+            title: '转发查看',
+            content: $('#divAddUser'),
+            area: ['800px', '500px'], //宽高
+            btn: ['确定'],
+            yes: function (index, layero) {
+                if (!$("#divAddUser").verifyForm()) {
+                    return false;
+                }
+
+                var remark = $("#opinion1").val();
+                var userIds = $("#userids").val();
+                var usernames = $("#usernames").val();
+
+                luckyu.layer.layerConfirm("确定邀请以下用户转发查看？<br />" + usernames, function () {
+                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/HelpMe', { taskId: taskId, userIds: userIds.split(','), remark: remark }, function (data) {
                         if (!!callBack) {
                             callBack();
                         }
-                        parent.layui.layer.close(layerIndex);
+                        var history_id = data;
+                        $("#AnnexName1").uploadFile({
+                            exId: history_id,
+                            callback: function () {
+                                parent.layui.layer.close(layerIndex);
+                            }
+                        });
                     });
                 });
+            },
+            success: function (layero, index) {
+                $("div.layui-layer-btn", parent.document).hide();
+            },
+            cancel: function (index, layero) {
+                $("div.layui-layer-btn", parent.document).show();
             }
         });
     }

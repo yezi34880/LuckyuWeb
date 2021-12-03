@@ -39,9 +39,12 @@ var bootstrap = function (layui) {
         for (var i = 0, l = list.length; i < l; i++) {
             var item = list[i];
             var active = "";
-            var imgName = "UserCard02.png";
-            if (item.F_Gender == 1) {
+            var imgName = "UserCard.png";
+            if (item.sex == 1) {
                 imgName = "UserCard01.png";
+            }
+            else if (item.sex == 2) {
+                imgName = "UserCard02.png";
             }
             if (userlistselected.indexOf(item.user_id) != -1) {
                 active = "active";

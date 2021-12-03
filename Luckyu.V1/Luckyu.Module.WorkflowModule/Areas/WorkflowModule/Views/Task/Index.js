@@ -113,7 +113,7 @@ var bootstrap = function (layui) {
                             }
                         });
                         btns.push({
-                            name: "协办",
+                            name: "转发查看",
                             callback: function (index, layero) {
                                 layero.find("iframe")[0].contentWindow.helpmeClick(index, function () {
                                     page.searchInCurrentPage();
@@ -122,7 +122,7 @@ var bootstrap = function (layui) {
                             }
                         });
                         btns.push({
-                            name: "加签",
+                            name: "会签办理",
                             callback: function (index, layero) {
                                 layero.find("iframe")[0].contentWindow.adduserClick(index, function () {
                                     page.searchInCurrentPage();
@@ -140,12 +140,11 @@ var bootstrap = function (layui) {
                     url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id + "&historyId=" + row.history_id,
                     btn: btns,
                     success: function (layero, index) {
-                        var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
-                        $("div.layui-layer-btn", layero).append(html);
-                        $("#questionBtn", layero).click(function () {
-                            top.layui.layer.alert(luckyu_staticdata.wf_description);
-                        });
-
+                        //var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
+                        //$("div.layui-layer-btn", layero).append(html);
+                        //$("#questionBtn", layero).click(function () {
+                        //    top.layui.layer.alert(luckyu_staticdata.wf_description);
+                        //});
                     }
                 });
             });

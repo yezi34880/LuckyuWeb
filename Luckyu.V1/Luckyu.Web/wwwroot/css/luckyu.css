@@ -7,6 +7,10 @@
     background-color: var(--tn-nav-color);
 }
 
+.layui-card-body{
+    display: list-item;
+}
+
 .layui-textarea {
     margin-bottom: 5px;
 }

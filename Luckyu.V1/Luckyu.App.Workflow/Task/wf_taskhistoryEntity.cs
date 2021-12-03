@@ -67,7 +67,7 @@ namespace Luckyu.App.Workflow
         public string previousname { get; set; }
 
         /// <summary>
-        ///  result   1同意 2拒绝 3加签
+        ///  result   1同意 2拒绝 3会签办理
         /// </summary>
         public int result { get; set; }
 
@@ -77,14 +77,14 @@ namespace Luckyu.App.Workflow
         public string opinion { get; set; }
 
         /// <summary>
-        ///  authorize_user_id   
+        ///  app_userid   
         /// </summary>
-        public string authorize_user_id { get; set; }
+        public string app_userid { get; set; }
 
         /// <summary>
-        ///  authorizen_userame   
+        ///  app_username   
         /// </summary>
-        public string authorizen_userame { get; set; }
+        public string app_username { get; set; }
 
         /// <summary>
         ///  createtime   

@@ -56,6 +56,10 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
+        #divNext .layui-card-header .layui-icon {
+            position: sticky;
+        }
     </style>
 }
 
@@ -96,35 +100,37 @@
 </div>
 
 <div id="divApprove" lay-filter="Approve" style="display:none;">
-    <div class="layui-tab layui-tab-brief" style="margin:0;" >
+    <div class="layui-tab layui-tab-brief" style="margin:0;">
         <ul class="layui-tab-title">
-            <li class="layui-this">审批结果</li>
+            <li class="layui-this">结果</li>
             <li>附件</li>
+            <li id="tabNext">下一步</li>
         </ul>
         <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
                 <div>
-                    <div class="form-item layui-col-xs12">
-                        <label class="layui-form-label">审批结果</label>
-                        <div class="layui-input-block">
-                            <input name="result" lay-filter="result" type="radio" class="layui-input" title="通过" value="1" checked />
-                            <input name="result" lay-filter="result" type="radio" class="layui-input" title="驳回" value="2" />
+                    <div id="divResult">
+                        <div class="form-item layui-col-xs12">
+                            <label class="layui-form-label">审批结果</label>
+                            <div class="layui-input-block">
+                                <input name="result" lay-filter="result" type="radio" class="layui-input" title="通过" value="1" checked />
+                                <input name="result" lay-filter="result" type="radio" class="layui-input" title="退回" value="2" />
+                            </div>
+                        </div>
+                        <div class="form-item layui-col-xs12" id="divReturn" style="display:none;">
+                            <label class="layui-form-label">退回规则</label>
+                            <div class="layui-input-block">
+                                <input name="returnType" type="radio" class="layui-input" title="至起始" value="0" checked />
+                                <input name="returnType" type="radio" class="layui-input" title="至上一步" value="1" />
+                            </div>
                         </div>
                     </div>
-                    <div class="form-item layui-col-xs12" id="divReturn" style="display:none;">
-                        <label class="layui-form-label">驳回规则</label>
-                        <div class="layui-input-block">
-                            <input name="returnType" type="radio" class="layui-input" title="至起始" value="0" checked />
-                            <input name="returnType" type="radio" class="layui-input" title="至上一步" value="1" />
-                        </div>
-                    </div>
                     <div class="form-item layui-col-xs12">
-                        <label class="layui-form-label">意见</label>
+                        <label class="layui-form-label">意见建议</label>
                         <div class="layui-input-block">
                             <textarea id="opinion" class="layui-textarea" rows="4"></textarea>
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="layui-tab-item">
@@ -136,21 +142,34 @@
                     </div>
                 </div>
             </div>
+            <div class="layui-tab-item">
+                <div id="divNext">
+
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="divRead" lay-filter="Read" style="display:none;">
-    <div class="layui-tab layui-tab-brief" style="margin:0;" lay-filter="Leave">
+<div id="divAddUser" lay-filter="AddUser" style="display:none;">
+    <div class="layui-tab layui-tab-brief" style="margin:0;">
         <ul class="layui-tab-title">
-            <li class="layui-this">查阅结果</li>
+            <li class="layui-this">选择用户</li>
             <li>附件</li>
         </ul>
         <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
                 <div>
                     <div class="form-item layui-col-xs12">
-                        <label class="layui-form-label">意见</label>
+                        <label class="layui-form-label">选择用户</label>
+                        <div class="layui-input-block inputselect">
+                            <input type="hidden" id="userids" />
+                            <input type="text" class="layui-input" id="usernames" readonly title="点击选择" lay-verify="required" />
+                            <span id="spanuserselect" class="luckyu-input-button" title="点击选择">---</span>
+                        </div>
+                    </div>
+                    <div class="form-item layui-col-xs12">
+                        <label class="layui-form-label">备注</label>
                         <div class="layui-input-block">
                             <textarea id="opinion1" class="layui-textarea" rows="4"></textarea>
                         </div>
@@ -168,6 +187,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 @section Footer{
