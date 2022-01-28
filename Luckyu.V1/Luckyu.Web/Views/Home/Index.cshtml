@@ -21,28 +21,13 @@
             text-align: right;
             vertical-align: top;
         }
-
-        .firstloading {
-            position: absolute;
-            background-color: #fff;
-            z-index: 1999;
-        }
     </style>
 }
-<div id="firstloading" class="firstloading" style="overflow:hidden;">
-</div>
 <script>
     paceOptions = {
         restartOnPushState: false,
         restartOnRequestAfter: false
     };
-    $("#firstloading").height(window.innerHeight - 1).width(window.innerWidth - 1);
-    $(window).resize(function () {
-        var firstloading = $("#firstloading");
-        if (!!firstloading && firstloading.length > 0) {
-            firstloading.height(window.innerHeight - 1).width(window.innerWidth - 1);
-        }
-    });
 </script>
 <div class="layui-layout-body">
     <div id="Luckyu_app">
@@ -73,7 +58,7 @@
                     <li class="layui-nav-item" lay-unselect>
                         <a lay-href="/SystemModule/Message/ShowIndex" layadmin-event="message" lay-text="消息中心">
                             <i class="layui-icon layui-icon-notice"></i>
-                            <span class="layui-badge-dot"></span>
+                            <span id="spanMessage"></span>
                         </a>
                     </li>
                     <li class="layui-nav-item" lay-unselect>

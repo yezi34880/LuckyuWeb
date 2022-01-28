@@ -40,22 +40,23 @@
             <div id="divStep" style="display:none;">
                 <div class="layui-col-xs12 form-item">
                     <div class="layui-input-block">
-                        <input type="checkbox" id="not_autoskip" title="相同审批人不自动跳过" lay-skin="primary" />
+                        <input type="checkbox" id="autoskip" title="相同审批人自动跳过" lay-skin="primary" checked />
                     </div>
                 </div>
                 <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">节点可选择</label>
                     <div class="layui-input-block">
-                        <input type="checkbox" id="comfirm_node" title="下步节点多个时是否允许选择" lay-skin="primary" />
+                        <input type="radio" name="comfirm_node" title="默认" value="0" checked />
+                        <input type="radio" name="comfirm_node" title="可选" value="1" />
+                        <input type="radio" name="comfirm_node" title="单选（同一层级有一个单选，则全部单选）" value="2" />
                     </div>
                 </div>
                 <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">用户可选择</label>
                     <div class="layui-input-block">
-                        <input type="checkbox" id="comfirm_user" title="当前节点用户是否允许选择" lay-skin="primary" />
-                    </div>
-                </div>
-                <div class="layui-col-xs12 form-item">
-                    <div class="layui-input-block">
-                        <input type="checkbox" id="user_num" title="仅允许选择一个用户" lay-skin="primary" />
+                        <input type="radio" name="comfirm_user" title="默认" value="0" checked />
+                        <input type="radio" name="comfirm_user" title="可选" value="1" />
+                        <input type="radio" name="comfirm_user" title="单选（只能选一个用户）" value="2" />
                     </div>
                 </div>
             </div>

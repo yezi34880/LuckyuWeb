@@ -22,7 +22,7 @@ namespace Luckyu.App.Workflow
             var roledepts = loginInfo.managedepartments.Where(r => r.relationtype == 1).Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
             var postdepts = loginInfo.managedepartments.Where(r => r.relationtype == 2).Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
 
-            var query = db.Select<wf_flow_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
+            var query = db.Select<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
                 .Where((fi, t, ta) => fi.is_finished == 0 && t.is_done == 0 && (
                 ta.user_id == loginInfo.user_id  // 用户
                 || loginInfo.group_ids.Contains(ta.group_id)   // 小组
@@ -142,7 +142,7 @@ namespace Luckyu.App.Workflow
 
 
 
-            var query = db.Select<wf_flow_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
+            var query = db.Select<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
                 .Where((fi, t, ta) => fi.is_finished == 0 && t.is_done == 0 && (
                 delegate_flow_user.Contains(fi.flowcode, ta.user_id)
 
@@ -201,9 +201,9 @@ namespace Luckyu.App.Workflow
         /// <summary>
         /// 流程监控 列表
         /// </summary>
-        public JqgridPageResponse<wf_flow_instanceEntity> MonitorPage(JqgridPageRequest jqPage, int is_finished)
+        public JqgridPageResponse<wf_instanceEntity> MonitorPage(JqgridPageRequest jqPage, int is_finished)
         {
-            Expression<Func<wf_flow_instanceEntity, bool>> exp = r => r.is_finished == is_finished;
+            Expression<Func<wf_instanceEntity, bool>> exp = r => r.is_finished == is_finished;
             if (jqPage.sidx.IsEmpty())
             {
                 jqPage.sidx = "createtime";
@@ -213,7 +213,7 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
-        public void Create(wf_flow_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Create(wf_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -255,14 +255,14 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Approve(wf_flow_instanceEntity instance, wf_taskEntity currentTask, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Approve(wf_instanceEntity instance, wf_taskEntity currentTask, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
         {
             var trans = BaseRepository().BeginTrans();
             try
             {
                 if (instance.is_finished == 1)
                 {
-                    trans.UpdateOnlyColumns(instance, r => new { r.is_finished });
+                    trans.UpdateOnlyColumns(instance, r => new { r.is_finished, r.finishtime, r.finish_userid, r.finish_username });
                     trans.db.Update<wf_taskEntity>().Where(r => r.instance_id == instance.instance_id).Set(r => r.is_done == 1).ExecuteAffrows();
                 }
                 else
@@ -356,7 +356,7 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Finish(wf_flow_instanceEntity instance, List<wf_taskEntity> listTask, wf_taskhistoryEntity history)
+        public void Finish(wf_instanceEntity instance, List<wf_taskEntity> listTask, wf_taskhistoryEntity history)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -383,7 +383,7 @@ namespace Luckyu.App.Workflow
             var trans = BaseRepository().BeginTrans();
             try
             {
-                var query = trans.db.Update<wf_flow_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 0);
+                var query = trans.db.Update<wf_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 0);
                 if (!schemejson.IsEmpty())
                 {
                     query = query.Set(r => r.schemejson == schemejson);
@@ -409,7 +409,7 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Complete(wf_flow_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Complete(wf_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -456,7 +456,7 @@ namespace Luckyu.App.Workflow
             var trans = BaseRepository().BeginTrans();
             try
             {
-                trans.db.Update<wf_flow_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 2).ExecuteAffrows();
+                trans.db.Update<wf_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 2).ExecuteAffrows();
                 trans.db.Delete<wf_taskEntity>().Where(r => r.is_done == 0 && r.instance_id == instanceId).ExecuteAffrows();
                 trans.db.Insert(history).ExecuteAffrows();
                 trans.Commit();

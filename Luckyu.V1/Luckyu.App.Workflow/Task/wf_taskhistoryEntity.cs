@@ -77,6 +77,11 @@ namespace Luckyu.App.Workflow
         public string opinion { get; set; }
 
         /// <summary>
+        /// tasktime 任务时间
+        /// </summary>
+        public DateTime tasktime { get; set; }
+
+        /// <summary>
         ///  app_userid   
         /// </summary>
         public string app_userid { get; set; }
@@ -85,6 +90,21 @@ namespace Luckyu.App.Workflow
         ///  app_username   
         /// </summary>
         public string app_username { get; set; }
+
+        /// <summary>
+        ///  appremark   审批备注
+        /// </summary>
+        public string appremark { get; set; }
+
+        /// <summary>
+        ///  processjson   表单数据Json
+        /// </summary>
+        public string processjson { get; set; }
+
+        /// <summary>
+        /// apptime 审批时间
+        /// </summary>
+        public DateTime apptime { get; set; }
 
         /// <summary>
         ///  createtime   
@@ -109,15 +129,6 @@ namespace Luckyu.App.Workflow
         #endregion
 
         #region 扩展
-        [Column(IsIgnore = true)]
-        public string submit_user_id { get; set; }
-
-        [Column(IsIgnore = true)]
-        public string submit_username { get; set; }
-
-        [Column(IsIgnore = true)]
-        public string flowname { get; set; }
-
         [Column(IsIgnore = true)]
         public string annex { get; set; }
         #endregion

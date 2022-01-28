@@ -65,7 +65,8 @@ namespace Luckyu.App.System
 
             var basepath = GetBasePath();
             string FileEextension = Path.GetExtension(fileName);
-            string virtualPath = $"{userInfo.user_id}\\{DateTime.Now.ToString("yyyyMMdd")}\\{annex.annex_id}{FileEextension}";
+            string onlyfilename = Path.GetFileNameWithoutExtension(fileName);
+            string virtualPath = $"{userInfo.user_id}\\{DateTime.Now.ToString("yyyyMMdd")}\\{onlyfilename}_{annex.annex_id}{FileEextension}";
             if (!folderPre.IsEmpty())
             {
                 virtualPath = FileHelper.Combine(folderPre, virtualPath);

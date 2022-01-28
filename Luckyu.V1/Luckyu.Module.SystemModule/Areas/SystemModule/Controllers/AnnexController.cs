@@ -87,7 +87,6 @@ namespace Luckyu.Module.SystemModule.Controllers
             return File(bytes, annex.contexttype, annex.filename);
         }
 
-
         public IActionResult ShowFileByExid(string exId, string exCode)
         {
             Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;

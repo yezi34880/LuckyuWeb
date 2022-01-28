@@ -19,24 +19,19 @@ namespace Luckyu.App.Workflow
         public string type { get; set; }
 
         /// <summary>
-        /// 确认下步节点（如果下一步有多个节点，可由当前审批人自行选择一个）
+        /// 确认当前节点是否可选，0=不选节点，默认往下走；1-节点可选择；2-节点单选
         /// </summary>
         public int comfirm_node { get; set; }
 
         /// <summary>
-        /// 确认当前步骤人员，如果有多人，需要选择
+        /// 确认当前步骤人员，0=不选人；1=选人；2-单选人
         /// </summary>
         public int comfirm_user { get; set; }
 
         /// <summary>
-        /// 选择用户时单选还是多选，0为多选（注意，多选时相当于会签，必须多人全部同意之后才能继续），1为单选，以后可以扩展为选择人数
+        /// 相同用户自动跳过
         /// </summary>
-        public int user_num { get; set; }
-
-        /// <summary>
-        /// 不自动跳过，默认为0，即如果下一步审批人与当前相同则自动跳过，除非下一步节点这个属性为1
-        /// </summary>
-        public int not_autoskip { get; set; }
+        public int autoskip { get; set; }
 
         /// <summary>
         /// 会签类型 1-全部通过 2-任一人通过 3-按比例

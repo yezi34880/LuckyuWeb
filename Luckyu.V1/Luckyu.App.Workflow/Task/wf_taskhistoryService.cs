@@ -19,7 +19,7 @@ namespace Luckyu.App.Workflow
         public JqgridPageResponse<WFTaskModel> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             var db = BaseRepository().db;
-            var query = db.Select<wf_flow_instanceEntity, wf_taskhistoryEntity>()
+            var query = db.Select<wf_instanceEntity, wf_taskhistoryEntity>()
                 .InnerJoin((fi, th) => th.instance_id == fi.instance_id)
                 .Where((fi, th) => th.app_userid == loginInfo.user_id);
 

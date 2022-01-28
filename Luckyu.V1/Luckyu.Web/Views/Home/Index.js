@@ -101,9 +101,7 @@
         init: function () {
             top.luckyu.clientdata.init(function () { });
             Pace.on('done', function () {
-                $("#firstloading").fadeOut(function () {
-                    $(this).remove();
-                });
+
             });
             page.bind();
 

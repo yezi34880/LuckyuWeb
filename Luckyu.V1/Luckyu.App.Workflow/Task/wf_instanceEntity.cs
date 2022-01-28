@@ -8,10 +8,10 @@ using System.Collections.Generic;
 namespace Luckyu.App.Workflow
 {
     /// <summary>
-    ///  wf_flow_instance   
+    ///  wf_instance   
     /// </summary>
-    [Table(Name = "WF_FLOW_INSTANCE")]
-    public class wf_flow_instanceEntity
+    [Table(Name = "WF_INSTANCE")]
+    public class wf_instanceEntity
     {
         #region 属性
 
@@ -52,9 +52,9 @@ namespace Luckyu.App.Workflow
         public string processcontent { get; set; }
 
         /// <summary>
-        ///  submit_user_id    单据提交人 后期 同公司 同部门 根据这个值计算
+        ///  submit_userid    单据提交人 后期 同公司 同部门 根据这个值计算
         /// </summary>
-        public string submit_user_id { get; set; }
+        public string submit_userid { get; set; }
 
         /// <summary>
         ///  submit_username    单据提交人 后期 同公司 同部门 根据这个值计算
@@ -101,6 +101,20 @@ namespace Luckyu.App.Workflow
         /// </summary>
         public string department_id { get; set; }
 
+        /// <summary>
+        /// finish_userid
+        /// </summary>
+        public string finish_userid { get; set; }
+
+        /// <summary>
+        /// finish_username 最后审批人
+        /// </summary>
+        public string finish_username { get; set; }
+
+        /// <summary>
+        /// finishtime 流程结束时间
+        /// </summary>
+        public DateTime? finishtime { get; set; }
         #endregion
 
         #region 扩展
@@ -133,7 +147,7 @@ namespace Luckyu.App.Workflow
             this.createtime = DateTime.Now;
             this.create_userId = loginInfo.user_id;
             this.create_username = $"{loginInfo.realname}-{loginInfo.loginname}";
-            this.submit_user_id = loginInfo.user_id;
+            this.submit_userid = loginInfo.user_id;
             this.submit_username = $"{loginInfo.realname}-{loginInfo.loginname}";
             this.department_id = loginInfo.department_id;
             this.company_id = loginInfo.company_id;

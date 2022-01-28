@@ -237,27 +237,24 @@ var bootstrap = function (layui) {
                     if (!$("#divApprove").verifyForm()) {
                         return false;
                     }
-                    debugger;
-                    var nextnode = $("input[type=radio][name=nextnode]");
-                    var authors = [];
+                    var nextnode = $("input[name=nextnode]");
+                    var authors = {};
                     if (nextnode.length > 0) {
-                        var checknodes = nextnode.filter(function (t) {
-                            return $(t).is("checked");
-                        });
+                        var checknodes = $("input[name=nextnode]:checked");
                         if (checknodes.length < 1) {
                             $("#tabNext").click();
                             layui.layer.alert("请选择下一步节点", { icon: 2 });
+                            return false;
                         }
-                        authors[checknodes[0].val()] = [];
+                        authors[checknodes[0].value] = [];
                     }
-                    var nextusers = $("input[type=checkbox][lay-filter=nodeuser]");
+                    var nextusers = $("input[lay-filter=nodeuser]");
                     if (nextusers.length > 0) {
-                        var checkusers = nextusers.filter(function (t) {
-                            return $(t).is("checked");
-                        });
+                        var checkusers = $("input[lay-filter=nodeuser]:checked");
                         if (checkusers.length < 1) {
                             $("#tabNext").click();
                             layui.layer.alert("请选择下一步用户", { icon: 2 });
+                            return false;
                         }
                         for (var i = 0; i < checkusers.length; i++) {
                             var $chk = $(checkusers);
@@ -265,20 +262,19 @@ var bootstrap = function (layui) {
                             if (!authors[nodeid]) {
                                 authors[nodeid] = [];
                                 authors[nodeid].push({
-                                    Key: chk.val(),
-                                    Value: chk.attr("title")
+                                    Key: $chk.val(),
+                                    Value: $chk.attr("title")
                                 });
                             }
                             else {
                                 authors[nodeid].push({
-                                    Key: chk.val(),
-                                    Value: chk.attr("title")
+                                    Key: $chk.val(),
+                                    Value: $chk.attr("title")
                                 });
                             }
                         }
                     }
 
-                    return false;
                     var result = $("input[name=result]:checked").val();
                     var opinion = $("#opinion").val();
                     var returnType = $("input[name=returnType]:checked").val();

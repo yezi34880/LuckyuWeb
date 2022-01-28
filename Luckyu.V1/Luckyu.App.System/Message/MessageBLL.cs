@@ -29,6 +29,12 @@ namespace Luckyu.App.System
             return page;
         }
 
+        public int GetNotReadCount(UserModel loginInfo)
+        {
+            var count = messageService.GetCount(r => r.to_userid == loginInfo.user_id && r.is_delete == 0 && r.is_read == 0);
+            return count;
+        }
+
         public List<sys_messageEntity> Send(sys_messageEntity entity, UserModel loginInfo)
         {
             var list = new List<sys_messageEntity>();

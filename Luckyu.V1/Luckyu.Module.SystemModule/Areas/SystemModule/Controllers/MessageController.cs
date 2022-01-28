@@ -59,6 +59,13 @@ namespace Luckyu.Module.SystemModule.Controllers
         #endregion
 
         #region ShowIndex
+        public IActionResult GetNotReadCount()
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var count = messageBLL.GetNotReadCount(loginInfo);
+            return Success(count);
+        }
+
         public IActionResult ShowIndex()
         {
             return View();
