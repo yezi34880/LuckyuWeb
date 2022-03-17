@@ -26,6 +26,60 @@
     <EmbeddedResource Remove="File\Temp\**" />
     <None Remove="File\Temp\**" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\dist\CORS" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\dist\eleTree.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\dist\fonts\eletree_icon.svg" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\img\search.83621669.svg" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\10.a0b1a881.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\11.38a905a5.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\12.283c4f32.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\13.b9d56332.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\14.73379bc3.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\15.7f1deca5.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\16.68f9f651.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\17.1936bb47.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\18.b9d2e7ea.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\19.47022793.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\20.840dae7e.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\21.05ca35b5.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\22.430b273e.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\23.bc776c15.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\24.d4738935.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\25.75456f05.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\26.db4e6df0.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\27.c8722d8b.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\28.596bb539.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\29.b284c5db.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\3.b77c06cc.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\30.7cf1dbee.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\31.3c57113a.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\32.82dc2e02.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\33.30ba126c.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\34.91729efe.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\35.2f8f329a.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\36.65394400.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\37.90ca698e.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\38.026f7dad.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\39.415e4ced.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\4.b0d5486a.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\40.d57633b1.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\41.857dbc9a.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\42.c849b4ba.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\43.ccc6eb23.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\5.31af0348.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\6.cc7f3865.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\7.56874f53.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\8.7615c930.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\9.6eb8268c.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\app.480250c8.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\assets\js\vendors~docsearch.b0b0b3af.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\eleTree\CORS" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\eleTree\eleTree.js" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\eleTree\fonts\eletree_icon.svg" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\docs\_redirects" />
+    <None Include="wwwroot\lib\layuiadmin\modules\eleTree\README.md" />
+  </ItemGroup>
   <!--复制Views下的资源文件-->
 
 

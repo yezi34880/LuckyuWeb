@@ -198,7 +198,7 @@
             });
             luckyu.ajax.getNoloading('/SystemModule/Message/GetNotReadCount', {}, function (res) {
                 if (res.code = 200) {
-                    var h = '<span class="layui-badge">' + (res.data > 99 ? "99+", res.data) + '</span>'
+                    var h = '<span class="layui-badge">' + (res.data > 99 ? "99+" : res.data) + '</span>';
                     $("#spanMessage", parent.document).html(h);
                 }
             });

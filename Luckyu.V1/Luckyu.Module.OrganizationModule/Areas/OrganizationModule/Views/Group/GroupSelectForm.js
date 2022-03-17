@@ -32,6 +32,7 @@ var bootstrap = function (layui) {
                 sortname: "sort",
                 sortorder: "ASC",
                 multiselect: true,
+                multiboxonly: true,
                 beforeSelectRow: function (rowId, evnet) {
                     if (!multiple) {
                         var jqGridRowid = grid.jqGrid("getGridParam", "selarrrow");

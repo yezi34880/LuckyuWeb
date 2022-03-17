@@ -145,7 +145,6 @@ namespace Luckyu.Module.SystemModule.Controllers
         #endregion
 
         #region Interface
-        [HttpGet, AjaxOnly]
         public IActionResult GetMap(string ver)
         {
             var data = dataitemBLL.GetModelMap();
@@ -165,19 +164,18 @@ namespace Luckyu.Module.SystemModule.Controllers
             }
         }
 
-        [HttpGet, AjaxOnly]
         public IActionResult GetDataItemDatailsByCode(string code)
         {
             var data = dataitemBLL.GetDetailList(r => r.itemcode == code);
             return Success(data);
         }
-        [HttpGet, AjaxOnly]
+
         public IActionResult GetSelectTree()
         {
             var treeData = dataitemBLL.GetSelectTree();
             return Json(treeData);
         }
-        [HttpGet, AjaxOnly]
+
         public IActionResult GetTree()
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);

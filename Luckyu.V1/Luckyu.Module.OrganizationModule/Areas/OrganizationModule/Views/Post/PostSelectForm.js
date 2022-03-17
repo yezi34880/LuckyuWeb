@@ -33,6 +33,7 @@ var bootstrap = function (layui) {
                 sortname: "sort",
                 sortorder: "ASC",
                 multiselect: true,
+                multiboxonly: true, // 点击行单选，只有点击checkbox多选
                 beforeSelectRow: function (rowId, evnet) {
                     if (!multiple) {
                         var jqGridRowid = grid.jqGrid("getGridParam", "selarrrow");

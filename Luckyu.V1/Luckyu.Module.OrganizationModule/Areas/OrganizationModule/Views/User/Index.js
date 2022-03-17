@@ -14,18 +14,18 @@ var bootstrap = function (layui) {
             page.initGrid();
         },
         initTree: function () {
-            treeCompany = layui.eleTree.render({
-                elem: '#treeCompany',
+            treeCompany = layui.eleTree({
+                el: '#treeCompany',
                 defaultExpandAll: true,
                 url: luckyu.rootUrl + "/OrganizationModule/Department/GetTree",
                 expandOnClickNode: false,
                 showLine: true,
                 highlightCurrent: true,
             });
-            layui.eleTree.on("nodeClick(treeCompany)", function (d) {
-                $("#company").html(' - ' + d.data.currentData.label);
-                var id = d.data.currentData.id;
-                var tag = d.data.currentData.ext.tag;
+            treeCompany.on("click", function (d) {
+                $("#company").html(' - ' + d.data.label);
+                var id = d.data.id;
+                var tag = d.data.ext.tag;
                 var postData = {
                     organizationId: id,
                     organizationTag: tag

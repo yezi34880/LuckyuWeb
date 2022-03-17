@@ -11,8 +11,8 @@ var bootstrap = function (layui) {
     var treeModule;
     var page = {
         bind: function () {
-            treeModule = layui.eleTree.render({
-                elem: '#treeModule',
+            treeModule = layui.eleTree({
+                el: '#treeModule',
                 defaultExpandAll: true,
                 url: luckyu.rootUrl + "/OrganizationModule/Module/GetTree",
                 expandOnClickNode: false,

@@ -14,8 +14,8 @@ var bootstrap = function (layui) {
     var tree;
     var page = {
         bind: function () {
-            tree = layui.eleTree.render({
-                elem: '#tree',
+            tree = layui.eleTree({
+                el: '#tree',
                 defaultExpandAll: true,
                 url: luckyu.rootUrl + "/OrganizationModule/Department/GetTree?companyId=" + companyId + "&multiple=" + multiple,
                 expandOnClickNode: false,
@@ -30,12 +30,12 @@ var bootstrap = function (layui) {
                     }
                 }
             });
-            layui.eleTree.on("nodeChecked(tree)", function (d) {
+            tree.on("checkbox", function (d) {
                 if (multiple === false) {
                     tree.unCheckNodes()
-                    tree.setChecked([d.data.currentData.id], true)
+                    tree.setChecked([d.data.id], true)
                 }
-                if (multiple === true && d.data.currentData.ext.tag === "all") {
+                if (multiple === true && d.data.ext.tag === "all") {
                     if (d.isChecked) {
                         var nodes = tree.getAllNodeData();
                         var arr = [];

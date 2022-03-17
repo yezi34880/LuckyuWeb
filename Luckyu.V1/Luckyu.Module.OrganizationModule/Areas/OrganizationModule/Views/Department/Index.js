@@ -15,17 +15,17 @@ var bootstrap = function (layui) {
             page.initGrid();
         },
         initTree: function () {
-            treeCompany = layui.eleTree.render({
-                elem: '#treeCompany',
+            treeCompany = layui.eleTree({
+                el: '#treeCompany',
                 defaultExpandAll: true,
                 url: luckyu.rootUrl + "/OrganizationModule/Company/GetTree",
                 expandOnClickNode: false,
                 showLine: true,
                 highlightCurrent: true,
             });
-            layui.eleTree.on("nodeClick(treeCompany)", function (d) {
-                $("#company").html(' - ' + d.data.currentData.label);
-                page.search({ companyId: d.data.currentData.id });
+            treeCompany.on("click", function (d) {
+                $("#company").html(' - ' + d.data.label);
+                page.search({ companyId: d.data.id });
             })
         },
         initGrid: function () {

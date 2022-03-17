@@ -14,43 +14,25 @@ var bootstrap = function (layui) {
             page.initGrid();
         },
         initTree: function () {
-            treeDataitem = layui.eleTree.render({
-                elem: '#treeDataitem',
+            treeDataitem = layui.eleTree({
+                el: '#treeDataitem',
                 defaultExpandAll: true,
                 url: luckyu.rootUrl + "/SystemModule/Dataitem/GetTree",
                 expandOnClickNode: false,
                 showLine: true,
                 highlightCurrent: true,
-                searchNodeMethod: function (value, data) {
-                    if (!value) {
-                        return true;
-                    }
-                    else if (data.ext.code.indexOf(value) > -1) {
-                        return true;
-                    }
-                    else if (data.ext.code.toLowerCase().indexOf(value.toLowerCase()) > -1) {
-                        return true;
-                    }
-                    else if (data.label.indexOf(value) > -1) {
-                        return true;
-                    }
-                    else if (data.label.toLowerCase().indexOf(value.toLowerCase()) > -1) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-
-                }
             });
             $("#keyword").on("input", function (e) {
                 var val = e.currentTarget.value;
-                treeDataitem.search(val);
+                treeDataitem.search(val, function (value, data) {
+                    if (!value) return true;
+                    return data.label.indexOf(value) > -1 || data.ext.code.indexOf(value) > -1;
+                });
             });
 
-            layui.eleTree.on("nodeClick(treeDataitem)", function (d) {
-                $("#show").html(' - ' + d.data.currentData.label + '【' + d.data.currentData.ext.code + '】');
-                page.search({ classifyId: d.data.currentData.id });
+            treeDataitem.on("click", function (d) {
+                $("#show").html(' - ' + d.data.label + '【' + d.data.ext.code + '】');
+                page.search({ classifyId: d.data.id });
             })
         },
         initGrid: function () {

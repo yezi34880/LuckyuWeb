@@ -3,11 +3,16 @@
     --tn-nav-color: #009688;
 }
 
+.eleTree-title-active {
+    background-color: #dff0d8 !important;
+    font-weight: bold !important;
+}
+
 .layui-btn {
     background-color: var(--tn-nav-color);
 }
 
-.layui-card-body{
+.layui-card-body {
     display: list-item;
 }
 

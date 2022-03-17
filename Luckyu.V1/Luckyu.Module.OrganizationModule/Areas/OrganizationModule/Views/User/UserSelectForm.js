@@ -121,16 +121,16 @@ var bootstrap = function (layui) {
 
     var page = {
         initTree: function () {
-            var treeDepartment = layui.eleTree.render({
-                elem: '#treeDepartment',
+            var treeDepartment = layui.eleTree({
+                el: '#treeDepartment',
                 defaultExpandAll: true,
                 url: luckyu.rootUrl + "/OrganizationModule/Department/GetTree?companyId=" + companyId,
                 expandOnClickNode: false,
                 highlightCurrent: true,
             });
-            layui.eleTree.on("nodeClick(treeDepartment)", function (d) {
-                var id = d.data.currentData.id;
-                var tag = d.data.currentData.ext.tag;
+            treeDepartment.on("click", function (d) {
+                var id = d.data.id;
+                var tag = d.data.ext.tag;
                 var requestParam = {
                     organizationId: id,
                     organizationTag: tag,
