@@ -2,7 +2,7 @@
 using Luckyu.App.Workflow;
 using Luckyu.Utility;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Collections.Generic;
 
 namespace Luckyu.Module.WorkflowModule.Controllers
 {
@@ -103,10 +103,10 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
 
         [AjaxOnly, HttpPost]
-        public IActionResult Modify(string instanceId, string schemeId, string nodeId)
+        public IActionResult Modify(string instanceId, string schemeId, string nodeId, List<string> userIds)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = taskBLL.Modify(instanceId, schemeId, nodeId, loginInfo);
+            var res = taskBLL.Modify(instanceId, schemeId, nodeId, userIds, loginInfo);
             return Json(res);
         }
         #endregion

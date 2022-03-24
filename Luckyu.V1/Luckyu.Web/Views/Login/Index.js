@@ -3,7 +3,7 @@
  */
 
 layui.config({
-    version: 20200725, //一般用于更新组件缓存，默认不开启。设为true即让浏览器不缓存。也可以设为一个固定的值，如：201610
+    version: 20220322, //一般用于更新组件缓存，默认不开启。设为true即让浏览器不缓存。也可以设为一个固定的值，如：201610
     base: '/lib/layuiadmin/modules/'
 }).use(['layer', 'form', 'notice'], function () {
     luckyu.notice.init();
@@ -23,7 +23,10 @@ layui.config({
                     }
                     else {
                         layui.notice.error(res.info);
-                        $("#verifycode_img").click();
+                        if (res.data.wrongnum > 2) {
+                            $("#divVerifyCode").show();
+                            $("#verifycode_img").click();
+                        }
                     }
                 });
 

@@ -1047,7 +1047,7 @@ namespace Luckyu.App.Workflow
         /// 调整流程, 设置运行中流程到任意节点
         /// </summary>
         /// <returns></returns>
-        public ResponseResult Modify(string instanceId, string schemeId, string nodeId, UserModel loginInfo)
+        public ResponseResult Modify(string instanceId, string schemeId, string nodeId, List<string> userIds, UserModel loginInfo)
         {
             var instance = instanceService.GetEntity(r => r.instance_id == instanceId);
             if (instance == null)
@@ -1087,8 +1087,23 @@ namespace Luckyu.App.Workflow
             newTask.previousname = oldTasks[0].nodename;
             newTask.Create(loginInfo);
 
-            var turple = GetNextAuth(nodeNext, instance, newTask.task_id, loginInfo);
-            newTask.authrizes = turple.Item1;
+            if (userIds.IsEmpty())
+            {
+                var turple = GetNextAuth(nodeNext, instance, newTask.task_id, loginInfo);
+                newTask.authrizes = turple.Item1;
+            }
+            else
+            {
+                foreach (var userid in userIds)
+                {
+                    var au = new wf_task_authorizeEntity();
+                    au.task_id = newTask.task_id;
+                    au.is_add = 1;
+                    au.user_id = userid;
+                    au.Create(loginInfo);
+                    newTask.authrizes.Add(au);
+                }
+            }
 
             var history = new wf_taskhistoryEntity();
             history = oldTasks[0].Adapt<wf_taskhistoryEntity>();

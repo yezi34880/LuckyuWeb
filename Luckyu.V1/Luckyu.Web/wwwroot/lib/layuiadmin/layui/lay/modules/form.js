@@ -674,9 +674,12 @@ layui.define('layer', function (exports) {
                     errorText = errorText || verify[thisVer][1];
 
                     // 隐藏元素不判断
-                    if (othis.is("input") && othis.attr("type") === "hidden") {
-                        othis = false;
+                    if (!othis.is(":visible")) {
+                        isTrue = false;
                     }
+                    //if (othis.is("input") && othis.attr("type") === "hidden") {
+                    //    othis = false;
+                    //}
 
                     //如果是必填项或者非空命中校验，则阻止提交，弹出提示
                     if (isTrue) {

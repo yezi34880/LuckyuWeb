@@ -41,11 +41,15 @@ namespace Luckyu.Web.Controllers
         //[HandlerValidateAntiForgeryToken]
         public IActionResult CheckLogin(string username, string password, string verifycode)
         {
-            var vcode = HttpContext.Session.GetString("session_verifycode");
-            //if (vcode.IsEmpty() || vcode != EncrypHelper.MD5_Encryp(verifycode.ToLower()))
-            //{
-            //    return Fail("验证码错误或过期，请刷新");
-            //}
+            var wrongnum = HttpContext.Session.GetInt32("session_wrongnum");
+            if (!wrongnum.IsEmpty() && wrongnum > 2)
+            {
+                var vcode = HttpContext.Session.GetString("session_verifycode");
+                if (vcode.IsEmpty() || vcode != EncrypHelper.MD5_Encryp(verifycode.ToLower()))
+                {
+                    return Fail("验证码错误或过期，请刷新");
+                }
+            }
             var res = userBLL.CheckLogin(username, password);
             var log = new sys_logEntity();
             var request = HttpContext.Request;
@@ -61,11 +65,12 @@ namespace Luckyu.Web.Controllers
             log.log_type = (int)LogType.Login;
             log.log_time = DateTime.Now;
             log.module = "Login";
-            log.log_content = $"用户 {res.data.realname}-{res.data.loginname} 登录";
+            log.log_content = $"用户名 {username} 登录";
             if (res.code == 200)
             {
+                HttpContext.Session.SetInt32("session_wrongnum", 0);
                 LoginUserInfo.Instance.SetLogin(res.data.loginname, HttpContext, LuckyuHelper.AppID);
-                log.log_content += $"  登录成功";
+                log.log_content += $"  登录成功 登录用户为 { res.data.realname}-{ res.data.loginname}?";
                 log.op_type = "成功";
                 log.user_id = res.data.user_id;
                 log.user_name = res.data.realname;
@@ -74,10 +79,14 @@ namespace Luckyu.Web.Controllers
             }
             else
             {
+                var wrongnum1 = HttpContext.Session.GetInt32("session_wrongnum");
+                var wrongnum2 = wrongnum1.HasValue ? wrongnum1.Value + 1 : 1;
+                HttpContext.Session.SetInt32("session_wrongnum", wrongnum2);
+
                 log.log_content += "  登录失败 " + res.info;
                 log.op_type = "失败";
                 LogBLL.WriteLog(log);
-                return Fail(res.info);
+                return Fail(res.info, new { wrongnum = wrongnum2 });
             }
         }
         #endregion

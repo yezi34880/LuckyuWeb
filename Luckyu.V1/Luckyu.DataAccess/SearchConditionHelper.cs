@@ -15,6 +15,50 @@ namespace Luckyu.DataAccess
     {
         #region 返回当前条件
         /// <summary>
+        /// 字符 通用查询 条件
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static DynamicFilterInfo GetCustomCondition(string field, string op, string data)
+        {
+            if (data.IsEmpty())
+            {
+                return null;
+            }
+            var filter = new DynamicFilterInfo();
+            filter.Logic = DynamicFilterLogic.And;
+            filter.Field = field;
+            filter.Value = data;
+            switch (op)
+            {
+                case "cn":
+                    filter.Operator = DynamicFilterOperator.Contains;
+                    break;
+                case "nc":
+                    filter.Operator = DynamicFilterOperator.NotContains;
+                    break;
+                case "eq":
+                    filter.Operator = DynamicFilterOperator.Equal;
+                    break;
+                case "ne":
+                    filter.Operator = DynamicFilterOperator.NotEqual;
+                    break;
+                case "bw":
+                    filter.Operator = DynamicFilterOperator.StartsWith;
+                    break;
+                case "ew":
+                    filter.Operator = DynamicFilterOperator.EndsWith;
+                    break;
+                default:
+                    filter.Operator = DynamicFilterOperator.Contains;
+                    break;
+            }
+            return filter;
+        }
+
+
+        /// <summary>
         /// 根据时间段构建sql条件  
         /// </summary>
         /// <param name="field">字段名</param>
@@ -159,7 +203,7 @@ namespace Luckyu.DataAccess
                     }
                     if (rule.ltype.IsEmpty() || rule.ltype == "text")
                     {
-                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                        filters.Add(SearchConditionHelper.GetCustomCondition(rule.field, rule.op, rule.data));
                     }
                     else
                     {

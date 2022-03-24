@@ -31,7 +31,7 @@
         /**
          * 清空所有搜索
          */
-        clearSearchBar: function (grid) {
+        clearSearchBar: function (grid, func) {
             var $grid = $(grid);
             if (!$grid || $grid.length < 1) {
                 return;
@@ -44,6 +44,9 @@
                     $that.attr("_realValue", "");
                     $that.val("");
                 }
+            }
+            if (!!func) {
+                func();
             }
             $grid[0].clearToolbar();
         },
@@ -71,7 +74,7 @@
         /**
          * 统一搜索设置, 回车执行搜索,搜索之前参数调整 参数清除
          */
-        filterToolbar: function (grid) {
+        filterToolbar: function (grid, searchFunc, clearFunc) {
             var $grid = $(grid);
             if (!$grid || $grid.length < 1) {
                 return;
@@ -85,6 +88,7 @@
             $grid.jqGrid('filterToolbar', {
                 autosearch: true,  // true输入后回车键搜索，false文本改变搜索
                 stringResult: true,
+                searchOperators: true,
                 beforeSearch: function () {  // 重新设置参数 手动触发查询
                     if (!!this.p.postData.filters) {
                         var filters = JSON.parse(this.p.postData.filters)
@@ -106,11 +110,17 @@
                             }
                         }
                         this.p.postData.filters = JSON.stringify(filters);
+                        if (!!searchFunc) {
+                            this.p.postData = searchFunc(this.p.postData);
+                        }
                     }
                 },
                 beforeClear: function (a, b, c, d) {
                     this.p.postData._search = false;
                     this.p.postData.filters = null;
+                    if (!!clearFunc) {
+                        this.p.postData = clearFunc(this.p.postData);
+                    }
                 },
 
             });
@@ -405,17 +415,17 @@
                     var grida = $(this);
                     luckyu.grid.resizeGrid(grida);
                 },
-                clearSearchBar: function () {
+                clearSearchBar: function (func) {
                     var grida = $(this);
-                    luckyu.grid.clearSearchBar(grida);
+                    luckyu.grid.clearSearchBar(grida, func);
                 },
                 toggleSearchBar: function () {
                     var grida = $(this);
                     luckyu.grid.toggleSearchBar(grida);
                 },
-                filterToolbar: function () {
+                filterToolbar: function (searchFunc, clearFunc) {
                     var grida = $(this);
-                    luckyu.grid.filterToolbar(grida);
+                    luckyu.grid.filterToolbar(grida, searchFunc, clearFunc);
                 },
                 deleteRow: function (rowId) {
                     var grida = $(this);
@@ -789,6 +799,11 @@
                                 }
                             };
                         }
+                        else {  // 普通文本框 增加 条件选项
+                            col.searchoptions = {
+                                sopt: ['cn', 'nc', 'eq', 'ne', 'bw', 'ew']
+                            };
+                        }
                     }
                     if (op.footerrow === true) {
                         var gridComplete = function () {
@@ -827,6 +842,27 @@
                             op.gridComplete = gridComplete;
                         }
                     }
+
+                    var loadComplete = function () { // 隐藏条件选择
+                        var colModel = self.jqGrid("getGridParam", "colModel");
+                        for (var i = 0; i < colModel.length; i++) {
+                            var col = colModel[i];
+                            if (!col.searchoptions || !col.searchoptions.sopt) {
+                                $("a.soptclass[colname=" + col.name + "]").parent().hide();
+                            }
+                        }
+                    };
+                    if (!!op.loadComplete) {
+                        var loadCompleteOrigin = op.gridComplete;
+                        op.loadComplete = function () {
+                            loadCompleteOrigin();
+                            loadComplete();
+                        };
+                    }
+                    else {
+                        op.loadComplete = loadComplete;
+                    }
+
                     var grida = $(this).jqGrid(op);
                     return grida;
                 },

@@ -36,13 +36,50 @@ var bootstrap = function (layui) {
                         return;
                     }
 
-                    luckyu.layer.layerConfirm("确定调整该流程到节点 " + node.name + " ？", function () {
-                        luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify', { instanceId: instanceId, schemeId: '', nodeId: node.id }, function (data) {
-                            layui.notice.success("操作成功");
-                            var layerIndex = parent.layer.getFrameIndex(window.name);
-                            parent.layer.close(layerIndex);
-                        });
+                    layui.layer.open({
+                        type: 0,
+                        title: "调整流程节点",
+                        content: '确定调整该流程到节点 ' + node.name + ' ？',
+                        icon: 3,
+                        area: ['400px', '160px'],
+                        btn: ["调整并使用默认用户", "调整并选择用户", "取消"],
+                        yes: function (index, layero) {
+                            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify', { instanceId: instanceId, schemeId: '', nodeId: node.id, userIds: [] }, function (data) {
+                                layui.notice.success("操作成功");
+                                var layerIndex = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(layerIndex);
+                            });
+                        },
+                        btn2: function (index, layero) {
+                            luckyu.layer.userSelectForm({
+                                multiple: true,
+                                callback: function (userlist) {
+                                    if (userlist.length < 1) {
+                                        layui.notice.error("没有选择用户");
+                                        return;
+                                    }
+                                    var userids = userlist.map(r => r.userId);
+                                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify',
+                                        { instanceId: instanceId, schemeId: '', nodeId: node.id, userIds: userids },
+                                        function (data) {
+                                            layui.notice.success("操作成功");
+                                            var layerIndex = parent.layer.getFrameIndex(window.name);
+                                            parent.layer.close(layerIndex);
+                                        });
+
+                                }
+                            });
+
+                        }
                     });
+
+                    //luckyu.layer.layerConfirm("确定调整该流程到节点 " + node.name + " ？", function () {
+                    //    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify', { instanceId: instanceId, schemeId: '', nodeId: node.id }, function (data) {
+                    //        layui.notice.success("操作成功");
+                    //        var layerIndex = parent.layer.getFrameIndex(window.name);
+                    //        parent.layer.close(layerIndex);
+                    //    });
+                    //});
                 }
             });
             $('#flowLast').dfworkflow({
@@ -68,13 +105,44 @@ var bootstrap = function (layui) {
                     }
 
                     var scheme_id = $('#flowLast').attr("luckyu-schemeid");
-                    luckyu.layer.layerConfirm("确定调整该流程到最新版本，并调整节点到 " + node.name + " ？", function () {
-                        luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify', { instanceId: instanceId, schemeId: scheme_id, nodeId: node.id }, function (data) {
-                            layui.notice.success("操作成功");
-                            var layerIndex = parent.layer.getFrameIndex(window.name);
-                            parent.layer.close(layerIndex);
-                        });
+
+                    layui.layer.open({
+                        type: 0,
+                        title: "调整流程节点",
+                        content: '确定调整该流程到最新版本，并调整节点到 " + node.name + " ？',
+                        icon: 3,
+                        area: ['400px', '180px'],
+                        btn: ["调整并使用默认用户", "调整并选择用户", "取消"],
+                        yes: function (index, layero) {
+                            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify', { instanceId: instanceId, schemeId: scheme_id, nodeId: node.id, userIds: [] }, function (data) {
+                                layui.notice.success("操作成功");
+                                var layerIndex = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(layerIndex);
+                            });
+                        },
+                        btn2: function (index, layero) {
+                            luckyu.layer.userSelectForm({
+                                multiple: true,
+                                callback: function (userlist) {
+                                    if (userlist.length < 1) {
+                                        layui.notice.error("没有选择用户");
+                                        return;
+                                    }
+                                    var userids = userlist.map(r => r.userId);
+                                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify',
+                                        { instanceId: instanceId, schemeId: scheme_id, nodeId: node.id, userIds: userids },
+                                        function (data) {
+                                            layui.notice.success("操作成功");
+                                            var layerIndex = parent.layer.getFrameIndex(window.name);
+                                            parent.layer.close(layerIndex);
+                                        });
+
+                                }
+                            });
+
+                        }
                     });
+
                 }
             });
 
@@ -213,7 +281,7 @@ var bootstrap = function (layui) {
             $(window).resize(function () {
                 gridHistory.setGridWidth(window.innerWidth - 40);
                 gridHistory.setGridHeight(window.innerHeight - 200);
-        });
+            });
 
         },
         initData: function () {
