@@ -24,16 +24,31 @@
     <div class="layui-tab-content">
         <!--基本信息-->
         <div class="layui-tab-item layui-show">
-            @*<div class="layui-col-xs12 form-item">
-                    <label class="layui-form-label">节点名称</label>
-                    <div class="layui-input-block">
-                        <input id="node_id" type="text" class="layui-input" />
-                    </div>
-                </div>*@
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">节点编码</label>
+                <div class="layui-input-block">
+                    <input id="code" type="text" class="layui-input" />
+                </div>
+            </div>
             <div class="layui-col-xs12 form-item">
                 <label class="layui-form-label">节点名称</label>
                 <div class="layui-input-block">
                     <input id="name" type="text" class="layui-input" />
+                </div>
+            </div>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">超时选项</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="默认" value="0" checked />
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时通过" value="1" />
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时退回起草" value="2" />
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时通过上一步" value="3" />
+                </div>
+            </div>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">超时时间(小时)</label>
+                <div class="layui-input-block">
+                    <input id="timeout" type="text" class="layui-input" lay-verify="number" />
                 </div>
             </div>
 
@@ -48,15 +63,15 @@
                     <div class="layui-input-block">
                         <input type="radio" name="comfirm_node" title="默认" value="0" checked />
                         <input type="radio" name="comfirm_node" title="可选" value="1" />
-                        <input type="radio" name="comfirm_node" title="单选（同一层级有一个单选，则全部单选）" value="2" />
+                        <input type="radio" name="comfirm_node" title="单选(同一层级有一个单选，则全部单选)" value="2" />
                     </div>
                 </div>
                 <div class="layui-col-xs12 form-item">
                     <label class="layui-form-label">用户可选择</label>
                     <div class="layui-input-block">
                         <input type="radio" name="comfirm_user" title="默认" value="0" checked />
-                        <input type="radio" name="comfirm_user" title="可选" value="1" />
-                        <input type="radio" name="comfirm_user" title="单选（只能选一个用户）" value="2" />
+                        <input type="radio" name="comfirm_user" title="多选" value="1" />
+                        <input type="radio" name="comfirm_user" title="单选(只能选一个用户)" value="2" />
                     </div>
                 </div>
             </div>
@@ -65,13 +80,15 @@
                 <div class="layui-col-xs12 form-item">
                     <label class="layui-form-label">会签类型</label>
                     <div class="layui-input-block">
-                        <div id="confluence_type" class="xm-select"></div>
+                        <input type="radio" name="confluence_type" lay-filter="confluence_type" title="全部通过" value="1" checked />
+                        <input type="radio" name="confluence_type" lay-filter="confluence_type" title="任意一人通过" value="2" />
+                        <input type="radio" name="confluence_type" lay-filter="confluence_type" title="按比例通过" value="3" />
                     </div>
                 </div>
-                <div class="layui-col-xs12 form-item">
+                <div class="layui-col-xs12 form-item" id="divconfluence_rate">
                     <label class="layui-form-label">会签比例(%)</label>
                     <div class="layui-input-block inputselect">
-                        <input id="confluence_rate" type="text" class="layui-input" lay-verify="number" readonly />
+                        <input id="confluence_rate" type="text" class="layui-input" lay-verify="number" />
                         <span class="luckyu-input-button">%</span>
                     </div>
                 </div>

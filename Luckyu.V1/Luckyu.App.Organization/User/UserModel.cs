@@ -61,5 +61,20 @@ namespace Luckyu.App.Organization
         /// </summary>
         public string token { get; set; }
 
+        /// <summary>
+        /// 系统用户，用于超时自动审批等场景
+        /// </summary>
+        /// <returns></returns>
+        public static UserModel CreateSystemUser()
+        {
+            var loginInfo = new UserModel
+            {
+                user_id = "@system",
+                loginname = "xitong",
+                realname = "系统"
+            };
+            return loginInfo;
+        }
+
     }
 }

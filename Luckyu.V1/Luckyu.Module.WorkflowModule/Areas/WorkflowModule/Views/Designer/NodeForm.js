@@ -53,20 +53,14 @@ var bootstrap = function () {
                     break;
             }
 
-            $("#confluence_type").initLocal({
-                data: [
-                    { name: "全部通过", value: '1' },
-                    { name: "任意一人通过", value: '2' },
-                    { name: "按比例通过", value: '3' },
-                ],
-                initValue: "1",
-                select: function (res) {
-                    if (res.arr.length > 0 && res.arr[0].value === "3") {
-                        $("#confluence_rate").removeAttr("readonly");
-                    }
-                    else {
-                        $("#confluence_rate").attr("readonly", "readonly").val("");
-                    }
+            layui.form.on('radio(timeout_type)', function (cbdata) {
+                if (cbdata.value == 0) {
+                    $("#timeout").val("");
+                }
+            });
+            layui.form.on('radio(confluence_type)', function (cbdata) {
+                if (cbdata.value != 3) {
+                    $("#confluence_rate").val("");
                 }
             });
 

@@ -86,16 +86,32 @@ namespace Luckyu.DataAccess
                         log.log_type = (int)LogType.Sql;
                         log.op_type = e.CurdType.ToString();
                         log.app_name = LuckyuHelper.AppID;
-                        log.log_content = $"SQL  {e.Sql}   RESULT  {e.ExecuteResult.ToJson()}";
-                        log.log_json = e.DbParms.ToJson();
+                        log.log_content = $"【SQL】{e.Sql}\r\n【PARAMS】{e.DbParms.ToJson()}\r\n【RESULT】{e.ExecuteResult.ToJson()}\r\n";
+                        log.log_json = "";
                         log.module = e.Table.DbName;
+
+                        //var strkeyvalues = new System.Text.StringBuilder();
+                        //if (!e.ExecuteResult.IsEmpty())
+                        //{
+                        //    var t = e.ExecuteResult.GetType();
+                        //    IEnumerable result = Convert.ChangeType(e.ExecuteResult, t);
+                        //    foreach (var row in result)
+                        //    {
+                        //        var entity = Convert.ChangeType(row, e.EntityType);
+                        //        foreach (var pri in e.Table.Primarys)
+                        //        {
+                        //            var keyvalue = pri.GetDbValue(entity);
+                        //            strkeyvalues.Append($"{keyvalue},");
+                        //        }
+                        //    }
+                        //}
+                        //log.process_id = strkeyvalues.ToString().Trim(',');
                         logService.Insert(log);
                     }
-                };
-            }
+                }
 
             return db;
-        }
+            }
 
         public static string ParaPre
         {

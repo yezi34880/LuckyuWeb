@@ -40,6 +40,7 @@ namespace Luckyu.App.Workflow
         #region Get
         public JqgridPageResponse<WFTaskModel> Page(JqgridPageRequest jqPage, int tasktype, UserModel loginInfo)
         {
+            TimeoutApprove(); // 每次查询 自动判断超时自动办理
             var page = new JqgridPageResponse<WFTaskModel>();
             if (tasktype == 1)  // 待办
             {
@@ -589,10 +590,13 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("没有审批人");
             }
-            var users = GetUserByAuth(auths);
-            if (users.IsEmpty() || !users.Exists(r => r.user_id == loginInfo.user_id))
+            if (loginInfo.user_id != "@system")
             {
-                return ResponseResult.Fail("当前用户不是审批人");
+                var users = GetUserByAuth(auths);
+                if (users.IsEmpty() || !users.Exists(r => r.user_id == loginInfo.user_id))
+                {
+                    return ResponseResult.Fail("当前用户不是审批人");
+                }
             }
 
             var scheme = instance.schemejson.ToObject<WFSchemeModel>();
@@ -629,11 +633,11 @@ namespace Luckyu.App.Workflow
                 historyCurrent.appremark = "【转发查看】 ";
             }
 
-            if (nodeCurrent.type == "confluencenode")
+            if (currentAuth != null && nodeCurrent.type == "confluencenode")
             {
                 historyCurrent.appremark = "【会签】 ";
             }
-            else if (nodeCurrent.type == "auditornode")
+            else if (currentAuth != null && nodeCurrent.type == "auditornode")
             {
                 historyCurrent.appremark = "【传阅】 ";
             }
@@ -850,6 +854,42 @@ namespace Luckyu.App.Workflow
         }
 
         #endregion
+
+        /// <summary>
+        /// 超时自动审批
+        /// </summary>
+        public void TimeoutApprove()
+        {
+            var systemInfo = UserModel.CreateSystemUser();
+            var preTasks = GetTaskList(r => r.is_done == 0); // 所有未完结的
+            foreach (var task in preTasks)
+            {
+                var instance = instanceService.GetEntity(r => r.instance_id == task.instance_id);
+                var schemeModel = instance.schemejson.ToObject<WFSchemeModel>();
+                var node = schemeModel.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
+                if (node.timeout_type > 0)
+                {
+                    var timeout = node.timeout.ToDouble();
+                    if (timeout > 0 && task.createtime.Value.AddHours(timeout) >= DateTime.Now)
+                    {
+                        switch (node.timeout_type)
+                        {
+                            case 1:
+                                // 模拟 执行 通过方法
+                                Approve(task.task_id, 1, "【超时自动通过】", 0, null, systemInfo);
+                                break;
+                            case 2:
+                                // 模拟 执行 通过方法
+                                Approve(task.task_id, 1, "【超时自动通过】", 0, null, systemInfo);
+                                break;
+                            case 3:
+                                Approve(task.task_id, 2, "【超时自动退回起草】", 0, null, systemInfo);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 会签办理（注意 ：如果会签办理选择多人，必须多人全部同意才会继续）
