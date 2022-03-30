@@ -54,64 +54,26 @@ namespace Luckyu.DataAccess
                           {
                           }, (command, result) =>
                           {
-                              //// result 包含 执行 sql语句 和返回结果 执行时间
-                              //var keywords = new string[] { "insert ", "update ", "delete ", "alter ", "drop " };
-                              //var sql = command.CommandText;
-                              //foreach (var keyword in keywords)
-                              //{
-                              //    if (sql.ToLower().Trim().StartsWith(keyword))
-                              //    {
-                              //        var dic = new Dictionary<string, string>();
-                              //        foreach (DbParameter para in command.Parameters)
-                              //        {
-                              //            dic.Add(para.ParameterName, para.Value.ToString());
-                              //        }
-                              //        var log = new sys_logEntity();
-                              //        log.log_type = (int)LogType.Sql;
-                              //        log.app_name = LuckyuHelper.AppID;
-                              //        log.log_content = result;
-                              //        log.log_json = JsonConvert.SerializeObject(dic);
-                              //        logService.Insert(log);
-                              //        break;
-                              //    }
-                              //}
                           })
                           .Build(); //请务必定义成 Singleton 单例模式
-
-                db.Aop.CurdAfter += (s, e) =>
-                {
-                    if (e.CurdType != FreeSql.Aop.CurdType.Select)
-                    {
-                        var log = new sys_logEntity();
-                        log.log_type = (int)LogType.Sql;
-                        log.op_type = e.CurdType.ToString();
-                        log.app_name = LuckyuHelper.AppID;
-                        log.log_content = $"【SQL】{e.Sql}\r\n【PARAMS】{e.DbParms.ToJson()}\r\n【RESULT】{e.ExecuteResult.ToJson()}\r\n";
-                        log.log_json = "";
-                        log.module = e.Table.DbName;
-
-                        //var strkeyvalues = new System.Text.StringBuilder();
-                        //if (!e.ExecuteResult.IsEmpty())
-                        //{
-                        //    var t = e.ExecuteResult.GetType();
-                        //    IEnumerable result = Convert.ChangeType(e.ExecuteResult, t);
-                        //    foreach (var row in result)
-                        //    {
-                        //        var entity = Convert.ChangeType(row, e.EntityType);
-                        //        foreach (var pri in e.Table.Primarys)
-                        //        {
-                        //            var keyvalue = pri.GetDbValue(entity);
-                        //            strkeyvalues.Append($"{keyvalue},");
-                        //        }
-                        //    }
-                        //}
-                        //log.process_id = strkeyvalues.ToString().Trim(',');
-                        logService.Insert(log);
-                    }
-                }
-
-            return db;
             }
+            db.Aop.CurdAfter += (s, e) =>
+            {
+                if (e.CurdType != FreeSql.Aop.CurdType.Select)
+                {
+                    var log = new sys_logEntity();
+                    log.log_type = (int)LogType.Sql;
+                    log.op_type = e.CurdType.ToString();
+                    log.app_name = LuckyuHelper.AppID;
+                    log.log_content = $"【SQL】{e.Sql}\r\n【PARAMS】{e.DbParms.ToJson()}\r\n【RESULT】{e.ExecuteResult.ToJson()}\r\n";
+                    log.log_json = "";
+                    log.module = e.Table.DbName;
+
+                    logService.Insert(log);
+                }
+            };
+            return db;
+        }
 
         public static string ParaPre
         {

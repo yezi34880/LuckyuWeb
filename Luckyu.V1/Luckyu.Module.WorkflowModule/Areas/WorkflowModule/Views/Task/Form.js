@@ -385,22 +385,6 @@ var bootstrap = function (layui) {
                 $("div.layui-layer-btn", parent.document).show();
             }
         });
-
-        //luckyu.layer.userSelectForm({
-        //    multiple: true,
-        //    callback: function (userlist) {
-        //        var userIds = userlist.map(r => r.userId);
-        //        var usernames = userlist.map(r => r.realname).join(",");
-        //        luckyu.layer.layerConfirm("确定邀请以下用户会签办理？<br />" + usernames, function () {
-        //            luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds, remark: '' }, function (data) {
-        //                if (!!callBack) {
-        //                    callBack();
-        //                }
-        //                parent.layui.layer.close(layerIndex);
-        //            });
-        //        });
-        //    }
-        //});
     };
     helpmeClick = function (layerIndex, callBack) {
         layui.layer.open({
