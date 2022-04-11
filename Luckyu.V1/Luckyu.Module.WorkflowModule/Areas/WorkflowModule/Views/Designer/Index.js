@@ -5,6 +5,7 @@ var bootstrap = function (layui) {
     "use strict";
     var grid;
     var slectRowId = '';
+    var formname = "流程设计 ";
     var page = {
         init: function () {
             page.initBtn();
@@ -61,7 +62,7 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + "新增",
                     width: 1200,
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Designer/Form",
@@ -83,7 +84,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改",
+                    title: formname + "修改",
                     width: 1200,
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Designer/Form?keyValue=" + rowid,

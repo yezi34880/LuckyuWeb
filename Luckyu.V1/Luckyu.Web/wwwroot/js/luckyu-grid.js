@@ -98,9 +98,8 @@
                             for (var i = 0; i < rules.length; i++) {
                                 var rule = rules[i];
                                 var $ele = $("#gs_" + rule.field);
-                                var val1 = $ele.val();
                                 var val2 = $ele.attr("_realValue");
-                                rule.data = val2 || val1;
+                                rule.data = val2 || rule.data;
 
                                 rule.ltype = "";
                                 var model = colModel.filter(r => r.name === rule.field);

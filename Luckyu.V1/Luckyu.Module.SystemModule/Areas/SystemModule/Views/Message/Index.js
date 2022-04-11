@@ -5,6 +5,7 @@ var bootstrap = function (layui) {
     "use strict";
     var grid = $("#grid");
     var slectRowId = '';
+    var formname = "系统消息 ";
     var page = {
         init: function () {
             page.initBtn();
@@ -24,7 +25,7 @@ var bootstrap = function (layui) {
                     { name: 'send_username', label: "发送人", width: 100, },
                     {
                         name: 'sendtime', label: "发送时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                 ],
@@ -58,7 +59,7 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + "新增",
                     width: 600,
                     height: 250,
                     url: luckyu.rootUrl + "/SystemModule/Message/Form",

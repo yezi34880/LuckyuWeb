@@ -5,6 +5,7 @@ var bootstrap = function (layui) {
     "use strict";
     var grid = $("#grid");
     var slectRowId = '';
+    var formname = "小组 ";
     var page = {
         init: function () {
             page.initBtn();
@@ -55,7 +56,7 @@ var bootstrap = function (layui) {
         initBtn: function () {
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + "新增",
                     width: 600,
                     height: 450,
                     url: luckyu.rootUrl + "/OrganizationModule/Group/Form",
@@ -77,7 +78,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改",
+                    title: formname + "修改",
                     width: 600,
                     height: 450,
                     url: luckyu.rootUrl + "/OrganizationModule/Group/Form?keyValue=" + rowid,

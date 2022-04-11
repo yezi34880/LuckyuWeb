@@ -17,7 +17,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Luckyu.App.Business\Luckyu.App.Business.csproj" />
 		<ProjectReference Include="..\Luckyu.App.OA\Luckyu.App.OA.csproj" />
 		<ProjectReference Include="..\Luckyu.App.Organization\Luckyu.App.Organization.csproj" />
 		<ProjectReference Include="..\Luckyu.App.System\Luckyu.App.System.csproj" />

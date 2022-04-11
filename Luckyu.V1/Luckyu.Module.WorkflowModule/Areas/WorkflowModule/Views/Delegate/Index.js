@@ -5,6 +5,7 @@ var bootstrap = function (layui) {
     "use strict";
     var grid = $("#grid");
     var slectRowId = '';
+    var formname = "任务委托 ";
     var page = {
         init: function () {
             page.initBtn();
@@ -22,12 +23,12 @@ var bootstrap = function (layui) {
                     { name: 'to_username', label: "被委托人", width: 100, },
                     {
                         name: 'starttime', label: "开始时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                     {
                         name: 'endtime', label: "结束时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                     { name: 'flowcode', label: "委托流程", width: 300, },
@@ -66,7 +67,7 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + "新增",
                     width: 800,
                     height: 400,
                     url: luckyu.rootUrl + "/WorkflowModule/Delegate/Form",
@@ -88,7 +89,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改/查看",
+                    title: formname + "修改/查看",
                     width: 800,
                     height: 400,
                     url: luckyu.rootUrl + "/WorkflowModule/Delegate/Form?keyValue=" + rowid,

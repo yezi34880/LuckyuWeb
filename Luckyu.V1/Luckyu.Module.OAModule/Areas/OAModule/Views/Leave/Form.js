@@ -25,7 +25,7 @@ var bootstrap = function (layui) {
             if (!!keyValue) {
                 luckyu.ajax.getv2(luckyu.rootUrl + "/OAModule/Leave/GetFormData", { keyValue: keyValue }
                     , function (data) {
-                        $('[lay-filter="Leave"]').setFormValue(data.Leave);
+                        $('[lay-filter="FormMain"]').setFormValue(data.Leave);
                         luckyu.clientdata.getAsync('dataItem', {
                             key: data.Leave.state,
                             code: "state",
@@ -53,7 +53,7 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex, callBack) {
-        var formData = $('[lay-filter="Leave"]').getFormValue();
+        var formData = $('[lay-filter="FormMain"]').getFormValue();
         var deleteAnnex = $("#AnnexName")[0].deleteAnnex;
         luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
             keyValue: keyValue,
@@ -78,7 +78,7 @@ var bootstrap = function (layui) {
             return false;
         }
         luckyu.layer.layerConfirm('确定要提交吗？', function () {
-            var formData = $('[lay-filter="Leave"]').getFormValue();
+            var formData = $('[lay-filter="FormMain"]').getFormValue();
             var deleteAnnex = $("#AnnexName")[0].deleteAnnex;
             luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/Leave/SaveForm", {
                 keyValue: keyValue,

@@ -6,6 +6,7 @@ var bootstrap = function (layui) {
     var grid;
     var treeCompany;
     var slectRowId = '';
+    var formname = "部门 ";
     var page = {
         init: function () {
             $('div.split-pane').splitPane();
@@ -94,7 +95,7 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + "新增",
                     width: 800,
                     height: 550,
                     url: luckyu.rootUrl + "/OrganizationModule/Department/Form",
@@ -116,7 +117,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改",
+                    title: formname + "修改",
                     width: 800,
                     height: 550,
                     url: luckyu.rootUrl + "/OrganizationModule/Department/Form?keyValue=" + rowid,

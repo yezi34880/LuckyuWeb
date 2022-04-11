@@ -22,7 +22,7 @@ var bootstrap = function (layui) {
                     { name: 'user_name', label: "用户", width: 80, },
                     {
                         name: 'log_time', label: "时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         searchoptions: {
                             // 只能选择月份
                             dataInit: function (elem) {
@@ -80,8 +80,7 @@ var bootstrap = function (layui) {
                 }
                 var rowData = grid.getRowData(rowid);
                 luckyu.layer.layerFormTop({
-                    id: "Show",
-                    title: "查看",
+                    title: "日志查看",
                     width: 900,
                     height: 600,
                     url: luckyu.rootUrl + "/SystemModule/Log/Show?keyValue=" + rowid + "&date=" + rowData.log_time,

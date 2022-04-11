@@ -27,7 +27,7 @@ var bootstrap = function (layui) {
                     },
                     {
                         name: 'createtime', label: "提交时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                 ],

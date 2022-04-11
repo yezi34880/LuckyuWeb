@@ -1,0 +1,33 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<div class="formbackgroud">
+    <div class="layui-row index-header">
+        <div class="pull-left">
+
+        </div>
+
+        <div class="pull-right">
+            <div class="layui-btn-group">
+                <button type="button" id="add" class="layui-btn layui-btn-sm"><i class="fa fa-plus"></i>&nbsp;新增</button>
+                <button type="button" id="edit" class="layui-btn layui-btn-sm"><i class="fa fa-pencil"></i>&nbsp;编辑/查看</button>
+                @*<button type="button" id="delete" class="layui-btn layui-btn-sm"><i class="fa fa-trash-o"></i>&nbsp;删除</button>*@
+            </div>
+            <div class="layui-btn-group">
+                <button type="button" id="setauthrize" class="layui-btn layui-btn-sm"><i class="fa fa-sitemap"></i>&nbsp;设置访问权限</button>
+                <button type="button" id="setflow" class="layui-btn layui-btn-sm"><i class="fa fa-share-alt"></i>&nbsp;设置流程</button>
+            </div>
+
+        </div>
+    </div>
+    <div class="layui-row">
+        <table id="grid"></table>
+        <div id="gridPager"></div>
+    </div>
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/FormModule/Views/FormDesigner/Index.js")
+}
+

@@ -5,6 +5,7 @@ var bootstrap = function (layui) {
     "use strict";
     var grid = $("#grid");
     var slectRowId = '';
+    var formname = "单据编码规则 ";
     var page = {
         init: function () {
             page.initBtn();
@@ -55,7 +56,7 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + "新增",
                     width: 800,
                     height: 600,
                     url: luckyu.rootUrl + "/SystemModule/CodeRule/Form",
@@ -77,7 +78,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改/查看",
+                    title: formname + "修改/查看",
                     width: 800,
                     height: 600,
                     url: luckyu.rootUrl + "/SystemModule/CodeRule/Form?keyValue=" + rowid,

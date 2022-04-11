@@ -20,7 +20,7 @@ var bootstrap = function (layui) {
             if (!!keyValue) {
                 luckyu.ajax.getv2(luckyu.rootUrl + "/OAModule/News/GetFormData", { keyValue: keyValue }
                     , function (data) {
-                        $('[lay-filter="News"]').setFormValue(data.News);
+                        $('[lay-filter="FormMain"]').setFormValue(data.News);
                     })
             }
         },
@@ -31,7 +31,7 @@ var bootstrap = function (layui) {
         if (!$(".layui-form").verifyForm()) {
             return false;
         }
-        var formData = $('[lay-filter="News"]').getFormValue();
+        var formData = $('[lay-filter="FormMain"]').getFormValue();
         luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/News/SaveForm", {
             keyValue: keyValue,
             strEntity: JSON.stringify(formData),

@@ -5,6 +5,8 @@ var bootstrap = function (layui) {
     "use strict";
     var grid = $("#grid");
     var slectRowId = '';
+    var formname = "请假 ";
+
     var page = {
         init: function () {
             page.initBtn();
@@ -20,7 +22,7 @@ var bootstrap = function (layui) {
                 colModel: [
                     { name: 'leave_id', hidden: true, key: true, hidedlg: true, },
                     {
-                        name: 'state', label: "状态", width: 60, align: "center", 
+                        name: 'state', label: "状态", width: 60, align: "center",
                         stype: "dataitem", dataitemcode: "state", formatterdataitem: "stateshow"
                     },
                     //{
@@ -40,12 +42,12 @@ var bootstrap = function (layui) {
                     { name: 'companyname', label: "公司", width: 100, },
                     {
                         name: 'begintime', label: "开始时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                     {
                         name: 'endtime', label: "结束时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                     {
@@ -59,7 +61,7 @@ var bootstrap = function (layui) {
                     { name: 'reason', label: "请假事由", width: 150, },
                     {
                         name: 'createtime', label: "创建时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m:s' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                 ],
@@ -91,7 +93,7 @@ var bootstrap = function (layui) {
         initBtn: function () {
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + "新增",
                     width: 900,
                     height: 650,
                     url: luckyu.rootUrl + "/OAModule/Leave/Form",
@@ -121,7 +123,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改/查看-" + rowid,
+                    title: formname + "修改/查看-" + rowid,
                     width: 900,
                     height: 650,
                     url: luckyu.rootUrl + "/OAModule/Leave/Form?keyValue=" + rowid,

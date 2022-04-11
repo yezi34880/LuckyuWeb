@@ -6,6 +6,7 @@ var bootstrap = function (layui) {
     var grid;
     var treeDataitem;
     var slectRowId = '';
+    var formname = "数据字典 ";
     var page = {
         init: function () {
             $('div.split-pane').splitPane();
@@ -96,7 +97,7 @@ var bootstrap = function (layui) {
                 var dataitem_id = node.id;
                 var itemcode = node.ext.code;
                 luckyu.layer.layerFormTop({
-                    title: "新增",
+                    title: formname + s"新增",
                     width: 800,
                     height: 550,
                     url: luckyu.rootUrl + "/SystemModule/Dataitem/Form?dataitem_id=" + dataitem_id + "&itemcode=" + itemcode,
@@ -118,7 +119,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    title: "修改",
+                    title: formname + "修改",
                     width: 800,
                     height: 550,
                     url: luckyu.rootUrl + "/SystemModule/Dataitem/Form?keyValue=" + rowid,

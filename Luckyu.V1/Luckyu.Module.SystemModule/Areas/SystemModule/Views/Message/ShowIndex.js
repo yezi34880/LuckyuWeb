@@ -23,7 +23,7 @@ var bootstrap = function (layui) {
                     { name: 'send_username', label: "发送人", width: 100, },
                     {
                         name: 'sendtime', label: "发送时间", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:m' },
+                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },
                 ],

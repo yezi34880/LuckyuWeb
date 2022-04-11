@@ -1,0 +1,195 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+
+@section Header{
+    <style>
+        .head {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .component-group ol {
+            display: inline-block;
+            background: #fff;
+            color: #000;
+            min-width: 70px;
+            width: 32%;
+            height: 70px;
+            line-height: 1;
+            text-align: center;
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+
+            .component-group ol:hover {
+                background: #009688;
+                border-radius: 5px;
+                color: #fff;
+                border-color: #fff;
+            }
+
+
+            .component-group ol .icon {
+                padding: 10px 5px 12px;
+                display: inline-block;
+            }
+
+                .component-group ol .icon i {
+                    font-size: 18px;
+                }
+
+        #formBuilder div.sortableghost {
+            border: 1px dashed #d1d1d1;
+        }
+
+        #formBuilder ol.sortableghost {
+            border: 1px dashed #d1d1d1;
+            text-indent: 3px;
+            box-sizing: border-box;
+            content: '';
+            overflow: hidden;
+            padding: 0;
+        }
+
+        #formBuilder .sortablechosen {
+            border: 1px solid #009688;
+            background-color: #e9f4fd !important;
+        }
+
+        #formBuilder div.form-item:hover, #formBuilder div.form-item.active {
+            border: 1px solid #009688;
+            background-color: #e9f4fd !important;
+        }
+    </style>
+}
+
+<div class="layui-tab layui-tab-brief" style="margin:0;" lay-filter="FormMain">
+    <ul class="layui-tab-title">
+        <li class="layui-this">表单信息</li>
+        <li>表单设计</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <div>
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">编码</label>
+                    <div class="layui-input-block">
+                        <input id="formcode" type="text" class="layui-input" lay-verify="required" />
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">名称</label>
+                    <div class="layui-input-block">
+                        <input id="formname" type="text" class="layui-input" lay-verify="required" />
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="remark" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-tab-item">
+            <div class="layui-col-xs12">
+                <!--控件-->
+                <div style="width:150px;float:left;">
+                    <div class="component">
+                        <div class="head">表单组件</div>
+                        <div class="component-group" id="compnent1">
+                            <ol data-tag="input"><div class="icon"><i class="fa fa-text-width"></i></div><div class="name">单行输入</div></ol>
+                            <ol data-tag="textarea"><div class="icon"><i class="fa fa-text-height"></i></div><div class="name">多行输入</div></ol>
+                            <ol data-tag="date"><div class="icon"><i class="fa fa-calendar"></i></div><div class="name">日期</div></ol>
+                            <ol data-tag="datetime"><div class="icon"><i class="fa fa-clock-o"></i></div><div class="name">日期时间</div></ol>
+                            @*<ol data-tag="radio"><div class="icon"><i class="layui-icon layui-icon-radio"></i></div><div class="name">单选框</div></ol>
+                    <ol data-tag="checkbox"><div class="icon"><i class="layui-icon layui-icon-table"></i></div><div class="name">多选框</div></ol>
+                    <ol data-tag="select"><div class="icon"><i class="layui-icon layui-icon-print"></i></div><div class="name">下拉框</div></ol>
+                    <ol data-tag="colorpicker"><div class="icon"><i class="layui-icon layui-icon-theme"></i></div><div class="name">颜色选择器</div></ol>
+                    <ol data-tag="slider"><div class="icon"><i class="layui-icon layui-icon-slider"></i></div><div class="name">滑块</div></ol>
+                    <ol data-tag="rate"><div class="icon"><i class="layui-icon layui-icon-rate-solid"></i></div><div class="name">评分</div></ol>
+                    <ol data-tag="switch"><div class="icon"><i class="layui-icon layui-icon-switch"><k></k></i></div><div class="name">开关</div></ol>
+                    <ol data-tag="cascader"><div class="icon"><i class="layui-icon layui-icon-cols"></i></div><div class="name">级联选择器</div></ol>
+                    <ol data-tag="editor"><div class="icon"><i class="layui-icon layui-icon-form"></i></div><div class="name">富文本</div></ol>
+                    <ol data-tag="upload"><div class="icon"><i class="layui-icon layui-icon-upload"></i></div><div class="name">文件上传</div></ol>
+                    <ol data-tag="tags"><div class="icon"><i class="layui-icon fa-instagram"></i></div><div class="name">标签选择器</div></ol>
+                    <ol data-tag="json"><div class="icon"><i class="layui-icon fa-bars"></i></div><div class="name">JSON组件</div></ol>*@
+                        </div>
+                    </div>
+
+                    @*<div class="component">
+                <div class="head">辅助组件</div>
+                <div class="component-group" id="sort_2">
+                    <ol data-tag="tips"><div class="icon"><i class="layui-icon layui-icon-tips"></i></div><div class="name">提示</div></ol>
+                    <ol data-tag="button"><div class="icon"><i class="layui-icon layui-icon-layer"></i></div><div class="name">按钮</div></ol>
+                    <ol data-tag="note"><div class="icon"><i class="layui-icon layui-icon-note"></i></div><div class="name">便签</div></ol>
+                </div>
+            </div>
+            <div class="component">
+                <div class="head">布局组件</div>
+                <div class="component-group" id="sort_3">
+                    <ol data-tag="subtraction"><div class="icon"><i class="layui-icon layui-icon-subtraction"></i></div><div class="name">分割线</div></ol>
+                    <ol data-tag="tab"><div class="icon"><i class="layui-icon layui-icon-tabs smallfont"></i></div><div class="name">选项卡</div></ol>
+                    <ol data-tag="grid"><div class="icon"><i class="layui-icon layui-icon-layouts"></i></div><div class="name">栅格</div></ol>
+                    <ol data-tag="space"><div class="icon"><i class="layui-icon layui-icon-more"></i></div><div class="name">间距</div></ol>
+                </div>
+            </div>*@
+
+
+                </div>
+                <!--属性 margin-right放在前面 自适应的放最后-->
+                <div style="width:250px;float:right;">
+                    <div class="head">表单组件</div>
+                    <div class="form-item layui-col-xs12">
+                        <label class="layui-form-label">控件编码</label>
+                        <div class="layui-input-block">
+                            <input id="columncode" type="text" class="layui-input" />
+                        </div>
+                    </div>
+                    <div class="form-item layui-col-xs12">
+                        <label class="layui-form-label">控件名称</label>
+                        <div class="layui-input-block">
+                            <input id="columnname" type="text" class="layui-input" />
+                        </div>
+                    </div>
+                    <div class="form-item layui-col-xs12">
+                        <label class="layui-form-label">占位</label>
+                        <div class="layui-input-block">
+                            <div id="formlength" class="xm-select"></div>
+                        </div>
+                    </div>
+                    <div id="inputPropety" style="display:none;">
+
+
+                    </div>
+
+
+                </div>
+                <!--表单-->
+                <div style="margin:0 250px 0 150px;">
+                    <div>
+                        <div class="layui-btn-group">
+                            <button type="button" id="preview" class="layui-btn layui-btn-sm"><i class="fa fa-eye"></i> 预览</button>
+                            <button type="button" id="remove" class="layui-btn layui-btn-sm"><i class="fa fa-trash-o"></i> 删除</button>
+                            <button type="button" id="removeall" class="layui-btn layui-btn-sm"><i class="fa fa-trash"></i> 清空</button>
+                        </div>
+                        <!-- // 表单设计区域 -->
+                        <div id="formBuilder" style="border:1px solid gray; width: 100%;min-height:500px;padding:5px;"></div>
+                        <!-- // 表单隐藏域 -->
+                        <textarea id="formdesign" name="formdesign" hidden></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+    <script src="~/lib/form-builder/Sortable/Sortable.js"></script>
+    @Html.AppendJs("~/Areas/FormModule/Views/FormDesigner/Form.js")
+}
+
+

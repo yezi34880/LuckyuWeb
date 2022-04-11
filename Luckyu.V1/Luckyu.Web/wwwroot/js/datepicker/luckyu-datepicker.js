@@ -12,6 +12,9 @@
             var DefaultOption = $self[0]._luckyudate.DefaultOption;
             $self.addClass('luckyu-search-date Wdate layui-input');
             $self.attr("autocomplete", "off");
+            if ($('#search_date_container_' + DefaultOption.id).length > 0) {
+                $('#search_date_container_' + DefaultOption.id).remove();
+            }
             var $container = $('<div class="luckyu-search-date-container" id="search_date_container_' + DefaultOption.id + '"><div class="luckyu-search-date-arrow"><div class="luckyu-search-date-inside"></div></div></div>');
 
             var $btnlist = $('<div class="luckyu-search-date-content-btns" id="search_date_content_btns_' + DefaultOption.id + '"></div>');

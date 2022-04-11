@@ -5,6 +5,7 @@ var bootstrap = function (layui) {
     "use strict";
     var grid = $("#grid");
     var slectRowId = '';
+    var formname = "数据字典分类 ";
     var page = {
         init: function () {
             page.initBtn();
@@ -68,8 +69,7 @@ var bootstrap = function (layui) {
 
             $("#add").click(function () {
                 luckyu.layer.layerFormTop({
-                    id: "ClassifyForm",
-                    title: "新增",
+                    title: formname + "新增",
                     width: 600,
                     height: 450,
                     url: luckyu.rootUrl + "/SystemModule/Dataitem/ClassifyForm",
@@ -91,8 +91,7 @@ var bootstrap = function (layui) {
                     return;
                 }
                 luckyu.layer.layerFormTop({
-                    id: "ClassifyForm",
-                    title: "修改",
+                    title: formname + "修改",
                     width: 600,
                     height: 450,
                     url: luckyu.rootUrl + "/SystemModule/Dataitem/ClassifyForm?keyValue=" + rowid,

@@ -25,7 +25,7 @@ var bootstrap = function (layui) {
             if (!!keyValue) {
                 luckyu.ajax.getv2(luckyu.rootUrl + "/OAModule/CarOrder/GetFormData", { keyValue: keyValue }
                     , function (data) {
-                        $('[lay-filter="CarOrder"]').setFormValue(data.CarOrder);
+                        $('[lay-filter="FormMain"]').setFormValue(data.CarOrder);
                         $("#statename").val(luckyu.clientdata.getDataitemName(data.CarOrder.state, "state"));
                         //$("#username").val(luckyu.clientdata.getUserName(data.CarOrder.user_id));
                         $("#deptname").val(luckyu.clientdata.getDepartmentName(data.CarOrder.department_id));
@@ -49,7 +49,7 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex, callBack) {
-        var formData = $('[lay-filter="CarOrder"]').getFormValue();
+        var formData = $('[lay-filter="FormMain"]').getFormValue();
         var deleteAnnex = $("#AnnexName")[0].deleteAnnex;
         luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/CarOrder/SaveForm", {
             keyValue: keyValue,
@@ -74,7 +74,7 @@ var bootstrap = function (layui) {
             return false;
         }
         luckyu.layer.layerConfirm('确定要提交吗？', function () {
-            var formData = $('[lay-filter="CarOrder"]').getFormValue();
+            var formData = $('[lay-filter="FormMain"]').getFormValue();
             var deleteAnnex = $("#AnnexName")[0].deleteAnnex;
             luckyu.ajax.postv2(luckyu.rootUrl + "/OAModule/CarOrder/SaveForm", {
                 keyValue: keyValue,
