@@ -36,7 +36,6 @@ var bootstrap = function (layui) {
                 chosenClass: "sortablechosen",
                 swapClass: 'highlight',
                 onAdd: function (evt) {
-                    debugger;
                     var col = {
                         columntype: evt.item.dataset.tag,
                         isselected: true,
@@ -61,8 +60,11 @@ var bootstrap = function (layui) {
                 layui.layer.open({
                     type: 1,
                     title: '表单预览 ' + $("#formname").val(),
-                    content: '<form id="formBase" class="layui-form" lay-filter="formBase" autocomplete="off"><div>' + htm + '</div></form>',
-                    area: ['700px', '500px'], //宽高
+                    content: '<form class="layui-form" autocomplete="off"><div>' + htm + '</div></form>',
+                    area: ['750px', '600px'], //宽高
+                    success: function (layero, layerindex) {
+                        $(layero).find("form.layui-form").initControl();
+                    }
                 });
             });
             // 删除单个控件
@@ -135,8 +137,35 @@ var bootstrap = function (layui) {
                     }
                 },
             })
+            // 数据库字段类型
+            xmSelect.render({
+                el: '#dbtype',
+                radio: true,
+                clickClose: true,
+                model: {
+                    label: {
+                        type: 'text',
+                        text: {
+                            //左边拼接的字符
+                            left: '',
+                            //右边拼接的字符
+                            right: '',
+                            //中间的分隔符
+                            separator: ', ',
+                        },
+                    }
+                },
+                data: [
+                    { name: 'varchar', value: "varchar" },
+                    { name: 'text', value: "text" },
+                    { name: 'int', value: "int" },
+                    { name: 'decimal', value: "decimal" },
+                    { name: 'datetime', value: "datetime" },
+                ],
+            })
 
             // 记录改变之前的值
+            // id 改变 需要记录下原始id
             $("#columncode").focus(function (e) {
                 $(this).data('old', e.target.value);
             });
@@ -167,6 +196,7 @@ var bootstrap = function (layui) {
                     }
                 }
             });
+
             $("#columnname").change(function (e) {
                 var divActive = $("#formBuilder div.form-item.active");
                 if (!!divActive && divActive.length > 0) {
@@ -185,6 +215,59 @@ var bootstrap = function (layui) {
                 }
 
             });
+            $("#placeholder").change(function (e) {
+                var divActive = $("#formBuilder div.form-item.active");
+                if (!!divActive && divActive.length > 0) {
+                    var divID = divActive.attr("id");
+                    var ctrlID = divID.substr(3, divID.length - 3);
+                    var placeholder = $(this).val();
+                    var columntype = divActive.attr("columntype");
+                    switch (columntype) {
+                        case "": {
+
+                            break;
+                        }
+                        default: {
+                            var ctrl = divActive.find("#" + ctrlID);
+                            $(ctrl).attr("placeholder", placeholder);
+                            break;
+                        }
+                    }
+
+                    var colObjects = formJson.filter(t => t.columncode == ctrlID);
+                    if (!!colObjects && colObjects.length > 0) {
+                        var colObject = colObjects[0];
+                        colObject.placeholder = placeholder;
+                    }
+                }
+            });
+            $("#defaultvalue").change(function (e) {
+                var divActive = $("#formBuilder div.form-item.active");
+                if (!!divActive && divActive.length > 0) {
+                    var divID = divActive.attr("id");
+                    var ctrlID = divID.substr(3, divID.length - 3);
+                    var defaultvalue = $(this).val();
+                    var columntype = divActive.attr("columntype");
+                    switch (columntype) {
+                        case "": {
+
+                            break;
+                        }
+                        default: {
+                            var ctrl = divActive.find("#" + ctrlID);
+                            $(ctrl).val(defaultvalue);
+                            break;
+                        }
+                    }
+
+                    var colObjects = formJson.filter(t => t.columncode == ctrlID);
+                    if (!!colObjects && colObjects.length > 0) {
+                        var colObject = colObjects[0];
+                        colObject.defaultvalue = defaultvalue;
+                    }
+                }
+            });
+
 
             layui.layer.close(loading);
         },
@@ -201,35 +284,83 @@ var bootstrap = function (layui) {
                     item.isselected = false; // 恢复原状
                     item.columncode = inputID;
                     item.formlength = !!item.formlength ? item.formlength : "12";
+                    item.placeholder = !!item.placeholder ? item.placeholder : "";
+                    item.defaultvalue = !!item.defaultvalue ? item.defaultvalue : "";
                     switch (item.columntype) {
                         case "input": {
+                            item.dblength = 255;
+                            item.dbtype = !!item.columnname ? item.columnname : "varchar";
                             item.columnname = !!item.columnname ? item.columnname : "单行文本";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
                     <label class="layui-form-label">'+ item.columnname + '</label>\
                     <div class="layui-input-block">\
-                        <input id="'+ item.columncode + '" type="text" class="layui-input" />\
+                        <input id="'+ item.columncode + '" type="text" class="layui-input" placeholder="' + item.placeholder + '" value="' + item.defaultvalue + '" />\
                     </div>\
                 </div>';
                             break;
                         }
                         case "textarea": {
+                            item.dblength = 500;
+                            item.dbtype = !!item.columnname ? item.columnname : "varchar";
                             item.columnname = !!item.columnname ? item.columnname : "多行文本";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
                     <label class="layui-form-label">'+ item.columnname + '</label>\
                     <div class="layui-input-block">\
-                        <textarea id="'+ item.columncode + '" class="layui-textarea"></textarea>\
+                        <textarea id="'+ item.columncode + '" class="layui-textarea"  placeholder="' + item.placeholder + '">' + item.defaultvalue + '</textarea>\
                     </div>\
                 </div>';
                             break;
                         }
                         case "date": {
-
+                            item.dbtype = !!item.columnname ? item.columnname : "datetime";
+                            item.columnname = !!item.columnname ? item.columnname : "日期";
+                            formHtml += '\
+                <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
+                    <label class="layui-form-label">'+ item.columnname + '</label>\
+                    <div class="layui-input-block">\
+                        <input id="'+ item.columncode + '" type="text" class="layui-input Wdate" onfocus="WdatePicker({ dateFmt: \'yyyy-MM-dd\' })"  placeholder="' + item.placeholder + '" value="' + item.defaultvalue + '" />\
+                    </div>\
+                </div>';
                             break;
                         }
                         case "datetime": {
-
+                            item.dbtype = !!item.columnname ? item.columnname : "datetime";
+                            item.columnname = !!item.columnname ? item.columnname : "日期时间";
+                            formHtml += '\
+                <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
+                    <label class="layui-form-label">'+ item.columnname + '</label>\
+                    <div class="layui-input-block">\
+                        <input id="'+ item.columncode + '" type="text" class="layui-input Wdate" onfocus="WdatePicker({ dateFmt: \'yyyy-MM-dd HH:mm\' })"  placeholder="' + item.placeholder + '" value="' + item.defaultvalue + '" />\
+                    </div>\
+                </div>';
+                            break;
+                        }
+                        case "number": {
+                            item.dbtype = !!item.columnname ? item.columnname : "decimal";
+                            item.dblength = 18;
+                            item.dbdigits = 2;
+                            item.columnname = !!item.columnname ? item.columnname : "数字";
+                            formHtml += '\
+                <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
+                    <label class="layui-form-label">'+ item.columnname + '</label>\
+                    <div class="layui-input-block">\
+                        <input id="'+ item.columncode + '" type="text" class="layui-input" placeholder="' + item.placeholder + '" value="' + item.defaultvalue + '" lay-verify="number" />\
+                    </div>\
+                </div>';
+                            break;
+                        }
+                        case "dateitem": {
+                            item.dbtype = !!item.columnname ? item.columnname : "varchar";
+                            item.columnname = !!item.columnname ? item.columnname : "数据字段下拉";
+                            formHtml += '\
+                <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
+                    <label class="layui-form-label">'+ item.columnname + '</label>\
+                    <div class="layui-input-block">\
+                            <div id="'+ item.columncode + '" class="xm-select" luckyu-type="dataitem" luckyu-code="leavetype" placeholder="' + item.placeholder + '" luckyu-initvalue="' + item.defaultvalue + '"></div>\
+                    </div>\
+                </div>';
                             break;
                         }
                         default:
@@ -260,6 +391,7 @@ var bootstrap = function (layui) {
                 });
 
                 layui.form.render();
+                $("#formBuilder").initControl();
             }
         },
         showCtrlPropety: function (divID) {
@@ -271,6 +403,12 @@ var bootstrap = function (layui) {
                 $("#columnname").val(colObject.columnname);
                 xmSelect.get("#formlength", true).setValue([colObject.formlength]);
             }
+
+            var columntype = $("#" + divID).attr("columntype");
+            $("div.ctrlpropety").each(function () {
+                $(this).hide();
+            });
+            $("#" + columntype + "Propety").show();
         },
         initData: function () {
             if (!!keyValue) {
@@ -283,7 +421,7 @@ var bootstrap = function (layui) {
     page.init();
 
     saveClick = function (layerIndex, callBack) {
-        if (!$(".layui-form").verifyForm()) {
+        if (!$("#divFormInfo").verifyForm()) {
             return false;
         }
         var formhtml = formHtml;

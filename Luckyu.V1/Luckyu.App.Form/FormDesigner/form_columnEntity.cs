@@ -41,6 +41,11 @@ namespace Luckyu.App.Form
         public string columnname { get; set; }
 
         /// <summary>
+        ///  placeholder 标签显示名
+        /// </summary>
+        public string placeholder { get; set; }
+
+        /// <summary>
         ///  formlength 页面占位 3 4 6 12
         /// </summary>
         public int formlength { get; set; }

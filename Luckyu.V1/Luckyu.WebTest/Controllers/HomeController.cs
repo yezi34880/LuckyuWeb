@@ -41,5 +41,32 @@ namespace Luckyu.WebTest.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        #region 测试程序热更新
+
+
+
+        public IActionResult GetMsg()
+        {
+            return null;
+        }
+
+        public IActionResult DynamicLoad()
+        {
+            var assemblyDynamic = new System.Runtime.Loader.AssemblyLoadContext("AppDynamicLoca", true);
+
+            //var folder = @"D:\MyProject\OpenSource\LuckyuWeb\Luckyu.V1\Luckyu.WebTest\bin\Debug\netcoreapp3.1\UpdateFolder";
+            //var fileNames1 = System.IO.Directory.GetFiles(folder, "*.dll");
+            //foreach (var name in fileNames1)
+            //{
+            //    //Assembly.LoadFile(name);
+            //    var assembly = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(name);
+            //    System.IO.File.Delete(name);
+            //}
+            return Content("");
+        }
+
+        #endregion
+
     }
 }

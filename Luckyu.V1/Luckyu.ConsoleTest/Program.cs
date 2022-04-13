@@ -1,4 +1,5 @@
 ﻿using Luckyu.App.System;
+using Luckyu.App.Workflow;
 using Luckyu.DataAccess;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -14,14 +15,21 @@ namespace Luckyu.ConsoleTest
         {
             //TestDbTrans();
 
-            decimal num = 9988.4560M;
-            Console.WriteLine(num);
-            var a = Money.GetCnString(num.ToString());
-            Console.WriteLine(a);
-            var b = Money.GetEnString(num.ToString());
-            Console.WriteLine(b);
+            //decimal num = 9988.4560M;
+            //Console.WriteLine(num);
+            //var a = Money.GetCnString(num.ToString());
+            //Console.WriteLine(a);
+            //var b = Money.GetEnString(num.ToString());
+            //Console.WriteLine(b);
 
-            Console.ReadLine();
+            var str = "";
+            do
+            {
+                str = Console.ReadLine();
+                str = str + "_2";
+                Console.WriteLine(str);
+            }
+            while (str != "quit");
         }
 
         /// <summary>

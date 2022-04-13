@@ -1,0 +1,23 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="formbackgroud">
+    <button type="button" id="dynamicLoad" class="layui-btn layui-btn-sm">&nbsp;动态加载程序集</button>
+
+</div>
+
+@section Footer{
+    <script>
+        $(function () {
+            $("#dynamicLoad").click(function () {
+                $.post("/DeveloperModule/AdminManage/DynamicLoadDLL", {}, function () {
+                    alert("操作成功");
+                });
+            });
+
+
+        });
+    </script>
+}
+

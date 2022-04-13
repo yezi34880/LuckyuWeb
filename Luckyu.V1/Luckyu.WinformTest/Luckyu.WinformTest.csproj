@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Luckyu.ClassTest\Luckyu.ClassTest.csproj" />
     <ProjectReference Include="..\Luckyu.Utility.Refy\Luckyu.Utility.Refy.csproj" />
   </ItemGroup>
 

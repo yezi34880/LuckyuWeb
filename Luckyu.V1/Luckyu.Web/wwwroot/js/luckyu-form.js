@@ -35,26 +35,29 @@
                         if (type === "dataitem") {
                             var code = self.attr("luckyu-code");
                             var initvalue = self.attr("luckyu-initvalue");
+                            var placeholder = self.attr("placeholder");
                             var multiple = self.attr("luckyu-multiple");
                             multiple = multiple === "true" || multiple == 1 ? true : false;
-                            self.initDataItem({ code: code, multiple: multiple, initValue: initvalue });
+                            self.initDataItem({ code: code, multiple: multiple, initValue: initvalue, tips: placeholder });
                         }
                         else if (type === "datasource") {
                             var url = self.attr("luckyu-url");
                             var name = self.attr("luckyu-name");
                             var initvalue = self.attr("luckyu-initvalue");
                             var value = self.attr("luckyu-value");
+                            var placeholder = self.attr("placeholder");
                             var multiple = self.attr("luckyu-multiple");
                             multiple = multiple === "true" || multiple == 1 ? true : false;
-                            self.initDataSource({ url: url, nameField: name, valueField: value, multiple: multiple, initValue: initvalue });
+                            self.initDataSource({ url: url, nameField: name, valueField: value, multiple: multiple, initValue: initvalue, tips: placeholder });
                         }
                         else if (type === "datalocal") {
                             var data = self.attr("luckyu-data");
                             var initvalue = self.attr("luckyu-initvalue");
                             var jsonData = JSON.parse(data);
+                            var placeholder = self.attr("placeholder");
                             var multiple = self.attr("luckyu-multiple");
                             multiple = multiple === "true" || multiple == 1 ? true : false;
-                            self.initLocal({ data: jsonData, multiple: multiple, initValue: initvalue });
+                            self.initLocal({ data: jsonData, multiple: multiple, initValue: initvalue, tips: placeholder });
                         }
                     });
                     $(this).find(".luckyu-editor").each(function () {

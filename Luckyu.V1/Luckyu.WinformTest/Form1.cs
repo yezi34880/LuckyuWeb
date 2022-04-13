@@ -61,7 +61,6 @@ namespace Luckyu.WinformTest
 
         #endregion
 
-
         #region 缩略图
         private void button2_Click(object sender, EventArgs e)
         {
@@ -88,6 +87,19 @@ namespace Luckyu.WinformTest
         }
 
 
+        #endregion
+
+        #region 测试动态加载程序集
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var str = ClassTest.DynamicLoad.GetTestString();
+            MessageBox.Show(str);
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var name = @"D:\MyProject\OpenSource\LuckyuWeb\Luckyu.V1\Luckyu.ClassTest\bin\Debug\netcoreapp3.1\Luckyu.ClassTest.dll";
+            System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(name);
+        }
         #endregion
 
     }

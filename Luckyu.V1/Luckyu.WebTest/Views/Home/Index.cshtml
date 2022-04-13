@@ -26,6 +26,12 @@
     <div>
         <input type="button" id="sendBack" value="后台发送消息" />
     </div>
+
+    <div>
+        <input type="button" id="getvalue" value="显示后台传值" />
+        <input type="button" id="dynamicload" value="后台热更新" />
+    </div>
+
 </div>
 
 <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
@@ -34,7 +40,18 @@
 <script>
     $("#sendBack").click(function () {
         $.post("/Home/Send", {}, function () {
-
         });
     });
+
+    $("#getvalue").click(function () {
+        $.get("/Home/GetMsg", {}, function (res) {
+            alert(res);
+        });
+    });
+    $("#dynamicload").click(function () {
+        $.get("/Home/DynamicLoad", {}, function () {
+            alert("操作成功");
+        });
+    });
+
 </script>

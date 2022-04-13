@@ -3,6 +3,7 @@ using Luckyu.DataAccess;
 using Luckyu.Utility;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -213,7 +214,7 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
-        public void Create(wf_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Create(wf_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql, UserModel loginInfo)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -241,8 +242,8 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            var sql1 = sql.Replace("@processId", $"{BaseConnection.ParaPre}processId");
-                            trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
+                            var tuple = BuildSql(sql, instance.process_id, loginInfo);
+                            trans.db.Ado.ExecuteNonQuery(tuple.Item1, tuple.Item2);
                         }
                     }
                 }
@@ -255,7 +256,7 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Approve(wf_instanceEntity instance, wf_taskEntity currentTask, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Approve(wf_instanceEntity instance, wf_taskEntity currentTask, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql, UserModel loginInfo)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -294,8 +295,8 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            var sql1 = sql.Replace("@processId", $"{BaseConnection.ParaPre}processId");
-                            trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
+                            var tuple = BuildSql(sql, instance.process_id, loginInfo);
+                            trans.db.Ado.ExecuteNonQuery(tuple.Item1, tuple.Item2);
                         }
                     }
                 }
@@ -409,7 +410,7 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Complete(wf_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql)
+        public void Complete(wf_instanceEntity instance, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql, UserModel loginInfo)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -432,8 +433,8 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            var sql1 = sql.Replace("@processId", $"{BaseConnection.ParaPre}processId");
-                            trans.db.Ado.ExecuteNonQuery(sql1, new { processId = instance.process_id });
+                            var tuple = BuildSql(sql, instance.process_id, loginInfo);
+                            trans.db.Ado.ExecuteNonQuery(tuple.Item1, tuple.Item2);
                         }
                     }
                 }
@@ -482,6 +483,36 @@ namespace Luckyu.App.Workflow
                 trans.Rollback();
                 throw ex;
             }
+        }
+
+        /// <summary>
+        /// 统一组装sql
+        /// </summary>
+        private Tuple<string, Dictionary<string, object>> BuildSql(string sql, string processId, UserModel loginInfo)
+        {
+            var sqlparams = new Dictionary<string, object>();
+            var sql1 = sql;
+            if (sql1.Contains("@processId"))
+            {
+                sql1 = sql1.Replace("@processId", $"{BaseConnection.ParaPre}processId");
+                sqlparams.Add("processId", processId);
+            }
+            if (sql1.Contains("@userId"))
+            {
+                sql1 = sql1.Replace("@proceuserIdssId", $"{BaseConnection.ParaPre}userId");
+                sqlparams.Add("userId", loginInfo.user_id);
+            }
+            if (sql1.Contains("@userCode"))
+            {
+                sql1 = sql1.Replace("@userCode", $"{BaseConnection.ParaPre}userCode");
+                sqlparams.Add("userCode", loginInfo.loginname);
+            }
+            if (sql1.Contains("@userName"))
+            {
+                sql1 = sql1.Replace("@userName", $"{BaseConnection.ParaPre}userName");
+                sqlparams.Add("userName", loginInfo.realname);
+            }
+            return new Tuple<string, Dictionary<string, object>>(sql1, sqlparams);
         }
     }
 }

@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UEditor.Core;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Luckyu.Web
 {
@@ -58,13 +59,24 @@ namespace Luckyu.Web
            });
 
             #region 动态加载 模块程序集
+            var context = new System.Runtime.Loader.AssemblyLoadContext("DynamicContext", true);
+
             // 动态加载 模块程序集
-            var fileNames = Directory.GetFiles(AppContext.BaseDirectory, "Luckyu.Module.*.dll");
+            var fileNames = Directory.GetFiles(AppContext.BaseDirectory, "*.Module.*.dll");
             foreach (var name in fileNames)
             {
-                var assembly = Assembly.LoadFile(name);
+                //var assembly = Assembly.LoadFile(name);
+                //builder.AddApplicationPart(assembly);
+                // 使用流读取 不占用
+                //var bytes = File.ReadAllBytes(name);
+                //var assembly = Assembly.Load(bytes);
+                //builder.AddApplicationPart(assembly);
+
+                var assembly = context.LoadFromAssemblyPath(name);
                 builder.AddApplicationPart(assembly);
             }
+
+            #region 加载视图时是否预编译
             if (LuckyuHelper.IsDebug()) // 调试事不编译视图，方便调试
             {
                 builder.AddRazorRuntimeCompilation(options =>
@@ -81,7 +93,7 @@ namespace Luckyu.Web
                     }
                 });
             }
-            else  // 发布时也有部分视图不用编译
+            else  // 发布时也有部分视图不用编译（打印页面可以预览修改）
             {
                 builder.AddRazorRuntimeCompilation(options =>
                 {
@@ -98,11 +110,20 @@ namespace Luckyu.Web
 
             }
 
-            var fileNames1 = Directory.GetFiles(AppContext.BaseDirectory, "Luckyu.App.*.dll");
+            #endregion
+
+            var fileNames1 = Directory.GetFiles(AppContext.BaseDirectory, "*.App.*.dll");
             foreach (var name in fileNames1)
             {
-                //Assembly.LoadFile(name);
-                System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(name);
+                //System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(name);
+
+                // 使用流读取 不占用 做成热插拔式
+                //var bytes = File.ReadAllBytes(name);
+                //using (var stream = new MemoryStream(bytes))
+                //{
+                //    System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromStream(stream);
+                //}
+                context.LoadFromAssemblyPath(name);
             }
 
             #endregion
