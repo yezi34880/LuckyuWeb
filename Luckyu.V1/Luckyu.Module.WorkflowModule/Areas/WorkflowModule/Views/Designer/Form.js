@@ -22,13 +22,12 @@ var bootstrap = function (layui) {
                     if (node.type != 'endround') {
                         top.currentModifyNode = node;
                         luckyu.layer.layerFormTop({
-                            id: 'NodeForm',
                             title: '节点信息【' + node.name + '】',
                             url: luckyu.rootUrl + '/WorkFlowModule/Designer/NodeForm',
                             width: 700,
                             height: 550,
                             btn: [{
-                                name: "确认",
+                                name: "保存",
                                 callback: function (index, layero) {
                                     layero.find("iframe")[0].contentWindow.saveClick(index, function () {
                                         $('#Designer').dfworkflowSet('updateNodeName', { nodeId: node.id });
@@ -41,13 +40,12 @@ var bootstrap = function (layui) {
                 openLine: function (line) {
                     top.currentModifyLine = line;
                     luckyu.layer.layerFormTop({
-                        id: 'LineForm',
                         title: '连线信息',
                         url: luckyu.rootUrl + '/WorkFlowModule/Designer/LineForm',
                         width: 500,
                         height: 400,
                         btn: [{
-                            name: "确认",
+                            name: "保存",
                             callback: function (index, layero) {
                                 layero.find("iframe")[0].contentWindow.saveClick(index, function () {
                                     $('#Designer').dfworkflowSet('updateLineName', { lineId: line.id });

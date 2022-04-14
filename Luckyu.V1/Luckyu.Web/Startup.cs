@@ -59,8 +59,6 @@ namespace Luckyu.Web
            });
 
             #region 动态加载 模块程序集
-            var context = new System.Runtime.Loader.AssemblyLoadContext("DynamicContext", true);
-
             // 动态加载 模块程序集
             var fileNames = Directory.GetFiles(AppContext.BaseDirectory, "*.Module.*.dll");
             foreach (var name in fileNames)
@@ -68,11 +66,8 @@ namespace Luckyu.Web
                 //var assembly = Assembly.LoadFile(name);
                 //builder.AddApplicationPart(assembly);
                 // 使用流读取 不占用
-                //var bytes = File.ReadAllBytes(name);
-                //var assembly = Assembly.Load(bytes);
-                //builder.AddApplicationPart(assembly);
-
-                var assembly = context.LoadFromAssemblyPath(name);
+                var bytes = File.ReadAllBytes(name);
+                var assembly = Assembly.Load(bytes);
                 builder.AddApplicationPart(assembly);
             }
 
@@ -118,12 +113,11 @@ namespace Luckyu.Web
                 //System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(name);
 
                 // 使用流读取 不占用 做成热插拔式
-                //var bytes = File.ReadAllBytes(name);
-                //using (var stream = new MemoryStream(bytes))
-                //{
-                //    System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromStream(stream);
-                //}
-                context.LoadFromAssemblyPath(name);
+                var bytes = File.ReadAllBytes(name);
+                using (var stream = new MemoryStream(bytes))
+                {
+                    System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromStream(stream);
+                }
             }
 
             #endregion
