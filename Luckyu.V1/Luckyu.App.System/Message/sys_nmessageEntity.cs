@@ -1,5 +1,5 @@
 ﻿using System;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -9,14 +9,14 @@ namespace Luckyu.App.System
     /// <summary>
     /// sys_message  消息
     /// </summary>
-    [Table(Name = "SYS_MESSAGE")]
+    [SugarTable( "sys_message")]
     public class sys_messageEntity
     {
         #region 属性
         /// <summary>
         /// message_id
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string message_id { get; set; }
 
         /// <summary>

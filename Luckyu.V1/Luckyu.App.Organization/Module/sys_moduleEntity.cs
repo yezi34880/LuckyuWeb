@@ -1,5 +1,5 @@
 
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.Log;
 using Luckyu.Utility;
 using System;
@@ -10,7 +10,7 @@ namespace Luckyu.App.Organization
     /// <summary>
     ///  sys_module   
     /// </summary>
-    [Table(Name = "SYS_MODULE")]
+    [SugarTable( "sys_module")]
     public class sys_moduleEntity
     {
         #region 属性
@@ -18,7 +18,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  module_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string module_id { get; set; }
 
         /// <summary>

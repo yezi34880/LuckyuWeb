@@ -1,7 +1,7 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using System;
 
 namespace Luckyu.App.OA
@@ -9,14 +9,14 @@ namespace Luckyu.App.OA
     /// <summary>
     ///  oa_carorder   
     /// </summary>
-    [Table(Name = "OA_CARORDER")]
+    [SugarTable( "oa_carorder")]
     public class oa_carorderEntity : ExtensionEntityBase
     {
         #region 属性
         /// <summary>
         ///  order_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string order_id { get; set; }
 
         /// <summary>

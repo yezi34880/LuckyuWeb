@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -10,7 +10,7 @@ namespace Luckyu.App.Workflow
     /// <summary>
     ///  wf_flow   
     /// </summary>
-    [Table(Name = "WF_FLOW")]
+    [SugarTable( "wf_flow")]
     public class wf_flowEntity
     {
         #region 属性
@@ -18,7 +18,7 @@ namespace Luckyu.App.Workflow
         /// <summary>
         ///  flow_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string flow_id { get; set; }
 
         /// <summary>

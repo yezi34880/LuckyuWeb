@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -10,7 +10,7 @@ namespace Luckyu.App.System
     /// <summary>
     ///  sys_annexfile   
     /// </summary>
-    [Table(Name = "SYS_ANNEXFILE")]
+    [SugarTable( "sys_annexfile")]
     public class sys_annexfileEntity
     {
         #region 属性
@@ -18,7 +18,7 @@ namespace Luckyu.App.System
         /// <summary>
         ///  annex_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string annex_id { get; set; }
 
         /// <summary>

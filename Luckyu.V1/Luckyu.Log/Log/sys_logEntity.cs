@@ -1,14 +1,15 @@
 using IPTools.Core;
 using System;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 
 namespace Luckyu.Log
 {
     /// <summary>
     ///  sys_log   
     /// </summary>
-    [Table(Name = "SYS_LOG")]
-    [Index("index1", "log_type,log_time,process_id,user_id")]
+
+    [SplitTable(SplitType.Month)]//按年分表 （自带分表支持 年、季、月、周、日）
+    [SugarTable("sys_log_{year}{month}")]//生成表名格式 3个变量必须要有
     public class sys_logEntity
     {
         #region 属性
@@ -16,7 +17,7 @@ namespace Luckyu.Log
         /// <summary>
         ///  log_id   
         /// </summary>
-        [Column(IsPrimary = true, StringLength = 50)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string log_id { get; set; }
 
         /// <summary>
@@ -32,24 +33,25 @@ namespace Luckyu.Log
         /// <summary>
         ///  log_time   操作时间
         /// </summary>
+        [SplitField]
         public DateTime log_time { get; set; }
 
         /// <summary>
         ///  process_id  业务主键
         /// </summary>
-        [Column(StringLength = 50)]
+        [SugarColumn(Length = 50)]
         public string process_id { get; set; } = "";
 
         /// <summary>
         ///  log_content   动作
         /// </summary>
-        [Column(StringLength = -1)]
+        [SugarColumn(Length = -1)]
         public string log_content { get; set; } = "";
 
         /// <summary>
         ///  log_json   源数据
         /// </summary>
-        [Column(StringLength = -1)]
+        [SugarColumn(Length = -1)]
         public string log_json { get; set; } = "";
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace Luckyu.Log
         /// <summary>
         ///  user_id   
         /// </summary>
-        [Column(StringLength = 50)]
+        [SugarColumn(Length = 50)]
         public string user_id { get; set; } = "";
 
         /// <summary>
@@ -96,7 +98,7 @@ namespace Luckyu.Log
         /// <summary>
         ///  remark   
         /// </summary>
-        [Column(StringLength = -1)]
+        [SugarColumn(Length = -1)]
         public string remark { get; set; } = "";
 
         /// <summary>

@@ -50,7 +50,7 @@ var bootstrap = function (layui) {
                         stype: "department_id"
                     },
                     {
-                        name: 'createtime', label: "提交时间", width: 100, align: "right",
+                        name: 'createtime', label: "提交时间", index:"fi.createtime",width: 100, align: "right",
                         formatter: "date", formatoptions: { newformat: 'Y-m-d H:i' },
                         stype: "daterange"
                     },

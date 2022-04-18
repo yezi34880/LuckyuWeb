@@ -9,7 +9,7 @@ using Luckyu.Utility;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Reflection;
-using FreeSql.DatabaseModel;
+using SqlSugar;
 
 namespace Luckyu.App.System
 {
@@ -30,19 +30,15 @@ namespace Luckyu.App.System
         #region Log
         public void LogInsert<T>(T entity, UserModel loginInfo) where T : class, new()
         {
-            var db = BaseConnection.InitDatabase();
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var db = BaseConnection.db;
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return;
             }
-            if (entityInfo.Primarys.Length < 1)
-            {
-                return;
-            }
-            //var primaryName = entityInfo.Primarys[0].Attribute.Name;
-            var keyValue = entityInfo.Primarys[0].GetValue(entity).ToString();
-            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbName);
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).First();
+            var keyValue = pk.PropertyInfo.GetValue(entity).ToString();
+            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbTableName);
             if (tableInfo == null)
             {
                 return;
@@ -78,23 +74,19 @@ namespace Luckyu.App.System
 
         public void LogDelete<T>(T entity, UserModel loginInfo) where T : class, new()
         {
-            var db = BaseConnection.InitDatabase();
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var db = BaseConnection.db;
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return;
             }
-            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbName);
+            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbTableName);
             if (tableInfo == null)
             {
                 return;
             }
-            if (entityInfo.Primarys.Length < 1)
-            {
-                return;
-            }
-            //var primaryName = entityInfo.Primarys[0].Attribute.Name;
-            var keyValue = entityInfo.Primarys[0].GetValue(entity).ToString();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).First();
+            var keyValue = pk.PropertyInfo.GetValue(entity).ToString();
             var log = new sys_logEntity();
             log.app_name = LuckyuHelper.AppID;
             log.log_type = (int)LogType.Business;
@@ -126,22 +118,19 @@ namespace Luckyu.App.System
 
         public void LogUpdate<T>(T from, T to, string json, UserModel loginInfo) where T : class, new()
         {
-            var db = BaseConnection.InitDatabase();
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var db = BaseConnection.db;
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return;
             }
-            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbName);
+            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbTableName);
             if (tableInfo == null)
             {
                 return;
             }
-            if (entityInfo.Primarys.Length < 1)
-            {
-                return;
-            }
-            var keyValue = entityInfo.Primarys[0].GetValue(to).ToString();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).First();
+            var keyValue = pk.PropertyInfo.GetValue(from).ToString();
             var onlyCols = new List<string>();
             if (!json.IsEmpty())
             {
@@ -200,21 +189,18 @@ namespace Luckyu.App.System
 
         public void LogUpdate<T>(T to, string json, UserModel loginInfo) where T : class, new()
         {
-            var db = BaseConnection.InitDatabase();
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var db = BaseConnection.db;
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return;
             }
-            if (entityInfo.Primarys.Length < 1)
-            {
-                return;
-            }
-            var primaryName = entityInfo.Primarys[0].Attribute.Name;
-            var keyValue = entityInfo.Primarys[0].GetValue(to);
-            var sql = $"SELECT * FROM {entityInfo.DbName} WHERE {primaryName} = {BaseConnection.ParaPre}{primaryName}";
-            var dicParas = new Dictionary<string, object> { { primaryName, keyValue } };
-            var from = db.Select<T>().WithSql(sql, dicParas).First();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).First();
+            var pkName = pk.DbColumnName;
+            var keyValue = pk.PropertyInfo.GetValue(to).ToString();
+            var sql = $"SELECT * FROM {entityInfo.DbTableName} WHERE {pkName} = {BaseConnection.ParaPre}{pkName}";
+            var parm = new SugarParameter(pkName, keyValue);
+            var from = db.Queryable<T>().Where(sql, parm).First();
             LogUpdate(from, to, json, loginInfo);
         }
 
@@ -225,18 +211,13 @@ namespace Luckyu.App.System
         /// </summary>
         public ResponseResult CheckEntity<T>(T entity) where T : class, new()
         {
-            var db = BaseConnection.InitDatabase();
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var db = BaseConnection.db;
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return ResponseResult.Fail(MessageString.Fail);
             }
-            if (entityInfo.Primarys.Length < 1)
-            {
-                return ResponseResult.Fail(MessageString.Fail);
-            }
-            //var keyValue =( entityInfo.Primarys[0].GetValue(entity)??"").ToString();
-            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbName);
+            var tableInfo = tableService.GetEntity(r => r.dbname == entityInfo.DbTableName);
             if (tableInfo == null)
             {
                 return ResponseResult.Fail(MessageString.Fail);
@@ -371,7 +352,7 @@ namespace Luckyu.App.System
             return list.Select(r => new KeyValue
             {
                 Key = r.Name,
-                Value = r.Comment.IsEmpty() ? r.Name : $"{r.Comment} { r.Name}"
+                Value = r.Description.IsEmpty() ? r.Name : $"{r.Description} { r.Name}"
             }).ToList();
         }
 
@@ -381,6 +362,11 @@ namespace Luckyu.App.System
             return tb;
         }
 
+        public List<DbColumnInfo> GetColumnInfoByTableName(string tablename)
+        {
+            var tb = columnService.GetColumnInfoByTableName(tablename);
+            return tb;
+        }
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using System;
 
 namespace Luckyu.App.OA
@@ -9,14 +9,14 @@ namespace Luckyu.App.OA
     /// <summary>
     ///  oa_leave   
     /// </summary>
-    [Table(Name = "OA_LEAVE")]
+    [SugarTable( "oa_leave")]
     public class oa_leaveEntity : ExtensionEntityBase
     {
         #region 属性
         /// <summary>
         ///  leave_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string leave_id { get; set; }
 
         /// <summary>

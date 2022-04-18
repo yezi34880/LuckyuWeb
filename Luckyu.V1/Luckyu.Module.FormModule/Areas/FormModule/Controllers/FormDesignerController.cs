@@ -3,9 +3,6 @@ using Luckyu.App.Organization;
 using Luckyu.App.System;
 using Luckyu.Utility;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,9 +47,10 @@ namespace Luckyu.Module.FormModule.Controllers
             return null;
         }
 
-        public IActionResult SaveForm(string keyValue)
+        public IActionResult SaveForm(string keyValue, string strEntity)
         {
-            return null;
+            var res = formBLL.SaveForm(keyValue, strEntity);
+            return Json(res);
         }
 
 

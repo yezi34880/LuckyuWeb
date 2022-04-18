@@ -1,7 +1,7 @@
 using Luckyu.Log;
 using System;
 using System.Collections.Generic;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.Utility;
 
 namespace Luckyu.App.Organization
@@ -9,7 +9,7 @@ namespace Luckyu.App.Organization
     /// <summary>
     ///  sys_userrelation   
     /// </summary>
-    [Table(Name = "SYS_USERRELATION")]
+    [SugarTable( "sys_userrelation")]
     public class sys_userrelationEntity
     {
         #region 属性
@@ -17,7 +17,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string id { get; set; }
 
         /// <summary>

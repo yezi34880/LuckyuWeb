@@ -1,80 +1,40 @@
-﻿using FreeSql;
-using FreeSql.DatabaseModel;
-using FreeSql.Internal.Model;
-using Luckyu.Utility;
+﻿using Luckyu.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Luckyu.DataAccess
 {
     public class Repository
     {
-        public IFreeSql db
+        public SqlSugarClient db
         {
             get
             {
-                return BaseConnection.InitDatabase();
+                return BaseConnection.db;
             }
         }
-
-        private static DbTransaction trans;
 
         #region 事务
         public Repository BeginTrans()
         {
-            trans = db.Ado.MasterPool.Get().Value.BeginTransaction();
+            db.BeginTran();
             return this;
         }
         public void Commit()
         {
-            if (trans != null)
-            {
-                trans.Commit();
-            }
+            db.CommitTran();
         }
         public void Rollback()
         {
-            if (trans != null)
-            {
-                trans.Rollback();
-            }
+            db.RollbackTran();
         }
-        #endregion
-
-        #region 执行 SQL 语句
-        /// <summary>
-        /// 执行sql语句
-        /// </summary>
-        /// <param name="strSql">sql语句</param>
-        /// <returns>h返回受影响行数，select语句无效</returns>
-        public T ExecuteScalar<T>(string strSql, object param = null)
-        {
-            var obj = db.Ado.ExecuteScalar(trans, strSql, param);
-            var result = (T)obj;
-            return result;
-        }
-
-        /// <summary>
-        /// 执行sql语句
-        /// </summary>
-        /// <param name="strSql">sql语句</param>
-        /// <param name="param">参数</param>
-        /// <returns></returns>
-        public int ExecuteBySql(string strSql, object param = null)
-        {
-            return db.Ado.ExecuteNonQuery(trans, strSql, param);
-        }
-
         #endregion
 
         #region 增删改
@@ -88,13 +48,13 @@ namespace Luckyu.DataAccess
         private T VerifyDbColumn<T>(T entity, Expression<Func<T, object>> ignoreColumns1 = null, List<string> ignoreColumns2 = null) where T : class, new()
         {
             // 验证字段长度是否超长
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 throw new Exception("实体没有对应的数据表");
             }
-            var tableName = entityInfo.DbName;
-            var dbTable = db.DbFirst.GetTableByName(tableName);
+            var tableName = entityInfo.DbTableName;
+            var dbColumns = db.DbMaintenance.GetColumnInfosByTableName(tableName);
             var ignoreColumnName = new List<string>();
             if (ignoreColumns1 != null)
             {
@@ -110,43 +70,41 @@ namespace Luckyu.DataAccess
             }
             foreach (var col in entityInfo.Columns)
             {
-                if (col.Key.IsEmpty())
+                if (col.DbColumnName.IsEmpty())
                 {
                     continue;
                 }
-                var dbCol = dbTable.Columns.Where(r => r.Name == col.Value.Attribute.Name).FirstOrDefault();
-                if (dbCol == null)
-                {
-                    continue;
-                }
-                if (col.Value.CsType != typeof(string) || dbCol.CsType != typeof(string))
+                if (col.PropertyInfo.PropertyType != typeof(string))
                 {
                     continue;
                 }
 
-                var value = col.Value.GetValue(entity);  // string  null 转为 空字符串
+                var value = col.PropertyInfo.GetValue(entity);  // string  null 转为 空字符串
                 if (value == null)
                 {
-                    col.Value.SetValue(entity, "");
+                    col.PropertyInfo.SetValue(entity, "");
                 }
-                if (ignoreColumnName.Contains(col.Key.ToUpper()))
+                if (ignoreColumnName.Contains(col.DbColumnName.ToUpper()))
                 {
                     continue;
                 }
+                var dbCol = dbColumns.Where(r => r.DbColumnName.ToUpper() == col.DbColumnName).FirstOrDefault();
                 // 目前类型仅为varchar nvarchar,不能简单判断 col.PropertyInfo.PropertyType == typeod(string) 
                 // 经测试数据库类型为text时,dbCol.Length有一个迷之长度16,实际数据库并没有长度限制,导致异常,不确定其他类型有没有,故先不做判断
-                var strValue = (value ?? "").ToString();
-                var valueLength = 0;
-                switch (dbCol.DbTypeText.ToLower())
+                if (dbCol != null)
                 {
-                    case "varchar": valueLength = strValue.GetASCIILength(); break;
-                    case "nvarchar": valueLength = strValue.Length; break;
+                    var strValue = (value ?? "").ToString();
+                    var valueLength = 0;
+                    switch (dbCol.DataType)
+                    {
+                        case "varchar": valueLength = strValue.GetASCIILength(); break;
+                        case "nvarchar": valueLength = strValue.Length; break;
+                    }
+                    if (dbCol.Length > 0 && valueLength > 0 && valueLength > dbCol.Length)
+                    {
+                        throw new Exception($"【{(col.DbTableName + " " + col.PropertyName + " " + col.ColumnDescription)}】字段长度过长，数据库长度为{ dbCol.Length}，实际字段长度为{valueLength}，请验证输入，或联系管理员增加数据库字段长度");
+                    }
                 }
-                if (col.Value.DbSize > 0 && valueLength > 0 && valueLength > col.Value.DbSize)
-                {
-                    throw new Exception($"【{(col.Value.Table.DbName + " " + col.Value.CsName + " " + col.Value.Comment)}】字段长度过长，数据库长度为{ col.Value.DbSize}，实际字段长度为{valueLength}，请验证输入，或联系管理员增加数据库字段长度");
-                }
-
             }
             return entity;
         }
@@ -163,7 +121,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Insert(entity).WithTransaction(trans).ExecuteAffrows();
+                result = db.Insertable(entity).ExecuteCommand();
                 InsertExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -182,7 +140,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Insert(list).WithTransaction(trans).ExecuteAffrows();
+                result = db.Insertable(list).ExecuteCommand();
                 InsertExtensionTableList<T>(list);
             }
             catch (Exception ex)
@@ -229,7 +187,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Delete<T>().Where(entity).WithTransaction(trans).ExecuteAffrows();
+                result = db.Deleteable<T>().Where(entity).ExecuteCommand();
                 DeleteExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -244,7 +202,7 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                result = db.Delete<T>().WithTransaction(trans).Where(list).ExecuteAffrows();
+                result = db.Deleteable<T>().Where(list).ExecuteCommand();
                 DeleteExtensionTableList<T>(list);
             }
             catch (Exception ex)
@@ -258,8 +216,8 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var list = db.Select<T>().Where(condition).ToList();
-                result = db.Delete<T>().WithTransaction(trans).Where(list).ExecuteAffrows();
+                var list = db.Queryable<T>().Where(condition).ToList();
+                result = db.Deleteable<T>().Where(list).ExecuteCommand();
                 DeleteExtensionTableList<T>(list);
             }
             catch (Exception ex)
@@ -281,8 +239,8 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().WithTransaction(trans).SetSource(entity).UpdateColumns(onlyUpdateColumns);
-                result = query.ExecuteAffrows();
+                var query = db.Updateable<T>(entity).UpdateColumns(onlyUpdateColumns);
+                result = query.ExecuteCommand();
             }
             catch (Exception ex)
             {
@@ -304,12 +262,12 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
+                var query = db.Updateable<T>(entity);
                 if (ignoreColumns != null)
                 {
                     query = query.IgnoreColumns(ignoreColumns);
                 }
-                result = query.ExecuteAffrows();
+                result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -331,23 +289,30 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
+                var query = db.Updateable<T>(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
+                var flag = true; // 是否更新，如果忽略字段为除主键外全部，则不更新，否则报 update table set where id = @Id 无更新列sql语法错误
                 if (dict != null && dict.Count > 0)
                 {
-                    var entityInfo = db.CodeFirst.GetTableByEntity<T>();
-                    var allColumns = entityInfo.Columns;
-                    igCols = allColumns.Where(r => !r.Value.Attribute.IsPrimary && !dict.Keys.Contains(r.Key)).Select(r => r.Key).ToList();
+                    var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
+                    igCols = entityInfo.Columns.Where(r => !r.IsPrimarykey && !dict.Keys.Contains(r.PropertyName)).Select(r => r.PropertyName).ToList();
                     if (!igCols.IsEmpty())
                     {
                         query = query.IgnoreColumns(igCols.ToArray());
                     }
+                    if (igCols.Count >= entityInfo.Columns.Count - 1)
+                    {
+                        flag = false;
+                    }
                 }
-                VerifyDbColumn(entity, null, igCols);
+                if (flag)
+                {
+                    VerifyDbColumn(entity, null, igCols);
 
-                result = query.ExecuteAffrows();
-                UpdateExtensionTable<T>(entity);
+                    result = query.ExecuteCommand();
+                    UpdateExtensionTable<T>(entity);
+                }
             }
             catch (Exception ex)
             {
@@ -368,14 +333,13 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                var query = db.Updateable(entity);
+                var dict = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
                 {
-                    var entityInfo = db.CodeFirst.GetTableByEntity<T>();
-                    var allColumns = entityInfo.Columns;
-                    igCols = allColumns.Where(r => !r.Value.Attribute.IsPrimary && !dict.Keys.Contains(r.Key)).Select(r => r.Key).ToList();
+                    var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
+                    igCols = entityInfo.Columns.Where(r => !r.IsPrimarykey && !dict.Keys.Contains(r.PropertyName)).Select(r => r.PropertyName).ToList();
                     if (!igCols.IsEmpty())
                     {
                         query = query.IgnoreColumns(igCols.ToArray());
@@ -387,13 +351,14 @@ namespace Luckyu.DataAccess
                 }
                 VerifyDbColumn(entity, ignoreColumns, igCols);
 
-                result = query.ExecuteAffrows();
+                result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+
             return result;
         }
 
@@ -410,14 +375,13 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                var query = db.Updateable(entity);
+                var dict = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
                 {
-                    var entityInfo = db.CodeFirst.GetTableByEntity<T>();
-                    var allColumns = entityInfo.Columns;
-                    igCols = allColumns.Where(r => !r.Value.Attribute.IsPrimary && !dict.Keys.Contains(r.Key)).Select(r => r.Key).ToList();
+                    var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
+                    igCols = entityInfo.Columns.Where(r => !r.IsPrimarykey && !dict.Keys.Contains(r.PropertyName)).Select(r => r.PropertyName).ToList();
                     if (appendColumns != null)
                     {
                         var properties = ReferencedPropertyFinder.GetExpProperties(appendColumns);
@@ -434,7 +398,40 @@ namespace Luckyu.DataAccess
                 }
                 VerifyDbColumn(entity, null, igCols);
 
-                result = query.ExecuteAffrows();
+                result = query.ExecuteCommand();
+                UpdateExtensionTable<T>(entity);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+        public int UpdateAppendColumns<T>(T entity, string json, List<string> appendColumns) where T : class, new()
+        {
+            var result = 0;
+            try
+            {
+                var query = db.Updateable(entity);
+                var dict = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                var igCols = new List<string>();
+                if (dict != null && dict.Count > 0)
+                {
+                    var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
+                    igCols = entityInfo.Columns.Where(r => !r.IsPrimarykey && !dict.Keys.Contains(r.PropertyName)).Select(r => r.PropertyName).ToList();
+                    if (!appendColumns.IsEmpty())
+                    {
+                        igCols = igCols.Where(r => !appendColumns.Contains(r)).ToList();
+                    }
+                    if (!igCols.IsEmpty())
+                    {
+                        query = query.IgnoreColumns(igCols.ToArray());
+                    }
+                }
+                VerifyDbColumn(entity, null, igCols);
+
+                result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -458,14 +455,13 @@ namespace Luckyu.DataAccess
             var result = 0;
             try
             {
-                var query = db.Update<T>().WithTransaction(trans).SetSource(entity);
+                var query = db.Updateable<T>(entity);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 var igCols = new List<string>();
                 if (dict != null && dict.Count > 0)
                 {
-                    var entityInfo = db.CodeFirst.GetTableByEntity<T>();
-                    var allColumns = entityInfo.Columns;
-                    igCols = allColumns.Where(r => !r.Value.Attribute.IsPrimary && !dict.Keys.Contains(r.Key)).Select(r => r.Key).ToList();
+                    var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
+                    igCols = entityInfo.Columns.Where(r => !r.IsPrimarykey && !dict.Keys.Contains(r.PropertyName)).Select(r => r.PropertyName).ToList();
                     if (appendColumns != null)
                     {
                         var properties = ReferencedPropertyFinder.GetExpProperties(appendColumns);
@@ -487,7 +483,7 @@ namespace Luckyu.DataAccess
                 }
                 VerifyDbColumn(entity, null, igCols);
 
-                result = query.ExecuteAffrows();
+                result = query.ExecuteCommand();
                 UpdateExtensionTable<T>(entity);
             }
             catch (Exception ex)
@@ -511,26 +507,21 @@ namespace Luckyu.DataAccess
             {
                 return 0;
             }
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return 0;
             }
-            var tableName = entityInfo.DbName;
+            var tableName = entityInfo.DbTableName;
             var tableNameEx = tableName + "_extension";
             // 获取扩展表的字段
-            var tableEx = db.DbFirst.GetTableByName(tableNameEx);
-            if (tableEx == null)
-            {
-                return 0;
-            }
-            var colsEx = tableEx.Columns;
+            var colsEx = db.DbMaintenance.GetColumnInfosByTableName(tableNameEx);
             if (colsEx == null || colsEx.Count < 1)
             {
                 return 0;
             }
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var pkName = pk.DbColumnName.ToUpper();
             var keyValue = type.GetProperties().First(n => n.Name.ToUpper() == pkName).GetValue(entity);
             JObject extJObject = (JObject)entity.GetType().GetProperties().First(n => n.Name == "ExtObject").GetValue(entity);
             if (extJObject == null)
@@ -549,26 +540,21 @@ namespace Luckyu.DataAccess
             {
                 return 0;
             }
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return 0;
             }
-            var tableName = entityInfo.DbName;
+            var tableName = entityInfo.DbTableName;
             var tableNameEx = tableName + "_extension";
             // 获取当前表的字段
-            var tableEx = db.DbFirst.GetTableByName(tableNameEx);
-            if (tableEx == null)
-            {
-                return 0;
-            }
-            var colsEx = tableEx.Columns;
+            var colsEx = db.DbMaintenance.GetColumnInfosByTableName(tableNameEx);
             if (colsEx == null || colsEx.Count < 1)
             {
                 return 0;
             }
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var pkName = pk.DbColumnName.ToUpper();
 
             var result = 0;
             foreach (var entity in list)
@@ -591,21 +577,21 @@ namespace Luckyu.DataAccess
             var strName = new StringBuilder();
             var sqlValue = new StringBuilder();
 
-            var dicParam = new Dictionary<string, object>();
+            var args = new List<SugarParameter>();
             foreach (var field in formDataJson)
             {
                 var upper = field.Key.ToUpper();
-                var col = cols.Where(r => r.Name.ToUpper() == upper).FirstOrDefault();
+                var col = cols.Where(r => r.DbColumnName.ToUpper() == upper).FirstOrDefault();
                 if (col != null && !field.Value.IsEmpty())
                 {
                     strName.Append($"{upper},");
                     sqlValue.Append($" {BaseConnection.ParaPre}{upper},");
 
-                    dicParam.Add(upper, field.Value);
+                    args.Add(new SugarParameter(upper, field.Value));
                 }
             }
             var sql = $"INSERT INTO {tableName} ( {strName.ToString().TrimEnd(',')} ) VALUES ( {sqlValue.ToString().TrimEnd(',')} )";
-            return db.Ado.ExecuteNonQuery(trans, sql, dicParam);
+            return db.Ado.ExecuteCommand(sql, args);
         }
 
         /// <summary>
@@ -618,27 +604,22 @@ namespace Luckyu.DataAccess
             {
                 return 0;
             }
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return 0;
             }
-            var tableName = entityInfo.DbName;
+            var tableName = entityInfo.DbTableName;
             var tableNameEx = tableName + "_extension";
             // 获取扩展表的字段
-            var tableEx = db.DbFirst.GetTableByName(tableNameEx);
-            if (tableEx == null)
-            {
-                return 0;
-            }
-            var colsEx = tableEx.Columns;
+            var colsEx = db.DbMaintenance.GetColumnInfosByTableName(tableNameEx);
             if (colsEx == null || colsEx.Count < 1)
             {
                 return 0;
             }
             // 主键 字段
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var pkName = pk.DbColumnName.ToUpper();
             var keyValue = type.GetProperties().First(n => n.Name.ToUpper() == pkName).GetValue(entity);
 
             JObject extJObject = (JObject)entity.GetType().GetProperties().First(n => n.Name == "ExtObject").GetValue(entity);
@@ -650,7 +631,7 @@ namespace Luckyu.DataAccess
             extJObject.Add(pkName, keyValue.ToString());
 
             var sqlCount = $"SELECT COUNT(1) FROM {tableNameEx} WHERE {pkName} = {BaseConnection.ParaPre}{pkName} ";
-            var countExt = (int)db.Ado.ExecuteScalar(sqlCount, new Dictionary<string, object> { { pkName, keyValue } });
+            var countExt = db.Ado.GetInt(sqlCount);
             if (countExt > 0)
             {
                 UpdateExtSql(tableNameEx, colsEx, extJObject);
@@ -665,23 +646,23 @@ namespace Luckyu.DataAccess
         {
             var strSql = new StringBuilder($"UPDATE {tableName} SET ");
             var listValue = new List<string>();
-            var dicParas = new Dictionary<string, object>();
+            var args = new List<SugarParameter>();
             foreach (var field in formDataJson)
             {
                 var upper = field.Key.ToUpper();
-                var col = cols.Where(r => r.Name.ToUpper() == upper).FirstOrDefault();
-                if (!col.IsPrimary)
+                var col = cols.Where(r => r.DbColumnName.ToUpper() == upper).FirstOrDefault();
+                if (!col.IsPrimarykey)
                 {
                     listValue.Add($"{upper} = @{upper}");
-                    dicParas.Add(upper, field.Value.ToString());
+                    args.Add(new SugarParameter(upper, field.Value.ToString()));
                 }
             }
             strSql.Append(string.Join(",", listValue));
-            var pk = cols.Where(r => r.IsPrimary).FirstOrDefault();
-            var strPkName = pk.Name.ToUpper();
+            var pk = cols.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var strPkName = pk.DbColumnName.ToUpper();
             strSql.Append($" WHERE {strPkName} = {BaseConnection.ParaPre}{strPkName} ");
-            dicParas.Add(strPkName, formDataJson[strPkName].ToString());
-            return db.Ado.ExecuteNonQuery(trans, strSql.ToString(), dicParas);
+            args.Add(new SugarParameter(strPkName, formDataJson[strPkName].ToString()));
+            return db.Ado.ExecuteCommand(strSql.ToString(), args);
         }
 
         /// <summary>
@@ -694,30 +675,25 @@ namespace Luckyu.DataAccess
             {
                 return 0;
             }
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return 0;
             }
-            var tableName = entityInfo.DbName;
+            var tableName = entityInfo.DbTableName;
             var tableNameEx = tableName + "_extension";
-            var tableEx = db.DbFirst.GetTableByName(tableNameEx);
-            if (tableEx == null)
-            {
-                return 0;
-            }
-            var colsEx = tableEx.Columns;
+            var colsEx = db.DbMaintenance.GetColumnInfosByTableName(tableNameEx);
             if (colsEx == null || colsEx.Count < 1)
             {
                 return 0;
             }
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var pkName = pk.DbColumnName.ToUpper();
             var keyValue = type.GetProperties().First(n => n.Name.ToUpper() == pkName).GetValue(entity);
 
             var sql = $"DELETE FROM {tableNameEx} WHERE {pkName} = {BaseConnection.ParaPre}{pkName} ";
-            var dicParas = new Dictionary<string, object> { { pkName, keyValue } };
-            return db.Ado.ExecuteNonQuery(trans, sql, dicParas);
+            var parms = new SugarParameter(pkName, keyValue);
+            return db.Ado.ExecuteCommand(sql, parms);
         }
         private int DeleteExtensionTableList<T>(List<T> list)
         {
@@ -726,25 +702,20 @@ namespace Luckyu.DataAccess
             {
                 return 0;
             }
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return 0;
             }
-            var tableName = entityInfo.DbName;
+            var tableName = entityInfo.DbTableName;
             var tableNameEx = tableName + "_extension";
-            var tableEx = db.DbFirst.GetTableByName(tableNameEx);
-            if (tableEx == null)
-            {
-                return 0;
-            }
-            var colsEx = tableEx.Columns;
+            var colsEx = db.DbMaintenance.GetColumnInfosByTableName(tableNameEx);
             if (colsEx == null || colsEx.Count < 1)
             {
                 return 0;
             }
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var pkName = pk.DbColumnName.ToUpper();
 
             var result = 0;
             foreach (var entity in list)
@@ -752,8 +723,8 @@ namespace Luckyu.DataAccess
                 var keyValue = type.GetProperties().First(n => n.Name.ToUpper() == pkName).GetValue(entity);
 
                 var sql = $"DELETE FROM {tableNameEx} WHERE {pkName} = {BaseConnection.ParaPre}{pkName} ";
-                var dicParas = new Dictionary<string, object> { { pkName, keyValue } };
-                result += db.Ado.ExecuteNonQuery(trans, sql, dicParas);
+                var parms = new SugarParameter(pkName, keyValue);
+                result += db.Ado.ExecuteCommand(sql, parms);
             }
             return result;
         }
@@ -768,41 +739,36 @@ namespace Luckyu.DataAccess
             {
                 return;
             }
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return;
             }
-            var tableName = entityInfo.DbName;
+            var tableName = entityInfo.DbTableName;
             var tableNameEx = tableName + "_extension";
-            var tableEx = db.DbFirst.GetTableByName(tableNameEx);
-            if (tableEx == null)
-            {
-                return;
-            }
-            var colsEx = tableEx.Columns;
+            var colsEx = db.DbMaintenance.GetColumnInfosByTableName(tableNameEx);
             if (colsEx == null || colsEx.Count < 1)
             {
                 return;
             }
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var pkName = pk.DbColumnName.ToUpper();
             var keyValue = type.GetProperties().First(n => n.Name.ToUpper() == pkName).GetValue(entity);
 
             var sql = $"SELECT * FROM {tableNameEx} WHERE {pkName} = {BaseConnection.ParaPre}{pkName} ";
-            var dicParas = new Dictionary<string, object> { { pkName, keyValue } };
-            var dt = db.Ado.ExecuteDataTable(sql, dicParas);
+            var parm = new SugarParameter(pkName, keyValue);
+            var dt = db.Ado.GetDataTable(sql, parm);
             JObject extObject = new JObject();
             if (dt != null && dt.Rows.Count > 0)
             {
                 DataRow dr = dt.Rows[0];
                 foreach (var column in colsEx)
                 {
-                    if (column.IsPrimary)
+                    if (column.IsPrimarykey)
                     {
                         continue;
                     }
-                    extObject.Add(column.Name, dr[column.Name].ToString());
+                    extObject.Add(column.DbColumnName, dr[column.DbColumnName].ToString());
                 }
             }
             entity.GetType().GetProperties().First(n => n.Name == "ExtObject").SetValue(entity, extObject);
@@ -814,43 +780,38 @@ namespace Luckyu.DataAccess
             {
                 return;
             }
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return;
             }
-            var tableName = entityInfo.DbName;
+            var tableName = entityInfo.DbTableName;
             var tableNameEx = tableName + "_extension";
-            var tableEx = db.DbFirst.GetTableByName(tableNameEx);
-            if (tableEx == null)
-            {
-                return;
-            }
-            var colsEx = tableEx.Columns;
+            var colsEx = db.DbMaintenance.GetColumnInfosByTableName(tableNameEx);
             if (colsEx == null || colsEx.Count < 1)
             {
                 return;
             }
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).FirstOrDefault();
+            var pkName = pk.DbColumnName.ToUpper();
             foreach (var entity in list)
             {
                 var keyValue = type.GetProperties().First(n => n.Name.ToUpper() == pkName).GetValue(entity);
 
                 var sql = $"SELECT * FROM {tableNameEx} WHERE {pkName} = @{pkName} ";
-                var dicParas = new Dictionary<string, object> { { pkName, keyValue } };
-                var dt = db.Ado.ExecuteDataTable(sql, dicParas);
+                var parm = new SugarParameter(pkName, keyValue);
+                var dt = db.Ado.GetDataTable(sql, parm);
                 JObject extObject = new JObject();
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     DataRow dr = dt.Rows[0];
                     foreach (var column in colsEx)
                     {
-                        if (column.IsPrimary)
+                        if (column.IsPrimarykey)
                         {
                             continue;
                         }
-                        extObject.Add(column.Name, dr[column.Name].ToString());
+                        extObject.Add(column.DbColumnName, dr[column.DbColumnName].ToString());
                     }
                 }
                 entity.GetType().GetProperties().First(n => n.Name == "ExtObject").SetValue(entity, extObject);
@@ -862,13 +823,23 @@ namespace Luckyu.DataAccess
         #region   查询
         public bool Exist<T>(T entity) where T : class, new()
         {
-            var result = db.Select<T>(entity).Any();
-            return result;
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
+            if (entityInfo == null)
+            {
+                return false;
+            }
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).First();
+            var keyValue = pk.PropertyInfo.GetValue(entity).ToString();
+            var pkName = pk.DbColumnName;
+            var sql = $"SELECT COUNT(1) FROM {entityInfo.DbTableName} WHERE {pk.DbColumnName} = @{pk.DbColumnName}";
+            var parm = new SugarParameter(pk.DbColumnName, keyValue);
+            var result = db.Ado.GetInt(sql, parm);
+            return result > 0;
         }
 
         public int Count<T>(Expression<Func<T, bool>> condition) where T : class, new()
         {
-            var count = db.Select<T>().Where(condition).Count();
+            var count = db.Queryable<T>().Where(condition).Count();
             return (int)count;
         }
 
@@ -881,16 +852,15 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public T GetEntity<T>(string keyValue) where T : class, new()
         {
-            var entityInfo = db.CodeFirst.GetTableByEntity<T>();
+            var entityInfo = db.EntityMaintenance.GetEntityInfo<T>();
             if (entityInfo == null)
             {
                 return null;
             }
-            var pk = entityInfo.Primarys.FirstOrDefault();
-            var pkName = pk.Attribute.Name.ToUpper();
-            var sql = $"SELECT * FROM {entityInfo.DbName} WHERE {pkName} = {BaseConnection.ParaPre}{pkName}";
-            var dicParas = new Dictionary<string, object> { { pkName, keyValue } };
-            var entity = db.Select<T>().WithSql(sql, dicParas).First();
+            var pk = entityInfo.Columns.Where(r => r.IsPrimarykey).First();
+            var sql = $"SELECT * FROM {entityInfo.DbTableName} WHERE {pk.DbColumnName} = {BaseConnection.ParaPre}{pk.DbColumnName}";
+            var parm = new SugarParameter(pk.DbColumnName, keyValue);
+            var entity = db.Ado.SqlQuerySingle<T>(sql, parm);
             if (entity != null)
             {
                 AttachExtObject<T>(ref entity);
@@ -906,7 +876,7 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public T GetEntity<T>(Expression<Func<T, bool>> condition, string orderby = "") where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (!string.IsNullOrEmpty(orderby))
             {
                 query = query.OrderBy(orderby);
@@ -920,16 +890,16 @@ namespace Luckyu.DataAccess
         }
         public T GetEntity<T>(Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderby = null, bool isDesc = false) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (orderby != null)
             {
                 if (isDesc)
                 {
-                    query = query.OrderByDescending(orderby);
+                    query = query.OrderBy(orderby, OrderByType.Desc);
                 }
                 else
                 {
-                    query = query.OrderBy(orderby);
+                    query = query.OrderBy(orderby, OrderByType.Asc);
                 }
             }
             var entity = query.First();
@@ -948,7 +918,7 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public T GetEntity<T>(string strSql, object dbParameter = null) where T : class, new()
         {
-            var entity = db.Select<T>().WithSql(strSql, dbParameter).First();
+            var entity = db.Queryable<T>().Where(strSql, dbParameter).First();
             if (entity != null)
             {
                 AttachExtObject<T>(ref entity);
@@ -958,37 +928,51 @@ namespace Luckyu.DataAccess
         #endregion
 
         #region DataTable
-        public DataTable GetDataTable(string sql, object paras = null)
+        public DataTable GetDataTable(string sql, List<SugarParameter> dbParameter)
         {
-            return db.Ado.ExecuteDataTable(sql, paras);
+            return db.Ado.GetDataTable(sql, dbParameter);
         }
 
-        public JqgridDatatablePageResponse GetDataTable(JqgridPageRequest jqPage, string strSql, object paras = null)
+        public DataTable GetDataTable(string sql, object paras = null)
         {
-            var dbType = db.Ado.DataType;
+            return db.Ado.GetDataTable(sql, paras);
+        }
+
+        public JqgridDatatablePageResponse GetDataTablePage(JqgridPageRequest pagination, string strSql, List<SugarParameter> dbParameter = null)
+        {
+            var dbType = db.CurrentConnectionConfig.DbType;
             strSql = strSql.Trim().TrimEnd(';');
-            if (!jqPage.sidx.IsEmpty())
+            if (!string.IsNullOrEmpty(pagination.sidx))
             {
-                strSql += $" ORDER BY {jqPage.sidx} {jqPage.sord}";
+                strSql += $" ORDER BY {pagination.sidx} {pagination.sord}";
             }
-            var pageIndex = jqPage.page < 1 ? 1 : jqPage.page;
-            var pageSize = jqPage.rows < 1 ? 30 : jqPage.rows;
+            var pageIndex = pagination.page < 1 ? 1 : pagination.page;
+            var pageSize = pagination.rows < 1 ? 30 : pagination.rows;
 
             var sqlParts = SQLPartsHelper.SplitSQL(strSql);
             var countSql = SQLPartsHelper.GetCountSql(sqlParts);
             var pageSql = SQLPartsHelper.GetPageSql(sqlParts, pageIndex, pageSize, dbType);
-            var total = (int)db.Ado.ExecuteScalar(countSql, paras);  // 执行之后dbParameter的value会被清空，所以前面复制出来一份，感觉是orm的bug，先这样吧
-            DataTable dt = null;
+            var newParams = new List<SugarParameter>();
+            if (dbParameter != null)
+            {
+                foreach (var param in dbParameter)
+                {
+                    newParams.Add(new SugarParameter(param.ParameterName, param.Value, param.DbType));
+                }
+            }
+            var total = db.Ado.GetInt(countSql, dbParameter);  // 执行之后dbParameter的value会被清空，所以前面复制出来一份，感觉是orm的bug，先这样吧
+            //var list = new List<T>();
+            DataTable list = null;
             if (total > 0)
             {
-                dt = db.Ado.ExecuteDataTable(pageSql, paras);
+                list = db.Ado.GetDataTable(pageSql, newParams);
             }
             var page = new JqgridDatatablePageResponse
             {
-                count = jqPage.rows,
-                page = jqPage.page,
+                count = pagination.rows,
+                page = pagination.page,
                 records = total,
-                rows = dt,
+                rows = list,
             };
             return page;
         }
@@ -1005,7 +989,7 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public List<T> GetList<T>(string strSql, object dbParameter = null) where T : class
         {
-            var list = db.Ado.Query<T>(strSql, dbParameter);
+            var list = db.Ado.SqlQuery<T>(strSql, dbParameter);
             if (list != null && list.Count > 0)
             {
                 AttachExtList<T>(ref list);
@@ -1020,7 +1004,7 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public List<T> GetList<T>(Expression<Func<T, bool>> condition, string orderby = "") where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (!string.IsNullOrEmpty(orderby))
             {
                 query = query.OrderBy(orderby);
@@ -1040,14 +1024,11 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public List<T> GetList<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
@@ -1066,15 +1047,12 @@ namespace Luckyu.DataAccess
         /// <typeparam name="T">类型</typeparam>
         /// <param name="condition">表达式</param>
         /// <returns></returns>
-        public List<T> GetList<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, List<DynamicFilterInfo> filters) where T : class, new()
+        public List<T> GetList<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, List<IConditionalModel> filters) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
@@ -1088,24 +1066,21 @@ namespace Luckyu.DataAccess
             return list;
         }
 
-        public List<T> GetList<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, Dictionary<string, Func<DynamicFilterInfo>> dicCondition) where T : class, new()
+        public List<T> GetList<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, Dictionary<string, Func<List<ConditionalModel>>> dicCondition) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (dicCondition.Count > 0)
             {
                 foreach (var item in dicCondition)
                 {
                     var conditions = dicCondition[item.Key]();
-                    filters.Add(conditions);
+                    filters.AddRange(conditions);
                 }
             }
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
@@ -1121,16 +1096,16 @@ namespace Luckyu.DataAccess
 
         public List<T> GetList<T>(Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderby = null, bool isDesc = false) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (orderby != null)
             {
                 if (isDesc)
                 {
-                    query = query.OrderByDescending(orderby);
+                    query = query.OrderBy(orderby, OrderByType.Desc);
                 }
                 else
                 {
-                    query = query.OrderBy(orderby);
+                    query = query.OrderBy(orderby, OrderByType.Asc);
                 }
             }
             var list = query.ToList();
@@ -1147,7 +1122,7 @@ namespace Luckyu.DataAccess
         /// <typeparam name="T">类型</typeparam>
         /// <param name="condition">表达式</param>
         /// <returns></returns>
-        public List<T> GetList<T>(ISelect<T> query) where T : class, new()
+        public List<T> GetList<T>(ISugarQueryable<T> query) where T : class, new()
         {
             var list = query.ToList();
             if (list != null && list.Count > 0)
@@ -1156,14 +1131,11 @@ namespace Luckyu.DataAccess
             }
             return list;
         }
-        public List<T> GetList<T>(ISelect<T> query, List<DynamicFilterInfo> filters) where T : class, new()
+        public List<T> GetList<T>(ISugarQueryable<T> query, List<IConditionalModel> filters) where T : class, new()
         {
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
+                query = query.Where(filters);
             }
             var list = query.ToList();
             if (list != null && list.Count > 0)
@@ -1184,16 +1156,16 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public List<T> GetListTop<T>(int top, Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderby, bool isDesc = false) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (orderby != null)
             {
                 if (isDesc)
                 {
-                    query = query.OrderByDescending(orderby);
+                    query = query.OrderBy(orderby, OrderByType.Desc);
                 }
                 else
                 {
-                    query = query.OrderBy(orderby);
+                    query = query.OrderBy(orderby, OrderByType.Asc);
                 }
             }
             var list = query.Take(top).ToList();
@@ -1211,7 +1183,7 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public List<T> GetListTop<T>(int top, Expression<Func<T, bool>> condition, string orderby = "") where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (!string.IsNullOrEmpty(orderby))
             {
                 query = query.OrderBy(orderby);
@@ -1237,7 +1209,7 @@ namespace Luckyu.DataAccess
         /// <returns></returns>
         public T GetEntityTop<T>(int top, Expression<Func<T, bool>> condition, string orderby = "") where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (!string.IsNullOrEmpty(orderby))
             {
                 query = query.OrderBy(orderby);
@@ -1257,18 +1229,18 @@ namespace Luckyu.DataAccess
         /// </summary>
         public JqgridPageResponse<T> GetPage<T>(int pageIndex, int pageSize, Expression<Func<T, bool>> condition, string orderby) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             if (!string.IsNullOrEmpty(orderby))
             {
                 query = query.OrderBy(orderby);
             }
-            //var total = 0;
-            var list = query.Count(out var total).Page(pageIndex, pageSize).ToList();
+            var total = 0;
+            var list = query.ToPageList(pageIndex, pageSize, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = pageSize,
                 page = pageIndex,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
@@ -1276,147 +1248,118 @@ namespace Luckyu.DataAccess
         }
         public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-                    }
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
         }
         public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, Expression<Func<T, T>> select) where T : class, new()
         {
-            var query = db.Select<T>().Where(condition);
+            var query = db.Queryable<T>().Where(condition);
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-                    }
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList(select);
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
         }
-        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, ISelect<T> query) where T : class, new()
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, ISugarQueryable<T> query) where T : class, new()
         {
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-
-                    }
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
         }
-        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, ISelect<T> query, List<DynamicFilterInfo> filters) where T : class, new()
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, ISugarQueryable<T> query, List<IConditionalModel> filters) where T : class, new()
         {
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-
-                    }
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
         }
-        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, List<DynamicFilterInfo> filters) where T : class, new()
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, List<IConditionalModel> filters) where T : class, new()
         {
-            var query = db.Select<T>();
+            var query = db.Queryable<T>();
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-
-                    }
-
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
         }
-        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, List<Expression<Func<T, bool>>> condition, List<DynamicFilterInfo> filters) where T : class, new()
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, List<Expression<Func<T, bool>>> condition, List<IConditionalModel> filters) where T : class, new()
         {
-            var query = db.Select<T>();
+            var query = db.Queryable<T>();
             if (condition.Count > 0)
             {
                 foreach (var item in condition)
@@ -1426,64 +1369,52 @@ namespace Luckyu.DataAccess
             }
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-
-                    }
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
         }
-        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, List<DynamicFilterInfo> filters) where T : class, new()
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, List<IConditionalModel> filters) where T : class, new()
         {
-            var query = db.Select<T>();
+            var query = db.Queryable<T>();
             if (condition != null)
             {
                 query = query.Where(condition);
             }
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-
-                    }
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
         }
-        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, Dictionary<string, Func<string, string, DynamicFilterInfo>> dicModels) where T : class, new()
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, Expression<Func<T, bool>> condition, Dictionary<string, Func<string, string, List<IConditionalModel>>> dicModels) where T : class, new()
         {
-            var query = db.Select<T>();
+            var query = db.Queryable<T>();
             if (condition != null)
             {
                 query = query.Where(condition);
@@ -1497,37 +1428,32 @@ namespace Luckyu.DataAccess
                     var rule = rules.Where(r => r.field == item.Key).FirstOrDefault();
                     if (rule != null)
                     {
-                        var comdition = dicModels[rule.field](rule.field, rule.data);
-                        if (comdition != null)
+                        var comditions = dicModels[rule.field](rule.field, rule.data);
+                        if (comditions != null)
                         {
-                            filters.Add(comdition);
+                            filters.AddRange(comditions);
                         }
                     }
                 }
             }
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    if (filter != null)
-                    {
-                        query = query.WhereDynamicFilter(filter);
-
-                    }
-                }
+                query = query.Where(filters);
             }
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList();
+            var total = 0;
+            var list = query.ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<T>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
+
             return page;
         }
         /// <summary>
@@ -1538,9 +1464,9 @@ namespace Luckyu.DataAccess
         /// <param name="dbParameter">参数</param>
         /// <param name="jqPage">分页数据</param>
         /// <returns></returns>
-        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, string strSql, object dbParameter = null) where T : class, new()
+        public JqgridPageResponse<T> GetPage<T>(JqgridPageRequest jqPage, string strSql, List<SugarParameter> dbParameter = null) where T : class, new()
         {
-            var dbType = db.Ado.DataType;
+            var dbType = db.CurrentConnectionConfig.DbType;
             strSql = strSql.Trim().TrimEnd(';');
             if (!string.IsNullOrEmpty(jqPage.sidx))
             {
@@ -1552,11 +1478,19 @@ namespace Luckyu.DataAccess
             var sqlParts = SQLPartsHelper.SplitSQL(strSql);
             var countSql = SQLPartsHelper.GetCountSql(sqlParts);
             var pageSql = SQLPartsHelper.GetPageSql(sqlParts, pageIndex, pageSize, dbType);
-            var total = (int)db.Ado.ExecuteScalar(countSql, dbParameter);
+            var newParams = new List<SugarParameter>();
+            if (dbParameter != null)
+            {
+                foreach (var param in dbParameter)
+                {
+                    newParams.Add(new SugarParameter(param.ParameterName, param.Value, param.DbType));
+                }
+            }
+            var total = db.Ado.GetInt(countSql, dbParameter);  // 执行之后dbParameter的value会被清空，所以前面复制出来一份，感觉是orm的bug，先这样吧
             var list = new List<T>();
             if (total > 0)
             {
-                list = db.Ado.Query<T>(pageSql, dbParameter).ToList();
+                list = db.Ado.SqlQuery<T>(pageSql, newParams).ToList();
             }
             var page = new JqgridPageResponse<T>
             {

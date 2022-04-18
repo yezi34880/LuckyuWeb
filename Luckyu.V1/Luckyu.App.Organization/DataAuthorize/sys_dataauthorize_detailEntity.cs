@@ -1,5 +1,5 @@
 
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.Log;
 using Luckyu.Utility;
 
@@ -8,7 +8,7 @@ namespace Luckyu.App.Organization
     /// <summary>
     ///  sys_dataauthorize_detail   
     /// </summary>
-    [Table(Name = "SYS_DATAAUTHORIZE_DETAIL")]
+    [SugarTable( "sys_dataauthorize_detail")]
     public class sys_dataauthorize_detailEntity
     {
         #region 属性
@@ -16,7 +16,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  detail_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string detail_id { get; set; }
 
         /// <summary>

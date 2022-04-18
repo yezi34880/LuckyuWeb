@@ -1,20 +1,21 @@
 ﻿using Luckyu.Log;
-using FreeSql;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using Newtonsoft.Json;
 using Luckyu.Utility;
+using SqlSugar;
+using System.Linq;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace Luckyu.DataAccess
 {
     public class BaseConnection
     {
         private static string connectionString = "";
-        private static DataType dbType;
+        private static DbType dbType;
         private static sys_logService logService = new sys_logService();
-
-        private static IFreeSql db;
 
         private static string GetConnectionString()
         {
@@ -26,9 +27,9 @@ namespace Luckyu.DataAccess
             return connectionString;
         }
 
-        private static DataType GetDbType()
+        private static DbType GetDbType()
         {
-            dbType = DataType.MySql;
+            dbType = DbType.MySql;
             return dbType;
         }
 
@@ -36,56 +37,95 @@ namespace Luckyu.DataAccess
         {
             connectionString = conString;
         }
-        public static IFreeSql InitDatabase()
-        {
-            if (db == null)
-            {
-                db = new FreeSqlBuilder()
-                          .UseConnectionString(GetDbType(), GetConnectionString())
-                          .UseNameConvert(FreeSql.Internal.NameConvertType.ToLower)
-                          .UseAutoSyncStructure(false) //自动同步实体结构到数据库
-                                                       //.UseGenerateCommandParameterWithLambda(LuckyuHelper.IsDebug() ? false : true)
-                                                       //.UseNoneCommandParameter(LuckyuHelper.IsDebug() ? true : false)
-                                                       // 参数化时候有问题，超长字符串会背截断，还没找到原因，有空来找
-                                                       // 找到原因了 使用参数时，默认长度255 ，除非手动指定   [Column(Name = "Name", StringLength = -1)]
-                          .UseGenerateCommandParameterWithLambda(false)
-                          .UseNoneCommandParameter(true)
-                          .UseMonitorCommand((command) =>
-                          {
-                          }, (command, result) =>
-                          {
-                          })
-                          .Build(); //请务必定义成 Singleton 单例模式
-            }
-            db.Aop.CurdAfter += (s, e) =>
-            {
-                if (e.CurdType != FreeSql.Aop.CurdType.Select)
-                {
-                    var log = new sys_logEntity();
-                    log.log_type = (int)LogType.Sql;
-                    log.op_type = e.CurdType.ToString();
-                    log.app_name = LuckyuHelper.AppID;
-                    log.log_content = $"【SQL】{e.Sql}\r\n【PARAMS】{e.DbParms.ToJson()}\r\n【RESULT】{e.ExecuteResult.ToJson()}\r\n";
-                    log.log_json = "";
-                    log.module = e.Table.DbName;
 
-                    logService.Insert(log);
-                }
-            };
-            return db;
+        public static SqlSugarClient db
+        {
+            get
+            {
+                /// 扩展 In 多列的方法
+                var expMethods = new List<SqlFuncExternal>();
+                expMethods.Add(new SqlFuncExternal()
+                {
+                    UniqueMethodName = "Contains",
+                    MethodValue = (expInfo, dbType, expContext) =>
+                    {
+                        var str = new StringBuilder();
+                        //var listType = expInfo.Args[0].MemberValue.GetType();
+                        //var tupleType = listType.GetGenericArguments()[0];
+                        //var itemType1 = tupleType.GetGenericArguments()[0];
+                        //var itemType2 = tupleType.GetGenericArguments()[1];
+                        var list = expInfo.Args[0].MemberValue as ICollection<ValueTuple<string, string>>;
+                        if (list.IsEmpty())
+                        {
+                            str.Append(" 1=0 ");
+                            return str.ToString();
+                        }
+                        var idx = 0;
+                        foreach (var item in list)
+                        {
+                            if (idx++ > 0)
+                            {
+                                str.Append(" OR ");
+                            }
+                            str.Append($"( {item.Item1}={expInfo.Args[1].MemberName}")
+                            .Append(" AND ")
+                            .Append($"{item.Item2}={expInfo.Args[2].MemberName} )");
+                        }
+                        return str.ToString();
+                    }
+                });
+
+                var db = new SqlSugarClient(
+                   new ConnectionConfig()
+                   {
+                       ConnectionString = GetConnectionString(),
+                       DbType = GetDbType(),//设置数据库类型
+                       IsAutoCloseConnection = true,//自动释放数据务，如果存在事务，在事务结束后释放
+                       ConfigureExternalServices = new ConfigureExternalServices()
+                       {
+                           SqlFuncServices = expMethods,//set ext method
+                           EntityService = (property, column) =>
+                           {
+                               var attributes = property.GetCustomAttributes(true);//get all attributes     
+                               if (attributes.Any(it => it is NotMappedAttribute))//根据自定义属性    
+                               {
+                                   column.IsIgnore = true;
+                               }
+                           }
+                       },
+                   });
+                db.Aop.OnLogExecuted = (sql, pars) =>
+                {
+                    sql = sql.ToLower().Trim();
+                    if (sql.StartsWith("update") || sql.StartsWith("insert") || sql.StartsWith("delete")|| sql.StartsWith("drop")|| sql.StartsWith("create")|| sql.StartsWith("alert"))
+                    {
+                        var log = new sys_logEntity();
+                        log.log_type = (int)LogType.Sql;
+                        // log.op_type = e.CurdType.ToString();
+                        log.app_name = LuckyuHelper.AppID;
+                        log.log_content = $"【SQL】{sql}\r\n【PARAMS】{pars.ToDictionary(r => r.ParameterName, t => t.Value.ToString()).ToJson()}\r\n【RESULT】{db.Ado.SqlExecutionTime}\r\n";
+                        log.log_json = "";
+                        //log.module = e.Table.DbName;
+                        logService.Insert(log);
+                    }
+                };
+
+                return db;
+            }
         }
 
         public static string ParaPre
         {
             get
             {
-                switch (GetDbType())
-                {
-                    case DataType.MySql:
-                        return "?";
-                    default:
-                        return "@";
-                }
+                return db.Ado.SqlParameterKeyWord;
+                //switch (GetDbType())
+                //{
+                //    case DbType.MySql:
+                //        return "?";
+                //    default:
+                //        return "@";
+                //}
             }
         }
 

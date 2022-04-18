@@ -1,4 +1,4 @@
-﻿using FreeSql.Internal.Model;
+﻿
 using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
@@ -40,7 +40,7 @@ namespace Luckyu.App.System
                 else
                 {
                     entity.Modify(keyValue, loginInfo);
-                    db.Update<sys_dataitem_detailEntity>().Where(r => r.itemcode == entity.itemcode).Set(r => r.itemcode == entity.itemcode).ExecuteAffrows();
+                    db.Updateable<sys_dataitem_detailEntity>().Where(r => r.itemcode == entity.itemcode).SetColumns(r => r.itemcode == entity.itemcode).ExecuteCommand();
                     trans.UpdateAppendColumns(entity, strEntity, r => new { r.edittime, r.edit_userid, r.edit_username });
                 }
                 trans.Commit();

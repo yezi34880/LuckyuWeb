@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -10,7 +10,7 @@ namespace Luckyu.App.Workflow
     /// <summary>
     ///  wf_task   
     /// </summary>
-    [Table(Name = "WF_TASK")]
+    [SugarTable( "wf_task")]
     public class wf_taskEntity
     {
         #region 属性
@@ -18,7 +18,7 @@ namespace Luckyu.App.Workflow
         /// <summary>
         ///  task_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string task_id { get; set; }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Luckyu.App.Workflow
         /// <summary>
         /// 待审批 能看到该步骤的用户
         /// </summary>
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public List<wf_task_authorizeEntity> authrizes { get; set; }
         #endregion
 

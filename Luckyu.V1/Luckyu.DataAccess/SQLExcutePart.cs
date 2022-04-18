@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqlSugar;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Luckyu.DataAccess
     {
         public string Sql { get; set; }
 
-        public List<DbParameter> SqlParams { get; set; }
+        public List<SugarParameter> SqlParams { get; set; }
 
     }
 }

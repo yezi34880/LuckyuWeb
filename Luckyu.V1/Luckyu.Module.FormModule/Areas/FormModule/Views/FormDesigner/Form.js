@@ -424,18 +424,19 @@ var bootstrap = function (layui) {
         if (!$("#divFormInfo").verifyForm()) {
             return false;
         }
-        var formhtml = formHtml;
-        var formjson = JSON.stringify(formJson);
+        var formData = $('#divFormInfo').getFormValue();
+        formData.formhtml = formhtml;
+        formData.formjson = JSON.stringify(formJson);
+        luckyu.ajax.postv2(luckyu.rootUrl + "/FormModule/FormDesigner/SaveForm", {
+            keyValue: keyValue,
+            strEntity: JSON.stringify(formData)
+        }, function (data) {
 
-        //luckyu.ajax.postv2(luckyu.rootUrl + "/FormModule/FormDesigner/SaveForm", {
-        //    keyValue: keyValue,
-        //}, function (data) {
-
-        //    parent.layui.layer.close(layerIndex);
-        //    if (!!callBack) {
-        //        callBack();
-        //    }
-        //});
+            parent.layui.layer.close(layerIndex);
+            if (!!callBack) {
+                callBack();
+            }
+        });
 
     };
 

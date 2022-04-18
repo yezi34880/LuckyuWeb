@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -10,7 +10,7 @@ namespace Luckyu.App.Workflow
     /// <summary>
     ///  wf_taskhistory   
     /// </summary>
-    [Table(Name ="WF_TASKHISTORY")]
+    [SugarTable("wf_taskhistory")]
     public class wf_taskhistoryEntity
     {
         #region 属性
@@ -18,7 +18,7 @@ namespace Luckyu.App.Workflow
         /// <summary>
         ///  history_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string history_id { get; set; }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Luckyu.App.Workflow
         #endregion
 
         #region 扩展
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public string annex { get; set; }
         #endregion
 

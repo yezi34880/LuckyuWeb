@@ -38,13 +38,13 @@ namespace Luckyu.App.System
 
         public List<sys_annexfileEntity> GetList(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
         {
-            condition = condition.And(r => r.is_delete == 0);
+            condition = condition.LinqAnd(r => r.is_delete == 0);
             var list = annexService.GetList(condition, orderby);
             return list;
         }
         public List<sys_annexfileEntity> GetList(Expression<Func<sys_annexfileEntity, bool>> condition, Expression<Func<sys_annexfileEntity, object>> orderby, bool isDesc = false)
         {
-            condition = condition.And(r => r.is_delete == 0);
+            condition = condition.LinqAnd(r => r.is_delete == 0);
             var list = annexService.GetList(condition, orderby, isDesc);
             return list;
         }

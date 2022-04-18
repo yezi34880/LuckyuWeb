@@ -13,36 +13,36 @@ namespace Luckyu.App.System
     {
         public void Insert(sys_annexfileEntity entity)
         {
-            BaseRepository().db.Insert(entity).ExecuteAffrows();
+            BaseRepository().db.Insertable(entity).ExecuteCommand();
         }
         public void Delete(sys_annexfileEntity entity)
         {
-            BaseRepository().db.Update<sys_annexfileEntity>().SetSource(entity).Set(r => r.is_delete == 1).ExecuteAffrows();
+            BaseRepository().db.Updateable<sys_annexfileEntity>(entity).SetColumns(r => r.is_delete == 1).ExecuteCommand();
         }
 
         public void Update(sys_annexfileEntity entity)
         {
             var db = BaseRepository().db;
-            db.Update<sys_annexfileEntity>().SetSource(entity).ExecuteAffrows();
+            db.Updateable<sys_annexfileEntity>(entity).ExecuteCommand();
         }
         public void UpdateSort(List<sys_annexfileEntity> list)
         {
             var db = BaseRepository().db;
-            db.Transaction(() =>
+            db.UseTran(() =>
             {
                 foreach (var item in list)
                 {
-                    db.Update<sys_annexfileEntity>().SetSource(item).UpdateColumns(r => new
+                    db.Updateable<sys_annexfileEntity>(item).UpdateColumns(r => new
                     {
                         r.sort,
-                    }).ExecuteAffrows();
+                    }).ExecuteCommand();
                 }
             });
         }
 
         public void DownLoad(sys_annexfileEntity entity)
         {
-            BaseRepository().db.Update<sys_annexfileEntity>().SetSource(entity).Set(r => r.downloadcount == r.downloadcount + 1).ExecuteAffrows();
+            BaseRepository().db.Updateable<sys_annexfileEntity>(entity).SetColumns(r => r.downloadcount == r.downloadcount + 1).ExecuteCommand();
         }
 
     }

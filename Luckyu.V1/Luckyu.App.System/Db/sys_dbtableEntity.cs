@@ -1,18 +1,18 @@
 ﻿using System;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 
 namespace Luckyu.App.System
 {
     /// <summary>
     ///  sys_dbtable   数据库 表
     /// </summary>
-    [Table(Name = "SYS_DBTABLE")]
+    [SugarTable( "sys_dbtable")]
     public class sys_dbtableEntity
     {
         /// <summary>
         /// table_id
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string table_id { get; set; }
 
         /// <summary>

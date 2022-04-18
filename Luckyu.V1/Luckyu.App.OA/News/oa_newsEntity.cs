@@ -1,4 +1,4 @@
-﻿using FreeSql.DataAnnotations;
+﻿using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -9,14 +9,14 @@ namespace Luckyu.App.OA
     /// <summary>
     ///  oa_news   
     /// </summary>
-    [Table(Name = "OA_NEWS")]
+    [SugarTable( "oa_news")]
     public class oa_newsEntity : ExtensionEntityBase
     {
         #region 属性
         /// <summary>
         ///  news_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string news_id { get; set; }
 
         /// <summary>

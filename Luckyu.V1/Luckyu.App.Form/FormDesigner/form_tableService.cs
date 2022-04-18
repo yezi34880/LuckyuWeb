@@ -1,5 +1,5 @@
 ﻿
-using FreeSql.Internal.Model;
+
 using Luckyu.App.Organization;
 using Luckyu.App.System;
 using Luckyu.DataAccess;
@@ -19,7 +19,7 @@ namespace Luckyu.App.Form
 
         #endregion
 
-         public JqgridPageResponse<form_tableEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
+        public JqgridPageResponse<form_tableEntity> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             Expression<Func<form_tableEntity, bool>> exp = r => r.is_delete == 0;
             var page = BaseRepository().GetPage(jqPage, exp);
@@ -28,25 +28,12 @@ namespace Luckyu.App.Form
 
         public void DeleteForm(form_tableEntity entity, UserModel loginInfo)
         {
-            entity.Remove(loginInfo);
-            BaseRepository().UpdateOnlyColumns(entity, r => new { r.is_delete, r.delete_userid, r.delete_username, r.deletetime });
-        }
-
-        public void SaveForm(string keyValue, form_tableEntity entity, string strEntity, UserModel loginInfo)
-        {
             var trans = BaseRepository().BeginTrans();
             try
             {
-                if (keyValue.IsEmpty())
-                {
-                    entity.Create(loginInfo);
-                    trans.Insert(entity);
-                }
-                else
-                {
-                    entity.Modify(keyValue, loginInfo);
-                    trans.UpdateAppendColumns(entity, strEntity, r => new { r.edittime, r.edit_userid, r.edit_username });
-                }
+                entity.Remove(loginInfo);
+                trans.UpdateOnlyColumns(entity, r => new { r.is_delete, r.delete_userid, r.delete_username, r.deletetime });
+
                 trans.Commit();
             }
             catch (Exception ex)
@@ -54,6 +41,31 @@ namespace Luckyu.App.Form
                 trans.Rollback();
                 throw ex;
             }
+        }
+
+        public ResponseResult InsertTable(string keyValue, form_tableEntity entity, UserModel loginInfo)
+        {
+            var repo = BaseRepository();
+            var dbtableName = $"cusform_{entity.formcode}";
+            var isExists = repo.db.DbMaintenance.IsAnyTable(dbtableName);
+            if (isExists)
+            {
+                return ResponseResult.Fail("数据库表已存在，请联系管理员确认");
+            }
+
+            var trans = repo.BeginTrans();
+            try
+            {
+                entity.Create(loginInfo);
+
+                trans.Commit();
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                throw ex;
+            }
+            return ResponseResult.Success();
         }
 
     }

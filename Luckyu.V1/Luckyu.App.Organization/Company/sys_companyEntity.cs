@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.Log;
 using Luckyu.Utility;
 using System;
@@ -8,7 +8,7 @@ namespace Luckyu.App.Organization
     /// <summary>
     ///  sys_company   
     /// </summary>
-    [Table(Name = "SYS_COMPANY")]
+    [SugarTable( "sys_company")]
     public class sys_companyEntity : ExtensionEntityBase
     {
         #region 属性
@@ -16,7 +16,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  company_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string company_id { get; set; }
 
         /// <summary>

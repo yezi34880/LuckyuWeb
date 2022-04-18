@@ -1,5 +1,5 @@
 
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.Log;
 using Luckyu.Utility;
 using System;
@@ -9,7 +9,7 @@ namespace Luckyu.App.Organization
     /// <summary>
     ///  sys_dataauthorize   
     /// </summary>
-    [Table(Name = "SYS_DATAAUTHORIZE")]
+    [SugarTable("sys_dataauthorize")]
     public class sys_dataauthorizeEntity
     {
         #region 属性
@@ -17,7 +17,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  auth_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string auth_id { get; set; }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Luckyu.App.Organization
         /// </summary>
         public int is_enable { get; set; }
 
-       /// <summary>
+        /// <summary>
         ///  remark   
         /// </summary>
         public string remark { get; set; }
@@ -118,13 +118,13 @@ namespace Luckyu.App.Organization
         #endregion
 
         #region 扩展
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public int seeobjecttype { get; set; }
 
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public string seeobjectnames { get; set; }
 
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public string seeobject_ids { get; set; }
         #endregion
 

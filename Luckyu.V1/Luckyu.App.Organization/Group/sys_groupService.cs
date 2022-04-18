@@ -1,4 +1,4 @@
-﻿using FreeSql.Internal.Model;
+﻿
 using Luckyu.DataAccess;
 using Luckyu.Utility;
 using System;

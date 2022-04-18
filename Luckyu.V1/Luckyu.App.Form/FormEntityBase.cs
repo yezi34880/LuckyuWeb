@@ -1,4 +1,4 @@
-﻿using FreeSql.DataAnnotations;
+﻿using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -11,7 +11,7 @@ namespace Luckyu.App.Form
         /// <summary>
         /// 主键
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string id { get; set; }
 
         /// <summary>

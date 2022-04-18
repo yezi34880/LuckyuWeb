@@ -1,4 +1,4 @@
-﻿using FreeSql;
+﻿using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,10 +77,10 @@ namespace Luckyu.DataAccess
             return countSql;
         }
 
-        public static string GetPageSql(SQLParts parts, int pageIndex, int pageSize, DataType dbType)
+        public static string GetPageSql(SQLParts parts, int pageIndex, int pageSize, DbType dbType)
         {
             string pageSql;
-            if (dbType == DataType.SqlServer)
+            if (dbType == DbType.SqlServer)
             {
                 pageSql = $@"
 SELECT * FROM 
@@ -88,7 +88,7 @@ SELECT * FROM
 WHERE peta_rn > {((pageIndex - 1) * pageSize).ToString()} 
     AND peta_rn <= {(pageIndex * pageSize).ToString()} ";
             }
-            else if (dbType == DataType.MySql)
+            else if (dbType == DbType.MySql)
             {
                 var start = (pageIndex - 1) * pageSize;
                 pageSql = $@"SELECT * FROM ({parts.Sql}) temp_table LIMIT {start},{pageSize}";

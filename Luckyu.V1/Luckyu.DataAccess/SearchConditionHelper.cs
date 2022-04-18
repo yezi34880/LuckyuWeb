@@ -1,5 +1,5 @@
-﻿using FreeSql.Internal.Model;
-using Luckyu.Utility;
+﻿using Luckyu.Utility;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,41 +20,40 @@ namespace Luckyu.DataAccess
         /// <param name="field"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static DynamicFilterInfo GetCustomCondition(string field, string op, string data)
+        public static List<ConditionalModel> GetCustomCondition(string field, string op, string data)
         {
+            var filters = new List<ConditionalModel>();
             if (data.IsEmpty())
             {
-                return null;
+                return filters;
             }
-            var filter = new DynamicFilterInfo();
-            filter.Logic = DynamicFilterLogic.And;
-            filter.Field = field;
-            filter.Value = data;
+            var filter = new ConditionalModel();
             switch (op)
             {
                 case "cn":
-                    filter.Operator = DynamicFilterOperator.Contains;
+                    filter.ConditionalType = ConditionalType.Like;
                     break;
                 case "nc":
-                    filter.Operator = DynamicFilterOperator.NotContains;
+                    filter.ConditionalType = ConditionalType.NoLike;
                     break;
                 case "eq":
-                    filter.Operator = DynamicFilterOperator.Equal;
+                    filter.ConditionalType = ConditionalType.Equal;
                     break;
                 case "ne":
-                    filter.Operator = DynamicFilterOperator.NotEqual;
+                    filter.ConditionalType = ConditionalType.NoEqual;
                     break;
                 case "bw":
-                    filter.Operator = DynamicFilterOperator.StartsWith;
+                    filter.ConditionalType = ConditionalType.LikeLeft;
                     break;
                 case "ew":
-                    filter.Operator = DynamicFilterOperator.EndsWith;
+                    filter.ConditionalType = ConditionalType.LikeRight;
                     break;
                 default:
-                    filter.Operator = DynamicFilterOperator.Contains;
+                    filter.ConditionalType = ConditionalType.Like;
                     break;
             }
-            return filter;
+            filters.Add(filter);
+            return filters;
         }
 
 
@@ -64,26 +63,33 @@ namespace Luckyu.DataAccess
         /// <param name="field">字段名</param>
         /// <param name="data">值 格式为 2019-1-1 - 2020-1-1，必须是以【 - 】空格-空格作为分隔符</param>
         /// <param name="data">分隔符 默认分隔符为【 - 】空格-空格</param>
-        public static DynamicFilterInfo GetDateCondition(string field, string data, string split = " - ")
+        public static List<ConditionalModel> GetDateCondition(string field, string data, string split = " - ")
         {
-            var filter = new DynamicFilterInfo();
-            filter.Logic = DynamicFilterLogic.And;
-            filter.Filters = new List<DynamicFilterInfo>();
-            if (data.IsEmpty())
-            {
-                return null;
-            }
+            var filters = new List<ConditionalModel>();
             var timespans = data.SplitNoEmpty(split);
-            if (timespans.Length > 1)
+            if (timespans.Length > 0)
             {
-                filter.Filters.Add(new DynamicFilterInfo
+                filters.Add(new ConditionalModel
                 {
-                    Field = field,
-                    Value = timespans,
-                    Operator = DynamicFilterOperator.DateRange,
+                    FieldName = field,
+                    FieldValue = timespans[0],
+                    ConditionalType = ConditionalType.GreaterThanOrEqual,
+                    FieldValueConvertFunc = (val) => { return timespans[0].ToDate(); }
+                });
+                var nextDay = timespans[1].ToDate().AddDays(1).ToString("yyyy-MM-dd");
+                filters.Add(new ConditionalModel
+                {
+                    FieldName = field,
+                    FieldValue = nextDay,
+                    ConditionalType = ConditionalType.LessThan,
+                    FieldValueConvertFunc = (val) => { return nextDay; }
                 });
             }
-            return filter;
+            else
+            {
+                throw new Exception("日期段格式不正确");
+            }
+            return filters;
         }
 
         /// <summary>
@@ -93,40 +99,32 @@ namespace Luckyu.DataAccess
         /// <param name="data">值 格式为空 或 1 - 999，必须是以【 - 】空格-空格作为分隔符</param>
         /// <param name="split"></param>
         /// <returns></returns>
-        public static DynamicFilterInfo GetNumberCondition(string field, string data, string split = " - ")
+        public static List<ConditionalModel> GetNumberCondition(string field, string data, string split = " - ")
         {
-            if (data.IsEmpty())
+            var filters = new List<ConditionalModel>();
+            var timespans = data.SplitNoEmpty(split);
+            if (timespans.Length > 0)
             {
-                return null;
+                filters.Add(new ConditionalModel
+                {
+                    FieldName = field,
+                    FieldValue = timespans[0],
+                    ConditionalType = ConditionalType.GreaterThanOrEqual,
+                    FieldValueConvertFunc = (val) => { return timespans[0].ToDecimal(); }
+                });
+                filters.Add(new ConditionalModel
+                {
+                    FieldName = field,
+                    FieldValue = timespans[1],
+                    ConditionalType = ConditionalType.LessThanOrEqual,
+                    FieldValueConvertFunc = (val) => { return timespans[1].ToDecimal(); }
+                });
             }
-            var filter = new DynamicFilterInfo();
-            filter.Logic = DynamicFilterLogic.And;
-            filter.Filters = new List<DynamicFilterInfo>();
-            var nums = data.SplitNoEmpty(split);
-            if (nums.Length > 1)
+            else
             {
-                var num1 = nums[0].ToDecimalOrNull();
-                if (num1.HasValue)
-                {
-                    filter.Filters.Add(new DynamicFilterInfo
-                    {
-                        Field = field,
-                        Value = num1.Value,
-                        Operator = DynamicFilterOperator.GreaterThanOrEqual,
-                    });
-                }
-                var num2 = nums[1].ToDecimalOrNull();
-                if (num2.HasValue)
-                {
-                    filter.Filters.Add(new DynamicFilterInfo
-                    {
-                        Field = field,
-                        Value = num2.Value,
-                        Operator = DynamicFilterOperator.LessThan,
-                    });
-                }
+                throw new Exception("数字格式不正确");
             }
-            return filter;
+            return filters;
         }
 
         /// <summary>
@@ -135,18 +133,21 @@ namespace Luckyu.DataAccess
         /// <param name="field"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static DynamicFilterInfo GetStringLikeCondition(string field, string data)
+        public static List<ConditionalModel> GetStringLikeCondition(string field, string data)
         {
+            var filters = new List<ConditionalModel>();
             if (data.IsEmpty())
             {
-                return null;
+                return filters;
             }
-            var filter = new DynamicFilterInfo();
-            filter.Logic = DynamicFilterLogic.And;
-            filter.Field = field;
-            filter.Value = data;
-            filter.Operator = DynamicFilterOperator.Contains;
-            return filter;
+            var filter = new ConditionalModel()
+            {
+                FieldName = field,
+                FieldValue = $"%{data}%",
+                ConditionalType = ConditionalType.Like
+            };
+            filters.Add(filter);
+            return filters;
         }
 
         /// <summary>
@@ -155,44 +156,51 @@ namespace Luckyu.DataAccess
         /// <param name="field"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static DynamicFilterInfo GetStringEqualCondition(string field, string data, string notSearch = "")
+        public static List<ConditionalModel> GetStringEqualCondition(string field, string data, string notSearch = "")
         {
+            var filters = new List<ConditionalModel>();
             if (data.IsEmpty())
             {
-                return null;
+                return filters;
             }
             if (data == notSearch)
             {
-                return null;
+                return filters;
             }
-            var filter = new DynamicFilterInfo();
-            filter.Logic = DynamicFilterLogic.And;
-            filter.Field = field;
-            filter.Value = data;
-            filter.Operator = DynamicFilterOperator.Equal;
-            return filter;
+            var filter = new ConditionalModel()
+            {
+                FieldName = field,
+                FieldValue = $"{data}",
+                ConditionalType = ConditionalType.Equal
+            };
+            filters.Add(filter);
+            return filters;
         }
 
-        public static DynamicFilterInfo GetStringContainCondition(string field, string data, string split = ",")
+        public static List<ConditionalModel> GetStringContainCondition(string field, string data, string split = ",")
         {
+            var filters = new List<ConditionalModel>();
             if (data.IsEmpty())
             {
-                return null;
+                return filters;
             }
-            var datas = data.SplitNoEmpty(split);
-            var filter = new DynamicFilterInfo();
-            filter.Logic = DynamicFilterLogic.And;
-            filter.Field = field;
-            filter.Value = datas;
-            filter.Operator = DynamicFilterOperator.Any;
-            return filter;
+            var filter = new ConditionalModel()
+            {
+                FieldName = field,
+                FieldValue = data,
+                ConditionalType = ConditionalType.In,
+                FieldValueConvertFunc = (val) => { return data.SplitNoEmpty(split); }
+            };
+            filters.Add(filter);
+
+            return filters;
         }
         #endregion
 
         #region 分页构造条件
-        public static List<DynamicFilterInfo> ContructJQCondition(JqgridPageRequest jqPage)
+        public static List<IConditionalModel> ContructJQCondition(JqgridPageRequest jqPage)
         {
-            var filters = new List<DynamicFilterInfo>();
+            var filterss = new List<IConditionalModel>();
             if (jqPage.isSearch)
             {
                 foreach (var rule in jqPage.fitersObj.rules)
@@ -203,7 +211,7 @@ namespace Luckyu.DataAccess
                     }
                     if (rule.ltype.IsEmpty() || rule.ltype == "text")
                     {
-                        filters.Add(SearchConditionHelper.GetCustomCondition(rule.field, rule.op, rule.data));
+                        filterss.AddRange(SearchConditionHelper.GetCustomCondition(rule.field, rule.op, rule.data));
                     }
                     else
                     {
@@ -212,32 +220,32 @@ namespace Luckyu.DataAccess
                             case "user_id":
                             case "department_id":
                             case "company_id":
-                                filters.Add(SearchConditionHelper.GetStringContainCondition(rule.field, rule.data));
+                                filterss.AddRange(SearchConditionHelper.GetStringContainCondition(rule.field, rule.data));
                                 break;
                             case "datasource":
                             case "dataitem":
-                                filters.Add(SearchConditionHelper.GetStringEqualCondition(rule.field, rule.data, "-1"));
+                                filterss.AddRange(SearchConditionHelper.GetStringEqualCondition(rule.field, rule.data, "-1"));
                                 break;
                             case "datasources":
                             case "dataitems":
                                 {
                                     if (rule.data != "-1")
                                     {
-                                        filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
+                                        filterss.AddRange(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
                                     }
                                     break;
                                 }
                             case "daterange":
-                                filters.Add(SearchConditionHelper.GetDateCondition(rule.field, rule.data));
+                                filterss.AddRange(SearchConditionHelper.GetDateCondition(rule.field, rule.data));
                                 break;
                             case "numberrange":
-                                filters.Add(SearchConditionHelper.GetNumberCondition(rule.field, rule.data));
+                                filterss.AddRange(SearchConditionHelper.GetNumberCondition(rule.field, rule.data));
                                 break;
                         }
                     }
                 }
             }
-            return filters;
+            return filterss;
         }
 
         #endregion

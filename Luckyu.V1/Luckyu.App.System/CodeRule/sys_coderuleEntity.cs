@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using System;
@@ -9,7 +9,7 @@ namespace Luckyu.App.System
 	/// <summary>
 	///  sys_coderule   
 	/// </summary>
-	[Table(Name = "SYS_CODERULE")]
+	[SugarTable( "sys_coderule")]
 	public class sys_coderuleEntity 
 	{
 		#region 属性
@@ -17,7 +17,7 @@ namespace Luckyu.App.System
 		/// <summary>
 		///  rule_id   
 		/// </summary>
-		[Column(IsPrimary = true)]
+		[SugarColumn(IsPrimaryKey = true)]
 		public string rule_id { get; set; }
 
 		/// <summary>

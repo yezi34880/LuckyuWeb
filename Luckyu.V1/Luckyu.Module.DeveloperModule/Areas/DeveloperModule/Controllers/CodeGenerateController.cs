@@ -45,8 +45,14 @@ namespace Luckyu.Module.DeveloperModule.Controllers
         #region 生成
         public async Task<IActionResult> GenerateEntity(string dbtablename)
         {
-            var dbtable = databaseBLL.GetTableInfoByName(dbtablename);
-            var partialViewHtml = await this.RenderViewAsync("Templete_Entity", dbtable, true);
+            var table = databaseBLL.GetTableInfoByName(dbtablename);
+            var columns = databaseBLL.GetColumnInfoByTableName(dbtablename);
+            var Model = new
+            {
+                Table = table,
+                Columns = columns
+            };
+            var partialViewHtml = await this.RenderViewAsync("Templete_Entity", Model, true);
             return Success(partialViewHtml);
         }
         public async Task<IActionResult> GenerateService(string dbtablename)

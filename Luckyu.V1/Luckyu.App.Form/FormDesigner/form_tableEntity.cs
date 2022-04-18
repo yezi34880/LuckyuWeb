@@ -2,7 +2,7 @@
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using System;
 
 namespace Luckyu.App.Form
@@ -10,14 +10,14 @@ namespace Luckyu.App.Form
     /// <summary>
     ///  form_table 
     /// </summary>
-    [Table(Name = "FORM_TABLE")]
+    [SugarTable( "form_table")]
     public class form_tableEntity
     {
         #region 属性
         /// <summary>
         ///  form_id 
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string form_id { get; set; }
 
         /// <summary>

@@ -1,6 +1,8 @@
-﻿using FreeSql;
+﻿using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text;
 
 namespace Luckyu.Log
@@ -8,8 +10,7 @@ namespace Luckyu.Log
     public class LogDBConnection
     {
         private static string connectionString = "";
-        private static DataType dbType;
-        private static IFreeSql db;
+        private static DbType dbType;
 
         private static string GetConnectionString()
         {
@@ -21,22 +22,36 @@ namespace Luckyu.Log
             return connectionString;
         }
 
-        private static DataType GetDbType()
+        private static DbType GetDbType()
         {
-            dbType = DataType.MySql;
-            return DataType.MySql;
+            dbType = DbType.MySql;
+            return DbType.MySql;
         }
-        public static IFreeSql InitDatabase()
+
+        public static SqlSugarClient db
         {
-            if (db == null)
+            get
             {
-                db = new FreeSqlBuilder()
-                          .UseConnectionString(GetDbType(), GetConnectionString())
-                          .UseNameConvert(FreeSql.Internal.NameConvertType.ToLower)
-                          .UseAutoSyncStructure(false) //自动同步实体结构到数据库
-                          .Build(); //请务必定义成 Singleton 单例模式
+                var db = new SqlSugarClient(
+                   new ConnectionConfig()
+                   {
+                       ConnectionString = GetConnectionString(),
+                       DbType = GetDbType(),//设置数据库类型
+                       IsAutoCloseConnection = true,//自动释放数据务，如果存在事务，在事务结束后释放
+                       ConfigureExternalServices = new ConfigureExternalServices()
+                       {
+                           EntityService = (property, column) =>
+                           {
+                               var attributes = property.GetCustomAttributes(true);//get all attributes     
+                               if (attributes.Any(it => it is NotMappedAttribute))//根据自定义属性    
+                               {
+                                   column.IsIgnore = true;
+                               }
+                           }
+                       },
+                   });
+                return db;
             }
-            return db;
         }
 
         public static void SetConnectString(string conString)

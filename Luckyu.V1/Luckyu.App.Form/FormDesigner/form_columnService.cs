@@ -1,5 +1,5 @@
 ﻿
-using FreeSql.Internal.Model;
+
 using Luckyu.App.Organization;
 using Luckyu.App.System;
 using Luckyu.DataAccess;

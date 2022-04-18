@@ -13,17 +13,16 @@ namespace Luckyu.App.Workflow
         public void DeleteTaskAuth(string authId)
         {
             var db = BaseRepository().db;
-            db.Delete<wf_task_authorizeEntity>().Where(r => r.auth_id == authId).ExecuteAffrows();
+            db.Deleteable<wf_task_authorizeEntity>().Where(r => r.auth_id == authId).ExecuteCommand();
         }
 
         public List<WFTaskAuthModel> GetAddUserPage(JqgridPageRequest jqPage, string instanceId)
         {
             var db = BaseRepository().db;
-            var query = db.Select<wf_task_authorizeEntity, wf_taskEntity>()
-                .InnerJoin((ta, t) => ta.task_id == t.task_id)
+            var query = db.Queryable<wf_task_authorizeEntity, wf_taskEntity>((ta, t) => ta.task_id == t.task_id)
                 .Where((ta, t) => t.instance_id == instanceId && t.is_done == 0 && ta.is_add == 1);
 
-            var list = query.ToList<WFTaskAuthModel>();
+            var list = query.Select<WFTaskAuthModel>().ToList();
             return list;
         }
 

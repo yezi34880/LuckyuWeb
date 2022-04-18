@@ -1,4 +1,4 @@
-﻿using FreeSql.Internal.Model;
+﻿
 using Luckyu.DataAccess;
 using Luckyu.Utility;
 using System.Linq;
@@ -25,7 +25,6 @@ namespace Luckyu.App.Organization
                     expCondition = expCondition.LinqAnd(r => r.department_id == organizationId);
                 }
             }
-            var dicCondition = new Dictionary<string, Func<string, string, DynamicFilterInfo>>();
             var page = BaseRepository().GetPage(jqpage, expCondition);
             return page;
         }
@@ -64,7 +63,7 @@ namespace Luckyu.App.Organization
                             auth.user_id = entity.user_id;
                             auth.relationtype = (int)UserRelationEnum.Role;
                             auth.object_id = role.role_id;
-                            db.Insert(auth).ExecuteAffrows();
+                            db.Insertable(auth).ExecuteCommand();
                         }
                     }
 
@@ -78,7 +77,7 @@ namespace Luckyu.App.Organization
                             auth.user_id = entity.user_id;
                             auth.relationtype = (int)UserRelationEnum.Post;
                             auth.object_id = post.post_id;
-                            db.Insert(auth).ExecuteAffrows();
+                            db.Insertable(auth).ExecuteCommand();
                         }
                     }
 

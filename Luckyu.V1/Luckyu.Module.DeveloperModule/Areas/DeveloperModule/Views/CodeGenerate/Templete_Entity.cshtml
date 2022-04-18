@@ -1,32 +1,30 @@
-﻿@using Luckyu.App.OA;
-@using FreeSql.DatabaseModel;
-@model DbTableInfo;
+﻿@using SqlSugar;
 
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using System;
 
 namespace Luckyu.App.OA
 {
     /// <summary>
-    ///  @Model.Name @Html.Raw(Model.Comment)
+    ///  @Model.Table.Name @Html.Raw(Model.Table.Description)
     /// </summary>
-    [Table(Name = "@Model.Name.ToUpper()")]
-    public class @(Model.Name)Entity : ExtensionEntityBase
+    [SugarTable( "@Model.Table.Name.ToLower()")]
+    public class @(Model.Table.Name)Entity : ExtensionEntityBase
     {
         #region 属性
-        @foreach (var col in Model.Columns)
+        @foreach (var col in Model.Columns as List<DbColumnInfo>)
         {
         @:/// <summary>
-        @:///  @col.Name @Html.Raw(col.Coment)
+        @:///  @col.DbColumnName @Html.Raw(col.ColumnDescription)
         @:/// </summary>
-        if (col.IsPrimary)
+        if (col.IsPrimarykey)
         {
-        @:[Column(IsPrimary = true)]
+        @:[SugarColumn(IsPrimaryKey = true)]
         }
-        @:public @col.CsType @col.Name { get; set; }
+        @:public @col.DataType @col.DbColumnName { get; set; }
         @:
         }
         #endregion

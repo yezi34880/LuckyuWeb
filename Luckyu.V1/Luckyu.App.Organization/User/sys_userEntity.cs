@@ -1,9 +1,7 @@
-
+using SqlSugar;
 using Luckyu.Log;
-using FreeSql;
 using System;
 using System.Collections.Generic;
-using FreeSql.DataAnnotations;
 using Luckyu.Utility;
 
 namespace Luckyu.App.Organization
@@ -11,7 +9,7 @@ namespace Luckyu.App.Organization
     /// <summary>
     ///  sys_user   
     /// </summary>
-    [Table(Name = "SYS_USER")]
+    [SugarTable( "sys_user")]
     public class sys_userEntity
     {
         #region 属性
@@ -19,7 +17,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  user_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string user_id { get; set; }
 
         /// <summary>
@@ -165,16 +163,16 @@ namespace Luckyu.App.Organization
         #endregion
 
         #region 扩展
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public string np_roles { get; set; }
 
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public string np_posts { get; set; }
 
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public string np_groups { get; set; }
 
-        [Column(IsIgnore = true)]
+        [SugarColumn(IsIgnore = true)]
         public string np_depts { get; set; }
         #endregion
 

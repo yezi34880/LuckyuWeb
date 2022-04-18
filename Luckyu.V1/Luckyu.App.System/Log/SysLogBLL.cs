@@ -1,5 +1,4 @@
-﻿using FreeSql.Internal.Model;
-using Luckyu.DataAccess;
+﻿using Luckyu.DataAccess;
 using Luckyu.Log;
 using Luckyu.Utility;
 using System;
@@ -17,48 +16,19 @@ namespace Luckyu.App.System
 
         public JqgridPageResponse<sys_logEntity> Page(JqgridPageRequest jqPage, int logtype)
         {
-            var db = LogDBConnection.InitDatabase();
-            Expression<Func<sys_logEntity, bool>> exp = r => r.is_enable == 1 && r.log_type == logtype;
-            var query = db.Select<sys_logEntity>().Where(exp);
-            var filters = new List<DynamicFilterInfo>();
-            var date = DateTime.Today;
-            if (jqPage.isSearch)
-            {
-                foreach (var rule in jqPage.fitersObj.rules)
-                {
-                    switch (rule.field)
-                    {
-                        case "log_time":
-                            date = rule.data.ToDate();
-                            break;
-                        default:
-                            filters.Add(SearchConditionHelper.GetStringLikeCondition(rule.field, rule.data));
-                            break;
-                    }
-                }
-            }
-            if (!filters.IsEmpty())
-            {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
-            }
-            if (!string.IsNullOrEmpty(jqPage.sidx))
-            {
-                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
-            }
-            long total;
-            var list = logService.GetPage(jqPage.page, jqPage.rows, query, date, out total);
-            var page = new JqgridPageResponse<sys_logEntity>
-            {
-                count = jqPage.rows,
-                page = jqPage.page,
-                records = (int)total,
-                rows = list,
-            };
-            return page;
-
+            //var db = LogDBConnection.db;
+            //Expression<Func<sys_logEntity, bool>> exp = r => r.is_enable == 1 && r.log_type == logtype;
+            //long total;
+            //var list = logService.GetPage(jqPage.page, jqPage.rows, exp, date, ref total);
+            //var page = new JqgridPageResponse<sys_logEntity>
+            //{
+            //    count = jqPage.rows,
+            //    page = jqPage.page,
+            //    records = (int)total,
+            //    rows = list,
+            //};
+            //return page;
+            return null;
         }
 
     }

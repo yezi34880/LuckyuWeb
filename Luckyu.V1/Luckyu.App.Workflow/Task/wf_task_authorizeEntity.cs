@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
@@ -8,7 +8,7 @@ namespace Luckyu.App.Workflow
     /// <summary>
     ///  wf_task_authorize   
     /// </summary>
-    [Table(Name = "WF_TASK_AUTHORIZE")]
+    [SugarTable( "wf_task_authorize")]
     public class wf_task_authorizeEntity
     {
         #region 属性
@@ -16,7 +16,7 @@ namespace Luckyu.App.Workflow
         /// <summary>
         ///  auth_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string auth_id { get; set; }
 
         /// <summary>

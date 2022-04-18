@@ -1,5 +1,4 @@
-﻿using FreeSql.Internal.Model;
-using Luckyu.DataAccess;
+﻿using Luckyu.DataAccess;
 using Luckyu.Utility;
 using System;
 using System.Collections.Generic;

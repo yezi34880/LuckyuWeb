@@ -1,6 +1,6 @@
-﻿using FreeSql;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -13,28 +13,23 @@ namespace Luckyu.Log
         public void Insert(sys_logEntity entity)
         {
             entity.Create();
-            var db = LogDBConnection.InitDatabase();
-
-            var entityInfo = db.CodeFirst.GetTableByEntity(typeof(sys_logEntity));
-            var newTableName = entityInfo.DbName + tableSuffix;
-            if (!db.DbFirst.ExistsTable(newTableName))
-            {
-                db.CodeFirst.SyncStructure(typeof(sys_logEntity), newTableName);
-            }
-            db.Insert(entity).AsTable(tablename => tablename + tableSuffix).ExecuteAffrows();
+            var db = LogDBConnection.db;
+            db.Insertable(entity).SplitTable().ExecuteCommand();
         }
 
-        public List<sys_logEntity> GetPage(int pageIndex, int paegSize, ISelect<sys_logEntity> query, DateTime date, out long total)
+        public List<sys_logEntity> GetPage(int pageIndex, int paegSize, Expression<Func<sys_logEntity, bool>> condition, DateTime date, ref int total)
         {
-            var list = query.AsTable((_, tablename) => $"{tablename}_{date.ToString("yyyyMM")}").Count(out total).Page(pageIndex, paegSize).ToList();
+            var db = LogDBConnection.db;
+            var name = db.SplitHelper<sys_logEntity>().GetTableName(date);//根据时间获取表名
+            var list = db.Queryable<sys_logEntity>().Where(condition).SplitTable(r => r.Where(t => t.TableName == name)).ToPageList(pageIndex, paegSize, ref total);
             return list;
         }
 
         public sys_logEntity GetEntity(Expression<Func<sys_logEntity, bool>> condition, DateTime date)
         {
-            var db = LogDBConnection.InitDatabase();
-            var query = db.Select<sys_logEntity>().Where(condition);
-            var entity = query.AsTable((_, tablename) => $"{tablename}_{date.ToString("yyyyMM")}").First();
+            var db = LogDBConnection.db;
+            var name = db.SplitHelper<sys_logEntity>().GetTableName(date);//根据时间获取表名
+            var entity = db.Queryable<sys_logEntity>().Where(condition).SplitTable(r => r.Where(t => t.TableName == name)).First();
             return entity;
         }
 

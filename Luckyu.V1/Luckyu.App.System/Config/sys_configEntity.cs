@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using System;
@@ -9,7 +9,7 @@ namespace Luckyu.App.System
     /// <summary>
     ///  sys_config   
     /// </summary>
-    [Table(Name = "SYS_CONFIG")]
+    [SugarTable( "sys_config")]
     public class sys_configEntity
     {
         #region 属性
@@ -17,7 +17,7 @@ namespace Luckyu.App.System
         /// <summary>
         ///  config_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string config_id { get; set; }
 
         /// <summary>

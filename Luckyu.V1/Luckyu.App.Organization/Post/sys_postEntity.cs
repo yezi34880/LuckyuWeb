@@ -1,4 +1,4 @@
-using FreeSql.DataAnnotations;
+using SqlSugar;
 using Luckyu.Log;
 using Luckyu.Utility;
 using System;
@@ -9,7 +9,7 @@ namespace Luckyu.App.Organization
     /// <summary>
     ///  sys_post   
     /// </summary>
-    [Table(Name = "SYS_POST")]
+    [SugarTable( "sys_post")]
     public class sys_postEntity
     {
         #region 属性
@@ -17,7 +17,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  post_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string post_id { get; set; }
 
         /// <summary>

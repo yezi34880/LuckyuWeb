@@ -1,6 +1,7 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.DataAccess;
 using Luckyu.Utility;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -23,7 +24,13 @@ namespace Luckyu.App.Workflow
             var roledepts = loginInfo.managedepartments.Where(r => r.relationtype == 1).Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
             var postdepts = loginInfo.managedepartments.Where(r => r.relationtype == 2).Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
 
-            var query = db.Select<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
+            //var expPost = Expressionable.Create<wf_task_authorizeEntity>();
+            //foreach (var item in postdepts)
+            //{
+            //    expPost.Or(it => it.post_id == item.Item1 && it.manage_dept_id == item.Item2);
+            //}
+
+            var query = db.Queryable<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
                 .Where((fi, t, ta) => fi.is_finished == 0 && t.is_done == 0 && (
                 ta.user_id == loginInfo.user_id  // 用户
                 || loginInfo.group_ids.Contains(ta.group_id)   // 小组
@@ -45,34 +52,21 @@ namespace Luckyu.App.Workflow
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
+                query = query.Where(filters);
             }
 
-            if (!jqPage.sidx.IsEmpty())
+            if (jqPage.sidx.IsEmpty())
             {
-                switch (jqPage.sidx)
-                {
-                    case "createtime":
-                        jqPage.sidx = "a.createtime";
-                        break;
-                }
-                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
-            }
-            else
-            {
-                jqPage.sidx = "a.createtime";
+                jqPage.sidx = "fi.createtime";
                 jqPage.sord = "DESC";
             }
-
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
+            int total = 0;
+            var list = query.Select<WFTaskModel>().ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<WFTaskModel>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
@@ -85,16 +79,16 @@ namespace Luckyu.App.Workflow
         {
             var db = BaseRepository().db;
             var now = DateTime.Now;
-            var delegates = db.Select<wf_delegateEntity>().Where(r => r.is_delete == 0 && r.is_enable == 1 && now >= r.starttime && now < r.endtime && r.to_user_id == loginInfo.user_id).ToList();
+            var delegates = db.Queryable<wf_delegateEntity>().Where(r => r.is_delete == 0 && r.is_enable == 1 && now >= r.starttime && now < r.endtime && r.to_user_id == loginInfo.user_id).ToList();
 
             var delegate_userIds = delegates.Select(r => r.user_id).ToList();
-            var roledepts = db.Select<sys_departmentmanageEntity>().Where(r => delegate_userIds.Contains(r.user_id) && r.relationtype == 1).ToList().Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
-            var postdepts = db.Select<sys_departmentmanageEntity>().Where(r => delegate_userIds.Contains(r.user_id) && r.relationtype == 2).ToList().Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
+            var roledepts = db.Queryable<sys_departmentmanageEntity>().Where(r => delegate_userIds.Contains(r.user_id) && r.relationtype == 1).ToList().Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
+            var postdepts = db.Queryable<sys_departmentmanageEntity>().Where(r => delegate_userIds.Contains(r.user_id) && r.relationtype == 2).ToList().Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
 
             // 分流程的委托好难写 要考虑许多
             //  比如 两个流程 分别分给两个人，这两个人对应的 公司 部门 角色 岗位 组 都要和 流程关联起来，好好理一理
             var delegate_flow_user = delegates.Select(r => new ValueTuple<string, string>(r.flowcode.Trim(','), r.user_id)).ToList();
-            var grouprelations = db.Select<sys_userrelationEntity>().Where(r => r.relationtype == 3 && delegate_userIds.Contains(r.user_id)).ToList();
+            var grouprelations = db.Queryable<sys_userrelationEntity>().Where(r => r.relationtype == 3 && delegate_userIds.Contains(r.user_id)).ToList();
             var delegate_flow_group = grouprelations.Select(r =>
             {
                 var value = new ValueTuple<string, string>();
@@ -104,7 +98,7 @@ namespace Luckyu.App.Workflow
                 value.Item2 = r.object_id;
                 return value;
             }).ToList();
-            var rolerelations = db.Select<sys_userrelationEntity>().Where(r => r.relationtype == 1 && delegate_userIds.Contains(r.user_id)).ToList();
+            var rolerelations = db.Queryable<sys_userrelationEntity>().Where(r => r.relationtype == 1 && delegate_userIds.Contains(r.user_id)).ToList();
             var delegate_flow_role = rolerelations.Select(r =>
             {
                 var value = new ValueTuple<string, string>();
@@ -114,7 +108,7 @@ namespace Luckyu.App.Workflow
                 value.Item2 = r.object_id;
                 return value;
             }).ToList();
-            var postrelations = db.Select<sys_userrelationEntity>().Where(r => r.relationtype == 2 && delegate_userIds.Contains(r.user_id)).ToList();
+            var postrelations = db.Queryable<sys_userrelationEntity>().Where(r => r.relationtype == 2 && delegate_userIds.Contains(r.user_id)).ToList();
             var delegate_flow_post = postrelations.Select(r =>
             {
                 var value = new ValueTuple<string, string>();
@@ -125,7 +119,7 @@ namespace Luckyu.App.Workflow
                 return value;
             }).ToList();
 
-            var users = db.Select<sys_userEntity>().Where(r => delegate_userIds.Contains(r.user_id)).ToList();
+            var users = db.Queryable<sys_userEntity>().Where(r => delegate_userIds.Contains(r.user_id)).ToList();
             var delegate_flow_dept = delegates.Select(r =>
             {
                 var value = new ValueTuple<string, string>();
@@ -143,7 +137,7 @@ namespace Luckyu.App.Workflow
 
 
 
-            var query = db.Select<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>().InnerJoin((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
+            var query = db.Queryable<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity>((fi, t, ta) => t.task_id == ta.task_id && t.instance_id == fi.instance_id)
                 .Where((fi, t, ta) => fi.is_finished == 0 && t.is_done == 0 && (
                 delegate_flow_user.Contains(fi.flowcode, ta.user_id)
 
@@ -166,34 +160,22 @@ namespace Luckyu.App.Workflow
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
-                foreach (var filter in filters)
-                {
-                    query = query.WhereDynamicFilter(filter);
-                }
+                query = query.Where(filters);
             }
 
-            if (!jqPage.sidx.IsEmpty())
+            if (jqPage.sidx.IsEmpty())
             {
-                switch (jqPage.sidx)
-                {
-                    case "createtime":
-                        jqPage.sidx = "a.createtime";
-                        break;
-                }
-                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
-            }
-            else
-            {
-                jqPage.sidx = "a.createtime";
+                jqPage.sidx = "fi.createtime";
                 jqPage.sord = "DESC";
             }
 
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
+            int total = 0;
+            var list = query.Select<WFTaskModel>().ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<WFTaskModel>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
@@ -243,7 +225,7 @@ namespace Luckyu.App.Workflow
                         if (!sql.IsEmpty())
                         {
                             var tuple = BuildSql(sql, instance.process_id, loginInfo);
-                            trans.db.Ado.ExecuteNonQuery(tuple.Item1, tuple.Item2);
+                            trans.db.Ado.ExecuteCommand(tuple.Item1, tuple.Item2);
                         }
                     }
                 }
@@ -264,7 +246,7 @@ namespace Luckyu.App.Workflow
                 if (instance.is_finished == 1)
                 {
                     trans.UpdateOnlyColumns(instance, r => new { r.is_finished, r.finishtime, r.finish_userid, r.finish_username });
-                    trans.db.Update<wf_taskEntity>().Where(r => r.instance_id == instance.instance_id).Set(r => r.is_done == 1).ExecuteAffrows();
+                    trans.db.Updateable<wf_taskEntity>().Where(r => r.instance_id == instance.instance_id).SetColumns(r => r.is_done == 1).ExecuteCommand();
                 }
                 else
                 {
@@ -296,7 +278,7 @@ namespace Luckyu.App.Workflow
                         if (!sql.IsEmpty())
                         {
                             var tuple = BuildSql(sql, instance.process_id, loginInfo);
-                            trans.db.Ado.ExecuteNonQuery(tuple.Item1, tuple.Item2);
+                            trans.db.Ado.ExecuteCommand(tuple.Item1, tuple.Item2);
                         }
                     }
                 }
@@ -315,7 +297,7 @@ namespace Luckyu.App.Workflow
             var trans = BaseRepository().BeginTrans();
             try
             {
-                trans.db.Update<wf_taskEntity>(currentTask).ExecuteAffrows();
+                trans.db.Updateable<wf_taskEntity>(currentTask).ExecuteCommand();
                 foreach (var task in listTask)
                 {
                     trans.Insert(task);
@@ -384,12 +366,12 @@ namespace Luckyu.App.Workflow
             var trans = BaseRepository().BeginTrans();
             try
             {
-                var query = trans.db.Update<wf_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 0);
+                var query = trans.db.Updateable<wf_instanceEntity>().Where(r => r.instance_id == instanceId).SetColumns(r => r.is_finished == 0);
                 if (!schemejson.IsEmpty())
                 {
-                    query = query.Set(r => r.schemejson == schemejson);
+                    query = query.SetColumns(r => r.schemejson == schemejson);
                 }
-                query.ExecuteAffrows();
+                query.ExecuteCommand();
                 foreach (var task in oldTasks)
                 {
                     trans.Delete<wf_task_authorizeEntity>(r => r.task_id == task.task_id);
@@ -434,7 +416,7 @@ namespace Luckyu.App.Workflow
                         if (!sql.IsEmpty())
                         {
                             var tuple = BuildSql(sql, instance.process_id, loginInfo);
-                            trans.db.Ado.ExecuteNonQuery(tuple.Item1, tuple.Item2);
+                            trans.db.Ado.ExecuteCommand(tuple.Item1, tuple.Item2);
                         }
                     }
                 }
@@ -457,9 +439,9 @@ namespace Luckyu.App.Workflow
             var trans = BaseRepository().BeginTrans();
             try
             {
-                trans.db.Update<wf_instanceEntity>().Where(r => r.instance_id == instanceId).Set(r => r.is_finished == 2).ExecuteAffrows();
-                trans.db.Delete<wf_taskEntity>().Where(r => r.is_done == 0 && r.instance_id == instanceId).ExecuteAffrows();
-                trans.db.Insert(history).ExecuteAffrows();
+                trans.db.Updateable<wf_instanceEntity>().Where(r => r.instance_id == instanceId).SetColumns(r => r.is_finished == 2).ExecuteCommand();
+                trans.db.Deleteable<wf_taskEntity>().Where(r => r.is_done == 0 && r.instance_id == instanceId).ExecuteCommand();
+                trans.db.Insertable(history).ExecuteCommand();
                 trans.Commit();
             }
             catch (Exception ex)
@@ -474,8 +456,8 @@ namespace Luckyu.App.Workflow
             var trans = BaseRepository().BeginTrans();
             try
             {
-                trans.db.Delete<wf_taskEntity>().Where(r => r.task_id == task.task_id).ExecuteAffrows();
-                trans.db.Delete<wf_task_authorizeEntity>().Where(r => r.task_id == task.task_id).ExecuteAffrows();
+                trans.db.Deleteable<wf_taskEntity>().Where(r => r.task_id == task.task_id).ExecuteCommand();
+                trans.db.Deleteable<wf_task_authorizeEntity>().Where(r => r.task_id == task.task_id).ExecuteCommand();
                 trans.Commit();
             }
             catch (Exception ex)

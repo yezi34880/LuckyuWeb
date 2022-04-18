@@ -1,4 +1,4 @@
-﻿using FreeSql.DataAnnotations;
+﻿using SqlSugar;
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using System;
@@ -8,14 +8,14 @@ namespace Luckyu.App.Workflow
     /// <summary>
     ///  wf_delegate   
     /// </summary>
-    [Table(Name ="WF_DELEGATE")]
+    [SugarTable("wf_delegate")]
     public class wf_delegateEntity
     {
         #region 属性
         /// <summary>
         ///  delegate_id   
         /// </summary>
-        [Column(IsPrimary = true)]
+        [SugarColumn(IsPrimaryKey = true)]
         public string delegate_id { get; set; }
 
         /// <summary>

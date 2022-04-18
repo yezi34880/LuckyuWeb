@@ -1320,7 +1320,7 @@ namespace Luckyu.App.Workflow
 
                         var db = new DataAccess.Repository().db;
                         var sql = nodeNext.sqlcondition.Replace("@processId", $"{DataAccess.BaseConnection.ParaPre}processId");
-                        var resultCondition = db.Ado.ExecuteNonQuery(sql, new { processId = instance.process_id });
+                        var resultCondition = db.Ado.ExecuteCommand(sql, new { processId = instance.process_id });
                         if (resultCondition > 0)
                         {
                             historyCondition.appremark = "判断结果为【是】";

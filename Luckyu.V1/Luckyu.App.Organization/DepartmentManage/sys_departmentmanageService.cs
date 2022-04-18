@@ -1,4 +1,4 @@
-﻿using FreeSql.Internal.Model;
+﻿
 using Luckyu.DataAccess;
 using Luckyu.Utility;
 using System;
@@ -14,13 +14,13 @@ namespace Luckyu.App.Organization
             var trans = BaseRepository().BeginTrans();
             try
             {
-                trans.db.Delete<sys_departmentmanageEntity>().Where(r => r.user_id == userId).ExecuteAffrows();
+                trans.db.Deleteable<sys_departmentmanageEntity>().Where(r => r.user_id == userId).ExecuteCommand();
                 foreach (var item in list)
                 {
                     item.Create(loginInfo);
                     item.user_id = userId;
                 }
-                trans.db.Insert(list).ExecuteAffrows();
+                trans.db.Insertable(list).ExecuteCommand();
                 trans.Commit();
             }
             catch (Exception ex)

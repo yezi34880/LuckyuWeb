@@ -19,8 +19,7 @@ namespace Luckyu.App.Workflow
         public JqgridPageResponse<WFTaskModel> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
             var db = BaseRepository().db;
-            var query = db.Select<wf_instanceEntity, wf_taskhistoryEntity>()
-                .InnerJoin((fi, th) => th.instance_id == fi.instance_id)
+            var query = db.Queryable<wf_instanceEntity, wf_taskhistoryEntity>((fi, th) => th.instance_id == fi.instance_id)
                 .Where((fi, th) => th.app_userid == loginInfo.user_id);
 
             if (!jqPage.sidx.IsEmpty())
@@ -28,7 +27,7 @@ namespace Luckyu.App.Workflow
                 switch (jqPage.sidx)
                 {
                     case "createtime":
-                        jqPage.sidx = "a.createtime";
+                        jqPage.sidx = "fi.createtime";
                         break;
                 }
                 query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
@@ -38,12 +37,13 @@ namespace Luckyu.App.Workflow
                 jqPage.sidx = "b.createtime";
                 jqPage.sord = "DESC";
             }
-            var list = query.Count(out var total).Page(jqPage.page, jqPage.rows).ToList<WFTaskModel>();
+            var total = 0;
+            var list = query.Select<WFTaskModel>().ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<WFTaskModel>
             {
                 count = jqPage.rows,
                 page = jqPage.page,
-                records = (int)total,
+                records = total,
                 rows = list,
             };
             return page;
@@ -52,7 +52,7 @@ namespace Luckyu.App.Workflow
         public void DeleteHistory(string historyId)
         {
             var db = BaseRepository().db;
-            db.Delete<wf_taskhistoryEntity>().Where(r => r.history_id == historyId).ExecuteAffrows();
+            db.Deleteable<wf_taskhistoryEntity>().Where(r => r.history_id == historyId).ExecuteCommand();
         }
 
     }
