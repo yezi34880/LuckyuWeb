@@ -49,7 +49,8 @@ namespace Luckyu.Module.FormModule.Controllers
 
         public IActionResult SaveForm(string keyValue, string strEntity)
         {
-            var res = formBLL.SaveForm(keyValue, strEntity);
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var res = formBLL.SaveForm(keyValue, strEntity, loginInfo);
             return Json(res);
         }
 

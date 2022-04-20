@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Luckyu.Utility
@@ -38,32 +39,11 @@ namespace Luckyu.Utility
             return list == null || list.Count < 1;
         }
 
-        /// <summary>
-        /// 是否为空
-        /// </summary>
-        /// <param name="value">值</param>
-        public static bool IsEmpty(this Guid? value)
-        {
-            if (value == null)
-                return true;
-            return IsEmpty(value.Value);
-        }
-
-        /// <summary>
-        /// 是否为空
-        /// </summary>
-        /// <param name="value">值</param>
-        public static bool IsEmpty(this Guid value)
-        {
-            if (value == Guid.Empty)
-                return true;
-            return false;
-        }
-
         public static bool IsEmpty(this DateTime value)
         {
             return value <= LuckyuHelper.MinDate;
         }
+
         public static bool IsEmpty(this DateTime? value)
         {
             return !value.HasValue || value.Value <= LuckyuHelper.MinDate;
@@ -77,7 +57,6 @@ namespace Luckyu.Utility
         {
             return value == null || string.IsNullOrWhiteSpace(value.ToString());
         }
-
 
     }
 }

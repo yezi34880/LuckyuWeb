@@ -202,7 +202,7 @@ namespace Luckyu.App.Organization
                 if (loginInfo != null)
                 {
                     log.user_id = loginInfo.user_id;
-                    log.user_name = loginInfo.realname;
+                    log.user_name = $"{loginInfo.loginname}-{ loginInfo.realname}";
                 }
                 log.log_content = LogHelper.ErrorFormat(ex, log);
                 logger.Error(ex);

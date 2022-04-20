@@ -7,8 +7,8 @@ namespace Luckyu.Log
     /// <summary>
     ///  sys_log   
     /// </summary>
-
     [SplitTable(SplitType.Month)]//按年分表 （自带分表支持 年、季、月、周、日）
+    //[SugarTable("sys_log_{year}{month}{day}")]//生成表名格式 3个变量必须要有
     [SugarTable("sys_log_{year}{month}")]//生成表名格式 3个变量必须要有
     public class sys_logEntity
     {
@@ -17,7 +17,7 @@ namespace Luckyu.Log
         /// <summary>
         ///  log_id   
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true)]
+        [SugarColumn(IsPrimaryKey = true, Length = 50)]
         public string log_id { get; set; }
 
         /// <summary>
@@ -28,18 +28,20 @@ namespace Luckyu.Log
         /// <summary>
         ///  log_type  LogType.Operation枚举  1-登录日志2-操作日志3-异常日志4-调试信息 5-SQL
         /// </summary>
+        [SugarColumn(IndexGroupNameList = new string[] { "index1" })]
         public int log_type { get; set; }
 
         /// <summary>
         ///  log_time   操作时间
         /// </summary>
         [SplitField]
+        [SugarColumn(IndexGroupNameList = new string[] { "index1" })]
         public DateTime log_time { get; set; }
 
         /// <summary>
         ///  process_id  业务主键
         /// </summary>
-        [SugarColumn(Length = 50)]
+        [SugarColumn(Length = 50, IndexGroupNameList = new string[] { "index1" })]
         public string process_id { get; set; } = "";
 
         /// <summary>
@@ -87,7 +89,7 @@ namespace Luckyu.Log
         /// <summary>
         ///  user_id   
         /// </summary>
-        [SugarColumn(Length = 50)]
+        [SugarColumn(Length = 50, IndexGroupNameList = new string[] { "index1" })]
         public string user_id { get; set; } = "";
 
         /// <summary>

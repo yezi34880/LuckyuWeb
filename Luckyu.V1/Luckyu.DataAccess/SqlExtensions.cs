@@ -16,7 +16,7 @@ namespace Luckyu.DataAccess
         /// <summary>
         /// 扩展 In 多列的方法
         /// </summary>
-        public static bool Contains(this ICollection<(string, string)> that, string exp1, string exp2)
+        public static bool Contains<T1, T2>(this ICollection<(T1, T2)> that, string exp1, string exp2)
         {
             throw new NotSupportedException("Can only be used in expressions");
         }

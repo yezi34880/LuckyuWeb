@@ -31,13 +31,13 @@ namespace Luckyu.App.Form
         #endregion
 
         #region Set
-        public ResponseResult<form_tableEntity> SaveForm(string keyValue, string strEntity)
+        public ResponseResult<form_tableEntity> SaveForm(string keyValue, string strEntity, UserModel loginInfo)
         {
             var formEntity = strEntity.ToObject<form_tableEntity>();
+            var list = formEntity.formjson.ToObject<List<form_columnEntity>>();
             if (keyValue.IsEmpty())
             {
-
-
+                tableService.InsertTable(formEntity, list, loginInfo);
             }
             else
             {

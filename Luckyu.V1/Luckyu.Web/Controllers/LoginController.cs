@@ -73,7 +73,7 @@ namespace Luckyu.Web.Controllers
                 log.log_content += $"  登录成功 登录用户为 { res.data.realname}-{ res.data.loginname}?";
                 log.op_type = "成功";
                 log.user_id = res.data.user_id;
-                log.user_name = res.data.realname;
+                log.user_name = $"{res.data.loginname}-{ res.data.realname}";
                 LogBLL.WriteLog(log);
                 return Success("/Home/Index");
             }

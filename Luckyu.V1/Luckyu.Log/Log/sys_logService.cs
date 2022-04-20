@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqlSugar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,7 +22,7 @@ namespace Luckyu.Log
         {
             var db = LogDBConnection.db;
             var name = db.SplitHelper<sys_logEntity>().GetTableName(date);//根据时间获取表名
-            var list = db.Queryable<sys_logEntity>().Where(condition).SplitTable(r => r.Where(t => t.TableName == name)).ToPageList(pageIndex, paegSize, ref total);
+            var list = db.Queryable<sys_logEntity>().Where(condition).AS(name).ToPageList(pageIndex, paegSize, ref total);
             return list;
         }
 
@@ -29,7 +30,7 @@ namespace Luckyu.Log
         {
             var db = LogDBConnection.db;
             var name = db.SplitHelper<sys_logEntity>().GetTableName(date);//根据时间获取表名
-            var entity = db.Queryable<sys_logEntity>().Where(condition).SplitTable(r => r.Where(t => t.TableName == name)).First();
+            var entity = db.Queryable<sys_logEntity>().Where(condition).AS(name).First();
             return entity;
         }
 

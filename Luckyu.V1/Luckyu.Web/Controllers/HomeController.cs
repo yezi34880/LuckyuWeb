@@ -52,7 +52,7 @@ namespace Luckyu.Web.Controllers
                 module = moduleUrl,
                 log_content = moduleName + " " + moduleUrl,
                 user_id = loginInfo.user_id,
-                user_name = loginInfo.realname
+                user_name = $"{loginInfo.loginname}-{ loginInfo.realname}"
             };
             var info = DeviceDetector.GetInfoFromUserAgent(HttpContext.Request.Headers["User-Agent"].ToString());
             if (info != null)

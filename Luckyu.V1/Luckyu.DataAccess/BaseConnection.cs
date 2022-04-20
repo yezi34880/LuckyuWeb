@@ -8,6 +8,8 @@ using SqlSugar;
 using System.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace Luckyu.DataAccess
 {
@@ -50,12 +52,9 @@ namespace Luckyu.DataAccess
                     MethodValue = (expInfo, dbType, expContext) =>
                     {
                         var str = new StringBuilder();
-                        //var listType = expInfo.Args[0].MemberValue.GetType();
-                        //var tupleType = listType.GetGenericArguments()[0];
-                        //var itemType1 = tupleType.GetGenericArguments()[0];
-                        //var itemType2 = tupleType.GetGenericArguments()[1];
-                        var list = expInfo.Args[0].MemberValue as ICollection<ValueTuple<string, string>>;
-                        if (list.IsEmpty())
+                        //var list = expInfo.Args[0].MemberValue as ICollection<ValueTuple<string, string>>;
+                        var list = expInfo.Args[0].MemberValue as ICollection;
+                        if (list == null || list.Count < 1)
                         {
                             str.Append(" 1=0 ");
                             return str.ToString();
@@ -67,11 +66,28 @@ namespace Luckyu.DataAccess
                             {
                                 str.Append(" OR ");
                             }
-                            str.Append($"( {item.Item1}={expInfo.Args[1].MemberName}")
-                            .Append(" AND ")
-                            .Append($"{item.Item2}={expInfo.Args[2].MemberName} )");
+                            ITuple indexableTuple = (ITuple)item;
+                            for (var itemIdx = 0; itemIdx < indexableTuple.Length; itemIdx++)
+                            {
+                                if (itemIdx == 0)
+                                {
+                                    str.Append(" ( ");
+                                }
+                                str.Append($" {expInfo.Args[itemIdx + 1].MemberName}=\'{indexableTuple[itemIdx]}\' ");
+                                if (itemIdx == indexableTuple.Length - 1)
+                                {
+                                    str.Append(" ) ");
+                                }
+                                else
+                                {
+                                    str.Append(" AND ");
+                                }
+                            }
+                            //str.Append($"( {item.Item1}={expInfo.Args[1].MemberName}")
+                            //.Append(" AND ")
+                            //.Append($"{item.Item2}={expInfo.Args[2].MemberName} )");
                         }
-                        return str.ToString();
+                        return $"( {str.ToString()} )";
                     }
                 });
 
@@ -97,7 +113,7 @@ namespace Luckyu.DataAccess
                 db.Aop.OnLogExecuted = (sql, pars) =>
                 {
                     sql = sql.ToLower().Trim();
-                    if (sql.StartsWith("update") || sql.StartsWith("insert") || sql.StartsWith("delete")|| sql.StartsWith("drop")|| sql.StartsWith("create")|| sql.StartsWith("alert"))
+                    if (sql.StartsWith("update") || sql.StartsWith("insert") || sql.StartsWith("delete") || sql.StartsWith("drop") || sql.StartsWith("create") || sql.StartsWith("alert"))
                     {
                         var log = new sys_logEntity();
                         log.log_type = (int)LogType.Sql;

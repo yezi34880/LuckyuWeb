@@ -10,7 +10,7 @@ namespace Luckyu.App.Form
     /// <summary>
     ///  form_column 
     /// </summary>
-    [SugarTable( "form_column")]
+    [SugarTable("form_column")]
     public class form_columnEntity
     {
         #region 属性
@@ -69,6 +69,11 @@ namespace Luckyu.App.Form
         ///  defaultvalue 默认值
         /// </summary>
         public string defaultvalue { get; set; }
+
+        /// <summary>
+        /// is_visible 是否显示
+        /// </summary>
+        public int is_visible { get; set; }
 
         /// <summary>
         ///  remark 备注

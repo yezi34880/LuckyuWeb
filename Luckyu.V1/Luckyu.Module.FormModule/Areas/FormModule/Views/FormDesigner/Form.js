@@ -162,6 +162,22 @@ var bootstrap = function (layui) {
                     { name: 'decimal', value: "decimal" },
                     { name: 'datetime', value: "datetime" },
                 ],
+                select: function (seldata) {
+                    if (xmdata.arr.length > 0) {
+                        var divActive = $("#formBuilder div.form-item.active");
+                        if (!!divActive && divActive.length > 0) {
+                            var divID = divActive.attr("id");
+                            var ctrlID = divID.substr(3, divID.length - 3);
+                            var colObjects = formJson.filter(t => t.columncode == ctrlID);
+                            if (!!colObjects && colObjects.length > 0) {
+                                var colObject = colObjects[0];
+                                colObject.formlength = xmdata.arr[0].value;
+                            }
+                        }
+
+
+                    }
+                }
             })
 
             // 记录改变之前的值
@@ -289,7 +305,7 @@ var bootstrap = function (layui) {
                     switch (item.columntype) {
                         case "input": {
                             item.dblength = 255;
-                            item.dbtype = !!item.columnname ? item.columnname : "varchar";
+                            item.dbtype = !!item.dbtype ? item.dbtype : "varchar";
                             item.columnname = !!item.columnname ? item.columnname : "单行文本";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
@@ -302,7 +318,7 @@ var bootstrap = function (layui) {
                         }
                         case "textarea": {
                             item.dblength = 500;
-                            item.dbtype = !!item.columnname ? item.columnname : "varchar";
+                            item.dbtype = !!item.dbtype ? item.dbtype : "varchar";
                             item.columnname = !!item.columnname ? item.columnname : "多行文本";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
@@ -314,7 +330,7 @@ var bootstrap = function (layui) {
                             break;
                         }
                         case "date": {
-                            item.dbtype = !!item.columnname ? item.columnname : "datetime";
+                            item.dbtype = !!item.dbtype ? item.dbtype : "datetime";
                             item.columnname = !!item.columnname ? item.columnname : "日期";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
@@ -326,7 +342,7 @@ var bootstrap = function (layui) {
                             break;
                         }
                         case "datetime": {
-                            item.dbtype = !!item.columnname ? item.columnname : "datetime";
+                            item.dbtype = !!item.dbtype ? item.dbtype : "datetime";
                             item.columnname = !!item.columnname ? item.columnname : "日期时间";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
@@ -338,7 +354,7 @@ var bootstrap = function (layui) {
                             break;
                         }
                         case "number": {
-                            item.dbtype = !!item.columnname ? item.columnname : "decimal";
+                            item.dbtype = !!item.dbtype ? item.dbtype : "decimal";
                             item.dblength = 18;
                             item.dbdigits = 2;
                             item.columnname = !!item.columnname ? item.columnname : "数字";
@@ -352,7 +368,7 @@ var bootstrap = function (layui) {
                             break;
                         }
                         case "dateitem": {
-                            item.dbtype = !!item.columnname ? item.columnname : "varchar";
+                            item.dbtype = !!item.dbtype ? item.dbtype : "varchar";
                             item.columnname = !!item.columnname ? item.columnname : "数据字段下拉";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
@@ -425,7 +441,7 @@ var bootstrap = function (layui) {
             return false;
         }
         var formData = $('#divFormInfo').getFormValue();
-        formData.formhtml = formhtml;
+        formData.formhtml = formHtml;
         formData.formjson = JSON.stringify(formJson);
         luckyu.ajax.postv2(luckyu.rootUrl + "/FormModule/FormDesigner/SaveForm", {
             keyValue: keyValue,

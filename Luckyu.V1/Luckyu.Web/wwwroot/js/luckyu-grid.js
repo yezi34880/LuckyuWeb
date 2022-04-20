@@ -799,9 +799,10 @@
                             };
                         }
                         else {  // 普通文本框 增加 条件选项
-                            col.searchoptions = {
-                                sopt: ['cn', 'nc', 'eq', 'ne', 'bw', 'ew']
-                            };
+                            if (!col.searchoptions) {
+                                col.searchoptions = {};
+                            }
+                            col.searchoptions.sopt = ['cn', 'nc', 'eq', 'ne', 'bw', 'ew'];
                         }
                     }
                     if (op.footerrow === true) {

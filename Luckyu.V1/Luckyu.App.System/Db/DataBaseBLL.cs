@@ -51,7 +51,7 @@ namespace Luckyu.App.System
             log.process_id = keyValue;
 
             log.user_id = loginInfo.user_id;
-            log.user_name = loginInfo.realname;
+            log.user_name = $"{loginInfo.loginname}-{ loginInfo.realname}";
 
             var strResult = new StringBuilder();
             var columns = columnService.GetList(r => r.table_id == tableInfo.table_id);
@@ -95,7 +95,7 @@ namespace Luckyu.App.System
             log.process_id = keyValue;
 
             log.user_id = loginInfo.user_id;
-            log.user_name = loginInfo.realname;
+            log.user_name = $"{loginInfo.loginname}-{ loginInfo.realname}";
 
             var strResult = new StringBuilder();
             var columns = columnService.GetList(r => r.table_id == tableInfo.table_id);
@@ -145,7 +145,7 @@ namespace Luckyu.App.System
             log.process_id = keyValue;
 
             log.user_id = loginInfo.user_id;
-            log.user_name = loginInfo.realname;
+            log.user_name = $"{loginInfo.loginname}-{ loginInfo.realname}";
 
             var strResult = new StringBuilder();
             var columns = columnService.GetList(r => r.table_id == tableInfo.table_id);
