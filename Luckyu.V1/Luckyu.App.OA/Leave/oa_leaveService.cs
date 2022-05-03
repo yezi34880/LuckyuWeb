@@ -80,8 +80,8 @@ namespace Luckyu.App.OA
                 else
                 {
                     entity.Modify(keyValue, loginInfo);
-                    trans.UpdateAppendColumns(entity, strEntity, r => new { r.edittime, r.edit_userid, r.edit_username });
                     dbBLL.LogUpdate(entity, strEntity, loginInfo);
+                    trans.UpdateAppendColumns(entity, strEntity, r => new { r.edittime, r.edit_userid, r.edit_username });
                 }
                 trans.Commit();
             }

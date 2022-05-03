@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using Luckyu.App.Organization;
@@ -28,6 +29,23 @@ namespace Luckyu.App.Form
             return entity;
         }
 
+        public List<xmSelectTree> GetTableSelectList(Expression<Func<form_tableEntity, bool>> condition)
+        {
+            var list = tableService.GetList(condition);
+            var selectList = list.Select(r => new xmSelectTree
+            {
+                name = r.formname,
+                value = r.form_id
+            }).ToList();
+            return selectList;
+        }
+
+        public List<form_columnEntity> GetColumnList(Expression<Func<form_columnEntity, bool>> condition)
+        {
+            var list = colService.GetList(condition);
+            return list;
+        }
+
         #endregion
 
         #region Set
@@ -46,9 +64,7 @@ namespace Luckyu.App.Form
                 {
                     return ResponseResult.Fail<form_tableEntity>(MessageString.NoData);
                 }
-
-
-
+                tableService.UpdateTable(keyValue, formEntity, list, loginInfo);
             }
             return ResponseResult.Success<form_tableEntity>();
         }

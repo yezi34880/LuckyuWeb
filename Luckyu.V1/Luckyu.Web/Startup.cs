@@ -63,12 +63,12 @@ namespace Luckyu.Web
             var fileNames = Directory.GetFiles(AppContext.BaseDirectory, "*.Module.*.dll");
             foreach (var name in fileNames)
             {
-                //var assembly = Assembly.LoadFile(name);
-                //builder.AddApplicationPart(assembly);
-                // 使用流读取 不占用
-                var bytes = File.ReadAllBytes(name);
-                var assembly = Assembly.Load(bytes);
+                var assembly = Assembly.LoadFile(name);
                 builder.AddApplicationPart(assembly);
+                // 使用流读取 不占用
+                //var bytes = File.ReadAllBytes(name);
+                //var assembly = Assembly.Load(bytes);
+                //builder.AddApplicationPart(assembly);
             }
 
             #region 加载视图时是否预编译

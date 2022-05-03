@@ -19,7 +19,16 @@ var bootstrap = function (layui) {
                 showCheckbox: true,
                 showLine: true,
                 highlightCurrent: true,
-                done: function () {
+                iconItem: function (treedata) {
+                    if (!!treedata.ext.icon) {
+                        var iconClass = '.' + treedata.ext.icon.replace(' ', '.');
+                        return {
+                            fold: iconClass,
+                            leaf: iconClass,
+                        }
+                    }
+                },
+                done: function (treedata) {
                     page.initData();
                 }
             });

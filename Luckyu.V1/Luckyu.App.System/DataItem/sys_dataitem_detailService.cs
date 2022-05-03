@@ -19,6 +19,23 @@ namespace Luckyu.App.System
                 exp = exp.LinqAnd(r => r.is_system == 0);
             }
             exp = exp.LinqAnd(r => r.dataitem_id == classifyId);
+            if (jqpage.sidx.IsEmpty())
+            {
+                jqpage.sidx = "sort";
+                jqpage.sord = "ASC";
+            }
+            var page = BaseRepository().GetPage(jqpage, exp);
+            return page;
+        }
+        public JqgridPageResponse<sys_dataitem_detailEntity> SelectPage(JqgridPageRequest jqpage, string classifyId)
+        {
+            Expression<Func<sys_dataitem_detailEntity, bool>> exp = r => r.is_delete == 0 && r.is_enable == 1;
+            exp = exp.LinqAnd(r => r.dataitem_id == classifyId);
+            if (jqpage.sidx.IsEmpty())
+            {
+                jqpage.sidx = "sort";
+                jqpage.sord = "ASC";
+            }
             var page = BaseRepository().GetPage(jqpage, exp);
             return page;
         }

@@ -4,6 +4,7 @@
 var saveClick;
 var bootstrap = function (layui) {
     "use strict";
+    debugger;
 
     var keyValue = request("keyValue");
     var page = {
@@ -16,6 +17,32 @@ var bootstrap = function (layui) {
 
             $("#parent_id").initSelectTree({
                 url: luckyu.rootUrl + "/OrganizationModule/Module/GetSelectTree",
+                expandedKeys: []
+            });
+
+            $("#moduletype").initLocal({
+                data: [
+                    { "name": "系统菜单", "value": 0 },
+                    { "name": "自定义表单", "value": 2 }
+                ],
+                initValue: "0",
+                select: function (seldata) {
+                    if (seldata.arr.length > 0) {
+                        switch (seldata.arr[0].value) {
+                            case 0:
+                                $("#divmoduleurl").show();
+                                $("#divformname").hide();
+                                xmSelect.get("#form_id", true).setValue([]);
+                                break;
+                            case 2:
+                                $("#divmoduleurl").hide();
+                                $("#divformname").show();
+                                $("#moduleurl").val('');
+                                break;
+                        }
+
+                    }
+                }
             });
 
             layui.layer.close(loading);
@@ -37,6 +64,7 @@ var bootstrap = function (layui) {
             return false;
         }
         var formData = $('[lay-filter="Module"]').getFormValue();
+        formData.formname = formData.form_idname;
         luckyu.ajax.postv2(luckyu.rootUrl + "/OrganizationModule/Module/SaveForm", {
             keyValue: keyValue,
             strEntity: JSON.stringify(formData),

@@ -31,7 +31,7 @@ namespace Luckyu.Module.SystemModule.Controllers
         public IActionResult Page(JqgridPageRequest jqpage, string classifyId)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var isSystem = (loginInfo.level == 99 || loginInfo.level == 9);
+            var isSystem = loginInfo.level == (int)UserLevel.SuperAdmin;
             var page = dataitemBLL.DetailPage(jqpage, classifyId, isSystem);
             return Json(page);
         }
@@ -144,6 +144,20 @@ namespace Luckyu.Module.SystemModule.Controllers
 
         #endregion
 
+        #region DataitemSelectForm
+        public IActionResult DataitemSelectForm()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult SelectPage(JqgridPageRequest jqpage, string classifyId)
+        {
+            var page = dataitemBLL.DetailSelectPage(jqpage, classifyId);
+            return Json(page);
+        }
+
+        #endregion
+
         #region Interface
         public IActionResult GetMap(string ver)
         {
@@ -179,7 +193,7 @@ namespace Luckyu.Module.SystemModule.Controllers
         public IActionResult GetTree()
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var isSystem = (loginInfo.level == 99 || loginInfo.level == 9) ? 1 : 0;
+            var isSystem = (loginInfo.level == (int)UserLevel.SuperAdmin);
             var treeData = dataitemBLL.GetTree(isSystem);
             if (treeData.IsEmpty())
                 treeData = new List<eleTree>();

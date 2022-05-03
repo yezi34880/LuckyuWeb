@@ -63,6 +63,7 @@ var bootstrap = function (layui) {
                     content: '<form class="layui-form" autocomplete="off"><div>' + htm + '</div></form>',
                     area: ['750px', '600px'], //宽高
                     success: function (layero, layerindex) {
+                        debugger;
                         $(layero).find("form.layui-form").initControl();
                     }
                 });
@@ -171,7 +172,7 @@ var bootstrap = function (layui) {
                             var colObjects = formJson.filter(t => t.columncode == ctrlID);
                             if (!!colObjects && colObjects.length > 0) {
                                 var colObject = colObjects[0];
-                                colObject.formlength = xmdata.arr[0].value;
+                                colObject.dbtype = xmdata.arr[0].value;
                             }
                         }
 
@@ -188,15 +189,13 @@ var bootstrap = function (layui) {
             $("#columncode").change(function (e) {
                 var divActive = $("#formBuilder div.form-item.active");
                 if (!!divActive && divActive.length > 0) {
-                    var oldValue = event.target.dataset.old;
+                    var oldValue = $(this).data("old");
                     var columncode = $(this).val();
                     var columntype = divActive.attr("columntype");
                     switch (columntype) {
-                        case "input": {
-                            var ctrl = divActive.find("#" + oldValue);
-                            $(ctrl).attr("id", columncode);
-                            break;
-                        }
+                        case "date":
+                        case "datetime":
+                        case "input":
                         case "textarea": {
                             var ctrl = divActive.find("#" + oldValue);
                             $(ctrl).attr("id", columncode);
@@ -284,10 +283,50 @@ var bootstrap = function (layui) {
                 }
             });
 
+            // 数据字典数据源设置
+            $("#dataitem_name,#dataitem_nameSelect").click(function () {
+                luckyu.layer.layerFormTop({
+                    title: "数据字典选择",
+                    width: 850,
+                    height: 650,
+                    url: luckyu.rootUrl + "/SystemModule/Dataitem/DataitemSelectForm",
+                    btn: [{
+                        name: "确定",
+                        callback: function (index, layero) {
+                            var dataitem = layero.find("iframe")[0].contentWindow.okClick();
+                            if (!!dataitem) {
+                                $("#dataitem_name").val(dataitem.name);
+
+                                var divActive = $("#formBuilder div.form-item.active");
+                                if (!!divActive && divActive.length > 0) {
+                                    var divID = divActive.attr("id");
+                                    var ctrlID = divID.substr(3, divID.length - 3);
+                                    $("#" + ctrlID).attr("luckyu-code", dataitem.code);
+                                    $("#" + ctrlID).initDataItem({ code: dataitem.code });
+
+                                    var colObjects = formJson.filter(t => t.columncode == ctrlID);
+                                    if (!!colObjects && colObjects.length > 0) {
+                                        var colObject = colObjects[0];
+                                        colObject.columnconfig = {
+                                            itemcode: dataitem.code,
+                                            itemname: dataitem.name
+                                        };
+                                    }
+                                }
+
+                            }
+                            top.layui.layer.close(index);
+                        }
+                    }]
+                });
+
+            });
+
 
             layui.layer.close(loading);
         },
         renderForm: function (formJson) {
+            debugger;
             if (!!formJson && formJson.length > 0) {
                 formHtml = '';
                 var selectedname = "";
@@ -369,12 +408,12 @@ var bootstrap = function (layui) {
                         }
                         case "dateitem": {
                             item.dbtype = !!item.dbtype ? item.dbtype : "varchar";
-                            item.columnname = !!item.columnname ? item.columnname : "数据字段下拉";
+                            item.columnname = !!item.columnname ? item.columnname : "数据字典";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
                     <label class="layui-form-label">'+ item.columnname + '</label>\
                     <div class="layui-input-block">\
-                            <div id="'+ item.columncode + '" class="xm-select" luckyu-type="dataitem" luckyu-code="leavetype" placeholder="' + item.placeholder + '" luckyu-initvalue="' + item.defaultvalue + '"></div>\
+                            <div id="'+ item.columncode + '" class="xm-select" luckyu-type="dataitem" luckyu-code="" placeholder="' + item.placeholder + '" luckyu-initvalue="' + item.defaultvalue + '"></div>\
                     </div>\
                 </div>';
                             break;
@@ -385,6 +424,7 @@ var bootstrap = function (layui) {
 
                 var $formBuilder = $("#formBuilder");
                 $formBuilder.html(formHtml);
+                layui.form.render();
                 $formBuilder.find('div.form-item').each(function (k, n) {
                     var that = $(n);
                     if (that.hasClass("active")) {
@@ -406,18 +446,25 @@ var bootstrap = function (layui) {
                     });
                 });
 
-                layui.form.render();
                 $("#formBuilder").initControl();
             }
         },
         showCtrlPropety: function (divID) {
+            debugger;
             var ctrlID = divID.substr(3, divID.length - 3);
             var colObjects = formJson.filter(t => t.columncode == ctrlID);
             if (!!colObjects && colObjects.length > 0) {
                 var colObject = colObjects[0];
                 $("#columncode").val(colObject.columncode);
                 $("#columnname").val(colObject.columnname);
+                $("#placeholder").val(colObject.placeholder);
+                $("#defaultvalue").val(colObject.defaultvalue);
+                $("#dblength").val(colObject.dblength);
+                xmSelect.get("#dbtype", true).setValue([colObject.dbtype]);
                 xmSelect.get("#formlength", true).setValue([colObject.formlength]);
+
+                $("#dbdigits").val(colObject.dbdigits);
+
             }
 
             var columntype = $("#" + divID).attr("columntype");
@@ -429,7 +476,16 @@ var bootstrap = function (layui) {
         initData: function () {
             if (!!keyValue) {
                 luckyu.ajax.getv2(luckyu.rootUrl + '/FormModule/FormDesigner/GetFormData', { keyValue: keyValue }, function (data) {
+                    $("#formcode").val(data.Form.formcode);
+                    $("#formname").val(data.Form.formname);
+                    $("#remark").val(data.Form.remark);
 
+                    $("#formcode").attr("readonly", "readonly");
+                    $("#columncode").attr("readonly", "readonly");
+
+                    $("#formBuilder").html(data.Form.formhtml);
+                    formHtml = data.Form.formHtml;
+                    formJson = data.Form.formJson;
                 });
             }
         },

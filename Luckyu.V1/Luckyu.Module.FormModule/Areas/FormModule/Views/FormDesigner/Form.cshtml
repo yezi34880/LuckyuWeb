@@ -70,8 +70,10 @@
     <ul class="layui-tab-title">
         <li class="layui-this">表单信息</li>
         <li>表单设计</li>
+        <li>权限分配</li>
     </ul>
     <div class="layui-tab-content">
+        <!--表单信息-->
         <div class="layui-tab-item layui-show">
             <div id="divFormInfo">
                 <div class="layui-col-xs12 form-item">
@@ -92,8 +94,10 @@
                         <textarea id="remark" class="layui-textarea"></textarea>
                     </div>
                 </div>
+
             </div>
         </div>
+        <!--表单设计-->
         <div class="layui-tab-item">
             <div class="layui-col-xs12">
                 <!--控件-->
@@ -105,8 +109,8 @@
                             <ol data-tag="textarea"><div class="icon"><i class="fa fa-text-height"></i></div><div class="name">多行输入</div></ol>
                             <ol data-tag="date"><div class="icon"><i class="fa fa-calendar"></i></div><div class="name">日期</div></ol>
                             <ol data-tag="datetime"><div class="icon"><i class="fa fa-clock-o"></i></div><div class="name">日期时间</div></ol>
-                            <ol data-tag="number"><div class="icon"><i class="fa fa-sort-numeric-asc"></i></div><div class="name">数字</div></ol>
-                            <ol data-tag="dateitem"><div class="icon"><i class="fa fa-caret-square-o-down "></i></div><div class="name">数据字典下拉</div></ol>
+                            <ol data-tag="number"><div class="icon"><i class="fa fa-sort-numeric-desc"></i></div><div class="name">数字</div></ol>
+                            <ol data-tag="dateitem"><div class="icon"><i class="fa fa-caret-square-o-down"></i></div><div class="name">数据字典</div></ol>
 
                         </div>
                     </div>
@@ -117,17 +121,7 @@
                                 <ol data-tag="button"><div class="icon"><i class="layui-icon layui-icon-layer"></i></div><div class="name">按钮</div></ol>
                                 <ol data-tag="note"><div class="icon"><i class="layui-icon layui-icon-note"></i></div><div class="name">便签</div></ol>
                             </div>
-                        </div>
-                        <div class="component">
-                            <div class="head">布局组件</div>
-                            <div class="component-group" id="sort_3">
-                                <ol data-tag="subtraction"><div class="icon"><i class="layui-icon layui-icon-subtraction"></i></div><div class="name">分割线</div></ol>
-                                <ol data-tag="tab"><div class="icon"><i class="layui-icon layui-icon-tabs smallfont"></i></div><div class="name">选项卡</div></ol>
-                                <ol data-tag="grid"><div class="icon"><i class="layui-icon layui-icon-layouts"></i></div><div class="name">栅格</div></ol>
-                                <ol data-tag="space"><div class="icon"><i class="layui-icon layui-icon-more"></i></div><div class="name">间距</div></ol>
-                            </div>
                         </div>*@
-
 
                 </div>
                 <!--属性 margin-right放在前面 自适应的放最后-->
@@ -172,7 +166,7 @@
                     <div class="form-item layui-col-xs12">
                         <label class="layui-form-label">长度</label>
                         <div class="layui-input-block">
-                            <input id="dblength" type="text" class="layui-input" placeholder="MAX表示不限制长度" />
+                            <input id="dblength" type="number" class="layui-input" placeholder="MAX表示不限制长度" />
                         </div>
                     </div>
 
@@ -180,7 +174,16 @@
                         <div class="form-item layui-col-xs12">
                             <label class="layui-form-label">小数位</label>
                             <div class="layui-input-block">
-                                <input id="dbdigits" type="text" class="layui-input" placeholder="MAX表示不限制长度" />
+                                <input id="dbdigits" type="number" class="layui-input" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dateitemPropety" class="ctrlpropety" style="display:none;">
+                        <div class="form-item layui-col-xs12">
+                            <label class="layui-form-label">数据字典</label>
+                            <div class="layui-input-block inputselect">
+                                <input id="dataitem_name" type="text" class="layui-input" readonly />
+                                <span id="dataitem_nameSelect" class="luckyu-input-button" title="选取"><i class="fa fa-hand-pointer-o"></i></span>
                             </div>
                         </div>
                     </div>
@@ -203,6 +206,11 @@
                 </div>
             </div>
         </div>
+        <!--权限分配-->
+        <div class="layui-tab-item">
+            <table id="gridAuthrize"></table>
+        </div>
+
     </div>
 </div>
 

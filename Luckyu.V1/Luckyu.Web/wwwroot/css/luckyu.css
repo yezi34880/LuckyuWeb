@@ -67,14 +67,15 @@
 
 .luckyu-input-button {
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 5px;
+    top: 3px;
     width: 16px;
     height: 100%;
     line-height: 28px;
     cursor: pointer;
     overflow: hidden;
     z-index: 10;
+    font-size: 14px;
 }
 
 .ui-th-column {
@@ -167,5 +168,9 @@ input.numeric {
 .questionInfo {
     margin: 10px;
     font-size: large;
+    cursor: pointer;
+}
+
+.eleTree-node {
     cursor: pointer;
 }

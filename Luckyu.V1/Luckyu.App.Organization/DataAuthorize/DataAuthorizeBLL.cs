@@ -53,9 +53,22 @@ namespace Luckyu.App.Organization
         /// <summary>
         /// 获取当前模块配置人员
         /// </summary>
-        public DataAuthorizeModel GetDataAuthByUser(string moduleName, UserModel loginInfo)
+        /// <param name="moduleType">模块类型 0-系统模块；2-自定义模块</param>
+        /// <param name="modulenameOrformid">moduleType=0：传值moduelname；moduleType=2：传值form_id</param>
+        /// <param name="loginInfo">当前用户</param>
+        /// <returns></returns>
+        public DataAuthorizeModel GetDataAuthByUser(int moduleType, string modulenameOrformid, UserModel loginInfo)
         {
-            var listdata = GetList(r => r.modulename.Contains(moduleName) && (r.object_id == loginInfo.user_id || loginInfo.role_ids.Contains(r.object_id) || loginInfo.post_ids.Contains(r.object_id)));
+            Expression<Func<sys_dataauthorizeEntity, bool>> exp = r => (r.object_id == loginInfo.user_id || loginInfo.role_ids.Contains(r.object_id) || loginInfo.post_ids.Contains(r.object_id));
+            if (moduleType == 2)
+            {
+                exp = exp.LinqAnd(r => r.form_id.Contains(modulenameOrformid));
+            }
+            else
+            {
+                exp = exp.LinqAnd(r => r.modulename.Contains(modulenameOrformid));
+            }
+            var listdata = GetList(exp);
             var data = new DataAuthorizeModel();
             data.edittype = 0;
             if (listdata.IsEmpty())
@@ -178,7 +191,7 @@ namespace Luckyu.App.Organization
         public DataAuthorizeModel GetDataAuthByUser(DataAuthorizeModuleEnum module, UserModel loginInfo)
         {
             var moduleName = module.ToString();
-            var dataAuth = GetDataAuthByUser(moduleName, loginInfo);
+            var dataAuth = GetDataAuthByUser(0, moduleName, loginInfo);
             return dataAuth;
         }
 

@@ -21,6 +21,16 @@ namespace Luckyu.App.Organization
         public string auth_id { get; set; }
 
         /// <summary>
+        ///  moduletype   0-系统模块 2-自定义表单
+        /// </summary>
+        public string moduletype { get; set; }
+
+        /// <summary>
+        ///  form_id   
+        /// </summary>
+        public string form_id { get; set; }
+
+        /// <summary>
         ///  modulename   
         /// </summary>
         public string modulename { get; set; }

@@ -52,6 +52,9 @@ namespace Luckyu.App.Organization
 
         public string wechat { get; set; }
 
+        /// <summary>
+        /// -99 默认为超级管理员 UserLevel.SuperAdmin
+        /// </summary>
         public int level { get; set; }
 
         public string remark { get; set; }
@@ -76,5 +79,11 @@ namespace Luckyu.App.Organization
             return loginInfo;
         }
 
+    }
+
+    public enum UserLevel
+    {
+        // 超级管理员
+        SuperAdmin = -99
     }
 }

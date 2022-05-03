@@ -41,6 +41,11 @@ namespace Luckyu.App.Form
         public string columnname { get; set; }
 
         /// <summary>
+        ///  columnconfig Json配置 dataitem { code:"" }
+        /// </summary>
+        public string columnconfig { get; set; }
+
+        /// <summary>
         ///  placeholder 标签显示名
         /// </summary>
         public string placeholder { get; set; }
@@ -75,10 +80,45 @@ namespace Luckyu.App.Form
         /// </summary>
         public int is_visible { get; set; }
 
-        /// <summary>
+       /// <summary>
         ///  remark 备注
         /// </summary>
         public string remark { get; set; }
+
+        /// <summary>
+        ///  create_userid 
+        /// </summary>
+        public string create_userid { get; set; }
+
+        /// <summary>
+        ///  create_username 
+        /// </summary>
+        public string create_username { get; set; }
+
+        /// <summary>
+        ///  createtime 
+        /// </summary>
+        public DateTime? createtime { get; set; }
+
+        /// <summary>
+        /// is_delete 是否删除
+        /// </summary>
+        public int is_delete { get; set; }
+
+        /// <summary>
+        ///  delete_userid 
+        /// </summary>
+        public string delete_userid { get; set; }
+
+        /// <summary>
+        ///  delete_username 
+        /// </summary>
+        public string delete_username { get; set; }
+
+        /// <summary>
+        ///  deletetime 
+        /// </summary>
+        public DateTime? deletetime { get; set; }
 
         #endregion
 

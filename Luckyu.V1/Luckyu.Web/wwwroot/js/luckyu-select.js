@@ -246,6 +246,7 @@
                         multiple: false, // 是否多选
                         direction: "auto", //方向 auto / up / down
                         initValue: null, //默认选中
+                        expandedKeys: true, //默认展开节点的数组, 为 true 时, 展开所有节点
                         select: null, // 选中事件 function (data){}
                     };
                     $.extend(defaultOption, option);
@@ -267,7 +268,7 @@
                                 showFolderIcon: true, //是否展示三角图标
                                 showLine: true,	//是否显示虚线
                                 indent: 20,//间距
-                                expandedKeys: true,//默认展开节点的数组, 为 true 时, 展开所有节点
+                                expandedKeys: defaultOption.expandedKeys,//默认展开节点的数组, 为 true 时, 展开所有节点
                                 strict: false,  //是否严格遵守父子模式
                             },
                             data: xmdata,
@@ -433,7 +434,7 @@
                     };
                     $.extend(defaultOption, option);
                     luckyu.ajax.getSync(luckyu.rootUrl + "/OrganizationModule/Department/GetSelectTree",
-                        { companyId: defaultOption.companyId, onlyMyself: defaultOption.onlyMyself},
+                        { companyId: defaultOption.companyId, onlyMyself: defaultOption.onlyMyself },
                         function (res) {
                             var xmData = res;
                             var op = {

@@ -44,7 +44,10 @@ namespace Luckyu.Module.FormModule.Controllers
 
         public IActionResult GetFormData(string keyValue)
         {
-            return null;
+            var form = formBLL.GetTableEntity(r => r.form_id == keyValue);
+            var dic = new Dictionary<string, object>();
+            dic.Add("Form", form);
+            return Success(dic);
         }
 
         public IActionResult SaveForm(string keyValue, string strEntity)
@@ -53,8 +56,29 @@ namespace Luckyu.Module.FormModule.Controllers
             var res = formBLL.SaveForm(keyValue, strEntity, loginInfo);
             return Json(res);
         }
+        #endregion
 
+        #region Interface
+        /// <summary>
+        /// 获取所有自定义表单
+        /// </summary>
+        public IActionResult GetSelect()
+        {
+            var data = formBLL.GetTableSelectList(r => true);
+            return Success(data);
+        }
 
+        public IActionResult GetTableInfo(string form_id)
+        {
+            var table = formBLL.GetTableEntity(r => r.form_id == form_id);
+            var cols = formBLL.GetColumnList(r => r.form_id == form_id);
+            var data = new
+            {
+                FormTable = table,
+                FormColumns = cols
+            };
+            return Success(data);
+        }
         #endregion
     }
 }

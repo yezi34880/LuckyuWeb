@@ -47,9 +47,19 @@ namespace Luckyu.App.Organization
         public string moduleicon { get; set; }
 
         /// <summary>
-        ///  moduletype 0 桌面 1 手机   
+        ///  moduletype 0 桌面 1 手机  2 自定义表单  
         /// </summary>
         public int moduletype { get; set; }
+
+        /// <summary>
+        ///  form_id 自定义表单ID
+        /// </summary>
+        public string form_id { get; set; }
+
+        /// <summary>
+        ///  formname 自定义表单名
+        /// </summary>
+        public string formname { get; set; }
 
         /// <summary>
         ///  sort   

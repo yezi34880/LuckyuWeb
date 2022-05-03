@@ -65,12 +65,12 @@ namespace Luckyu.App.Organization
         }
 
 
-        public List<CommonTree<sys_moduleEntity>> GetModuleTreeByUser(UserModel user, int moduletype, out List<sys_moduleEntity> listSelfModule)
+        public List<CommonTree<sys_moduleEntity>> GetModuleTreeByUser(UserModel user, List<int> moduletypes, out List<sys_moduleEntity> listSelfModule)
         {
             var listModule = GetAllByCache();
-            listModule = listModule.Where(r => r.is_enable == 1 && r.moduletype == moduletype).ToList();
+            listModule = listModule.Where(r => r.is_enable == 1 && moduletypes.Contains(r.moduletype)).ToList();
             listSelfModule = new List<sys_moduleEntity>();
-            if (user.level == 99)
+            if (user.level == (int)UserLevel.SuperAdmin)
             {
                 listSelfModule = listModule;
             }
@@ -136,7 +136,12 @@ namespace Luckyu.App.Organization
             var tree = nodes.Select(r => new eleTree
             {
                 id = r.module_id,
-                label = $"<i class=\"{r.moduleicon}\"></i> " + r.modulename + $"  {r.remark}",
+                //label = $"<i class=\"{r.moduleicon}\"></i> " + r.modulename + $"  {r.remark}",
+                label = r.modulename + $"  {r.remark}",
+                ext = new Dictionary<string, string>
+                {
+                    {"icon", r.moduleicon}
+                },
                 children = ToTree(r.module_id, list),
             }).ToList();
             return tree;

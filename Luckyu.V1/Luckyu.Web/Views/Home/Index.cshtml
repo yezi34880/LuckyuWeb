@@ -121,10 +121,17 @@
                                             {
                                                 strHtml.Append($"<dd data-name=\"{child.Main.modulecode}\">");
                                                 strHtml.Append($"<i class=\"{child.Main.moduleicon}\"></i>");
-                                                strHtml.AppendFormat("<a {0}>",
-                                                    string.IsNullOrEmpty(child.Main.moduleurl) ?
-                                                    "href=\"javascript:;\"" :
-                                                    $"lay-href=\"{child.Main.moduleurl}\"");
+                                                if (child.Main.moduletype == 2)
+                                                {
+                                                    strHtml.Append($"<a lay-href=\"/FormModule/FormInput/Index?form_id={child.Main.form_id}\">");
+                                                }
+                                                else
+                                                {
+                                                    strHtml.AppendFormat("<a {0}>",
+                                                        string.IsNullOrEmpty(child.Main.moduleurl) ?
+                                                        "href=\"javascript:;\"" :
+                                                        $"lay-href=\"{child.Main.moduleurl}\"");
+                                                }
                                                 strHtml.Append(child.Main.modulename);
                                                 strHtml.Append("</a>");
                                                 if (!child.Children.IsEmpty())

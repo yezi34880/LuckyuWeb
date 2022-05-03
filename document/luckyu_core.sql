@@ -11,11 +11,40 @@
  Target Server Version : 50717
  File Encoding         : 65001
 
- Date: 08/04/2022 09:41:02
+ Date: 03/05/2022 21:57:45
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for cusform_request
+-- ----------------------------
+DROP TABLE IF EXISTS `cusform_request`;
+CREATE TABLE `cusform_request`  (
+  `l_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `l_bno` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `deal` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `personnum` decimal(18, 2) NOT NULL,
+  `l_remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `l_state` int(2) NOT NULL,
+  `l_create_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `l_create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `l_createtime` datetime(0) NULL DEFAULT NULL,
+  `l_edittime` datetime(0) NULL DEFAULT NULL,
+  `l_edit_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `l_edit_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `l_is_delete` int(2) NOT NULL,
+  `l_deletetime` datetime(0) NULL DEFAULT NULL,
+  `l_delete_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `l_delete_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`l_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of cusform_request
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for form_column
@@ -26,17 +55,32 @@ CREATE TABLE `form_column`  (
   `form_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `columncode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `columnname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `formlength` int(11) NOT NULL DEFAULT 12,
+  `columntype` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `columnconfig` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `dbtype` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `dblength` int(11) NOT NULL,
   `dbdigits` int(255) NOT NULL,
+  `is_visible` int(255) NOT NULL,
+  `placeholder` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `defaultvalue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `is_delete` int(255) NOT NULL,
+  `delete_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `delete_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `deletetime` datetime(0) NULL DEFAULT NULL,
+  `create_userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `createtime` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`column_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of form_column
 -- ----------------------------
+INSERT INTO `form_column` VALUES ('1520772493651087360', '1520772493462343680', 'content', '请示内容', 12, 'input', '', 'varchar', 255, 0, 1, '内容', '', '', 0, '', '', NULL, '1', 'system-超级管理员', '2022-05-01 22:29:52');
+INSERT INTO `form_column` VALUES ('1520772493651087361', '1520772493462343680', 'deal', '处理意见', 12, 'textarea', '', 'varchar', 500, 0, 1, '意见', '', '', 0, '', '', NULL, '1', 'system-超级管理员', '2022-05-01 22:29:52');
+INSERT INTO `form_column` VALUES ('1520772493651087362', '1520772493462343680', 'personnum', '人数', 6, 'number', '', 'decimal', 18, 2, 1, '', '', '', 0, '', '', NULL, '1', 'system-超级管理员', '2022-05-01 22:29:52');
 
 -- ----------------------------
 -- Table structure for form_table
@@ -47,6 +91,7 @@ CREATE TABLE `form_table`  (
   `formname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `formcode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `dbname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `formhtml` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `formjson` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `hasdetails` int(2) NOT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -66,6 +111,7 @@ CREATE TABLE `form_table`  (
 -- ----------------------------
 -- Records of form_table
 -- ----------------------------
+INSERT INTO `form_table` VALUES ('1520772493462343680', '请示报告单', 'request', '', '                <div class=\"layui-col-xs6 form-item\" id=\"divdateinput\" columntype=\"date\" draggable=\"false\">                    <label class=\"layui-form-label\">请示日期</label>                    <div class=\"layui-input-block\">                        <input id=\"dateinput\" type=\"text\" class=\"layui-input Wdate\" onfocus=\"WdatePicker({ dateFmt: \'yyyy-MM-dd\' })\" placeholder=\"\" value=\"\">                    </div>                </div>                <div class=\"layui-col-xs12 form-item\" id=\"divcontent\" columntype=\"input\" draggable=\"false\" style=\"\">                    <label class=\"layui-form-label\">请示内容</label>                    <div class=\"layui-input-block\">                        <input id=\"content\" type=\"text\" class=\"layui-input\" placeholder=\"内容\" value=\"\">                    </div>                </div>                <div class=\"layui-col-xs12 form-item\" id=\"divdeal\" columntype=\"textarea\" draggable=\"false\" style=\"\">                    <label class=\"layui-form-label\">处理意见</label>                    <div class=\"layui-input-block\">                        <textarea id=\"deal\" class=\"layui-textarea\" placeholder=\"意见\"></textarea>                    </div>                </div>                ', '[{\"columntype\":\"input\",\"isselected\":false,\"columncode\":\"content\",\"formlength\":\"12\",\"placeholder\":\"内容\",\"defaultvalue\":\"\",\"dblength\":255,\"dbtype\":\"varchar\",\"columnname\":\"请示内容\"},{\"columntype\":\"textarea\",\"isselected\":false,\"columncode\":\"deal\",\"formlength\":\"12\",\"placeholder\":\"意见\",\"defaultvalue\":\"\",\"dblength\":500,\"dbtype\":\"varchar\",\"columnname\":\"处理意见\"},{\"columntype\":\"number\",\"isselected\":false,\"columncode\":\"personnum\",\"formlength\":\"6\",\"placeholder\":\"\",\"defaultvalue\":\"\",\"dbtype\":\"decimal\",\"dblength\":18,\"dbdigits\":2,\"columnname\":\"人数\"}]', 0, '请示报告单', '1', '超级管理员-system', '2022-05-01 22:29:52', NULL, '', '', 0, '', '', NULL);
 
 -- ----------------------------
 -- Table structure for oa_carorder
@@ -376,7 +422,9 @@ INSERT INTO `sys_config` VALUES ('111', 'annexbasepath', '附件目录地址', '
 DROP TABLE IF EXISTS `sys_dataauthorize`;
 CREATE TABLE `sys_dataauthorize`  (
   `auth_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `moduletype` int(255) NOT NULL COMMENT '0-系统模块 2-自定义表单',
   `modulename` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `form_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '自定义表单id',
   `objectrange` int(255) NOT NULL COMMENT '0自定义 1同公司 2同部门 3同小组 9全部',
   `objecttype` int(255) NOT NULL COMMENT '0用户 1岗位 2角色',
   `object_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -401,7 +449,7 @@ CREATE TABLE `sys_dataauthorize`  (
 -- ----------------------------
 -- Records of sys_dataauthorize
 -- ----------------------------
-INSERT INTO `sys_dataauthorize` VALUES ('1314217046006960128', 'Leave', 9, 0, '1', '超级管理员', 0, 0, 1, '管理员', '1', '超级管理员', '2020-10-08 22:52:15', NULL, '', '', 0, '', '', NULL);
+INSERT INTO `sys_dataauthorize` VALUES ('1314217046006960128', 0, 'Leave', NULL, 9, 0, '1', '超级管理员', 0, 0, 1, '管理员', '1', '超级管理员', '2020-10-08 22:52:15', NULL, '', '', 0, '', '', NULL);
 
 -- ----------------------------
 -- Table structure for sys_dataauthorize_detail
@@ -737,7 +785,9 @@ CREATE TABLE `sys_module`  (
   `modulename` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `moduleurl` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `moduleicon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `moduletype` int(255) NOT NULL DEFAULT 0,
+  `moduletype` int(255) NOT NULL DEFAULT 0 COMMENT '0 桌面 1 手机  2 自定义表单',
+  `form_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '自定义表单ID',
+  `formname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `sort` int(11) NOT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_userId` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -757,33 +807,38 @@ CREATE TABLE `sys_module`  (
 -- ----------------------------
 -- Records of sys_module
 -- ----------------------------
-INSERT INTO `sys_module` VALUES ('1', '0', 'organization', '组织机构', NULL, 'layui-icon layui-icon-group', 0, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('10', '0', 'system', '系统设置', NULL, 'layui-icon layui-icon-set', 0, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('11', '1', 'module', '菜单管理', '/OrganizationModule/Module/Index', '', 0, 8, '', NULL, NULL, NULL, '2020-09-03 23:03:43', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('12', '10', 'dataitem', '数据字典分类', '/SystemModule/Dataitem/ClassifyIndex', '', 0, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('13', '10', 'dataitemdetail', '数据字段明细', '/SystemModule/Dataitem/Index', '', 0, 4, '', NULL, NULL, NULL, '2020-09-12 23:26:41', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('1300809545546862592', '1', 'dataauthorize', '数据权限管理', '/OrganizationModule/DataAuthorize/Index', '', 0, 10, '', '1', '超级管理员', '2020-09-01 22:55:38', '2020-10-07 14:45:47', '1', '超级管理员', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1301536109125308416', '1', 'user', '用户管理', '/OrganizationModule/User/Index', '', 0, 6, '', '1', '超级管理员', '2020-09-03 23:02:44', '2020-09-03 23:03:34', '1', '超级管理员', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1305783733730807808', '0', 'workflow', '流程管理', '', 'layui-icon layui-icon-link', 0, 3, '', '1', '超级管理员', '2020-09-15 16:21:17', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1305783880967655424', '1305783733730807808', 'designer', '流程设计', '/WorkflowModule/Designer/Index', '', 0, 1, '', '1', '超级管理员', '2020-09-15 16:21:52', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1308753678907346944', '1305783733730807808', 'mytask', '我的任务', '/WorkflowModule/Task/Index', '', 0, 5, '', '1', '超级管理员', '2020-09-23 21:02:47', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1308754116331311104', '0', 'oa', '办公管理', '', 'layui-icon layui-icon-form', 0, 10, '', '1', '超级管理员', '2020-09-23 21:04:31', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1308754213349756928', '1308754116331311104', 'leave', '请假管理', '/OAModule/Leave/Index', '', 0, 0, '', '1', '超级管理员', '2020-09-23 21:04:55', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1318445122542768128', '1308754116331311104', 'news', '新闻通知', '/OAModule/News/Index', '', 0, 5, '', '1', '超级管理员', '2020-10-20 14:53:07', '2020-10-20 15:05:55', '1', '超级管理员', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1321834335111876608', '1305783733730807808', 'delegate', '任务委托', '/WorkflowModule/Delegate/Index', '', 0, 8, '', '1', '超级管理员', '2020-10-29 23:20:39', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1323639339174989824', '10', 'coderule', '编码规则', '/SystemModule/CodeRule/Index', '', 0, 10, '', '1', '超级管理员', '2020-11-03 22:53:05', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1333041917851734016', '10', 'log', '系统日志', '/SystemModule/Log/Index', '', 0, 15, '', '1', '超级管理员', '2020-11-29 21:35:35', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1353517145971101696', '10', 'message', '消息通知', '/SystemModule/Message/Index', '', 0, 30, '', '1', '超级管理员', '2021-01-25 09:36:49', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1365235791206420480', '1308754116331311104', 'carorder', '车辆预约', '/OAModule/CarOrder/Index', '', 0, 10, '', '1', '超级管理员-system', '2021-02-26 17:42:32', NULL, '', '', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('14', '10', 'config', '配置字段', '/SystemModule/Config/Index', '', 0, 1, '', NULL, NULL, NULL, '2020-09-12 23:26:47', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('1422853947474972672', '0', 'develop', '程序开发', '', 'layui-icon layui-icon-fonts-code', 0, 5, '', '1', '超级管理员-system', '2021-08-04 17:36:31', '2021-08-04 17:38:10', '1', '超级管理员-system', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('1422854088323895296', '1422853947474972672', 'codegenerate', '代码生成', '/DeveloperModule/CodeGenerate/Form', '', 0, 1, '', '1', '超级管理员-system', '2021-08-04 17:37:05', '2021-08-07 21:45:17', '1', '超级管理员-system', 0, '', '', NULL, 1);
-INSERT INTO `sys_module` VALUES ('15', '1305783733730807808', 'monitor', '流程监控', '/WorkflowModule/Monitor/Index', NULL, 0, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('2', '1', 'company', '公司管理', '/OrganizationModule/Company/Index', '', 0, 1, '', NULL, NULL, NULL, '2020-09-01 23:08:36', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('3', '1', 'department', '部门管理', '/OrganizationModule/Department/Index', '', 0, 2, '', NULL, NULL, NULL, '2020-09-01 23:08:50', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('4', '1', 'post', '岗位管理', '/OrganizationModule/Post/Index', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('5', '1', 'role', '角色管理', '/OrganizationModule/Role/Index', NULL, 0, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
-INSERT INTO `sys_module` VALUES ('6', '1', 'group', '小组管理', '/OrganizationModule/Group/Index', NULL, 0, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('1', '0', 'organization', '组织机构', NULL, 'layui-icon layui-icon-group', 0, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('10', '0', 'system', '系统设置', NULL, 'layui-icon layui-icon-set', 0, NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('11', '1', 'module', '菜单管理', '/OrganizationModule/Module/Index', '', 0, NULL, NULL, 8, '', NULL, NULL, NULL, '2020-09-03 23:03:43', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('12', '10', 'dataitem', '数据字典分类', '/SystemModule/Dataitem/ClassifyIndex', '', 0, NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('13', '10', 'dataitemdetail', '数据字段明细', '/SystemModule/Dataitem/Index', '', 0, NULL, NULL, 4, '', NULL, NULL, NULL, '2020-09-12 23:26:41', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('1300809545546862592', '1', 'dataauthorize', '数据权限管理', '/OrganizationModule/DataAuthorize/Index', '', 0, NULL, NULL, 10, '', '1', '超级管理员', '2020-09-01 22:55:38', '2020-10-07 14:45:47', '1', '超级管理员', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1301536109125308416', '1', 'user', '用户管理', '/OrganizationModule/User/Index', '', 0, NULL, NULL, 6, '', '1', '超级管理员', '2020-09-03 23:02:44', '2020-09-03 23:03:34', '1', '超级管理员', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1305783733730807808', '0', 'workflow', '流程管理', '', 'layui-icon layui-icon-link', 0, NULL, NULL, 3, '', '1', '超级管理员', '2020-09-15 16:21:17', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1305783880967655424', '1305783733730807808', 'designer', '流程设计', '/WorkflowModule/Designer/Index', '', 0, NULL, NULL, 1, '', '1', '超级管理员', '2020-09-15 16:21:52', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1308753678907346944', '1305783733730807808', 'mytask', '我的任务', '/WorkflowModule/Task/Index', '', 0, NULL, NULL, 5, '', '1', '超级管理员', '2020-09-23 21:02:47', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1308754116331311104', '0', 'oa', '办公管理', '', 'layui-icon layui-icon-form', 0, NULL, NULL, 10, '', '1', '超级管理员', '2020-09-23 21:04:31', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1308754213349756928', '1308754116331311104', 'leave', '请假管理', '/OAModule/Leave/Index', '', 0, NULL, NULL, 0, '', '1', '超级管理员', '2020-09-23 21:04:55', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1318445122542768128', '1308754116331311104', 'news', '新闻通知', '/OAModule/News/Index', '', 0, NULL, NULL, 5, '', '1', '超级管理员', '2020-10-20 14:53:07', '2020-10-20 15:05:55', '1', '超级管理员', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1321834335111876608', '1305783733730807808', 'delegate', '任务委托', '/WorkflowModule/Delegate/Index', '', 0, NULL, NULL, 8, '', '1', '超级管理员', '2020-10-29 23:20:39', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1323639339174989824', '10', 'coderule', '编码规则', '/SystemModule/CodeRule/Index', '', 0, NULL, NULL, 10, '', '1', '超级管理员', '2020-11-03 22:53:05', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1333041917851734016', '10', 'log', '系统日志', '/SystemModule/Log/Index', '', 0, NULL, NULL, 15, '', '1', '超级管理员', '2020-11-29 21:35:35', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1353517145971101696', '10', 'message', '消息通知', '/SystemModule/Message/Index', '', 0, NULL, NULL, 30, '', '1', '超级管理员', '2021-01-25 09:36:49', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1365235791206420480', '1308754116331311104', 'carorder', '车辆预约', '/OAModule/CarOrder/Index', '', 0, NULL, NULL, 10, '', '1', '超级管理员-system', '2021-02-26 17:42:32', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('14', '10', 'config', '配置字段', '/SystemModule/Config/Index', '', 0, NULL, NULL, 1, '', NULL, NULL, NULL, '2020-09-12 23:26:47', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('1422853947474972672', '0', 'develop', '程序开发', '', 'layui-icon layui-icon-fonts-code', 0, NULL, NULL, 5, '', '1', '超级管理员-system', '2021-08-04 17:36:31', '2021-08-04 17:38:10', '1', '超级管理员-system', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1422854088323895296', '1422853947474972672', 'codegenerate', '代码生成', '/DeveloperModule/CodeGenerate/Form', '', 0, NULL, NULL, 1, '', '1', '超级管理员-system', '2021-08-04 17:37:05', '2021-08-07 21:45:17', '1', '超级管理员-system', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('15', '1305783733730807808', 'monitor', '流程监控', '/WorkflowModule/Monitor/Index', NULL, 0, NULL, NULL, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('1512249037535973376', '0', 'form', '表单管理', '', 'layui-icon layui-icon-form', 0, NULL, NULL, 6, '', '1', '超级管理员-system', '2022-04-08 10:00:41', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1512249628219805696', '1512249037535973376', 'formdesigner', '表单设计', '/FormModule/FormDesigner/Index', '', 0, NULL, NULL, 5, '', '1', '超级管理员-system', '2022-04-08 10:03:02', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1513795361767034880', '1422853947474972672', 'AdminManage', '开发管理配置', '/DeveloperModule/AdminManage/Index', '', 0, NULL, NULL, 5, '', '1', '超级管理员-system', '2022-04-12 16:25:14', '2022-04-21 11:20:41', '1', '超级管理员-system', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('1520787377184968704', '99', 'request', '请示报告单', '', '', 2, '1520772493462343680', '', 1, '', '1', '超级管理员-system', '2022-05-01 23:29:00', NULL, '', '', 0, '', '', NULL, 1);
+INSERT INTO `sys_module` VALUES ('2', '1', 'company', '公司管理', '/OrganizationModule/Company/Index', '', 0, NULL, NULL, 1, '', NULL, NULL, NULL, '2020-09-01 23:08:36', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('3', '1', 'department', '部门管理', '/OrganizationModule/Department/Index', '', 0, NULL, NULL, 2, '', NULL, NULL, NULL, '2020-09-01 23:08:50', '1', '超级管理员', 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('4', '1', 'post', '岗位管理', '/OrganizationModule/Post/Index', NULL, 0, NULL, NULL, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('5', '1', 'role', '角色管理', '/OrganizationModule/Role/Index', NULL, 0, NULL, NULL, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('6', '1', 'group', '小组管理', '/OrganizationModule/Group/Index', NULL, 0, NULL, NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
+INSERT INTO `sys_module` VALUES ('99', '0', 'customform', '自定义表单', NULL, 'layui-icon layui-icon-template-1', 0, NULL, NULL, 9, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 1);
 
 -- ----------------------------
 -- Table structure for sys_post
@@ -886,9 +941,9 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES ('1', '1297427797396033536', '1298639734708506624', 'system', '超级管理员', '超级管理员', 'system', 'abbd26a09cf9b18e41cd7b3aa2b90e4c', 'system', 0, '', '', NULL, '', NULL, 99, 0, '', NULL, NULL, '2020-08-15 16:49:25', '2021-04-07 22:27:49', '1', '超级管理员-system', 0, NULL, NULL, 1, NULL);
-INSERT INTO `sys_user` VALUES ('1306793709295243264', '1297427797396033536', '1298639734708506624', '', '测试用户', '', 'ceshi', '888', '', 0, '', '', NULL, '', '', 99, 0, '', '1', '超级管理员', '2020-09-18 11:14:34', NULL, '', '', 0, '', '', 1, NULL);
-INSERT INTO `sys_user` VALUES ('1306793948387348480', '1297427797396033536', '1298639734708506624', '', '测试用户2', '', 'ceshi2', '888', '', 0, '', '', NULL, '', '', 99, 0, '', '1', '超级管理员', '2020-09-18 11:15:31', NULL, '', '', 0, '', '', 1, NULL);
+INSERT INTO `sys_user` VALUES ('1', '1297427797396033536', '1298639734708506624', 'system', '超级管理员', '超级管理员', 'system', 'abbd26a09cf9b18e41cd7b3aa2b90e4c', 'system', 0, '', '', NULL, '', NULL, -99, 0, '', NULL, NULL, '2020-08-15 16:49:25', '2021-04-07 22:27:49', '1', '超级管理员-system', 0, NULL, NULL, 1, NULL);
+INSERT INTO `sys_user` VALUES ('1306793709295243264', '1297427797396033536', '1298639734708506624', '', '测试用户', '', 'ceshi', '888', '', 0, '', '', NULL, '', '', -99, 0, '', '1', '超级管理员', '2020-09-18 11:14:34', NULL, '', '', 0, '', '', 1, NULL);
+INSERT INTO `sys_user` VALUES ('1306793948387348480', '1297427797396033536', '1298639734708506624', '', '测试用户2', '', 'ceshi2', '888', '', 0, '', '', NULL, '', '', -99, 0, '', '1', '超级管理员', '2020-09-18 11:15:31', NULL, '', '', 0, '', '', 1, NULL);
 INSERT INTO `sys_user` VALUES ('1467488981896794112', '1297427797396033536', '1298639734708506624', '', '测试3', '', 'ceshi3', '888', '', 0, '', '', NULL, '', '', 0, 0, '', '1', '?????-system', '2021-12-05 21:40:13', '2021-12-06 20:54:00', '1', '超级管理员-system', 0, '', '', 1, NULL);
 INSERT INTO `sys_user` VALUES ('1467840161441255424', '1297427797396033536', '1467839455787356160', '', '办公室', '', 'bangongshi', '888', '', 0, '', '', NULL, '', '', 0, 0, '', '1', '超级管理员-system', '2021-12-06 20:55:40', NULL, '', '', 0, '', '', 1, NULL);
 INSERT INTO `sys_user` VALUES ('1467840291007500288', '1297427797396033536', '1467839628752064512', '', '财务', '', 'caiwu', '888', '', 0, '', '', NULL, '', '', 0, 0, '', '1', '超级管理员-system', '2021-12-06 20:56:11', NULL, '', '', 0, '', '', 1, NULL);

@@ -75,7 +75,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             var already = moduleBLL.GetList(r => r.modulecode == entity.modulecode && r.module_id != keyValue);
             if (already == null)
             {
-                return Fail("岗位编码已存在，请重新输入!");
+                return Fail("菜单编码已存在，请重新输入!");
             }
 
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);

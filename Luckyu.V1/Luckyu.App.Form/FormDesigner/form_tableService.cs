@@ -61,12 +61,32 @@ namespace Luckyu.App.Form
                 table.Create(loginInfo);
                 trans.Insert(table);
                 var dbCols = new List<DbColumnInfo>();
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_id",
+                    ColumnDescription = "主键",
+                    DataType = "varchar",
+                    Length = 50,
+                    IsPrimarykey = true,
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_bno",
+                    ColumnDescription = "编号",
+                    DataType = "varchar",
+                    Length = 50,
+                });
+
                 for (int i = 0; i < cols.Count; i++)
                 {
                     var col = cols[i];
 
                     col.form_id = table.form_id;
+                    col.is_visible = 1;
                     col.column_id = SnowflakeHelper.NewCode();
+                    col.createtime = DateTime.Now;
+                    col.create_userid = loginInfo.user_id;
+                    col.create_username = $"{loginInfo.loginname}-{loginInfo.realname}";
 
                     var dbCol = new DbColumnInfo();
                     dbCol.DbColumnName = col.columncode;
@@ -83,105 +103,96 @@ namespace Luckyu.App.Form
                         }
                     }
 
+                    if (col.dbtype == "varchar" || col.dbtype == "text")
+                    {
+                        dbCol.IsNullable = true;
+                    }
+
                     dbCol.DataType = col.dbtype;
                     dbCol.Length = col.dblength;
                     dbCol.DecimalDigits = col.dbdigits;
                     dbCol.DefaultValue = col.defaultvalue;
                     dbCols.Add(dbCol);
                 }
+
                 dbCols.Add(new DbColumnInfo
                 {
-                    DbColumnName = "id",
-                    ColumnDescription = "主键",
-                    DataType = "varchar",
-                    Length = 50,
-                    IsPrimarykey = true,
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "bno",
-                    ColumnDescription = "编号",
-                    DataType = "varchar",
-                    Length = 50,
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "state",
-                    ColumnDescription = "状态",
-                    DataType = "int",
-                    Length = 2,
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "remark",
+                    DbColumnName = "l_remark",
+                    IsNullable = true,
                     ColumnDescription = "备注",
                     DataType = "varchar",
                     Length = 255,
                 });
                 dbCols.Add(new DbColumnInfo
                 {
-                    DbColumnName = "create_userid",
-                    ColumnDescription = "",
-                    DataType = "varchar",
-                    Length = 50,
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "create_username",
-                    ColumnDescription = "",
-                    DataType = "varchar",
-                    Length = 50,
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "createtime",
-                    ColumnDescription = "",
-                    DataType = "datetime",
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "edittime",
-                    ColumnDescription = "",
-                    DataType = "datetime",
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "edit_userid",
-                    ColumnDescription = "",
-                    DataType = "varchar",
-                    Length = 50,
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "edit_username",
-                    ColumnDescription = "",
-                    DataType = "varchar",
-                    Length = 255,
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "is_delete",
-                    ColumnDescription = "",
+                    DbColumnName = "l_state",
+                    ColumnDescription = "状态",
                     DataType = "int",
                     Length = 2,
                 });
                 dbCols.Add(new DbColumnInfo
                 {
-                    DbColumnName = "deletetime",
-                    ColumnDescription = "",
-                    DataType = "datetime",
-                });
-                dbCols.Add(new DbColumnInfo
-                {
-                    DbColumnName = "delete_userid",
-                    ColumnDescription = "",
+                    DbColumnName = "l_create_userid",
+                    IsNullable = true,
                     DataType = "varchar",
                     Length = 50,
                 });
                 dbCols.Add(new DbColumnInfo
                 {
-                    DbColumnName = "delete_username",
-                    ColumnDescription = "",
+                    DbColumnName = "l_create_username",
+                    IsNullable = true,
+                    DataType = "varchar",
+                    Length = 50,
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_createtime",
+                    IsNullable = true,
+                    DataType = "datetime",
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_edittime",
+                    IsNullable = true,
+                    DataType = "datetime",
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_edit_userid",
+                    IsNullable = true,
+                    DataType = "varchar",
+                    Length = 50,
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_edit_username",
+                    IsNullable = true,
+                    DataType = "varchar",
+                    Length = 255,
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_is_delete",
+                    DataType = "int",
+                    Length = 2,
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_deletetime",
+                    IsNullable = true,
+                    DataType = "datetime",
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_delete_userid",
+                    IsNullable = true,
+                    DataType = "varchar",
+                    Length = 50,
+                });
+                dbCols.Add(new DbColumnInfo
+                {
+                    DbColumnName = "l_delete_username",
+                    IsNullable = true,
                     DataType = "varchar",
                     Length = 255,
                 });
@@ -212,7 +223,84 @@ namespace Luckyu.App.Form
             var trans = repo.BeginTrans();
             try
             {
+                table.edittime = DateTime.Now;
+                table.edit_userid = loginInfo.user_id;
+                table.edit_username = $"{loginInfo.loginname}-{loginInfo.realname}";
+                trans.UpdateOnlyColumns(table, r => new
+                {
+                    r.edittime,
+                    r.edit_userid,
+                    r.edit_username,
+                    r.formhtml,
+                    r.formjson,
+                    r.formname,
+                    r.remark
+                });
 
+                var oldCols = trans.db.Queryable<form_columnEntity>().Where(r => r.form_id == keyValue).ToList();
+                // 旧有新没有 隐藏 不要直接删除列
+                var oldExsits = oldCols.Where(r => !cols.Exists(t => t.columncode == r.columncode)).ToList();
+                trans.db.Updateable(oldExsits).SetColumns(r => new form_columnEntity
+                {
+                    is_delete = 1,
+                    deletetime = DateTime.Now,
+                    delete_userid = loginInfo.user_id,
+                    delete_username = $"{loginInfo.loginname}-{loginInfo.realname}"
+                }).ExecuteCommand();
+
+                // 新有旧没有 增加列
+                var currentExsits = cols.Where(r => !oldCols.Exists(t => t.columncode == r.columncode)).ToList();
+                for (int i = 0; i < cols.Count; i++)
+                {
+                    var col = cols[i];
+
+                    col.form_id = table.form_id;
+                    col.is_visible = 1;
+                    col.column_id = SnowflakeHelper.NewCode();
+                    col.createtime = DateTime.Now;
+                    col.create_userid = loginInfo.user_id;
+                    col.create_username = $"{loginInfo.loginname}-{loginInfo.realname}";
+
+                    var dbCol = new DbColumnInfo();
+                    dbCol.DbColumnName = col.columncode;
+                    dbCol.ColumnDescription = col.columnname;
+                    if (trans.db.CurrentConnectionConfig.DbType == DbType.SqlServer)
+                    {
+                        if (col.dbtype == "varchar")
+                        {
+                            col.dbtype = "nvarchar";
+                        }
+                        else if (col.dbtype == "text")
+                        {
+                            col.dbtype = "nvarchar(max)";
+                        }
+                    }
+
+                    if (col.dbtype == "varchar" || col.dbtype == "text")
+                    {
+                        dbCol.IsNullable = true;
+                    }
+
+                    dbCol.DataType = col.dbtype;
+                    dbCol.Length = col.dblength;
+                    dbCol.DecimalDigits = col.dbdigits;
+                    dbCol.DefaultValue = col.defaultvalue;
+                    trans.db.DbMaintenance.AddColumn(dbtableName, dbCol);
+                }
+
+                // 新有 旧有 修改属性
+                var allExsits = cols.Where(r => !oldCols.Exists(t => t.columncode == r.columncode)).ToList();
+                for (int i = 0; i < allExsits.Count; i++)
+                {
+                    var col = allExsits[i];
+                    trans.db.Updateable(col).UpdateColumns(r => new
+                    {
+                        r.columnconfig,
+                        r.columnname,
+                        r.defaultvalue,
+                        r.formlength,
+                    }).ExecuteCommand();
+                }
 
                 trans.Commit();
             }

@@ -30,7 +30,7 @@ namespace Luckyu.Module.MobileModule.Controllers
             ViewBag.UserInfo = loginInfo;
 
             List<sys_moduleEntity> listSelfModule;
-            var modules = moduleBLL.GetModuleTreeByUser(loginInfo, 1, out listSelfModule);
+            var modules = moduleBLL.GetModuleTreeByUser(loginInfo, new List<int> { 1 }, out listSelfModule);
             loginInfo.module_ids = listSelfModule.Select(r => r.module_id).ToList();
 
             return View();

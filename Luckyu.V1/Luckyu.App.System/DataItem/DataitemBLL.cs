@@ -86,11 +86,11 @@ namespace Luckyu.App.System
             }).ToList();
             return tree;
         }
-        public List<eleTree> GetTree(int isSystem)
+        public List<eleTree> GetTree(bool isSystem)
         {
             var all = GetAllClassifyByCache();
             all = all.Where(r => r.is_enable == 1).ToList();
-            if (isSystem == 0)
+            if (!isSystem)
             {
                 all = all.Where(r => r.is_system == 0).ToList();
             }
@@ -147,6 +147,11 @@ namespace Luckyu.App.System
         public JqgridPageResponse<sys_dataitem_detailEntity> DetailPage(JqgridPageRequest jqpage, string classifyId, bool isSystem)
         {
             var page = dataitemdetailService.Page(jqpage, classifyId, isSystem);
+            return page;
+        }
+        public JqgridPageResponse<sys_dataitem_detailEntity> DetailSelectPage(JqgridPageRequest jqpage, string classifyId)
+        {
+            var page = dataitemdetailService.SelectPage(jqpage, classifyId);
             return page;
         }
 

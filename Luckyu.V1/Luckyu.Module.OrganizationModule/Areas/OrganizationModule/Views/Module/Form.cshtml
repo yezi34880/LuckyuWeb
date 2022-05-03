@@ -18,10 +18,16 @@
             <input id="modulename" type="text" class="layui-input" lay-verify="required" />
         </div>
     </div>
-    <div class="form-item layui-col-xs6">
+    <div class="form-item layui-col-xs12">
         <label class="layui-form-label">上级菜单</label>
         <div class="layui-input-block">
             <div id="parent_id" class="xm-select"></div>
+        </div>
+    </div>
+    <div class="form-item layui-col-xs6">
+        <label class="layui-form-label">菜单类型</label>
+        <div class="layui-input-block">
+            <div id="moduletype" class="xm-select" lay-verify="required"></div>
         </div>
     </div>
     <div class="form-item layui-col-xs6">
@@ -30,10 +36,16 @@
             <input id="moduleicon" type="text" class="layui-input" />
         </div>
     </div>
-    <div class="form-item layui-col-xs12">
+    <div class="form-item layui-col-xs12" id="divmoduleurl">
         <label class="layui-form-label">地址</label>
         <div class="layui-input-block">
             <input id="moduleurl" type="text" class="layui-input" />
+        </div>
+    </div>
+    <div class="form-item layui-col-xs12" id="divformname" style="display:none;">
+        <label class="layui-form-label">自定义表单</label>
+        <div class="layui-input-block">
+            <div id="form_id" class="xm-select" luckyu-type="datasource" luckyu-url="/FormModule/FormDesigner/GetSelect"></div>
         </div>
     </div>
     <div class="form-item layui-col-xs12">
@@ -48,7 +60,7 @@
             <input id="sort" type="text" class="layui-input" lay-verify="number" />
         </div>
     </div>
-    <div class="form-item layui-col-xs6">
+    <div class="form-item layui-col-xs12">
         <div class="layui-input-block">
             <input type="checkbox" id="is_enable" title="是否有效" checked />
         </div>

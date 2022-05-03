@@ -48,7 +48,14 @@
                             var placeholder = self.attr("placeholder");
                             var multiple = self.attr("luckyu-multiple");
                             multiple = multiple === "true" || multiple == 1 ? true : false;
-                            self.initDataSource({ url: url, nameField: name, valueField: value, multiple: multiple, initValue: initvalue, tips: placeholder });
+                            self.initDataSource({
+                                url: url,
+                                nameField: name,
+                                valueField: value,
+                                multiple: multiple,
+                                initValue: initvalue,
+                                tips: placeholder
+                            });
                         }
                         else if (type === "datalocal") {
                             var data = self.attr("luckyu-data");

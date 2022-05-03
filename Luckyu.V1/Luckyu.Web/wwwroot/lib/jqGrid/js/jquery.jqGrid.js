@@ -1748,14 +1748,15 @@
                             if (this.footers.length > 0) { this.footers[idx + p.nv].style.width = nw + "px"; }
                             p.colModel[idx + p.nv].width = nw;
                         } else {
-                            p.tblwidth = this.newWidth || p.tblwidth;
-                            $('table:first', this.bDiv).css("width", p.tblwidth + "px");
-                            $('table:first', this.hDiv).css("width", p.tblwidth + "px");
-                            this.hDiv.scrollLeft = this.bDiv.scrollLeft;
-                            if (p.footerrow) {
-                                $('table:first', this.sDiv).css("width", p.tblwidth + "px");
-                                this.sDiv.scrollLeft = this.bDiv.scrollLeft;
-                            }
+                            // 2022-4-22 去掉这段 否则 拖动表头后对不齐
+                            //p.tblwidth = this.newWidth || p.tblwidth;
+                            //$('table:first', this.bDiv).css("width", p.tblwidth + "px");
+                            //$('table:first', this.hDiv).css("width", p.tblwidth + "px");
+                            //this.hDiv.scrollLeft = this.bDiv.scrollLeft;
+                            //if (p.footerrow) {
+                            //    $('table:first', this.sDiv).css("width", p.tblwidth + "px");
+                            //    this.sDiv.scrollLeft = this.bDiv.scrollLeft;
+                            //}
                         }
 
                         if (events) {
