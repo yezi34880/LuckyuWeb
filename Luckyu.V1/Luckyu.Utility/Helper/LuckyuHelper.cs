@@ -22,5 +22,15 @@ namespace Luckyu.Utility
             return false;
 #endif
         }
+
+        /// <summary>
+        /// 获取Type默认值
+        /// </summary>
+        /// <param name="targetType"></param>
+        /// <returns></returns>
+        public static object DefaultForType(Type targetType)
+        {
+            return targetType.IsValueType ? Activator.CreateInstance(targetType) : null;
+        }
     }
 }

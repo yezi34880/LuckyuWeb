@@ -53,6 +53,11 @@ namespace Luckyu.App.Form
         {
             var formEntity = strEntity.ToObject<form_tableEntity>();
             var list = formEntity.formjson.ToObject<List<form_columnEntity>>();
+            var codealready = GetTableEntity(r => r.form_id != keyValue && r.formcode == formEntity.formcode);
+            if (codealready != null)
+            {
+                return ResponseResult.Fail<form_tableEntity>("表单编码不能重复");
+            }
             if (keyValue.IsEmpty())
             {
                 tableService.InsertTable(formEntity, list, loginInfo);

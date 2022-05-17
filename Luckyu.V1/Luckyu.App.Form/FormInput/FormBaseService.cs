@@ -1,9 +1,11 @@
 ﻿using Luckyu.App.Organization;
 using Luckyu.DataAccess;
+using Luckyu.Log;
 using Luckyu.Utility;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,10 +34,11 @@ namespace Luckyu.App.Form
             {
                 var strAuth = new StringBuilder();
                 strAuth.Append($" l_create_userid = @userid ");
+                sqlparams.Add(new SugarParameter("userid", loginInfo.user_id));
                 if (!dataauth.IsAll)
                 {
                     var authusers = dataauth.AllUserIds;
-                    var strAuth1 = new StringBuilder($" l_create_userid in @authusers ");
+                    var strAuth1 = new StringBuilder($" l_create_userid in (@authusers) ");
                     sqlparams.Add(new SugarParameter("authusers", authusers));
                     if (dataauth.staterange == 0)
                     {
@@ -55,6 +58,7 @@ namespace Luckyu.App.Form
             else
             {
                 sql.Append($" and l_create_userid = @userid ");
+                sqlparams.Add(new SugarParameter("userid", loginInfo.user_id));
             }
             #endregion
 
@@ -93,6 +97,30 @@ namespace Luckyu.App.Form
             return dicEntity;
         }
 
+        /// <summary>
+        /// 返回列定义数据源
+        /// </summary>
+        /// <param name="formcode"></param>
+        /// <param name="columncode"></param>
+        /// <returns></returns>
+        public DataTable GetDataSource(string formcode, string columncode)
+        {
+            var repo = new Repository();
+            var formEntity = repo.db.Queryable<form_tableEntity>().Where(r => r.formcode == formcode).First();
+            if (formEntity == null)
+            {
+                return null;
+            }
+            var formColumn = repo.db.Queryable<form_columnEntity>().Where(r => r.form_id == formEntity.form_id && r.columncode == columncode).First();
+            if (formColumn == null)
+            {
+                return null;
+            }
+            var sql = formColumn.datasource;
+            var dt = repo.db.Ado.GetDataTable(sql);
+            return dt;
+        }
+
         public void DeleteForm(string form_id, string keyValue, UserModel loginInfo)
         {
             var trans = new Repository().BeginTrans();
@@ -124,7 +152,7 @@ where l_id = @keyValue ";
             }
         }
 
-        public void SaveForm(string form_id, string keyValue, Dictionary<string, object> dicEntity, UserModel loginInfo)
+        public string SaveForm(string form_id, string keyValue, Dictionary<string, object> dicEntity, UserModel loginInfo)
         {
             var trans = new Repository().BeginTrans();
 
@@ -137,11 +165,67 @@ where l_id = @keyValue ";
                 }
                 if (keyValue.IsEmpty())
                 {
+                    var dbCols = trans.db.DbMaintenance.GetColumnInfosByTableName(formEntity.dbname);
 
+                    var strFields = new StringBuilder();
+                    var strValues = new StringBuilder();
+                    var sqlparams = new List<SugarParameter>();
+
+                    for (int i = 0; i < dbCols.Count; i++)
+                    {
+                        var dbcol = dbCols[i];
+                        strFields.Append($"{dbcol.DbColumnName},");
+                        strFields.Append($"@{dbcol.DbColumnName},");
+                        if (dicEntity.ContainsKey(dbcol.DbColumnName))
+                        {
+                            sqlparams.Add(new SugarParameter(dbcol.DbColumnName, dicEntity[dbcol.DbColumnName]));
+                        }
+                        else
+                        {
+                            switch (dbcol.DbColumnName)
+                            {
+                                case "l_id":
+                                    keyValue = SnowflakeHelper.NewCode();
+                                    sqlparams.Add(new SugarParameter(dbcol.DbColumnName, keyValue));
+                                    break;
+                                case "l_create_userid":
+                                    sqlparams.Add(new SugarParameter(dbcol.DbColumnName, loginInfo.user_id));
+                                    break;
+                                case "l_create_username":
+                                    sqlparams.Add(new SugarParameter(dbcol.DbColumnName, $"{loginInfo.loginname}-{loginInfo.realname}"));
+                                    break;
+                                case "l_createtime":
+                                    sqlparams.Add(new SugarParameter(dbcol.DbColumnName, DateTime.Now));
+                                    break;
+                                case "l_state":
+                                    sqlparams.Add(new SugarParameter(dbcol.DbColumnName, 0));
+                                    break;
+                                case "l_bno":
+                                    sqlparams.Add(new SugarParameter(dbcol.DbColumnName, ""));
+                                    break;
+                                default:
+                                    sqlparams.Add(new SugarParameter(dbcol.DbColumnName, LuckyuHelper.DefaultForType(dbcol.PropertyType)));
+                                    break;
+                            }
+                        }
+                    }
+
+                    var sql = $"insert into {formEntity.dbname} ( {strFields.ToString().TrimEnd(',')} ) value ( {strValues.ToString().TrimEnd(',')} )";
+                    trans.db.Ado.ExecuteCommand(sql, sqlparams);
                 }
                 else
                 {
+                    var strFields = new StringBuilder();
+                    var sqlparams = new List<SugarParameter>();
+                    sqlparams.Add(new SugarParameter("keyValue", keyValue));
+                    foreach (var dic in dicEntity)
+                    {
+                        strFields.Append($"{dic.Key} = @{dic.Key},");
+                        sqlparams.Add(new SugarParameter(dic.Key, dic.Value));
+                    }
 
+                    var sql = $"update {formEntity.dbname} set {strFields} where l_id = @keyValue ";
+                    trans.db.Ado.ExecuteCommand(sql, sqlparams);
                 }
                 trans.Commit();
             }
@@ -150,7 +234,7 @@ where l_id = @keyValue ";
                 trans.Rollback();
                 throw ex;
             }
-
+            return keyValue;
         }
     }
 }

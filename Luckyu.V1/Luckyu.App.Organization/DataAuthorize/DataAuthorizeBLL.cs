@@ -69,12 +69,12 @@ namespace Luckyu.App.Organization
                 exp = exp.LinqAnd(r => r.modulename.Contains(modulenameOrformid));
             }
             var listdata = GetList(exp);
-            var data = new DataAuthorizeModel();
-            data.edittype = 0;
             if (listdata.IsEmpty())
             {
-                return data;
+                return null;
             }
+            var data = new DataAuthorizeModel();
+            data.edittype = 0;
             data.staterange = listdata.Exists(r => r.staterange == 1) ? 1 : 0;
             if (listdata.Exists(r => r.staterange == 2))
             {

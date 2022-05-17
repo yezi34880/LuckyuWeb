@@ -41,9 +41,34 @@ namespace Luckyu.App.Form
         public string columnname { get; set; }
 
         /// <summary>
-        ///  columnconfig Json配置 dataitem { code:"" }
+        /// dateformat 格式化
         /// </summary>
-        public string columnconfig { get; set; }
+        public string dateformat { get; set; }
+
+        /// <summary>
+        ///  selecttype 下拉框类型 dataitem datasource datalocal
+        /// </summary>
+        public string selecttype { get; set; }
+
+        /// <summary>
+        ///  dataitemcode
+        /// </summary>
+        public string dataitemcode { get; set; }
+
+        /// <summary>
+        ///  datasource
+        /// </summary>
+        public string datasource { get; set; }
+
+        /// <summary>
+        ///  datalocal
+        /// </summary>
+        public string datalocal { get; set; }
+
+        /// <summary>
+        ///  multiple  是否多选
+        /// </summary>
+        public int multiple { get; set; }
 
         /// <summary>
         ///  placeholder 标签显示名

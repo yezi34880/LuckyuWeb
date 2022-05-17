@@ -1,6 +1,4 @@
-﻿
-
-using Luckyu.App.Organization;
+﻿using Luckyu.App.Organization;
 using Luckyu.App.System;
 using Luckyu.DataAccess;
 using Luckyu.Log;
@@ -59,6 +57,7 @@ namespace Luckyu.App.Form
             try
             {
                 table.Create(loginInfo);
+                table.dbname = dbtableName;
                 trans.Insert(table);
                 var dbCols = new List<DbColumnInfo>();
                 dbCols.Add(new DbColumnInfo
@@ -80,6 +79,10 @@ namespace Luckyu.App.Form
                 for (int i = 0; i < cols.Count; i++)
                 {
                     var col = cols[i];
+                    if (col.columntype == "upload")
+                    {
+                        continue;
+                    }
 
                     col.form_id = table.form_id;
                     col.is_visible = 1;
@@ -253,6 +256,10 @@ namespace Luckyu.App.Form
                 for (int i = 0; i < cols.Count; i++)
                 {
                     var col = cols[i];
+                    if (col.columntype == "upload")
+                    {
+                        continue;
+                    }
 
                     col.form_id = table.form_id;
                     col.is_visible = 1;
@@ -295,7 +302,7 @@ namespace Luckyu.App.Form
                     var col = allExsits[i];
                     trans.db.Updateable(col).UpdateColumns(r => new
                     {
-                        r.columnconfig,
+                        r.dataitemcode,
                         r.columnname,
                         r.defaultvalue,
                         r.formlength,

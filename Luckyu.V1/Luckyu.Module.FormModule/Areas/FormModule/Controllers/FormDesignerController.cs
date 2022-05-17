@@ -18,7 +18,7 @@ namespace Luckyu.Module.FormModule.Controllers
     public class FormDesignerController : MvcControllerBase
     {
         #region Var
-        FormDesignerBLL formBLL = new FormDesignerBLL();
+        FormDesignerBLL designerBLL = new FormDesignerBLL();
         #endregion
 
         #region Index
@@ -29,11 +29,9 @@ namespace Luckyu.Module.FormModule.Controllers
         public IActionResult Page(JqgridPageRequest jqPage)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var page = formBLL.Page(jqPage, loginInfo);
+            var page = designerBLL.Page(jqPage, loginInfo);
             return Json(page);
         }
-
-
         #endregion
 
         #region Form
@@ -44,7 +42,7 @@ namespace Luckyu.Module.FormModule.Controllers
 
         public IActionResult GetFormData(string keyValue)
         {
-            var form = formBLL.GetTableEntity(r => r.form_id == keyValue);
+            var form = designerBLL.GetTableEntity(r => r.form_id == keyValue);
             var dic = new Dictionary<string, object>();
             dic.Add("Form", form);
             return Success(dic);
@@ -53,7 +51,7 @@ namespace Luckyu.Module.FormModule.Controllers
         public IActionResult SaveForm(string keyValue, string strEntity)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
-            var res = formBLL.SaveForm(keyValue, strEntity, loginInfo);
+            var res = designerBLL.SaveForm(keyValue, strEntity, loginInfo);
             return Json(res);
         }
         #endregion
@@ -64,14 +62,14 @@ namespace Luckyu.Module.FormModule.Controllers
         /// </summary>
         public IActionResult GetSelect()
         {
-            var data = formBLL.GetTableSelectList(r => true);
+            var data = designerBLL.GetTableSelectList(r => true);
             return Success(data);
         }
 
         public IActionResult GetTableInfo(string form_id)
         {
-            var table = formBLL.GetTableEntity(r => r.form_id == form_id);
-            var cols = formBLL.GetColumnList(r => r.form_id == form_id);
+            var table = designerBLL.GetTableEntity(r => r.form_id == form_id);
+            var cols = designerBLL.GetColumnList(r => r.form_id == form_id);
             var data = new
             {
                 FormTable = table,

@@ -84,23 +84,27 @@ namespace Luckyu.App.OA
                 return ResponseResult.Fail(MessageString.NoData);
             }
             var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
-            if (dataauth.edittype == 0)
+            if (dataauth != null)
             {
-                if (entity.state != (int)StateEnum.Draft)
+                if (dataauth.edittype == 0)
                 {
-                    return ResponseResult.Fail("只有起草状态才能删除");
+                    if (entity.state != (int)StateEnum.Draft)
+                    {
+                        return ResponseResult.Fail("只有起草状态才能删除");
+                    }
+                    if (entity.create_userid != loginInfo.user_id)
+                    {
+                        return ResponseResult.Fail("只创建人才能删除");
+                    }
                 }
-                if (entity.create_userid != loginInfo.user_id)
+                else if (dataauth.edittype == 1)
                 {
-                    return ResponseResult.Fail("只创建人才能删除");
+                    if (entity.state != (int)StateEnum.Draft)
+                    {
+                        return ResponseResult.Fail("只有起草状态才能删除");
+                    }
                 }
-            }
-            else if (dataauth.edittype == 1)
-            {
-                if (entity.state != (int)StateEnum.Draft)
-                {
-                    return ResponseResult.Fail("只有起草状态才能删除");
-                }
+
             }
             carorderService.DeleteForm(entity, loginInfo);
             return ResponseResult.Success();
@@ -118,24 +122,29 @@ namespace Luckyu.App.OA
                     return ResponseResult.Fail<oa_carorderEntity>(MessageString.NoData);
                 }
                 var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
-                if (dataauth.edittype == 0)
+                if (dataauth != null)
                 {
-                    if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                    if (dataauth.edittype == 0)
                     {
-                        return ResponseResult.Fail<oa_carorderEntity>("只有起草状态才能编辑");
+                        if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                        {
+                            return ResponseResult.Fail<oa_carorderEntity>("只有起草状态才能编辑");
+                        }
+                        if (old.create_userid != loginInfo.user_id)
+                        {
+                            return ResponseResult.Fail<oa_carorderEntity>("只创建人才能删除");
+                        }
                     }
-                    if (old.create_userid != loginInfo.user_id)
+                    else if (dataauth.edittype == 1)
                     {
-                        return ResponseResult.Fail<oa_carorderEntity>("只创建人才能删除");
+                        if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                        {
+                            return ResponseResult.Fail<oa_carorderEntity>("只有起草状态才能删除");
+                        }
                     }
+
                 }
-                else if (dataauth.edittype == 1)
-                {
-                    if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
-                    {
-                        return ResponseResult.Fail<oa_carorderEntity>("只有起草状态才能删除");
-                    }
-                }
+
             }
 
             // 统一的后台验证

@@ -84,29 +84,33 @@ namespace Luckyu.App.OA
                 return ResponseResult.Fail(MessageString.NoData);
             }
             var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
-            if (dataauth.edittype == 0)
+            if (dataauth != null)
             {
-                var inWorkflow = taskBLL.IsInWorkflow(keyValue);
-                if (inWorkflow)
+                if (dataauth.edittype == 0)
                 {
-                    return ResponseResult.Fail("该单据已提交进入流程，不能删除");
+                    var inWorkflow = taskBLL.IsInWorkflow(keyValue);
+                    if (inWorkflow)
+                    {
+                        return ResponseResult.Fail("该单据已提交进入流程，不能删除");
+                    }
+                    if (entity.state != (int)StateEnum.Draft)
+                    {
+                        return ResponseResult.Fail("只有起草状态才能删除");
+                    }
+                    if (entity.create_userid != loginInfo.user_id)
+                    {
+                        return ResponseResult.Fail("只创建人才能删除");
+                    }
                 }
-                if (entity.state != (int)StateEnum.Draft)
+                else if (dataauth.edittype == 1)
                 {
-                    return ResponseResult.Fail("只有起草状态才能删除");
-                }
-                if (entity.create_userid != loginInfo.user_id)
-                {
-                    return ResponseResult.Fail("只创建人才能删除");
+                    if (entity.state != (int)StateEnum.Draft)
+                    {
+                        return ResponseResult.Fail("只有起草状态才能删除");
+                    }
                 }
             }
-            else if (dataauth.edittype == 1)
-            {
-                if (entity.state != (int)StateEnum.Draft)
-                {
-                    return ResponseResult.Fail("只有起草状态才能删除");
-                }
-            }
+
             leaveService.DeleteForm(entity, loginInfo);
             return ResponseResult.Success();
         }
@@ -123,34 +127,38 @@ namespace Luckyu.App.OA
                     return ResponseResult.Fail<oa_leaveEntity>(MessageString.NoData);
                 }
                 var dataauth = dataBLL.GetDataAuthByUser(DataAuthorizeModuleEnum.Leave, loginInfo);
-                if (dataauth.edittype == 0)
+                if (dataauth != null)
                 {
-                    var inWorkflow = taskBLL.IsInWorkflow(keyValue);
-                    if (inWorkflow)
+                    if (dataauth.edittype == 0)
                     {
-                        return ResponseResult.Fail<oa_leaveEntity>("该单据已提交进入流程，不能删除");
+                        var inWorkflow = taskBLL.IsInWorkflow(keyValue);
+                        if (inWorkflow)
+                        {
+                            return ResponseResult.Fail<oa_leaveEntity>("该单据已提交进入流程，不能删除");
+                        }
+                        if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                        {
+                            return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能编辑");
+                        }
+                        if (old.create_userid != loginInfo.user_id)
+                        {
+                            return ResponseResult.Fail<oa_leaveEntity>("只创建人才能删除");
+                        }
                     }
-                    if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                    else if (dataauth.edittype == 1)
                     {
-                        return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能编辑");
-                    }
-                    if (old.create_userid != loginInfo.user_id)
-                    {
-                        return ResponseResult.Fail<oa_leaveEntity>("只创建人才能删除");
+                        var inWorkflow = taskBLL.IsInWorkflow(keyValue);
+                        if (inWorkflow)
+                        {
+                            return ResponseResult.Fail<oa_leaveEntity>("该单据已提交进入流程，不能删除");
+                        }
+                        if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
+                        {
+                            return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能删除");
+                        }
                     }
                 }
-                else if (dataauth.edittype == 1)
-                {
-                    var inWorkflow = taskBLL.IsInWorkflow(keyValue);
-                    if (inWorkflow)
-                    {
-                        return ResponseResult.Fail<oa_leaveEntity>("该单据已提交进入流程，不能删除");
-                    }
-                    if (old.state != (int)StateEnum.Draft && old.state != (int)StateEnum.Reject)
-                    {
-                        return ResponseResult.Fail<oa_leaveEntity>("只有起草状态才能删除");
-                    }
-                }
+
             }
 
             // 统一的后台验证

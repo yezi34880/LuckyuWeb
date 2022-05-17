@@ -14,18 +14,23 @@ var bootstrap = function (layui) {
             page.bind();
             page.initData();
         },
+        initCustomControl: function (divForm) {
+            $(divForm).initControl();
+        },
         bind: function () {
             var loading = luckyu.layer.loading();
 
-            var compnent = document.getElementById("compnent1");
-            new Sortable(compnent, {
-                group: {
-                    name: 'shared',
-                    pull: 'clone',
-                    put: false // 不允许拖拽进这个列表
-                },
-                animation: 150,
-                sort: false // 设为false，禁止sort
+            $(".component-group").each(function () {
+                var compnent = this;
+                new Sortable(compnent, {
+                    group: {
+                        name: 'shared',
+                        pull: 'clone',
+                        put: false // 不允许拖拽进这个列表
+                    },
+                    animation: 150,
+                    sort: false // 设为false，禁止sort
+                });
             });
 
             var formBuilder = document.getElementById("formBuilder");
@@ -64,7 +69,8 @@ var bootstrap = function (layui) {
                     area: ['750px', '600px'], //宽高
                     success: function (layero, layerindex) {
                         debugger;
-                        $(layero).find("form.layui-form").initControl();
+                        var divForm = $(layero).find("form.layui-form");
+                        page.initCustomControl(divForm);
                     }
                 });
             });
@@ -283,6 +289,84 @@ var bootstrap = function (layui) {
                 }
             });
 
+            // 时期时间 格式
+            $("#dateformat").change(function (e) {
+                var divActive = $("#formBuilder div.form-item.active");
+                if (!!divActive && divActive.length > 0) {
+                    var divID = divActive.attr("id");
+                    var ctrlID = divID.substr(3, divID.length - 3);
+                    var defaultvalue = $(this).val();
+                    var columntype = divActive.attr("columntype");
+                    switch (columntype) {
+                        case "datetime": {
+                            $("#" + ctrlID).off("focus").on("focus", function () {
+                                WdatePicker({
+                                    dateFmt: dateformat
+                                });
+                            });
+                            break;
+                        }
+                    }
+
+                    var colObjects = formJson.filter(t => t.columncode == ctrlID);
+                    if (!!colObjects && colObjects.length > 0) {
+                        var colObject = colObjects[0];
+                        colObject.defaultvalue = defaultvalue;
+                    }
+                }
+            });
+
+            // #region 下拉框
+            // 下拉框类型
+            xmSelect.render({
+                el: '#selecttype',
+                radio: true,
+                clickClose: true,
+                model: {
+                    label: {
+                        type: 'text',
+                        text: {
+                            //左边拼接的字符
+                            left: '',
+                            //右边拼接的字符
+                            right: '',
+                            //中间的分隔符
+                            separator: ', ',
+                        },
+                    }
+                },
+                data: [
+                    { name: '数据字典', value: "dataitem" },
+                    { name: '数据库数据源', value: "datasource" },
+                    { name: '本地数据源', value: "datalocal" },
+                ],
+                on: function (xmdata) {
+                    if (xmdata.arr.length > 0) {
+                        var val = xmdata.arr[0].value;
+                        $("#type_" + val).show().siblings().hide();
+
+                        var divActive = $("#formBuilder div.form-item.active");
+                        if (!!divActive && divActive.length > 0) {
+                            var divID = divActive.attr("id");
+                            var ctrlID = divID.substr(3, divID.length - 3);
+
+                            $("#" + ctrlID).attr("luckyu-type", val);
+                            switch (val) {
+                                case "datasource":
+                                    var url = "/FormModule/FormInput/GetDataSource?formcode=" + $("#formcode") + "&columncode=" + ctrlID;
+                                    $("#" + ctrlID).attr("luckyu-url", url);
+                                    break;
+                                default:
+                                    $("#" + ctrlID).removeAttr("luckyu-url");
+                                    break;
+                            }
+
+                        }
+
+
+                    }
+                }
+            })
             // 数据字典数据源设置
             $("#dataitem_name,#dataitem_nameSelect").click(function () {
                 luckyu.layer.layerFormTop({
@@ -307,10 +391,7 @@ var bootstrap = function (layui) {
                                     var colObjects = formJson.filter(t => t.columncode == ctrlID);
                                     if (!!colObjects && colObjects.length > 0) {
                                         var colObject = colObjects[0];
-                                        colObject.columnconfig = {
-                                            itemcode: dataitem.code,
-                                            itemname: dataitem.name
-                                        };
+                                        colObject.dataitemcode = dataitem.code;
                                     }
                                 }
 
@@ -321,7 +402,39 @@ var bootstrap = function (layui) {
                 });
 
             });
+            // 本地数据库
+            $("#datasource").change(function () {
+                var divActive = $("#formBuilder div.form-item.active");
+                if (!!divActive && divActive.length > 0) {
+                    var divID = divActive.attr("id");
+                    var ctrlID = divID.substr(3, divID.length - 3);
+                    var datasource = $(this).val();
+                    var colObjects = formJson.filter(t => t.columncode == ctrlID);
+                    if (!!colObjects && colObjects.length > 0) {
+                        var colObject = colObjects[0];
+                        colObject.datasource = datasource;
+                    }
+                }
 
+            });
+            // 本地数据库
+            $("#datalocal").change(function () {
+                var divActive = $("#formBuilder div.form-item.active");
+                if (!!divActive && divActive.length > 0) {
+                    var divID = divActive.attr("id");
+                    var ctrlID = divID.substr(3, divID.length - 3);
+                    var datalocal = $(this).val();
+                    $("#" + ctrlID).attr("luckyu-local", datalocal);
+                    var colObjects = formJson.filter(t => t.columncode == ctrlID);
+                    if (!!colObjects && colObjects.length > 0) {
+                        var colObject = colObjects[0];
+                        colObject.datalocal = datalocal;
+                    }
+                }
+
+            });
+
+            // #endregion 
 
             layui.layer.close(loading);
         },
@@ -356,7 +469,7 @@ var bootstrap = function (layui) {
                             break;
                         }
                         case "textarea": {
-                            item.dblength = 500;
+                            item.dblength = !!item.dblength ? item.dblength : 500;
                             item.dbtype = !!item.dbtype ? item.dbtype : "varchar";
                             item.columnname = !!item.columnname ? item.columnname : "多行文本";
                             formHtml += '\
@@ -368,34 +481,24 @@ var bootstrap = function (layui) {
                 </div>';
                             break;
                         }
-                        case "date": {
-                            item.dbtype = !!item.dbtype ? item.dbtype : "datetime";
-                            item.columnname = !!item.columnname ? item.columnname : "日期";
-                            formHtml += '\
-                <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
-                    <label class="layui-form-label">'+ item.columnname + '</label>\
-                    <div class="layui-input-block">\
-                        <input id="'+ item.columncode + '" type="text" class="layui-input Wdate" onfocus="WdatePicker({ dateFmt: \'yyyy-MM-dd\' })"  placeholder="' + item.placeholder + '" value="' + item.defaultvalue + '" />\
-                    </div>\
-                </div>';
-                            break;
-                        }
                         case "datetime": {
                             item.dbtype = !!item.dbtype ? item.dbtype : "datetime";
                             item.columnname = !!item.columnname ? item.columnname : "日期时间";
+                            item.dateformat = !!item.dateformat ? item.dateformat : "yyyy-MM-dd";
+
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
                     <label class="layui-form-label">'+ item.columnname + '</label>\
                     <div class="layui-input-block">\
-                        <input id="'+ item.columncode + '" type="text" class="layui-input Wdate" onfocus="WdatePicker({ dateFmt: \'yyyy-MM-dd HH:mm\' })"  placeholder="' + item.placeholder + '" value="' + item.defaultvalue + '" />\
+                        <input id="'+ item.columncode + '" type="text" class="layui-input Wdate" onfocus="WdatePicker({ dateFmt: \'' + item.dateformat + '\' })"  placeholder="' + item.placeholder + '" value="' + item.defaultvalue + '" />\
                     </div>\
                 </div>';
                             break;
                         }
                         case "number": {
                             item.dbtype = !!item.dbtype ? item.dbtype : "decimal";
-                            item.dblength = 18;
-                            item.dbdigits = 2;
+                            item.dblength = !!item.dblength ? item.dblength : 18;
+                            item.dbdigits = !!item.dbdigits ? item.dbdigits : 2;
                             item.columnname = !!item.columnname ? item.columnname : "数字";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
@@ -406,19 +509,43 @@ var bootstrap = function (layui) {
                 </div>';
                             break;
                         }
-                        case "dateitem": {
+                        case "select": {
                             item.dbtype = !!item.dbtype ? item.dbtype : "varchar";
-                            item.columnname = !!item.columnname ? item.columnname : "数据字典";
+                            item.columnname = !!item.columnname ? item.columnname : "下拉框";
                             formHtml += '\
                 <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
                     <label class="layui-form-label">'+ item.columnname + '</label>\
                     <div class="layui-input-block">\
-                            <div id="'+ item.columncode + '" class="xm-select" luckyu-type="dataitem" luckyu-code="" placeholder="' + item.placeholder + '" luckyu-initvalue="' + item.defaultvalue + '"></div>\
+                            <div id="'+ item.columncode + '" class="xm-select" luckyu-type="datalocal" placeholder="' + item.placeholder + '" luckyu-initvalue="' + item.defaultvalue + '"></div>\
                     </div>\
                 </div>';
                             break;
                         }
-                        default:
+                        case "uediter": {
+                            item.dbtype = !!item.dbtype ? item.dbtype : "text";
+                            item.columnname = !!item.columnname ? item.columnname : "富文本";
+                            formHtml += '\
+                <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
+                    <label class="layui-form-label">'+ item.columnname + '</label>\
+                    <div class="layui-input-block">\
+                        <script id="'+ item.columncode + '" type="text/plain" style="height:300px;"  class="luckyu-editor">\
+                        <\/script>\
+                    </div>\
+                </div>';
+                            break;
+                        }
+                        case "upload": {
+                            var formcode = $("#formcode").val();
+                            item.columnname = !!item.columnname ? item.columnname : "文件上传";
+                            formHtml += '\
+                <div class="layui-col-xs'+ item.formlength + ' form-item" id="div' + item.columncode + '" columntype="' + item.columntype + '">\
+                    <label class="layui-form-label">'+ item.columnname + '</label>\
+                    <div class="layui-input-block">\
+                        <input id="AnnexName" name="AnnexName" class="fileinput" multiple type="file" luckyu-folderPre="'+ formcode + '" />\
+                    </div>\
+                </div>';
+                            break;
+                        }
                     }
                 }
 
@@ -430,7 +557,6 @@ var bootstrap = function (layui) {
                     if (that.hasClass("active")) {
                         that.removeClass('active');
                     }
-                    console.log(selectedname);
                     if (!!selectedname && "div" + selectedname == that.attr("id")) {
                         that.addClass('active');
                         var divID = "div" + selectedname;
@@ -446,7 +572,7 @@ var bootstrap = function (layui) {
                     });
                 });
 
-                $("#formBuilder").initControl();
+                page.initCustomControl("#formBuilder");
             }
         },
         showCtrlPropety: function (divID) {
@@ -460,6 +586,7 @@ var bootstrap = function (layui) {
                 $("#placeholder").val(colObject.placeholder);
                 $("#defaultvalue").val(colObject.defaultvalue);
                 $("#dblength").val(colObject.dblength);
+                $("#dateformat").val(colObject.dateformat);
                 xmSelect.get("#dbtype", true).setValue([colObject.dbtype]);
                 xmSelect.get("#formlength", true).setValue([colObject.formlength]);
 
@@ -476,12 +603,11 @@ var bootstrap = function (layui) {
         initData: function () {
             if (!!keyValue) {
                 luckyu.ajax.getv2(luckyu.rootUrl + '/FormModule/FormDesigner/GetFormData', { keyValue: keyValue }, function (data) {
-                    $("#formcode").val(data.Form.formcode);
+                    $("#formcode").val(data.Form.formcode).attr("readonly", "readonly");
                     $("#formname").val(data.Form.formname);
                     $("#remark").val(data.Form.remark);
 
-                    $("#formcode").attr("readonly", "readonly");
-                    $("#columncode").attr("readonly", "readonly");
+                    //$("#columncode").attr("readonly", "readonly");
 
                     $("#formBuilder").html(data.Form.formhtml);
                     formHtml = data.Form.formHtml;

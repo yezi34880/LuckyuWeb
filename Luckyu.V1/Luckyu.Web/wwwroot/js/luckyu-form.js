@@ -60,7 +60,15 @@
                         else if (type === "datalocal") {
                             var data = self.attr("luckyu-data");
                             var initvalue = self.attr("luckyu-initvalue");
-                            var jsonData = JSON.parse(data);
+                            if (!data) {
+                                data = "[]";
+                            }
+                            var jsonData = [];
+                            try {
+                                jsonData = JSON.parse(data);
+                            } catch (e) {
+
+                            }
                             var placeholder = self.attr("placeholder");
                             var multiple = self.attr("luckyu-multiple");
                             multiple = multiple === "true" || multiple == 1 ? true : false;
@@ -192,19 +200,29 @@
                                     break;
                                 case "datetime":
                                     if (!!value) {
-                                        var format = 'yyyy-MM-dd';;
-                                        if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
-                                            format = $obj[0].initcfg.dateFmt;
+                                        var format = 'yyyy-MM-dd';
+                                        var format1 = $obj.attr("dateformat");
+                                        if (!format1) {
+                                            format = format1;
+                                        }
+                                        else if ($obj.hasClass("Wdate")) {
+                                            if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
+                                                format = $obj[0].initcfg.dateFmt;
+                                            }
                                         }
                                         var val = (new Date(value)).format(format);
                                         $obj.val(val);
                                     }
                                     break;
                                 default:
-                                    if ($obj.hasClass("Wdate")) {
+                                    var format1 = $obj.attr("dateformat");
+                                    if ($obj.hasClass("Wdate") || format1) {
                                         if (!!value) {
                                             var format = 'yyyy-MM-dd';;
-                                            if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
+                                            if (!!format1) {
+                                                format = format1;
+                                            }
+                                            else if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
                                                 format = $obj[0].initcfg.dateFmt;
                                             }
                                             var val = (new Date(value)).format(format);
@@ -261,6 +279,16 @@
                                 });
                             }
                         }
+                        else {
+                            var format = $obj.attr("dateformat");
+                            if (!!format) {
+                                var val = (new Date(value)).format(format);
+                                $obj.html(val);
+                            }
+                            else {
+                                $obj.html(value);
+                            }
+                        }
                     }
                 },
                 /**
@@ -298,19 +326,29 @@
                                     break;
                                 case "datetime":
                                     if (!!value) {
-                                        var format = 'yyyy-MM-dd';;
-                                        if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
-                                            format = $obj[0].initcfg.dateFmt;
+                                        var format = 'yyyy-MM-dd';
+                                        var format1 = $obj.attr("dateformat");
+                                        if (!format1) {
+                                            format = format1;
+                                        }
+                                        else if ($obj.hasClass("Wdate")) {
+                                            if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
+                                                format = $obj[0].initcfg.dateFmt;
+                                            }
                                         }
                                         var val = (new Date(value)).format(format);
                                         $obj.val(val);
                                     }
                                     break;
                                 default:
-                                    if ($obj.hasClass("Wdate")) {
+                                    var format1 = $obj.attr("dateformat");
+                                    if ($obj.hasClass("Wdate") || format1) {
                                         if (!!value) {
                                             var format = 'yyyy-MM-dd';;
-                                            if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
+                                            if (!!format1) {
+                                                format = format1;
+                                            }
+                                            else if (!!$obj[0].initcfg && !!$obj[0].initcfg.dateFmt) {
                                                 format = $obj[0].initcfg.dateFmt;
                                             }
                                             var val = (new Date(value)).format(format);

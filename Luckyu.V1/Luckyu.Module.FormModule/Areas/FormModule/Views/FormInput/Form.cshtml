@@ -1,0 +1,21 @@
+﻿@using Luckyu.App.Form;
+@{
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+    var table = ViewBag.FormTable as form_tableEntity;
+    var columns = ViewBag.FormColumns as List<form_columnEntity>;
+}
+
+@section Header{
+    <style>
+    </style>
+}
+
+<div lay-filter="FormMain">
+    @Html.Raw(table.formhtml)
+</div>
+
+@section Footer{
+    @Html.AppendJs("~/Areas/FormModule/Views/FormInput/Form.js")
+}
+
+

@@ -70,7 +70,7 @@
     <ul class="layui-tab-title">
         <li class="layui-this">表单信息</li>
         <li>表单设计</li>
-        <li>权限分配</li>
+        <li>事件</li>
     </ul>
     <div class="layui-tab-content">
         <!--表单信息-->
@@ -103,25 +103,25 @@
                 <!--控件-->
                 <div style="width:150px;float:left;">
                     <div class="component">
-                        <div class="head">表单组件</div>
+                        <div class="head">基本组件</div>
                         <div class="component-group" id="compnent1">
                             <ol data-tag="input"><div class="icon"><i class="fa fa-text-width"></i></div><div class="name">单行输入</div></ol>
                             <ol data-tag="textarea"><div class="icon"><i class="fa fa-text-height"></i></div><div class="name">多行输入</div></ol>
-                            <ol data-tag="date"><div class="icon"><i class="fa fa-calendar"></i></div><div class="name">日期</div></ol>
                             <ol data-tag="datetime"><div class="icon"><i class="fa fa-clock-o"></i></div><div class="name">日期时间</div></ol>
                             <ol data-tag="number"><div class="icon"><i class="fa fa-sort-numeric-desc"></i></div><div class="name">数字</div></ol>
-                            <ol data-tag="dateitem"><div class="icon"><i class="fa fa-caret-square-o-down"></i></div><div class="name">数据字典</div></ol>
-
+                            <ol data-tag="select"><div class="icon"><i class="fa fa-caret-square-o-down"></i></div><div class="name">下拉框</div></ol>
+                            <ol data-tag="uediter"><div class="icon"><i class="fa fa-pencil-square-o"></i></div><div class="name">富文本</div></ol>
+                            <ol data-tag="upload"><div class="icon"><i class="fa fa-upload"></i></div><div class="name">文件上传</div></ol>
                         </div>
                     </div>
-                    @*<div class="component">
-                            <div class="head">辅助组件</div>
-                            <div class="component-group" id="sort_2">
-                                <ol data-tag="tips"><div class="icon"><i class="layui-icon layui-icon-tips"></i></div><div class="name">提示</div></ol>
-                                <ol data-tag="button"><div class="icon"><i class="layui-icon layui-icon-layer"></i></div><div class="name">按钮</div></ol>
-                                <ol data-tag="note"><div class="icon"><i class="layui-icon layui-icon-note"></i></div><div class="name">便签</div></ol>
-                            </div>
-                        </div>*@
+                    <div class="component">
+                        <div class="head">特殊组件</div>
+                        <div class="component-group" id="compnent2">
+                            <ol data-tag="userselect"><div class="icon"><i class="fa fa-user"></i></div><div class="name">用户选择</div></ol>
+                            <ol data-tag="deptselect"><div class="icon"><i class="fa fa-building"></i></div><div class="name">部门选择</div></ol>
+                            <ol data-tag="groupselect"><div class="icon"><i class="fa fa-users"></i></div><div class="name">小组选择</div></ol>
+                        </div>
+                    </div>
 
                 </div>
                 <!--属性 margin-right放在前面 自适应的放最后-->
@@ -170,6 +170,14 @@
                         </div>
                     </div>
 
+                    <div id="datetimePropety" class="ctrlpropety" style="display:none;">
+                        <div class="form-item layui-col-xs12">
+                            <label class="layui-form-label">日期格式化</label>
+                            <div class="layui-input-block">
+                                <input id="dateformat" type="text" class="layui-input" placeholder="yyyy-MM-dd HH:mm:ss" />
+                            </div>
+                        </div>
+                    </div>
                     <div id="numberPropety" class="ctrlpropety" style="display:none;">
                         <div class="form-item layui-col-xs12">
                             <label class="layui-form-label">小数位</label>
@@ -178,14 +186,42 @@
                             </div>
                         </div>
                     </div>
-                    <div id="dateitemPropety" class="ctrlpropety" style="display:none;">
+                    <div id="selectPropety" class="ctrlpropety" style="display:none;">
                         <div class="form-item layui-col-xs12">
-                            <label class="layui-form-label">数据字典</label>
-                            <div class="layui-input-block inputselect">
-                                <input id="dataitem_name" type="text" class="layui-input" readonly />
-                                <span id="dataitem_nameSelect" class="luckyu-input-button" title="选取"><i class="fa fa-hand-pointer-o"></i></span>
+                            <label class="layui-form-label">下拉框类型</label>
+                            <div class="layui-input-block">
+                                <div id="selecttype" class="xm-select"></div>
                             </div>
                         </div>
+                        <div class="form-item layui-col-xs12">
+                            <label class="layui-form-label">是否多选</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" id="multiple" lay-skin="switch" />
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-item layui-col-xs12" id="type_dataitem" style="display:none;">
+                                <label class="layui-form-label">数据字典</label>
+                                <div class="layui-input-block inputselect">
+                                    <input id="dataitem_name" type="text" class="layui-input" readonly />
+                                    <span id="dataitem_nameSelect" class="luckyu-input-button" title="选取"><i class="fa fa-hand-pointer-o"></i></span>
+                                </div>
+                            </div>
+                            <div class="form-item layui-col-xs12" id="type_datasource" style="display:none;">
+                                <label class="layui-form-label">数据库数据源</label>
+                                <div class="layui-input-block">
+                                    <textarea id="datasource" class="layui-textarea" rows="4" placeholder="select '' as name,'' as value from XXX"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-item layui-col-xs12" id="type_datalocal" style="display:none;">
+                                <label class="layui-form-label">本地数据源</label>
+                                <div class="layui-input-block">
+                                    <textarea id="datalocal" class="layui-textarea" rows="3" placeholder="Json格式，[{name:'1',value:'1'},{name:'2',value:'2'}]"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
 
 
@@ -206,9 +242,35 @@
                 </div>
             </div>
         </div>
-        <!--权限分配-->
+        <!--事件-->
         <div class="layui-tab-item">
-            <table id="gridAuthrize"></table>
+            <div id="divFormEvent">
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">AfterPageLoad</label>
+                    <div class="layui-input-block">
+                        <textarea id="afterpageload" class="layui-textarea" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">AfterDataLoad</label>
+                    <div class="layui-input-block">
+                        <textarea id="afterdataload" class="layui-textarea" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">BeforeSave</label>
+                    <div class="layui-input-block">
+                        <textarea id="beforesave" class="layui-textarea" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 form-item">
+                    <label class="layui-form-label">AfterSave</label>
+                    <div class="layui-input-block">
+                        <textarea id="aftersave" class="layui-textarea" rows="10"></textarea>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </div>
