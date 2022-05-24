@@ -33,6 +33,10 @@ namespace Luckyu.App.Organization
             entity.Remove(loginInfo);
             BaseRepository().UpdateOnlyColumns(entity, r => new { r.is_delete, r.delete_userid, r.delete_username, r.deletetime });
         }
+        
+        /// <summary>
+        /// 用户启用、禁用
+        /// </summary>
         public void SetOnOff(sys_userEntity entity, UserModel loginInfo)
         {
             entity.is_enable = 1 - entity.is_enable;
@@ -40,6 +44,15 @@ namespace Luckyu.App.Organization
             entity.edit_userid = loginInfo.user_id;
             entity.edit_username = loginInfo.realname;
             BaseRepository().UpdateOnlyColumns(entity, r => new { r.is_enable, r.edit_userid, r.edit_username, r.edittime });
+        }
+
+        /// <summary>
+        /// 更新最后登录时间、登录ip
+        /// </summary>
+        /// <param name="entity"></param>
+        public void UpdateLastLogin(sys_userEntity entity)
+        {
+            BaseRepository().UpdateOnlyColumns(entity, r => new { r.lastlogintime, r.lastloginip });
         }
 
         public void SaveForm(string keyValue, sys_userEntity entity, string strEntity, UserModel loginInfo)

@@ -50,31 +50,9 @@ namespace Luckyu.Web.Controllers
                     return Fail("验证码错误或过期，请刷新");
                 }
             }
-            var res = userBLL.CheckLogin(username, password);
-            var log = new sys_logEntity();
-            var request = HttpContext.Request;
-
-            var info = DeviceDetector.GetInfoFromUserAgent(request.Headers["User-Agent"].ToString());
-            if (info != null)
-            {
-                log.device = (info.Match.Client == null ? "" : $"{info.Match.Client.Type}: {info.Match.Client.Name} {info.Match.Client.Version} ") + (info.Match.Os == null ? "" : $" os: {info.Match.Os.Name} {info.Match.Os.Version} {info.Match.Os.Platform}");
-            }
-            log.app_name = LuckyuHelper.AppID;
-            log.host = request.Host.Host;
-            log.ip_address = HttpContext.GetRequestIp();
-            log.log_type = (int)LogType.Login;
-            log.log_time = DateTime.Now;
-            log.module = "Login";
-            log.log_content = $"用户名 {username} 登录";
+            var res = userBLL.CheckLogin(username, password, "Login", HttpContext);
             if (res.code == 200)
             {
-                HttpContext.Session.SetInt32("session_wrongnum", 0);
-                LoginUserInfo.Instance.SetLogin(res.data.loginname, HttpContext, LuckyuHelper.AppID);
-                log.log_content += $"  登录成功 登录用户为 { res.data.realname}-{ res.data.loginname}?";
-                log.op_type = "成功";
-                log.user_id = res.data.user_id;
-                log.user_name = $"{res.data.loginname}-{ res.data.realname}";
-                LogBLL.WriteLog(log);
                 return Success("/Home/Index");
             }
             else
@@ -83,9 +61,6 @@ namespace Luckyu.Web.Controllers
                 var wrongnum2 = wrongnum1.HasValue ? wrongnum1.Value + 1 : 1;
                 HttpContext.Session.SetInt32("session_wrongnum", wrongnum2);
 
-                log.log_content += "  登录失败 " + res.info;
-                log.op_type = "失败";
-                LogBLL.WriteLog(log);
                 return Fail(res.info, new { wrongnum = wrongnum2 });
             }
         }

@@ -101,6 +101,16 @@ namespace Luckyu.App.Organization
         public int sort { get; set; }
 
         /// <summary>
+        ///  lastlogintime   最后登录时间
+        /// </summary>
+        public DateTime? lastlogintime { get; set; }
+
+        /// <summary>
+        ///  lastloginip   
+        /// </summary>
+        public string lastloginip { get; set; }
+
+        /// <summary>
         ///  remark   
         /// </summary>
         public string remark { get; set; }

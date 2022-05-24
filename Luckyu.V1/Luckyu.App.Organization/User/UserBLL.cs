@@ -1,6 +1,7 @@
 ﻿using Luckyu.Cache;
 using Luckyu.Log;
 using Luckyu.Utility;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,9 +135,25 @@ namespace Luckyu.App.Organization
         #endregion
 
         #region 登录验证  密码修改
-        public ResponseResult<sys_userEntity> CheckLogin(string loginname, string loginpwd)
+        public ResponseResult CheckLogin(string loginname, string loginpwd, string module, HttpContext httpContext)
         {
-            var res = new ResponseResult<sys_userEntity>();
+            var request = httpContext.Request;
+            var log = new sys_logEntity();
+
+            var info = DeviceDetectorNET.DeviceDetector.GetInfoFromUserAgent(request.Headers["User-Agent"].ToString());
+            if (info != null)
+            {
+                log.device = (info.Match.Client == null ? "" : $"{info.Match.Client.Type}: {info.Match.Client.Name} {info.Match.Client.Version} ") + (info.Match.Os == null ? "" : $" os: {info.Match.Os.Name} {info.Match.Os.Version} {info.Match.Os.Platform}");
+            }
+            log.app_name = LuckyuHelper.AppID;
+            log.host = request.Host.Host;
+            log.ip_address = httpContext.GetRequestIp();
+            log.log_type = (int)LogType.Login;
+            log.log_time = DateTime.Now;
+            log.module = module;
+            log.log_content = $"用户名 {loginname} 登录";
+
+            var res = new ResponseResult();
             var entity = userService.GetEntity(r => r.loginname == loginname);
             if (entity == null || entity.is_delete == 1)
             {
@@ -150,16 +167,34 @@ namespace Luckyu.App.Organization
             {
                 res.code = 500;
                 res.info = "密码错误";
+                log.log_content += "  登录失败 " + res.info;
+                log.op_type = "失败";
+                LogBLL.WriteLog(log);
                 return res;
             }
             if (entity.is_enable == 0)
             {
                 res.code = 500;
                 res.info = "该用户被锁定，请联系管理员";
+                log.log_content += "  登录失败 " + res.info;
+                log.op_type = "失败";
+                LogBLL.WriteLog(log);
                 return res;
             }
             res.code = 200;
-            res.data = entity;
+            res.info = "登录成功";
+
+            httpContext.Session.SetInt32("session_wrongnum", 0);
+            LoginUserInfo.Instance.SetLogin(entity.loginname, httpContext, LuckyuHelper.AppID);
+            log.log_content += $"  登录成功 登录用户为 { entity.realname}-{ entity.loginname}?";
+            log.op_type = "成功";
+            log.user_id = entity.user_id;
+            log.user_name = $"{entity.loginname}-{ entity.realname}";
+            LogBLL.WriteLog(log);
+
+            entity.lastloginip = log.ip_address;
+            entity.lastlogintime = DateTime.Now;
+            userService.UpdateLastLogin(entity);
             return res;
         }
 
