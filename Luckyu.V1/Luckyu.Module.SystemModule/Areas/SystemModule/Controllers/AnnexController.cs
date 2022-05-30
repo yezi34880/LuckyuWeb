@@ -23,9 +23,12 @@ namespace Luckyu.Module.SystemModule.Controllers
         private ConfigBLL configBLL = new ConfigBLL();
         #endregion
 
+        /// <summary>
+        /// 展示文件（一般用于图片）
+        /// </summary>
         public IActionResult ShowFile(string keyValue)
         {
-            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
+            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue);
             if (annex == null)
             {
                 return new EmptyResult();
@@ -42,6 +45,9 @@ namespace Luckyu.Module.SystemModule.Controllers
             return File(bytes, annex.contexttype);
         }
 
+        /// <summary>
+        /// 展示压缩文件（用于图片）
+        /// </summary>
         public IActionResult ShowFileThumb(string keyValue)
         {
             //var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
@@ -49,7 +55,7 @@ namespace Luckyu.Module.SystemModule.Controllers
             //{
             //    return new EmptyResult();
             //}
-            var thumb = annexBLL.GetEntity(r => r.externalcode == "[thumb]" && r.external_id == keyValue, r => r.createtime);
+            var thumb = annexBLL.GetEntity(r => r.externalcode == "[thumb]" && r.external_id == keyValue);
             if (thumb == null)
             {
                 return new EmptyResult();
@@ -67,9 +73,38 @@ namespace Luckyu.Module.SystemModule.Controllers
             return File(bytes, thumb.contexttype);
         }
 
+
+        public IActionResult ShowFileByExid(string exId, string exCode, int sort = 0)
+        {
+            Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
+            if (!exCode.IsEmpty())
+            {
+                exp = exp.LinqAnd(r => r.externalcode == exCode);
+            }
+            sys_annexfileEntity annex;
+            if (sort > 0)
+            {
+                annex = annexBLL.GetEntityTop(sort, exp);
+            }
+            else
+            {
+                annex = annexBLL.GetEntity(exp);
+            }
+            var basepath = configBLL.GetValueByCache(annex.basepath);
+            var filePath = FileHelper.Combine(basepath, annex.filepath);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return new EmptyResult();
+            }
+            Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
+            Response.ContentType = annex.contexttype;
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+            return File(bytes, annex.contexttype);
+        }
+
         public IActionResult DownloadFile(string keyValue)
         {
-            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
+            var annex = annexBLL.GetEntity(r => r.annex_id == keyValue);
             if (annex == null)
             {
                 return Redirect("/Error/NotFoundPage");
@@ -85,46 +120,6 @@ namespace Luckyu.Module.SystemModule.Controllers
             Response.ContentType = annex.contexttype;
             var bytes = System.IO.File.ReadAllBytes(filePath);
             return File(bytes, annex.contexttype, annex.filename);
-        }
-
-        public IActionResult ShowFileByExid(string exId, string exCode)
-        {
-            Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
-            if (!exCode.IsEmpty())
-            {
-                exp = exp.LinqAnd(r => r.externalcode == exCode);
-            }
-            var annex = annexBLL.GetEntity(exp, r => r.createtime, true);
-            var basepath = configBLL.GetValueByCache(annex.basepath);
-            var filePath = FileHelper.Combine(basepath, annex.filepath);
-            if (!System.IO.File.Exists(filePath))
-            {
-                return new EmptyResult();
-            }
-            Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
-            Response.ContentType = annex.contexttype;
-            var bytes = System.IO.File.ReadAllBytes(filePath);
-            return File(bytes, annex.contexttype);
-        }
-
-        public IActionResult ShowFileByExidSort(string exId, int sort)
-        {
-            Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
-            var annex = annexBLL.GetEntityTop(sort, exp, "sort,createtime");
-            if (annex == null)
-            {
-                return new EmptyResult();
-            }
-            var basepath = configBLL.GetValueByCache(annex.basepath);
-            var filePath = FileHelper.Combine(basepath, annex.filepath);
-            if (!System.IO.File.Exists(filePath))
-            {
-                return new EmptyResult();
-            }
-            Response.Headers.Append("Content-Disposition", "inline; filename=" + System.Web.HttpUtility.UrlEncode(annex.filename, Encoding.UTF8));
-            Response.ContentType = annex.contexttype;
-            var bytes = System.IO.File.ReadAllBytes(filePath);
-            return File(bytes, annex.contexttype);
         }
 
         /// <summary>
@@ -153,6 +148,24 @@ namespace Luckyu.Module.SystemModule.Controllers
                 res = annexBLL.GetPreviewList(r => r.external_id == exId);
             }
             return Json(res);
+        }
+
+        /// <summary>
+        /// fileinput 控件预览图
+        /// </summary>
+        public IActionResult FileInputPreview(string exId, string exCode)
+        {
+            if (exId.IsEmpty())
+            {
+                return Fail(MessageString.NoData);
+            }
+            Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
+            if (!exCode.IsEmpty())
+            {
+                exp = exp.LinqAnd(r => r.externalcode == exCode);
+            }
+            var annex = annexBLL.GetPreviewList(exp);
+            return Success(annex);
         }
 
         /// <summary>

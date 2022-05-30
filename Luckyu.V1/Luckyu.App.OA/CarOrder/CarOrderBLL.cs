@@ -41,11 +41,9 @@ namespace Luckyu.App.OA
             {
                 return ResponseResult.Fail<Dictionary<string, object>>(MessageString.NoData);
             }
-            var annex = fileBLL.GetPreviewList(r => r.external_id == keyValue);
             var dic = new Dictionary<string, object>
             {
                 {"CarOrder",entity },
-                {"Annex",annex }
             };
             return ResponseResult.Success(dic);
         }

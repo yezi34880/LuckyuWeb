@@ -19,18 +19,13 @@ namespace Luckyu.App.System
         #endregion
 
         #region Get
-        public sys_annexfileEntity GetEntity(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
+        public sys_annexfileEntity GetEntity(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "sort desc,createtime desc")
         {
             var entity = annexService.GetEntity(condition, orderby);
             return entity;
         }
-        public sys_annexfileEntity GetEntity(Expression<Func<sys_annexfileEntity, bool>> condition, Expression<Func<sys_annexfileEntity, object>> orderby, bool isDesc = false)
-        {
-            var entity = annexService.GetEntity(condition, orderby, isDesc);
-            return entity;
-        }
 
-        public sys_annexfileEntity GetEntityTop(int top, Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
+        public sys_annexfileEntity GetEntityTop(int top, Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "sort,createtime")
         {
             var entity = annexService.GetEntityTop(top, condition, orderby);
             return entity;
@@ -232,7 +227,7 @@ namespace Luckyu.App.System
         /// <param name="condition"></param>
         /// <param name="orderby"></param>
         /// <returns></returns>
-        public FileInputResponse GetPreviewList(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "")
+        public FileInputResponse GetPreviewList(Expression<Func<sys_annexfileEntity, bool>> condition, string orderby = "sort,createtime")
         {
             var list = GetList(condition, orderby);
             var res = ChangeListToPreview(list);

@@ -15,15 +15,10 @@ namespace Luckyu.Web
     {
         public static void Main(string[] args)
         {
-            var urls = AppSettingsHelper.GetAppSetting("ServerUrls");
-            Host.CreateDefaultBuilder(args) .ConfigureWebHostDefaults(webBuilder =>
-            {
-                var host = webBuilder.UseStartup<Startup>();
-                if (!string.IsNullOrEmpty(urls))
-                {
-                    host = host.UseUrls(urls);
-                }
-            }).Build().Run();
+            Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
+           {
+               webBuilder.UseStartup<Startup>();
+           }).Build().Run();
         }
     }
 }

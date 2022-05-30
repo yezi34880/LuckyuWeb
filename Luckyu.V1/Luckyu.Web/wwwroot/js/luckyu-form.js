@@ -539,6 +539,29 @@
                     });
                 },
                 /**
+                 * 设置预览文件
+                 * */
+                setFilePreview: function (option) {
+                    var $self = $(this);
+                    var defaultOption = {
+                        exId: '',
+                        exCode: '',
+                    };
+                    $.extend(defaultOption, option);
+                    luckyu.ajax.getv2(luckyu.rootUrl + "/SystemModule/Annex/FileInputPreview",
+                        { exId: defaultOption.exId, exCode: defaultOption.exCode }
+                        , function (data) {
+                            //$self.initFileInput({
+                            //    initialPreview: data.initialPreview,
+                            //    initialPreviewConfig: data.initialPreviewConfig
+                            //});
+                            $self.fileinput('refresh', {
+                                initialPreview: data.initialPreview,
+                                initialPreviewConfig: data.initialPreviewConfig
+                            });
+                        });
+                },
+                /**
                  * 上传
                  * @param {any} exId 文件外部Id
                  * @param {any} callback 回调

@@ -35,11 +35,11 @@ var bootstrap = function (layui) {
                                 }
                             }
                         });
-                        $('#AnnexName').initFileInput({
-                            initialPreview: data.Annex.initialPreview,
-                            initialPreviewConfig: data.Annex.initialPreviewConfig
-                        });
-                    })
+                    });
+
+                $('#AnnexName').setFilePreview({
+                    exId: keyValue,
+                });
             }
             else {
                 $("#statename").val("起草");

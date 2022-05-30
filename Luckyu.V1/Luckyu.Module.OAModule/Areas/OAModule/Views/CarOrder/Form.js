@@ -30,12 +30,12 @@ var bootstrap = function (layui) {
                         //$("#username").val(luckyu.clientdata.getUserName(data.CarOrder.user_id));
                         $("#deptname").val(luckyu.clientdata.getDepartmentName(data.CarOrder.department_id));
                         $("#companyname").val(luckyu.clientdata.getCompanyName(data.CarOrder.company_id));
+                    });
 
-                        $('#AnnexName').initFileInput({
-                            initialPreview: data.Annex.initialPreview,
-                            initialPreviewConfig: data.Annex.initialPreviewConfig
-                        });
-                    })
+                $('#AnnexName').setFilePreview({
+                    exId: keyValue,
+                });
+
             }
             else {
                 $("#statename").val("起草");

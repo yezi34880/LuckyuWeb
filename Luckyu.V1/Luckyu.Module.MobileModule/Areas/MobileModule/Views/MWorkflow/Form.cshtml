@@ -138,15 +138,20 @@
                         }
 
                         <div class="section-title">流程日志</div>
-                        <ul class="bui-list">
+                        <div id="step" class="bui-stepbar">
                             @foreach (var item in ViewBag.Historys as List<wf_taskhistoryEntity>)
                             {
-                                <li class="bui-btn">
-                                    <h3 class="item-title">@item.create_username @item.opinion @(WFTaskBLL.ApproveResultName(item.result)) </h3>
-                                    <p class="item-text">@item.nodename @(item.createtime.HasValue?item.createtime.Value.ToString("yyyy-MM-dd HH:mm:ss"):"")</p>
-                                </li>
+                                <div class="bui-stepbar-cell @(item.result==100?"":"active")">
+                                    <span class="bui-stepbar-dot"></span>
+                                    <div class="bui-stepbar-text">
+                                        <h3>@item.nodename @(WFTaskBLL.ApproveResultName(item.result))</h3>
+                                        <p class="bui-stepbar-time">@item.createtime ~ @item.apptime</p>
+                                        <p class="bui-stepbar-desc">@item.create_username</p>
+                                        <p class="bui-stepbar-desc">@item.opinion</p>
+                                    </div>
+                                </div>
                             }
-                        </ul>
+                        </div>
                     </li>
                 </ul>
             </div>
