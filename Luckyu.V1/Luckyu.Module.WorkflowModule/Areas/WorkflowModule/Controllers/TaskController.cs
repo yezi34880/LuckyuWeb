@@ -101,11 +101,11 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         }
 
         [AjaxOnly, HttpPost]
-        public async Task<IActionResult> Approve(string taskId, int result, string opinion, int returnType, string authors)
+        public async Task<IActionResult> Approve(string taskId, int result, string opinion, string authors)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             Dictionary<string, List<KeyValue>> dicAuthor = authors.ToObject<Dictionary<string, List<KeyValue>>>();
-            var res = await taskBLL.Approve(taskId, result, opinion, returnType, dicAuthor, loginInfo, _hubContext);
+            var res = await taskBLL.Approve(taskId, result, opinion,  dicAuthor, loginInfo, _hubContext);
             return Json(res);
         }
 

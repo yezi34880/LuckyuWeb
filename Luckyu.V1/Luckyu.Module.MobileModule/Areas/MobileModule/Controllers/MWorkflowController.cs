@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DeviceDetectorNET;
 using Luckyu.App.Organization;
@@ -36,51 +37,7 @@ namespace Luckyu.Module.MobileModule.Controllers
         #region Form
         public IActionResult Form(string taskId, string instanceId, string processId, string historyId)
         {
-            var historys = taskBLL.GetHistoryTaskList(processId, instanceId);
-            ViewBag.Historys = historys;
-
-            var formType = "instance";
-            if (taskId.IsEmpty() && historyId.IsEmpty())
-            {
-                formType = "instance";
-            }
-            else if (!taskId.IsEmpty() && historyId.IsEmpty())
-            {
-                formType = "task";
-            }
-            else if (taskId.IsEmpty() && !historyId.IsEmpty())
-            {
-                formType = "history";
-            }
-            ViewBag.FormType = formType;
-
-            var instance = taskBLL.GetInstanceEnttity(r => r.instance_id == instanceId);
-            ViewBag.Instance = instance;
-            var scheme = instance.schemejson.ToObject<WFSchemeModel>();
-            var node = new WFSchemeNodeModel();
-            if (formType == "instance")
-            {
-                node = scheme.nodes.Where(r => r.type == "startround").FirstOrDefault();
-            }
-            else if (formType == "task")
-            {
-                var task = taskBLL.GetTaskEntitty(r => r.task_id == taskId);
-                node = scheme.nodes.Where(r => r.id == task.node_id).FirstOrDefault();
-
-                if (task.nodetype == "auditornode")
-                {
-                    ViewBag.FormType = "read";
-                }
-            }
-            else if (formType == "history")
-            {
-                var history = taskBLL.GetHistoryEnttity(r => r.task_id == taskId);
-                node = scheme.nodes.Where(r => r.id == history.node_id).FirstOrDefault();
-            }
-            ViewBag.Forms = node != null ? node.forms : null;
-
             return View();
-
         }
 
         #endregion

@@ -25,6 +25,17 @@
         },
         utility: {
             /**
+             * 枚举字段 显示
+             * */
+            toEnum: function (value, enumlist) {
+                var result = '';
+                var one = enumlist.find(r => r.value == value);
+                if (!!one) {
+                    result = one.name;
+                }
+                return result;
+            },
+            /**
              * 获取Url参数
              * @param {any} name
              */

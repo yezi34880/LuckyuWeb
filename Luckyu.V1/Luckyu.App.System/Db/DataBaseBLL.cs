@@ -200,7 +200,7 @@ namespace Luckyu.App.System
             var keyValue = pk.PropertyInfo.GetValue(to).ToString();
             var sql = $"SELECT * FROM {entityInfo.DbTableName} WHERE {pkName} = {BaseConnection.ParaPre}{pkName}";
             var parm = new SugarParameter(pkName, keyValue);
-            var from = db.Queryable<T>().Where(sql, parm).First();
+            var from = db.Ado.SqlQuerySingle<T>(sql, parm);
             LogUpdate(from, to, json, loginInfo);
         }
 

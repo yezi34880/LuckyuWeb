@@ -44,6 +44,10 @@ namespace Luckyu.Web.Controllers
             var wrongnum = HttpContext.Session.GetInt32("session_wrongnum");
             if (!wrongnum.IsEmpty() && wrongnum > 2)
             {
+                if (verifycode.IsEmpty())
+                {
+                    return Fail("请输入验证码", new { wrongnum });
+                }
                 var vcode = HttpContext.Session.GetString("session_verifycode");
                 if (vcode.IsEmpty() || vcode != EncrypHelper.MD5_Encryp(verifycode.ToLower()))
                 {

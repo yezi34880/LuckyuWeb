@@ -32,6 +32,53 @@
                 top.layui.layer.close(indexo);
             });
         },
+        /**
+         * 弹出html
+         * */
+        layerHtml: function (option) {
+            option.width = option.width > $(window).width() ? $(window).width() - 10 : option.width;
+            option.height = option.height > $(window).height() ? $(window).height() - 10 : option.height;
+
+            var defaultOp = {
+                type: 1,
+                title: option.title,
+                area: [option.width + 'px', option.height + 'px'],
+                maxmin: option.maxmin === false ? false : true, //开启最大化最小化按钮
+                content: option.content,
+                closeComfirm: option.closeComfirm || false,  // 点击关闭 是否出现确认提示
+                success: option.success || null,  // 加载完成触发事件
+                cancel: option.cancel || null,  // 点击右上角关闭按钮时回调 
+                end: option.end || null,  // 弹出层销毁时回调
+                btn: null,
+            };
+            if (defaultOp.closeComfirm === true) {
+                defaultOp.cancel = function (index, layero) {
+                    top.layui.layer.confirm('确定要关闭吗！', function (indexo) {
+                        layui.layer.close(index);
+                        layui.layer.close(indexo);
+                        if (!!option.cancel) {
+                            option.cancel(index, layero);
+                        }
+                    });
+                    return false;
+                };
+            }
+            if (!!option.btn && option.btn.length > 0) {
+                defaultOp.btn = [];
+                for (var i = 0; i < option.btn.length; i++) {
+                    defaultOp.btn.push(option.btn[i].name);
+
+                    if (i < 1) {
+                        defaultOp.yes = option.btn[i].callback;
+                    }
+                    else {
+                        defaultOp["btn" + (i + 1).toString()] = option.btn[i].callback;
+                    }
+                }
+            }
+
+            layui.layer.open(defaultOp);
+        },
         layerForm: function (option) {
             option.width = option.width > $(window).width() ? $(window).width() - 10 : option.width;
             option.height = option.height > $(window).height() ? $(window).height() - 10 : option.height;
@@ -78,7 +125,7 @@
             layui.layer.open(defaultOp);
         },
         /**
-        * 顶级弹出菜单
+        * 顶级弹出页
         **/
         layerFormTop: function (option) {
             option.width = option.width > $(top).width() ? $(top).width() - 10 : option.width;

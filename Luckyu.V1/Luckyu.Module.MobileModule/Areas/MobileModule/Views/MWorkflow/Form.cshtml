@@ -1,12 +1,5 @@
-﻿@using Luckyu.App.Organization;
-@using Luckyu.App.Workflow;
-@{
+﻿@{
     Layout = "~/Views/Shared/_LayoutMobile.cshtml";
-
-    var loginInfo = ViewBag.UserInfo as UserModel;
-    var instance = ViewBag.Instance as wf_instanceEntity;
-    var forms = ViewBag.Forms as List<WFFormModel>;
-    var formType = ViewBag.FormType.ToString();
 }
 
 <div class="bui-page bui-box-vertical">
@@ -15,8 +8,7 @@
             <div class="bui-bar-left">
                 <div class="bui-btn" onclick="bui.back();"><i class="icon-back"></i></div>
             </div>
-            <div class="bui-bar-main">
-                @instance.processname
+            <div class="bui-bar-main" id="divHeader">
             </div>
             <div class="bui-bar-right">
             </div>
@@ -27,130 +19,99 @@
             <div class="bui-tab-main">
                 <ul>
                     <li>
-                        @if (!forms.IsEmpty())
-                        {
-                            <div id="tabForm" class="bui-tab bui-box-vertical">
-                                <div class="bui-tab-head">
-                                    <ul class="bui-nav">
-                                        @for (int i = 0; i < forms.Count; i++)
-                                        {
-                                            <li class="bui-btn">@forms[i].formname</li>
-                                        }
-                                    </ul>
-                                </div>
-                                <div class="bui-tab-main">
-                                    <ul id="ulForm">
-                                        @for (int i = 0; i < forms.Count; i++)
-                                        {
-                                            <li style="@(i==0?"display: none;":"")">
-                                                <iframe src="@($"{forms[i].mobileformurl}?keyValue={instance.process_id}")" frameborder="0" border="0"></iframe>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
+                        <div id="tabForm" class="bui-tab bui-box-vertical">
+                            <div class="bui-tab-head">
+                                <ul class="bui-nav" id="iframeNav">
+                                </ul>
                             </div>
-                        }
+                            <div class="bui-tab-main">
+                                <ul id="ulForm">
+                                </ul>
+                            </div>
+                        </div>
+
                     </li>
                     <li style="display: none;">
-                        @if (formType == "task" || formType == "read")
-                        {
-                            <div class="bui-fluid" id="appform">
-                                @if (formType == "task")
-                                {
-                                    <div class="span12">
-                                        <div class="section-title">审批结果</div>
-                                        <ul class="bui-list">
-                                            <li class="bui-btn bui-box">
-                                                <div class="span1">
-                                                    <label for="result1">通过</label>
-                                                </div>
-                                                <input id="result1" type="radio" class="bui-choose" name="result" value="1" checked="checked" />
-                                            </li>
-                                            <li class="bui-btn bui-box bui-btn-line">
-                                                <div class="span1">
-                                                    <label for="result2">退回</label>
-                                                </div>
-                                                <input id="result2" type="radio" class="bui-choose" name="result" value="2" />
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="span12" id="divReturn" style="display:none;">
-                                        <div class="section-title">退回规则</div>
-                                        <ul class="bui-list">
-                                            <li class="bui-btn bui-box">
-                                                <div class="span1">
-                                                    <label for="returnType0">至起始</label>
-                                                </div>
-                                                <input id="returnType0" type="radio" class="bui-choose" name="returnType" value="0" checked="checked" />
-                                            </li>
-                                            <li class="bui-btn bui-box bui-btn-line">
-                                                <div class="span1">
-                                                    <label for="returnType1">至上一步</label>
-                                                </div>
-                                                <input id="returnType1" type="radio" class="bui-choose" name="returnType" value="1" />
-                                            </li>
-                                        </ul>
-                                    </div>
-                                }
-
-                                <div class="span12">
-                                    <div class="bui-input">
-                                        <textarea placeholder="意见" id="opinion" rows="4"></textarea>
-                                    </div>
-                                </div>
-                                <div class="span12">
-                                    <div id="buiPhoto" class="bui-upload bui-fluid-space-4">
+                        <div class="bui-fluid" id="appform">
+                            <div class="span12" id="divAppResult" style="display:none;">
+                                <div class="section-title">审批结果</div>
+                                <ul class="bui-list">
+                                    <li class="bui-btn bui-box">
                                         <div class="span1">
-                                            <div id="btnUpload" class="bui-btn">
-                                                <i class="icon-plus large"></i>
-                                            </div>
+                                            <label for="result1">通过</label>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div class="span12">
-                                    <div class="bui-box-space">
+                                        <input id="result1" type="radio" class="bui-choose" name="result" value="1" checked="checked" />
+                                    </li>
+                                    <li class="bui-btn bui-box bui-btn-line">
                                         <div class="span1">
-                                            <div class="bui-btn round primary" id="btnApprove">@(formType == "task"?"审批":"确认")</div>
+                                            <label for="result2">退回</label>
                                         </div>
-                                    </div>
-                                </div>
-                                @if (formType == "task")
-                                {
-                                    <div class="span12" style="margin-top:5px;">
-                                        <div class="bui-box-space">
-                                            <div class="span1" id="btnHelpme">
-                                                <div class="bui-btn round">转发查看</div>
-                                            </div>
-                                            <div class="span1" id="btnAddUser">
-                                                <div class="bui-btn round">会签办理</div>
-                                            </div>
+                                        <input id="result2" type="radio" class="bui-choose" name="result" value="2" />
+                                    </li>
+                                    <li class="bui-btn bui-box bui-btn-line">
+                                        <div class="span1">
+                                            <label for="result3">退回上一步</label>
                                         </div>
-                                    </div>
-                                    <div class="span12" style="margin-top:5px;">
-                                        <div class="bui-btn-text" id="help">
-                                            <i class="fa fa-question-circle"></i>
-                                            说明
-                                        </div>
-                                    </div>
-                                }
+                                        <input id="result3" type="radio" class="bui-choose" name="result" value="3" />
+                                    </li>
+                                </ul>
                             </div>
-                        }
+
+                            <div class="span12">
+                                <div class="bui-input">
+                                    <textarea placeholder="意见" id="opinion" rows="4"></textarea>
+                                </div>
+                            </div>
+                            <div class="span12">
+                                <div id="buiPhoto" class="bui-upload bui-fluid-space-4">
+                                    <div class="span1">
+                                        <div id="btnUpload" class="bui-btn">
+                                            <i class="icon-plus large"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--下一步流程-->
+                            <div id="divNext" style="display:none;">
+                                <div class="section-title">下步流程</div>
+                                <ul class="bui-list" id="ulNext">
+                                </ul>
+                            </div>
+
+                            <div class="span12">
+                                <div class="bui-box-space">
+                                    <div class="span1">
+                                        <div class="bui-btn round primary" id="btnApprove" style="display:none;">确认</div>
+                                        <div class="bui-btn round primary" id="btnRead" style="display:none;">确认</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="divHelp">
+                                <div class="span12" style="margin-top:5px;">
+                                    <div class="bui-box-space">
+                                        <div class="span1" id="btnHelpme">
+                                            <div class="bui-btn round">转发查看</div>
+                                        </div>
+                                        <div class="span1" id="btnAddUser">
+                                            <div class="bui-btn round">会签办理</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="span12" style="margin-top:5px;">
+                                    <div class="bui-btn-text" id="help">
+                                        <i class="fa fa-question-circle"></i>
+                                        说明
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
 
                         <div class="section-title">流程日志</div>
                         <div id="step" class="bui-stepbar">
-                            @foreach (var item in ViewBag.Historys as List<wf_taskhistoryEntity>)
-                            {
-                                <div class="bui-stepbar-cell @(item.result==100?"":"active")">
-                                    <span class="bui-stepbar-dot"></span>
-                                    <div class="bui-stepbar-text">
-                                        <h3>@item.nodename @(WFTaskBLL.ApproveResultName(item.result))</h3>
-                                        <p class="bui-stepbar-time">@item.createtime ~ @item.apptime</p>
-                                        <p class="bui-stepbar-desc">@item.create_username</p>
-                                        <p class="bui-stepbar-desc">@item.opinion</p>
-                                    </div>
-                                </div>
-                            }
+
                         </div>
                     </li>
                 </ul>

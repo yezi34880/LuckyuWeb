@@ -24,20 +24,11 @@ var bootstrap = function (layui) {
             });
 
             $('#flow').height(window.innerHeight - 120);
+            $('#divtimeline').height(window.innerHeight - 90);
             window.onresize = function () {
                 $('#flow').height(window.innerHeight - 120);
+                $('#divtimeline').height(window.innerHeight - 90);
             };
-
-            layui.form.on('radio(result)', function (data) {
-                if (data.value == 2) {
-                    $("#divReturn").show();
-                    $("#opinion").attr("lay-verify", "required");
-                }
-                else {
-                    $("#divReturn").hide();
-                    $("#opinion").removeAttr("lay-verify");
-                }
-            });
 
             $("#AnnexName").initFileInput({
                 folderPre: "WFApprove"
@@ -59,54 +50,58 @@ var bootstrap = function (layui) {
                 });
             });
         },
-        initLogGrid: function (data) {
-            var gridLog = $("#gridLog").jqGrid({
-                //url: luckyu.rootUrl + '/WorkFlowModule/Task/GetWorkflowLog',
-                //datatype: "json",
-                //postData: { processId: processId, instanceId: instanceId },
-                datatype: "local",
-                data: data,
-                colModel: [
-                    { label: "节点名称", name: "nodename", width: 80, },
-                    { label: "操作用户", name: "create_username", width: 80, },
-                    {
-                        label: "操作时间", name: "createtime", width: 100, align: "right",
-                        formatter: "date",
-                        formatoptions: { newformat: 'Y-m-d H:i:s' },
-                    },
-                    {
-                        label: "结果", name: "result", width: 60, align: "center",
-                        formatter: function (cellvalue, options, rowObject) {
-                            var result = luckyu.utility.toEnum(cellvalue, luckyu_staticdata.wf_resultshow);
-                            return result;
-                        }
-                    },
-                    { label: "备注", name: "opinion", width: 350, },
-                    {
-                        label: "附件", name: "annex", width: 100,
-                        formatter: function (cellvalue, options, rowobject) {
-                            var result = '';
-                            if (!!cellvalue) {
-                                var list = JSON.parse(cellvalue);
-                                for (var i = 0; i < list.length; i++) {
-                                    result += ' <a style="color:blue;cursor:pointer;text-decoration:underline;" href="/SystemModule/Annex/ShowFile?keyValue=' + list[i].Key + '" target="_blank"> ' + list[i].Value + '</a>';
-                                }
-                            }
-                            return result;
-                        }
-                    },
-                ],
-                rownumbers: true,
-                viewrecords: true,
-                altRows: true,//隔行换色
+        saveFrame: function () {
+            // 这里有个难点 ，可能有多个iframe页，但每个页面save方法也可能是异步的，必须每个都验证通过最后才执行审批动作，
+            // 例如后台验证一个页面必填项未填写，则不走审批
+            // 暂时没想好
+            var flag = true;
+            $("#tabForms>.layui-tab-content iframe").each(function () {
+                var iframeWindow = this.contentWindow;
+                if (!!iframeWindow.approveSave) {
+                    flag = iframeWindow.approveSave();
+                }
             });
-
-            gridLog.setGridHeight(window.innerHeight - 120);
-            gridLog.setGridWidth(window.innerWidth - 40);
-            $(window).resize(function () {
-                gridLog.setGridHeight(window.innerHeight - 120);
-                gridLog.setGridWidth(window.innerWidth - 40);
-            });
+            return flag;
+        },
+        getAuthors: function () {
+            var nextnode = $("input[name=nextnode]");
+            var authors = {};
+            if (nextnode.length > 0) {
+                var checknodes = $("input[name=nextnode]:checked");
+                if (checknodes.length < 1) {
+                    $("#tabNext").click();
+                    layui.layer.alert("请选择下一步节点", { icon: 2 });
+                    return false;
+                }
+                authors[checknodes[0].value] = [];
+            }
+            var nextusers = $("input[lay-filter=nodeuser]");
+            if (nextusers.length > 0) {
+                var checkusers = $("input[lay-filter=nodeuser]:checked");
+                if (checkusers.length < 1) {
+                    $("#tabNext").click();
+                    layui.layer.alert("请选择下一步用户", { icon: 2 });
+                    return false;
+                }
+                for (var i = 0; i < checkusers.length; i++) {
+                    var $chk = $(checkusers);
+                    var nodeid = $chk.attr("nodeid");
+                    if (!authors[nodeid]) {
+                        authors[nodeid] = [];
+                        authors[nodeid].push({
+                            Key: $chk.val(),
+                            Value: $chk.attr("title")
+                        });
+                    }
+                    else {
+                        authors[nodeid].push({
+                            Key: $chk.val(),
+                            Value: $chk.attr("title")
+                        });
+                    }
+                }
+            }
+            return authors;
         },
         initData: function () {
             luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId, taskId: taskId, historyId: historyId }, function (data) {
@@ -152,7 +147,35 @@ var bootstrap = function (layui) {
                 });
 
                 // 历史记录
-                page.initLogGrid(data.History);
+                var htmlHistory = '';
+                for (var i = 0; i < data.History.length; i++) {
+                    var his = data.History[i];
+                    htmlHistory += '\
+<li class="layui-timeline-item">\
+    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
+    <div class="layui-timeline-content layui-text">\
+        <h3 class="layui-timeline-title">'+ luckyu.utility.toEnum(his.result, luckyu_staticdata.wf_resultshow) + ' ' + his.nodename + '</h3>\
+        <p>';
+                    if (his.result != 0) {
+                        htmlHistory += "审批人：" + his.create_username;
+
+                        if (his.result != 100) {
+                            htmlHistory += "<br/>提交时间：" + new Date(his.tasktime).format("yyyy-MM-dd HH:mm")
+                            htmlHistory += "<br/>办结时间：" + new Date(his.apptime).format("yyyy-MM-dd HH:mm")
+                            htmlHistory += (!his.opinion ? '' : ('<br/>意见建议：' + his.opinion));
+                        }
+                        if (!!his.annex && his.annex != '[]') {
+                            var list = JSON.parse(his.annex);
+                            htmlHistory += "<br/>附件：";
+                            for (var j = 0; j < list.length; j++) {
+                                htmlHistory += ' <br/><a style="color:blue;cursor:pointer;text-decoration:underline;" href="/SystemModule/Annex/ShowFile?keyValue=' + list[j].Key + '" target="_blank"> ' + list[j].Value + '</a>';
+                            }
+                        }
+                    }
+
+                    htmlHistory += '</p></div></li>';
+                }
+                $("#ultimeline").html(htmlHistory);
 
                 // 流程图
                 var shceme = JSON.parse(data.Instance.schemejson);
@@ -184,6 +207,9 @@ var bootstrap = function (layui) {
                         var nextnode = data.NextNodes[i];
                         var html_nodename = nextnode.name;
                         if (data.CurrentNode.comfirm_node == 1) {
+                            html_nodename = '<input type="checkbox" id="node_' + nextnode.id + '" name="nextnode" lay-filter="nextnode" value="' + nextnode.id + '" title="' + nextnode.name + '"  />';
+                        }
+                        else if (data.CurrentNode.comfirm_node == 2) {
                             html_nodename = '<input type="radio" id="node_' + nextnode.id + '" name="nextnode" lay-filter="nextnode" value="' + nextnode.id + '" title="' + nextnode.name + '"  />';
                         }
                         html += '<div class="layui-card"><div class="layui-card-header">' + html_nodename + '</div>';
@@ -208,83 +234,81 @@ var bootstrap = function (layui) {
                     });
                 }
             });
-        }
+        },
     };
     page.init();
 
     approveClick = function (layerIndex, callBack) {
 
-        // 这里有个难点 ，可能有多个iframe页，但每个页面save方法也可能是异步的，必须每个都验证通过最后才执行审批动作，
-        // 例如后台验证一个页面必填项未填写，则不走审批
-        // 暂时没想好
-        var flag = true;
-        $("#tabForms>.layui-tab-content iframe").each(function () {
-            var iframeWindow = this.contentWindow;
-            if (!!iframeWindow.approveSave) {
-                flag = iframeWindow.approveSave();
-            }
-        });
-
+        var flag = page.saveFrame();
         // 验证通过 才执行审批，必填项等
         if (flag) {
-            layui.layer.open({
-                type: 1,
+            luckyu.layer.layerHtml({
                 title: '审核',
                 content: $('#divApprove'),
-                area: ['800px', '500px'], //宽高
-                btn: ['确定'],
-                yes: function (index, layero) {
+                height: 500,
+                width: 800,
+                btn: [{
+                    name: "确认",
+                    callback: function (index, layero) {
+                        if (!$("#divApprove").verifyForm()) {
+                            return false;
+                        }
+
+                        var result = $("input[name=result]:checked").val();
+                        var opinion = $("#opinion").val();
+                        var authors = page.getAuthors();
+                        luckyu.ajax.postv2('/WorkflowModule/Task/Approve', {
+                            taskId: taskId,
+                            result: result,
+                            opinion: opinion,
+                            authors: authors,
+                        }, function (data) {
+                            if (!!callBack) {
+                                callBack();
+                            }
+                            var history_id = data.Item3[0].history_id;
+                            $("#AnnexName").uploadFile({
+                                exId: history_id,
+                                callback: function () {
+                                    parent.layui.layer.close(layerIndex);
+                                }
+                            });
+                        });
+                    }
+                }],
+                success: function (layero, index) {
+                    $("div.layui-layer-btn", parent.document).hide();
+                },
+                cancel: function (index, layero) {
+                    $("div.layui-layer-btn", parent.document).show();
+                },
+                end: function () {
+                    $("div.layui-layer-btn", parent.document).show();
+                }
+            });
+        }
+    };
+    readClick = function (layerIndex, callBack) {
+        $("#divResult").hide();
+
+        luckyu.layer.layerHtml({
+            title: '确认',
+            content: $('#divApprove'),
+            height: 500,
+            width: 800,
+            btn: [{
+                name: "确定",
+                callback: function (index, layero) {
                     if (!$("#divApprove").verifyForm()) {
                         return false;
                     }
-                    var nextnode = $("input[name=nextnode]");
-                    var authors = {};
-                    if (nextnode.length > 0) {
-                        var checknodes = $("input[name=nextnode]:checked");
-                        if (checknodes.length < 1) {
-                            $("#tabNext").click();
-                            layui.layer.alert("请选择下一步节点", { icon: 2 });
-                            return false;
-                        }
-                        authors[checknodes[0].value] = [];
-                    }
-                    var nextusers = $("input[lay-filter=nodeuser]");
-                    if (nextusers.length > 0) {
-                        var checkusers = $("input[lay-filter=nodeuser]:checked");
-                        if (checkusers.length < 1) {
-                            $("#tabNext").click();
-                            layui.layer.alert("请选择下一步用户", { icon: 2 });
-                            return false;
-                        }
-                        for (var i = 0; i < checkusers.length; i++) {
-                            var $chk = $(checkusers);
-                            var nodeid = $chk.attr("nodeid");
-                            if (!authors[nodeid]) {
-                                authors[nodeid] = [];
-                                authors[nodeid].push({
-                                    Key: $chk.val(),
-                                    Value: $chk.attr("title")
-                                });
-                            }
-                            else {
-                                authors[nodeid].push({
-                                    Key: $chk.val(),
-                                    Value: $chk.attr("title")
-                                });
-                            }
-                        }
-                    }
-
-                    var result = $("input[name=result]:checked").val();
                     var opinion = $("#opinion").val();
-                    var returnType = $("input[name=returnType]:checked").val();
+                    var authors = page.getAuthors();
                     luckyu.ajax.postv2('/WorkflowModule/Task/Approve', {
                         taskId: taskId,
-                        result: result,
                         opinion: opinion,
-                        returnType: returnType,
-                        nextNodeId: nextNodeId,
-                        authors: authors,
+                        authors: authors
                     }, function (data) {
                         if (!!callBack) {
                             callBack();
@@ -297,48 +321,8 @@ var bootstrap = function (layui) {
                             }
                         });
                     });
-                },
-                success: function (layero, index) {
-                    $("div.layui-layer-btn", parent.document).hide();
-                },
-                cancel: function (index, layero) {
-                    $("div.layui-layer-btn", parent.document).show();
                 }
-            });
-        }
-    };
-    readClick = function (layerIndex, callBack) {
-        $("#divResult").hide();
-
-        layui.layer.open({
-            type: 1,
-            title: '查阅',
-            content: $('#divApprove'),
-            area: ['800px', '500px'], //宽高
-            btn: ['确定'],
-            yes: function (index, layero) {
-                if (!$("#divApprove").verifyForm()) {
-                    return false;
-                }
-                var opinion = $("#opinion").val();
-                luckyu.ajax.postv2('/WorkflowModule/Task/Approve', {
-                    taskId: taskId,
-                    result: 4,
-                    opinion: opinion,
-                }, function (data) {
-                    if (!!callBack) {
-                        callBack();
-                    }
-                    var history_id = data.Item3[0].history_id;
-                    $("#AnnexName").uploadFile({
-                        exId: history_id,
-                        callback: function () {
-                            parent.layui.layer.close(layerIndex);
-                        }
-                    });
-                });
-
-            },
+            }],
             success: function (layero, index) {
                 $("div.layui-layer-btn", parent.document).hide();
             },
@@ -348,36 +332,38 @@ var bootstrap = function (layui) {
         });
     };
     adduserClick = function (layerIndex, callBack) {
-        layui.layer.open({
-            type: 1,
-            title: '会签办理',
+        luckyu.layer.layerHtml({
+            title: '邀请会签办理',
             content: $('#divAddUser'),
-            area: ['800px', '500px'], //宽高
-            btn: ['确定'],
-            yes: function (index, layero) {
-                if (!$("#divAddUser").verifyForm()) {
-                    return false;
-                }
+            height: 500,
+            width: 800,
+            btn: [{
+                name: "确定",
+                callback: function (index, layero) {
+                    if (!$("#divAddUser").verifyForm()) {
+                        return false;
+                    }
 
-                var remark = $("#opinion1").val();
-                var userIds = $("#userids").val();
-                var usernames = $("#usernames").val();
+                    var remark = $("#opinion1").val();
+                    var userIds = $("#userids").val();
+                    var usernames = $("#usernames").val();
 
-                luckyu.layer.layerConfirm("确定邀请以下用户会签办理审批？<br />" + usernames, function () {
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds.split(','), remark: remark }, function (data) {
-                        if (!!callBack) {
-                            callBack();
-                        }
-                        var history_id = data;
-                        $("#AnnexName1").uploadFile({
-                            exId: history_id,
-                            callback: function () {
-                                parent.layui.layer.close(layerIndex);
+                    luckyu.layer.layerConfirm("确定邀请以下用户会签办理审批？<br />" + usernames, function () {
+                        luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/AddUser', { taskId: taskId, userIds: userIds.split(','), remark: remark }, function (data) {
+                            if (!!callBack) {
+                                callBack();
                             }
+                            var history_id = data;
+                            $("#AnnexName1").uploadFile({
+                                exId: history_id,
+                                callback: function () {
+                                    parent.layui.layer.close(layerIndex);
+                                }
+                            });
                         });
                     });
-                });
-            },
+                }
+            }],
             success: function (layero, index) {
                 $("div.layui-layer-btn", parent.document).hide();
             },
@@ -387,36 +373,37 @@ var bootstrap = function (layui) {
         });
     };
     helpmeClick = function (layerIndex, callBack) {
-        layui.layer.open({
-            type: 1,
+        luckyu.layer.layerHtml({
             title: '转发查看',
             content: $('#divAddUser'),
-            area: ['800px', '500px'], //宽高
-            btn: ['确定'],
-            yes: function (index, layero) {
-                if (!$("#divAddUser").verifyForm()) {
-                    return false;
-                }
+            height: 500,
+            width: 800,
+            btn: [{
+                name: "确定",
+                callback: function (index, layero) {
+                    if (!$("#divAddUser").verifyForm()) {
+                        return false;
+                    }
+                    var remark = $("#opinion1").val();
+                    var userIds = $("#userids").val();
+                    var usernames = $("#usernames").val();
 
-                var remark = $("#opinion1").val();
-                var userIds = $("#userids").val();
-                var usernames = $("#usernames").val();
-
-                luckyu.layer.layerConfirm("确定邀请以下用户转发查看？<br />" + usernames, function () {
-                    luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/HelpMe', { taskId: taskId, userIds: userIds.split(','), remark: remark }, function (data) {
-                        if (!!callBack) {
-                            callBack();
-                        }
-                        var history_id = data;
-                        $("#AnnexName1").uploadFile({
-                            exId: history_id,
-                            callback: function () {
-                                parent.layui.layer.close(layerIndex);
+                    luckyu.layer.layerConfirm("确定转发给以下用户查看？<br />" + usernames, function () {
+                        luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Task/HelpMe', { taskId: taskId, userIds: userIds.split(','), remark: remark }, function (data) {
+                            if (!!callBack) {
+                                callBack();
                             }
+                            var history_id = data;
+                            $("#AnnexName1").uploadFile({
+                                exId: history_id,
+                                callback: function () {
+                                    parent.layui.layer.close(layerIndex);
+                                }
+                            });
                         });
                     });
-                });
-            },
+                }
+            }],
             success: function (layero, index) {
                 $("div.layui-layer-btn", parent.document).hide();
             },

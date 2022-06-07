@@ -166,18 +166,13 @@ namespace Luckyu.Utility
             {
                 using (var imgBmp = new Bitmap(sourceFile))
                 {
-                    //找到新尺寸
                     int oWidth = imgBmp.Width;
+                    if (oWidth <= width)
+                    {
+                        return false;
+                    }
                     int oHeight = imgBmp.Height;
-                    var height = oHeight;
-                    if (width > oWidth)
-                    {
-                        width = oWidth;
-                    }
-                    else
-                    {
-                        height = oHeight * width / oWidth;
-                    }
+                    var height = oHeight * width / oWidth;
                     var newImg = new Bitmap(imgBmp, width, height);
                     //保存到本地
                     newImg.Save(targetFile);

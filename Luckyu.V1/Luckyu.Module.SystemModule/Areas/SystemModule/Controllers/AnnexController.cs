@@ -26,6 +26,7 @@ namespace Luckyu.Module.SystemModule.Controllers
         /// <summary>
         /// 展示文件（一般用于图片）
         /// </summary>
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
         public IActionResult ShowFile(string keyValue)
         {
             var annex = annexBLL.GetEntity(r => r.annex_id == keyValue);
@@ -48,13 +49,9 @@ namespace Luckyu.Module.SystemModule.Controllers
         /// <summary>
         /// 展示压缩文件（用于图片）
         /// </summary>
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
         public IActionResult ShowFileThumb(string keyValue)
         {
-            //var annex = annexBLL.GetEntity(r => r.annex_id == keyValue, r => r.createtime);
-            //if (annex == null)
-            //{
-            //    return new EmptyResult();
-            //}
             var thumb = annexBLL.GetEntity(r => r.externalcode == "[thumb]" && r.external_id == keyValue);
             if (thumb == null)
             {
@@ -74,6 +71,7 @@ namespace Luckyu.Module.SystemModule.Controllers
         }
 
 
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
         public IActionResult ShowFileByExid(string exId, string exCode, int sort = 0)
         {
             Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
@@ -102,6 +100,7 @@ namespace Luckyu.Module.SystemModule.Controllers
             return File(bytes, annex.contexttype);
         }
 
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
         public IActionResult DownloadFile(string keyValue)
         {
             var annex = annexBLL.GetEntity(r => r.annex_id == keyValue);

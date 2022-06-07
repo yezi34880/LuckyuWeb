@@ -109,7 +109,7 @@ var bootstrap = function (layui) {
                     layui.layer.open({
                         type: 0,
                         title: "调整流程节点",
-                        content: '确定调整该流程到最新版本，并调整节点到 " + node.name + " ？',
+                        content: '确定调整该流程到最新版本，并调整节点到 ' + node.name + ' ？',
                         icon: 3,
                         area: ['400px', '180px'],
                         btn: ["调整并使用默认用户", "调整并选择用户", "取消"],

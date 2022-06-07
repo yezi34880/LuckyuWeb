@@ -38,14 +38,12 @@
             left: 120px;
         }
 
-        .layui-timeline-item {
-            padding-bottom: 0;
+        h3.layui-timeline-title {
+            margin-top: 0;
         }
 
-        .gridLog tr.jqgrow td {
-            overflow: hidden !important;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .layui-timeline-item p {
+            margin-bottom: 0;
         }
     </style>
 }
@@ -70,33 +68,23 @@
         @{
             for (int i = 0; i < Model.Count; i++)
             {
-                <div class="layui-tab-item @(i==Model.Count-1?"layui-show":"")" luckyu-id="@Model[i].instance_id">
-                    <div class="layui-tab layui-tab-brief">
-                        <ul class="layui-tab-title">
-                            <li class="layui-this">日志</li>
-                            <li>流程</li>
-                        </ul>
-                        <div class="layui-tab-content">
-                            <!--审批日志-->
-                            <div class="layui-tab-item layui-show">
-                                <div class="layui-col-xs12">
-                                    <table id="gridLog_@Model[i].instance_id" class="gridLog"></table>
-                                </div>
-                            </div>
-                            <!--流程-->
-                            <div class="layui-tab-item">
-                                <div class="layui-col-xs12">
-                                    <div id="flow_@Model[i].instance_id"></div>
-                                    <div style="position:relative;left:0px;bottom:0;width:100%;height:40px;border-top:1px solid #ddd;line-height:39px;text-align:right;padding-right:10px;font-size:16px;">
-                                        <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#5bc0de;" class="fa fa-square"></i><span>正在审批</span></div>
-                                        <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#5cb85c;" class="fa fa-square"></i><span>通过</span></div>
-                                        <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#d9534f;" class="fa fa-square"></i><span>不通过</span></div>
-                                        <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#999;" class="fa fa-square"></i><span>未处理</span></div>
-                                    </div>
-                                </div>
-                            </div>
+                <div>
+                    <div class="layui-col-xs8">
+                        <div id="flow_@Model[i].instance_id"></div>
+                        <div style="position:relative;left:0px;bottom:0;width:100%;height:40px;border-top:1px solid #ddd;line-height:39px;text-align:right;padding-right:10px;font-size:16px;">
+                            <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#5bc0de;" class="fa fa-square"></i><span>正在审批</span></div>
+                            <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#5cb85c;" class="fa fa-square"></i><span>通过</span></div>
+                            <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#d9534f;" class="fa fa-square"></i><span>不通过</span></div>
+                            <div style="display: inline-block;margin-left: 10px;"><i style="padding-right:5px;color:#999;" class="fa fa-square"></i><span>未处理</span></div>
                         </div>
                     </div>
+                    <div class="layui-col-xs4">
+                        <div style="padding-top:15px; padding-left: 15px;overflow: auto;">
+                            <ul class="layui-timeline" id="ultimeline_@Model[i].instance_id">
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             }
         }

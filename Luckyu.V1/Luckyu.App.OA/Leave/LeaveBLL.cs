@@ -177,7 +177,8 @@ namespace Luckyu.App.OA
             {
                 var json = JsonConvert.SerializeObject(entity);
                 // 0 起草  1 生效  2 审批中  3 退回
-                var res = await taskBLL.Create(FlowEnum.Leave, entity.leave_id, $"{entity.username}", json, loginInfo, messageHubContext);
+                var processname = $"{entity.username} {entity.reason}";
+                var res = await taskBLL.Create(FlowEnum.Leave, entity.leave_id, processname, json, loginInfo, messageHubContext);
                 if (res.code != 200)
                 {
                     return ResponseResult.Fail<oa_leaveEntity>(res.info);

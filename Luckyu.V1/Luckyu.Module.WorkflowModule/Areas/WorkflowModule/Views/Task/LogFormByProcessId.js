@@ -7,60 +7,12 @@ var bootstrap = function (layui) {
         init: function () {
             page.initData();
         },
-        initLogGrid: function (instanceId, data) {
-            var gridLog = $('#gridLog_' + instanceId).jqGrid({
-                //url: luckyu.rootUrl + '/WorkFlowModule/Task/GetWorkflowLog',
-                //datatype: "json",
-                //postData: { processId: processId, instanceId: instanceId },
-                datatype: "local",
-                data: data,
-                colModel: [
-                    { label: "节点名称", name: "nodename", width: 80, },
-                    { label: "操作用户", name: "create_username", width: 80, },
-                    {
-                        label: "操作时间", name: "createtime", width: 100, align: "right",
-                        formatter: "date", formatoptions: { newformat: 'Y-m-d H:i:s' },
-                    },
-                    {
-                        label: "流程状态", name: "result", width: 60, align: "center",
-                        formatter: function (cellvalue, options, rowObject) {
-                            var result = luckyu.utility.toEnum(cellvalue, luckyu_staticdata.wf_resultshow);
-                            return result;
-                        }
-                    },
-                    { label: "备注", name: "opinion", width: 350 },
-                    {
-                        label: "附件", name: "annex", width: 100,
-                        formatter: function (cellvalue, options, rowobject) {
-                            var result = '';
-                            if (!!cellvalue) {
-                                var list = JSON.parse(cellvalue);
-                                for (var i = 0; i < list.length; i++) {
-                                    result += ' <a style="color:blue;cursor:pointer;text-decoration:underline;" href="/SystemModule/Annex/ShowFile?keyValue=' + list[i].Key + '" target="_blank"> ' + list[i].Value + '</a>';
-                                }
-                            }
-                            return result;
-                        }
-                    },
-                ],
-                rownumbers: true,
-                viewrecords: true,
-                altRows: true,//隔行换色
-            });
-
-            gridLog.setGridHeight(window.innerHeight - 120);
-            gridLog.setGridWidth(window.innerWidth - 150);
-            $(window).resize(function () {
-                gridLog.setGridHeight(window.innerHeight - 120);
-                gridLog.setGridWidth(window.innerWidth - 150);
-            });
-        },
         initData: function () {
             $("li[luckyu-id]").each(function (item, index) {
                 var self = $(this);
                 var instanceId = self.attr("luckyu-id");
                 luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId }, function (data) {
-                    page.initLogGrid(instanceId, data.History);
+
                     var shceme = JSON.parse(data.Instance.schemejson);
 
                     for (var i = 0, l = shceme.nodes.length; i < l; i++) {
@@ -90,11 +42,45 @@ var bootstrap = function (layui) {
                         }
                     });
 
-                    $('#flow_' + instanceId).parent().height(window.innerHeight - 105).width(window.innerWidth - 155);
+                    $('#flow_' + instanceId).parent().height(window.innerHeight - 70).width(window.innerWidth - 550);
+                    $('#ultimeline_' + instanceId).parent().height(window.innerHeight - 70).width(window.innerWidth - 900);
                     $(window).resize(function () {
-                        $('#flow_' + instanceId).parent().height(window.innerHeight - 105).width(window.innerWidth - 155);
+                        $('#flow_' + instanceId).parent().height(window.innerHeight - 70).width(window.innerWidth - 550);
+                        $('#ultimeline_' + instanceId).parent().height(window.innerHeight - 70).width(window.innerWidth - 900);
                     });
                     $('#flow_' + instanceId).dfworkflowSet('set', { data: shceme });
+
+                    // 历史记录
+                    var htmlHistory = '';
+                    for (var i = 0; i < data.History.length; i++) {
+                        var his = data.History[i];
+                        htmlHistory += '\
+<li class="layui-timeline-item">\
+    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
+    <div class="layui-timeline-content layui-text">\
+        <h3 class="layui-timeline-title">'+ luckyu.utility.toEnum(his.result, luckyu_staticdata.wf_resultshow) + ' ' + his.nodename + '</h3>\
+        <p>';
+                        if (his.result != 0) {
+                            htmlHistory += "审批人：" + his.create_username;
+
+                            if (his.result != 100) {
+                                htmlHistory += "<br/>提交时间：" + new Date(his.tasktime).format("yyyy-MM-dd HH:mm")
+                                htmlHistory += "<br/>办结时间：" + new Date(his.apptime).format("yyyy-MM-dd HH:mm")
+                                htmlHistory += (!his.opinion ? '' : ('<br/>意见建议：' + his.opinion));
+                            }
+                            if (!!his.annex && his.annex != '[]') {
+                                var list = JSON.parse(his.annex);
+                                htmlHistory += "<br/>附件：";
+                                for (var j = 0; j < list.length; j++) {
+                                    htmlHistory += ' <br/><a style="color:blue;cursor:pointer;text-decoration:underline;" href="/SystemModule/Annex/ShowFile?keyValue=' + list[j].Key + '" target="_blank"> ' + list[j].Value + '</a>';
+                                }
+                            }
+                        }
+
+                        htmlHistory += '</p></div></li>';
+                    }
+                    $('#ultimeline_' + instanceId).html(htmlHistory);
+
                 });
 
             });

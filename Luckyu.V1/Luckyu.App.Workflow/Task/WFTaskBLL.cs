@@ -139,10 +139,10 @@ namespace Luckyu.App.Workflow
                 var auths = taskauthService.GetList(r => r.task_id == item.task_id);
                 var users = GetUserByAuth(auths);
                 item1.history_id = "";
-                item1.opinion = string.Join(",", users.Select(r => $"{r.realname}-{ r.loginname}"));
+                item1.opinion = "";
                 item1.result = 100;
                 item1.createtime = null;
-                item1.create_username = "";
+                item1.create_username = string.Join(",", users.Select(r => $"{r.realname}-{ r.loginname}"));
                 list.Add(item1);
             }
 
@@ -565,11 +565,11 @@ namespace Luckyu.App.Workflow
         /// 审批
         /// </summary>
         /// <param name="taskId">当前任务</param>
-        /// <param name="result">1同意 2拒绝</param>
+        /// <param name="result">1通过 2退回 3退回至上一步</param>
         /// <param name="opinion">审批意见</param>
         /// <param name="loginInfo"></param>
         /// <returns></returns>
-        public ResponseResult Approve(string taskId, int result, string opinion, int returnType, Dictionary<string, List<KeyValue>> authors, UserModel loginInfo)
+        public ResponseResult Approve(string taskId, int result, string opinion, Dictionary<string, List<KeyValue>> authors, UserModel loginInfo)
         {
             var task = taskService.GetEntity(r => r.task_id == taskId);
             if (task == null)
@@ -611,15 +611,15 @@ namespace Luckyu.App.Workflow
             historyCurrent.result = result;
             historyCurrent.nodetype = nodeCurrent.type;
 
-            if (result == 2 && task.nodetype != "helpme")
+            if ((result == 2 || result == 3) && task.nodetype != "helpme")
             {
-                if (returnType == 1)
-                {
-                    historyCurrent.appremark = "退回上一步";
-                }
-                else
+                if (result == 2)
                 {
                     historyCurrent.appremark = "退回";
+                }
+                else if (result == 3)
+                {
+                    historyCurrent.appremark = "退回上一步";
                 }
             }
 
@@ -694,80 +694,78 @@ namespace Luckyu.App.Workflow
             {
                 // 这里有问题，退回上一步其实有两种可能，如果上一步是其他审批，不用执行退回SQL与程序，否则直接就是起草了，而且这里后期可能需要针对这里把 退回SQL 再次拆分为两个，暂时先不弄
                 // 还有一个问题，如果上一步为开始，就要执行SQL，相当于退回起草状态了
-
-                if (returnType == 1) // 退回至上一步 
+                // 走到 箭头为【否】连接的下一步，如果没有下一步则回到起始，这里也有问题，其实应该调用 GetNextNode 方法，而不是只是单纯找拒绝的下一步，因为下一步可能会是执行或者会签等按钮，需要递归
+                lines = lines.Where(r => r.wftype == 2 || r.wftype == 0).ToList();
+                if (!nodeCurrent.sqlfail.IsEmpty())
                 {
-                    var preTasks = GetTaskList(r => r.instance_id == instance.instance_id && r.node_id == task.previous_id);
-                    if (!preTasks.IsEmpty())
-                    {
-                        if (preTasks.Exists(r => r.nodetype == "startround"))
-                        {
-                            listSql.Add(nodeCurrent.sqlfail);
-                            var historyEnd = new wf_taskhistoryEntity();
-                            historyEnd = instance.Adapt<wf_taskhistoryEntity>();
-                            historyEnd.result = 2;
-                            historyEnd.node_id = "";
-                            historyEnd.nodename = "";
-                            historyEnd.nodetype = "startround";
-                            historyEnd.previous_id = nodeCurrent.id;
-                            historyEnd.previousname = nodeCurrent.name;
-                            historyEnd.appremark = "【流程结束】退回上一步，上一步为开始节点";
-                            historyEnd.tasktime = DateTime.Now;
-                            historyEnd.apptime = DateTime.Now;
-                            historyEnd.Create(loginInfo);
-                            listHistory.Add(historyEnd);
-
-                            instance.is_finished = 1;
-                        }
-                        else
-                        {
-                            foreach (var preTask in preTasks)
-                            {
-                                var taskAuths = GetTaskAuthorizeList(r => r.task_id == preTask.task_id);
-                                preTask.Create(loginInfo);
-                                foreach (var au in taskAuths)
-                                {
-                                    au.Create(loginInfo);
-                                    au.task_id = preTask.task_id;
-                                }
-                                listTask.Add(preTask);
-                            }
-                        }
-                        taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
-                        var data1 = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
-                        return ResponseResult.Success((object)data1);
-                    }
+                    listSql.Add(nodeCurrent.sqlfail);
                 }
-                else  // 走到 箭头为【否】连接的下一步，如果没有下一步则回到起始，这里也有问题，其实应该调用 GetNextNode 方法，而不是只是单纯找拒绝的下一步，因为下一步可能会是执行或者会签等按钮，需要递归
+                if (lines.IsEmpty())  // 如果没有为【否】连线的节点，则回到起始
                 {
-                    lines = lines.Where(r => r.wftype == 2 || r.wftype == 0).ToList();
-                    if (!nodeCurrent.sqlfail.IsEmpty())
+                    var historyEnd = new wf_taskhistoryEntity();
+                    historyEnd = instance.Adapt<wf_taskhistoryEntity>();
+                    historyEnd.result = 2;
+                    historyEnd.node_id = "";
+                    historyEnd.nodename = "";
+                    historyEnd.nodetype = "endround";
+                    historyEnd.previous_id = nodeCurrent.id;
+                    historyEnd.previousname = nodeCurrent.name;
+                    historyEnd.appremark = "【流程结束】";
+                    historyEnd.tasktime = DateTime.Now;
+                    historyEnd.apptime = DateTime.Now;
+                    historyEnd.Create(loginInfo);
+                    listHistory.Add(historyEnd);
+
+                    instance.is_finished = 1;
+
+                    taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
+                    var data1 = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
+                    return ResponseResult.Success((object)data1);
+                }
+            }
+            else if (result == 3) // 退回上一步
+            {
+                var preTasks = GetTaskList(r => r.instance_id == instance.instance_id && r.node_id == task.previous_id);
+                if (!preTasks.IsEmpty())
+                {
+                    if (preTasks.Exists(r => r.nodetype == "startround"))
                     {
                         listSql.Add(nodeCurrent.sqlfail);
-                    }
-                    if (lines.IsEmpty())  // 如果没有为【否】连线的节点，则回到起始
-                    {
                         var historyEnd = new wf_taskhistoryEntity();
                         historyEnd = instance.Adapt<wf_taskhistoryEntity>();
                         historyEnd.result = 2;
                         historyEnd.node_id = "";
                         historyEnd.nodename = "";
-                        historyEnd.nodetype = "endround";
+                        historyEnd.nodetype = "startround";
                         historyEnd.previous_id = nodeCurrent.id;
                         historyEnd.previousname = nodeCurrent.name;
-                        historyEnd.appremark = "【流程结束】";
+                        historyEnd.appremark = "【流程结束】退回上一步，上一步为开始节点";
                         historyEnd.tasktime = DateTime.Now;
                         historyEnd.apptime = DateTime.Now;
                         historyEnd.Create(loginInfo);
                         listHistory.Add(historyEnd);
 
                         instance.is_finished = 1;
-
-                        taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
-                        var data1 = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
-                        return ResponseResult.Success((object)data1);
                     }
+                    else
+                    {
+                        foreach (var preTask in preTasks)
+                        {
+                            var taskAuths = GetTaskAuthorizeList(r => r.task_id == preTask.task_id);
+                            preTask.Create(loginInfo);
+                            foreach (var au in taskAuths)
+                            {
+                                au.Create(loginInfo);
+                                au.task_id = preTask.task_id;
+                            }
+                            listTask.Add(preTask);
+                        }
+                    }
+                    taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
+                    var data1 = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
+                    return ResponseResult.Success((object)data1);
                 }
+
             }
             else  // 同意
             {
@@ -826,9 +824,9 @@ namespace Luckyu.App.Workflow
             return ResponseResult.Success((object)data);
         }
 
-        public async Task<ResponseResult> Approve(string taskId, int result, string opinion, int returnType, Dictionary<string, List<KeyValue>> authors, UserModel loginInfo, IHubContext<MessageHub> hubContext)
+        public async Task<ResponseResult> Approve(string taskId, int result, string opinion, Dictionary<string, List<KeyValue>> authors, UserModel loginInfo, IHubContext<MessageHub> hubContext)
         {
-            var res = Approve(taskId, result, opinion, returnType, authors, loginInfo);
+            var res = Approve(taskId, result, opinion, authors, loginInfo);
             if (res.code == (int)ResponseCode.Success)
             {
                 var data = res.data as Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>;
@@ -875,15 +873,13 @@ namespace Luckyu.App.Workflow
                         switch (node.timeout_type)
                         {
                             case 1:
-                                // 模拟 执行 通过方法
-                                Approve(task.task_id, 1, "【超时自动通过】", 0, null, systemInfo);
+                                Approve(task.task_id, 1, "【超时自动通过】", null, systemInfo);
                                 break;
                             case 2:
-                                // 模拟 执行 通过方法
-                                Approve(task.task_id, 1, "【超时自动通过】", 0, null, systemInfo);
+                                Approve(task.task_id, 2, "【超时自动通过】", null, systemInfo);
                                 break;
                             case 3:
-                                Approve(task.task_id, 2, "【超时自动退回起草】", 0, null, systemInfo);
+                                Approve(task.task_id, 3, "【超时自动退回起草】", null, systemInfo);
                                 break;
                         }
                     }
@@ -1324,12 +1320,23 @@ namespace Luckyu.App.Workflow
                         if (resultCondition > 0)
                         {
                             historyCondition.appremark = "判断结果为【是】";
-                            currentLine = alllines.Where(r => r.from == nodeNext.id && r.wftype == 1).FirstOrDefault();
+
+                            var nextLines = alllines.Where(r => r.from == nodeNext.id && r.wftype == 1).ToList();
+                            var result = FindNextNode(nextLines, alllines, allnodes, instance, nodeNext, loginInfo);
+                            listTask.AddRange(result.Item1);
+                            listHistory.AddRange(result.Item2);
+                            listSql.AddRange(result.Item3);
                         }
                         else
                         {
                             historyCondition.appremark = "判断结果为【否】";
-                            currentLine = alllines.Where(r => r.from == nodeNext.id && r.wftype == 2).FirstOrDefault();
+
+                            var nextLines = alllines.Where(r => r.from == nodeNext.id && r.wftype == 2).ToList();
+                            var result = FindNextNode(nextLines, alllines, allnodes, instance, nodeNext, loginInfo);
+                            listTask.AddRange(result.Item1);
+                            listHistory.AddRange(result.Item2);
+                            listSql.AddRange(result.Item3);
+
                         }
                         listHistory.Add(historyCondition);
                     }
@@ -1338,7 +1345,11 @@ namespace Luckyu.App.Workflow
                         listSql.Add(nodeNext.sqlsuccess);
                         ProcessNodeInject(nodeNext, instance.instance_id, instance.process_id, 1, "", listTask, listHistory, listSql);
 
-                        currentLine = alllines.Where(r => r.from == nodeNext.id).FirstOrDefault();
+                        var nextLines = alllines.Where(r => r.from == nodeNext.id).ToList();
+                        var result = FindNextNode(nextLines, alllines, allnodes, instance, nodeNext, loginInfo);
+                        listTask.AddRange(result.Item1);
+                        listHistory.AddRange(result.Item2);
+                        listSql.AddRange(result.Item3);
 
                         var historyProcess = new wf_taskhistoryEntity();
                         historyProcess = instance.Adapt<wf_taskhistoryEntity>();

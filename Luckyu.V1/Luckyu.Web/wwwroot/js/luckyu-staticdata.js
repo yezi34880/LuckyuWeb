@@ -4,10 +4,10 @@
         wf_resultshow: [
             { value: 1, name: '<span class="label label-success">通过</span>' },
             { value: 2, name: '<span class="label label-error">退回</span>' },
-            { value: 3, name: '<span class="label label-primary">申请会签办理</span>' },
+            { value: 3, name: '<span class="label label-primary">申请会签</span>' },
             { value: 4, name: '<span class="label label-success">已阅</span>' },
             { value: 5, name: '<span class="label label-primary">调整</span>' },
-            { value: 6, name: '<span class="label label-primary">申请转发查看</span>' },
+            { value: 6, name: '<span class="label label-primary">转发查看</span>' },
             { value: 100, name: '<span class="label label-info">当前待办</span>' },
         ],
         // 说明
