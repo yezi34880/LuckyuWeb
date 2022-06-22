@@ -30,13 +30,13 @@ namespace Luckyu.App.Workflow
                         jqPage.sidx = "fi.createtime";
                         break;
                 }
-                query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             }
             else
             {
-                jqPage.sidx = "b.createtime";
+                jqPage.sidx = "fi.createtime";
                 jqPage.sord = "DESC";
             }
+            query = query.OrderBy($" {jqPage.sidx} {jqPage.sord} ");
             var total = 0;
             var list = query.Select<WFTaskModel>().ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<WFTaskModel>

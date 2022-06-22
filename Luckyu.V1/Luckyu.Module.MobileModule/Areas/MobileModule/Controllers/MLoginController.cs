@@ -27,31 +27,37 @@ namespace Luckyu.Module.MobileModule.Controllers
             return View();
         }
 
-        public IActionResult VerifyCode()
-        {
-            var vcode = VerifyCodeHelper.GetCode();
-            var bytes = VerifyCodeHelper.GetVerifyCode(vcode);
-            HttpContext.Session.SetString("m_session_verifycode", EncrypHelper.MD5_Encryp(vcode.ToLower()));
-            return File(bytes, @"image/Gif");
-        }
-
         [HttpPost, AjaxOnly]
         public IActionResult CheckLogin(string username, string password, string verifycode)
         {
-            var vcode = HttpContext.Session.GetString("m_session_verifycode");
-            if (vcode.IsEmpty() || vcode != EncrypHelper.MD5_Encryp(verifycode.ToLower()))
+            var wrongnum = HttpContext.Session.GetInt32("session_wrongnum");
+            if (!wrongnum.IsEmpty() && wrongnum > 2)
             {
-                return Fail("验证码错误或过期，请刷新");
+                if (verifycode.IsEmpty())
+                {
+                    return Fail("请输入验证码", new { wrongnum });
+                }
+                var vcode = HttpContext.Session.GetString("session_verifycode");
+                if (vcode.IsEmpty() || vcode.ToLower() != verifycode.ToLower())
+                {
+                    return Fail("验证码错误或过期，请刷新");
+                }
             }
             var res = userBLL.CheckLogin(username, password, "MobileLogin", HttpContext);
             if (res.code == 200)
             {
+                HttpContext.Session.Remove("session_wrongnum");
                 return Success("/MobileModule/MHome/Index");
             }
             else
             {
-                return Fail(res.info);
+                var wrongnum1 = HttpContext.Session.GetInt32("session_wrongnum");
+                var wrongnum2 = wrongnum1.HasValue ? wrongnum1.Value + 1 : 1;
+                HttpContext.Session.SetInt32("session_wrongnum", wrongnum2);
+
+                return Fail(res.info, new { wrongnum = wrongnum2 });
             }
+
         }
 
     }

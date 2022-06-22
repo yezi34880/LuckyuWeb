@@ -11,6 +11,7 @@
         init: function () {
             page.bind();
             page.bindUpload();
+            page.initData();
         },
         bindUpload: function () {
             // 拍照上传
@@ -161,15 +162,6 @@
                         var ele = $(this);
                         ele.attr("disabled", "disabled");
                     });
-                });
-            });
-
-            $("#help").click(function () {
-                bui.confirm({
-                    "title": "操作说明",
-                    "height": 640,
-                    "content": '<div style="text-align:left;">' + luckyu_staticdata.wf_description + '</div>',
-                    "buttons": [{ name: "我知道了", className: "primary-reverse" }]
                 });
             });
 
@@ -329,6 +321,7 @@
                     this.close()
                 });
             };
+            $("#btnOK").on("click", approve);
             var read = function () {
                 if (!$("#appform").verifyForm()) {
                     return;
@@ -380,13 +373,24 @@
                     this.close()
                 });
             };
+            $("#read").on("click", read);
 
-            $("#btnApprove").on("click", approve);
-            $("#btnRead").on("click", read);
+            var uiDialog;
+            $("#approve").on("click", function () {
+                uiDialog = bui.dialog({
+                    id: "#dialogDown",
+                    position: "bottom",
+                    autoClose: false
+                });
+                uiDialog.open();
+            });
 
+            $("#btnCancel").click(function () {
+                uiDialog.close();
+            });
         },
         initData: function () {
-            luckyu.ajax.getv2(luckyu.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId, taskId: taskId, historyId: historyId }, function (data) {
+            luckyumobile.ajax.getv2(luckyumobile.rootUrl + '/WorkflowModule/Task/GetFormData', { instanceId: instanceId, taskId: taskId, historyId: historyId }, function (data) {
                 var instance = data.Instance;
                 $("#divHeader").html(instance.flowname);
 
@@ -394,33 +398,34 @@
                 var htmlIframe = '';
                 // 表单
                 for (var i = 0; i < data.ShowNode.forms.length; i++) {
-                    var form = data.ShowNode.forms;
+                    var form = data.ShowNode.forms[i];
                     var formurl = form.mobileformurl;
-                    if (formurl.indexOf("?") < 0) {
-                        formurl += '?keyValue=' + instance.process_id;
-                    }
-                    else {
-                        formurl += '&keyValue=' + instance.process_id;
-                    }
-                    htmlTab += '<li class="bui-btn">' + form.formname + '</li>';
-                    htmlIframe += '\
-<li style="'+ (i == 0 ? "display: none; " : "") + '">\
+                    if (!!formurl) {
+                        if (formurl.indexOf("?") < 0) {
+                            formurl += '?keyValue=' + instance.process_id;
+                        }
+                        else {
+                            formurl += '&keyValue=' + instance.process_id;
+                        }
+                        htmlTab += '<li class="bui-btn">' + form.formname + '</li>';
+                        htmlIframe += '\
+<li style="width:100%;padding:0 10px;'+ (i > 0 ? "display: none; " : "") + '">\
     <iframe src="'+ formurl + '" frameborder="0" border="0"></iframe>\
 </li>';
+                    }
                 }
                 $("#iframeNav").html(htmlTab);
                 $("#ulForm").html(htmlIframe);
+                $("#ulForm").parent().css("width", "100%");
+                $("#ulForm iframe").css("height", "100%").css("width", "100%");
 
-                if (!!taskId) {
-                    $("#appform").show();
-                }
-                if (data.CurrentNode.type == "auditornode") {
-                    $("#btnRead").show();
-                }
-                else { // stepnode 一般审批 会签 转发
-                    $("#btnApprove").show();
-                    $("#divAppResult").show();
-                    $("#divHelp").show();
+                if (!!taskId) {  // 审批流程才有 审批按钮
+                    if (data.CurrentNode.type == "auditornode" || data.CurrentNode.type == "helpme") {  // 传阅 或者协办 就只有 确认
+                        $("#read").show();
+                    }
+                    else {
+                        $("#approve").show();
+                    }
                 }
 
                 var htmlHistory = '';
@@ -430,12 +435,28 @@
 <div class="bui-stepbar-cell '+ (item.result == 100 ? "" : "active") + '">\
     <span class="bui-stepbar-dot"></span>\
     <div class="bui-stepbar-text">\
-        <h3>'+ (item.nodename + " " + luckyu.utility.toEnum(item.result, luckyu_staticdata.wf_resultshow)) + '</h3>\
-        <p class="bui-stepbar-time">'+ (new Date(item.createtime).format("yyyy-MM-dd HH:mm") + " ~ " + new Date(item.apptime).format("yyyy-MM-dd HH:mm")) + '</p>\
-        <p class="bui-stepbar-desc">'+ item.create_username + '</p>\
-        <p class="bui-stepbar-desc">'+ item.opinion + '</p>\
-    </div>\
-</div>';
+        <h3>'+ (luckyumobile.utility.toEnum(item.result, luckyu_staticdata.m_wf_resultshow) + " " + item.nodename) + '</h3>\
+';
+
+                    if (item.result != 0) {
+                        htmlHistory += '<p class="bui-stepbar-desc">审批人：' + item.create_username + '</p>';
+
+                        if (item.result != 100) {
+                            htmlHistory += '<p class="bui-stepbar-desc">提交时间：' + new Date(item.tasktime).format("yyyy-MM-dd HH:mm") + '</p>';
+                            htmlHistory += '<p class="bui-stepbar-desc">办结时间：' + new Date(item.apptime).format("yyyy-MM-dd HH:mm") + '</p>';
+                            htmlHistory += (!item.opinion ? '' : ('<p class="bui-stepbar-desc">意见建议：' + item.opinion + '</p>'));
+                        }
+                        if (!!item.annex && item.annex != '[]') {
+                            var list = JSON.parse(item.annex);
+                            htmlHistory += '<p class="bui-stepbar-desc">附件：';
+                            for (var j = 0; j < list.length; j++) {
+                                htmlHistory += ' <br/><a style="color:blue;cursor:pointer;text-decoration:underline;" href="/SystemModule/Annex/ShowFile?keyValue=' + list[j].Key + '" target="_blank"> ' + list[j].Value + '</a>';
+                            }
+                            htmlHistory += '</p>';
+                        }
+                    }
+
+                    htmlHistory += '</div></div>';
                 }
                 $("#step").html(htmlHistory);
 
@@ -444,8 +465,8 @@
                     var htmlNext = '';
                     for (var i = 0; i < nextNodes.length; i++) {
                         var nextnode = data.NextNodes[i];
-                        var html_nodename = nextnode.name;
-                        if (data.CurrentNode.comfirm_node == 1) {
+                        var html_nodename = '<li class="bui-btn bui-box">' + nextnode.name + '</li>';
+                        if (nextnode.comfirm_node == 1) {
                             html_nodename = '\
 <li class="bui-btn bui-box">\
     <input id="node_' + nextnode.id + '" type="checkbox" class="bui-checkbox" name="nextnode" value="' + nextnode.id + '" />\
@@ -454,7 +475,7 @@
     </div>\
 </li>';
                         }
-                        else if (data.CurrentNode.comfirm_node == 2) {
+                        else if (nextnode.comfirm_node == 2) {
                             html_nodename = '\
 <li class="bui-btn bui-box">\
     <input id="node_' + nextnode.id + '" type="radio" class="bui-radio" name="nextnode" value="' + nextnode.id + '" />\
@@ -465,7 +486,7 @@
                         }
 
                         var htmcheckall = '';  // 多个人且多选 ，有全选按钮
-                        if (nextnode.comfirm_user == 1 && nextnode.auditors.length > 2 && nextnode.user_num != 1) {
+                        if (nextnode.comfirm_user == 1 && nextnode.authusers.length > 2 && nextnode.user_num != 1) {
                             htmcheckall = '\
 <li class="bui-btn bui-box">\
     <input type="checkbox" class="bui-checkbox checkalluser" id="checkall_'+ nextnode.id + '" nodeid="' + nextnode.id + '"  />\
@@ -475,11 +496,12 @@
 </li>';
                         }
 
-                        html += '<div class="layui-card"><div class="layui-card-header">' + html_nodename + htmcheckall + '</div>';
-                        html += '<div class="layui-card-body">';
+                        htmlNext += '<div class="layui-card"><div class="layui-card-header">' + html_nodename + htmcheckall + '</div>';
+                        htmlNext += '<div class="layui-card-body">';
 
                         // 用户
-                        if (nextnode.auditors.length > 0) {
+                        if (nextnode.authusers.length > 0) {
+                            htmlNext += '<div class="bui-fluid-space-2">';
                             for (var j = 0; j < nextnode.authusers.length; j++) {
                                 var authuser = nextnode.authusers[j];
                                 var html_username = '<div class="span1" style="text-align: center;">' + authuser.objectnames + '</div>';
@@ -490,116 +512,101 @@
     <input type="'+ inputtype + '" class="bui-check"  id="user_' + authuser.objectids + '" name="nodeuser_' + nextnode.id + '" nodeid="' + nextnode.id + '"  value="' + authuser.objectids + '"  lay-filter="nodeuser"   uncheck="' + authuser.objectnames + '" check="' + authuser.objectnames + '" />\
 </div>';
                                 }
-                                html += '<div class="layui-col-xs4">' + html_username + '</div>';
+                                htmlNext += '<div class="layui-col-xs4">' + html_username + '</div>';
                             }
+                            htmlNext += '</div>';
                         }
-                        else if (nextnode.auditors.length == 0) { // 没有人就自己选择
-                            html += '<div class="bui-btn primary small btnSelectUser" style="margin:10px;" usernumber="' + nextnode.usernumber + '"  nextnodeid="' + nextnode.id + '"  >选择用户</div><div class="bui-fluid-space-2 divUsers"></div>';
+                        else if (nextnode.authusers.length == 0) { // 没有人就自己选择
+                            htmlNext += '<div class="bui-btn primary small btnSelectUser" style="margin:10px;" usernumber="' + nextnode.usernumber + '"  nextnodeid="' + nextnode.id + '"  >选择用户</div><div class="bui-fluid-space-2 divUsers"></div>';
                         }
 
-                        html += '</div></div>';
+                        htmlNext += '</div></div>';
                     }
                     $("#ulNext").html(htmlNext);
                     $("#divNext").show();
 
-                    // 选人
-                    var btns = $(".btnSelectUser");
-                    if (!!btns && btns.length > 0) {
-                        btns.each(function () {
-                            $(this).click(function () {
-                                var $btn = $(this);
-                                var radio = $btn.parent().parent().find("input[name=nextnode]");
-                                if (radio.length > 0) {
-                                    if (!radio.is(":checked")) {
-                                        radio.click();
-                                    }
-                                    if (radio.attr("type") == "radio") {
-                                        var siblings = radio.parents("div.layui-card").siblings();
-                                        siblings.find('input[lay-filter="nodeuser"]').prop("checked", false);
-                                    }
-                                }
-                                var usernumber = $btn.attr("usernumber");
-                                var nextnodeid = $btn.attr("nextnodeid");
-                                var dialogobj = ahoitmobile.mobileUserSelect.init({
-                                    multiple: usernumber == 1 ? false : true,
-                                    callback: function (userlist) {
-                                        if (!!userlist && userlist.length > 0) {
-                                            var htm = '';
-                                            for (var u = 0; u < userlist.length; u++) {
-                                                htm += '\
-<div class="span1">\
-    <input type="checkbox" class="bui-check"  id="user_' + userlist[u].user_id + '" name="nodeuser_' + nextnodeid + '" nodeid="' + nextnodeid + '"  value="' + userlist[u].user_id + '"  lay-filter="nodeuser" uncheck="' + userlist[u].realname + '" check="' + userlist[u].realname + '" checked />\
-</div>';
-                                            }
-                                            $btn.next().html(htm);
+                    if (!!htmlNext) {
+                        // 选人
+                        var btns = $(".btnSelectUser");
+                        if (!!btns && btns.length > 0) {
+                            btns.each(function () {
+                                $(this).click(function () {
+                                    var $btn = $(this);
+                                    var radio = $btn.parent().parent().find("input[name=nextnode]");
+                                    if (radio.length > 0) {
+                                        if (!radio.is(":checked")) {
+                                            radio.prop("checked", true);
+                                        }
+                                        if (radio.attr("type") == "radio") {
+                                            var siblings = radio.parents("div.layui-card").siblings();
+                                            siblings.find('input[lay-filter="nodeuser"]').prop("checked", false);
                                         }
                                     }
-                                });
-                                dialogobj.open();
+                                    var usernumber = $btn.attr("usernumber");
+                                    var nextnodeid = $btn.attr("nextnodeid");
+                                    var dialogobj = luckyumobile.mobileUserSelect.init({
+                                        multiple: usernumber == 1 ? false : true,
+                                        callback: function (userlist) {
+                                            if (!!userlist && userlist.length > 0) {
+                                                var htm = '';
+                                                for (var u = 0; u < userlist.length; u++) {
+                                                    htm += '\
+    <div class="span1">\
+        <input type="checkbox" class="bui-check"  id="user_' + userlist[u].user_id + '" name="nodeuser_' + nextnodeid + '" nodeid="' + nextnodeid + '"  value="' + userlist[u].user_id + '"  lay-filter="nodeuser" uncheck="' + userlist[u].realname + '" check="' + userlist[u].realname + '" checked />\
+    </div>';
+                                                }
+                                                $btn.next().html(htm);
+                                            }
+                                        }
+                                    });
+                                    dialogobj.open();
 
+                                });
                             });
+                        }
+
+                        // 全选
+                        $(".checkalluser").click(function () {
+                            var nodeid = $(this).attr("nodeid");
+                            var ischecked = $(this).is(":checked");
+                            $('div.layui-card[nodeid="' + nodeid + '"] input[type=checkbox]').prop("checked", ischecked);
                         });
+                        // 取消其他节点选
+                        $('input[name=nextnode]').click(function () {
+                            var ischecked = $(this).is(":checked");
+                            var inputtyep = $(this).attr("type");
+                            var value = $(this).val();
+                            // radio选中，其余radio下人员全部取消选中
+                            if (ischecked && inputtyep == "radio") {
+                                $('div.layui-card[nodeid]').each(function (index, ele) {
+                                    var nodeid = $(ele).attr("nodeid");
+                                    if (nodeid != value) {
+                                        $(ele).find("input").prop('checked', false);
+                                    }
+                                });
+                            }
+                            // checkbox 取消选中自身，其下人员全部取消选中
+                            if (!ischecked && inputtype == "checkbox") {
+                                $('div.layui-card[nodeid="' + value + '"] input').prop('checked', false);
+                            }
+                        });
+                        // 勾选下面人员自动勾选节点
+                        $('input[lay-filter=nodeuser]').click(function (e) {
+                            var ischecked = $(this).is(":checked");
+                            if (ischecked) {
+                                var radioorcheckbox = $(this).parents("div.layui-card-body").prev().find("input[name=nextnode]");
+                                if (radioorcheckbox.length > 0) {
+                                    radioorcheckbox.prop("checked", true);
+                                }
+                                if (radioorcheckbox.attr("type") == "radio") {
+                                    var siblings = radioorcheckbox.parents("div.layui-card").siblings();
+                                    siblings.find('input[lay-filter="nodeuser"]').prop("checked", false);
+                                }
+                            }
+                        });
+
                     }
 
-                    // 全选
-                    $(".checkalluser").click(function () {
-                        var nodeid = $(this).attr("nodeid");
-                        var ischecked = $(this).is(":checked");
-                        $('div.layui-card[nodeid="' + nodeid + '"] input[type=checkbox]').prop("checked", ischecked);
-                    });
-                    // 取消其他节点选
-                    $('input[name=nextnode]').click(function () {
-                        var ischecked = $(this).is(":checked");
-                        var inputtyep = $(this).attr("type");
-                        var value = $(this).val();
-                        // radio选中，其余radio下人员全部取消选中
-                        if (ischecked && inputtyep == "radio") {
-                            $('div.layui-card[nodeid]').each(function (index, ele) {
-                                var nodeid = $(ele).attr("nodeid");
-                                if (nodeid != value) {
-                                    $(ele).find("input").prop('checked', false);
-                                }
-                            });
-                        }
-                        // checkbox 取消选中自身，其下人员全部取消选中
-                        if (!ischecked && inputtype == "checkbox") {
-                            $('div.layui-card[nodeid="' + value + '"] input').prop('checked', false);
-                        }
-
-                        // 收文 办公室转办环节 如果选择直接归档，其他都不要选
-                        if (value == "5b95a2d4-5ded-94f3-10f0-71b9a6071b71") {
-                            if (ischecked) {
-                                $('div.layui-card[nodeid]').each(function (index, ele) {
-                                    var nodeid = $(ele).attr("nodeid");
-                                    if (nodeid != value) {
-                                        $(ele).find("input").prop('checked', false).attr("disabled", "disabled");
-                                    }
-                                });
-                            }
-                            else {
-                                $('div.layui-card[nodeid]').each(function (index, ele) {
-                                    var nodeid = $(ele).attr("nodeid");
-                                    if (nodeid != value) {
-                                        $(ele).find("input").removeAttr("disabled");
-                                    }
-                                });
-                            }
-                        }
-                    });
-                    // 勾选下面人员自动勾选节点
-                    $('input[lay-filter=nodeuser]').click(function (e) {
-                        var ischecked = $(this).is(":checked");
-                        if (ischecked) {
-                            var radioorcheckbox = $(this).parents("div.layui-card-body").prev().find("input[name=nextnode]");
-                            if (radioorcheckbox.length > 0) {
-                                radioorcheckbox.prop("checked", true);
-                            }
-                            if (radioorcheckbox.attr("type") == "radio") {
-                                var siblings = radioorcheckbox.parents("div.layui-card").siblings();
-                                siblings.find('input[lay-filter="nodeuser"]').prop("checked", false);
-                            }
-                        }
-                    });
                 }
 
             });

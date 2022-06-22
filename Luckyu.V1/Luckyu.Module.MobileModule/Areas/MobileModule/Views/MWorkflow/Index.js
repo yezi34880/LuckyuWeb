@@ -10,14 +10,19 @@
             page.bindList();
         },
         bind: function () {
-            if (tasktype === 1) {
-                $("#headerTitle").html("待办工作");
-            }
-            else if (tasktype == 2) {
-                $("#headerTitle").html("已办工作");
-            }
-            else {
-                $("#headerTitle").html("我的提交");
+            switch (tasktype) {
+                case 1:
+                    $("#headerTitle").html("待办工作");
+                    break;
+                case 2:
+                    $("#headerTitle").html("已办工作");
+                    break;
+                case 3:
+                    $("#headerTitle").html("我的提交");
+                    break;
+                case 4:
+                    $("#headerTitle").html("委托代办");
+                    break;
             }
 
         },
@@ -72,15 +77,39 @@
                 var html = "";
                 for (var i = 0; i < data.length; i++) {
                     var row = data[i];
-                    html += '\
-<li class="bui-btn bui-box" href="/MobileModule/MWorkflow/Form?taskId=' + row.task_id + '&instanceId=' + row.instance_id + '&processId=' + row.process_id + '&historyId=' + row.history_id + '">\
-    <div class="span1">\
-        <h3 class="item-title"><span>【'+ row.flowname + '】</span><span>' + (row.nodename == null ? "" : row.nodename) + ' </span></h3>\
-        <h3 class="item-title">' + row.processname + '</h3>\
-        <p class="item-text" > '+ row.submit_username + ' ' + row.createtime + '</p >\
-     </div >\
-     <i class="icon-listright"></i>\
-</li>';
+                    if (tasktype == 1 || tasktype == 4) {
+                        html += '\
+    <li class="bui-btn bui-box" href="/MobileModule/MWorkflow/Form?taskId=' + row.task_id + '&instanceId=' + row.instance_id + '&processId=' + row.process_id + '&historyId=' + row.history_id + '">\
+        <div class="span1">\
+            <h3 class="item-title">'+ row.processname + '</h3>\
+            <p class="item-text" >当前环节：'+ row.nodename + '</p >\
+            <p class="item-text" >提交人：'+ row.submit_username + '</p >\
+            <p class="item-text" >提交时间：'+ row.createtime + '</p >\
+         </div >\
+         <i class="icon-listright"></i>\
+    </li>';
+                    }
+                    else if (tasktype == 2) {
+                        html += '\
+    <li class="bui-btn bui-box" href="/MobileModule/MWorkflow/Form?taskId=' + row.task_id + '&instanceId=' + row.instance_id + '&processId=' + row.process_id + '&historyId=' + row.history_id + '">\
+        <div class="span1">\
+            <h3 class="item-title">'+ row.processname + '</h3>\
+            <p class="item-text" >环节：'+ row.nodename + '</p >\
+            <p class="item-text" >办结时间：'+ row.createtime + '</p >\
+         </div >\
+         <i class="icon-listright"></i>\
+    </li>';
+                    }
+                    else if (tasktype == 3) {
+                        html += '\
+    <li class="bui-btn bui-box" href="/MobileModule/MWorkflow/Form?taskId=' + row.task_id + '&instanceId=' + row.instance_id + '&processId=' + row.process_id + '&historyId=' + row.history_id + '">\
+        <div class="span1">\
+            <h3 class="item-title">'+ row.processname + '</h3>\
+            <p class="item-text" >办结时间：'+ row.createtime + '</p >\
+         </div >\
+         <i class="icon-listright"></i>\
+    </li>';
+                    }
                 }
                 return html;
             }

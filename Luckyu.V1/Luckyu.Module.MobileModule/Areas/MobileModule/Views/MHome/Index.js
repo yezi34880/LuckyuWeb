@@ -22,6 +22,24 @@
             })
             uiAccordion.showAll();
 
+            // 小红点
+            luckyumobile.ajax.getv2('/WorkflowModule/Task/GetActiveCount', {}, function (data) {
+                if (data > 0) {
+                    if (data > 99) {
+                        data = 99;
+                    }
+                    $("#iActive").html('<span class="bui-badges">' + data + '</span>');
+                }
+            });
+            luckyumobile.ajax.getv2('/WorkflowModule/Task/GetDelegateCount', {}, function (data) {
+                if (data > 0) {
+                    if (data > 99) {
+                        data = 99;
+                    }
+                    $("#iDelegate").html('<span class="bui-badges">' + data + '</span>');
+                }
+            });
+
             $("#signout").click(function () {
                 bui.confirm("确认要退出吗？", function (e) {
                     //this 是指点击的按钮

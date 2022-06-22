@@ -19,4 +19,11 @@ namespace Luckyu.Utility
 
         public T2 Value { get; set; }
     }
+
+    public class KeyValueList<T1, T2>
+    {
+        public T1 Key { get; set; }
+
+        public List<T2> ValueList { get; set; }
+    }
 }

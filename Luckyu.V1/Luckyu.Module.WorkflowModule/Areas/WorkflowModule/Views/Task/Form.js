@@ -206,32 +206,125 @@ var bootstrap = function (layui) {
                     for (var i = 0; i < data.NextNodes.length; i++) {
                         var nextnode = data.NextNodes[i];
                         var html_nodename = nextnode.name;
-                        if (data.CurrentNode.comfirm_node == 1) {
-                            html_nodename = '<input type="checkbox" id="node_' + nextnode.id + '" name="nextnode" lay-filter="nextnode" value="' + nextnode.id + '" title="' + nextnode.name + '"  />';
+                        if (nextnode.comfirm_node == 1) {
+                            html_nodename = '<input type="checkbox" id="node_' + nextnode.id + '" name="nextnode" lay-filter="nextnode" lay-skin="primary" value="' + nextnode.id + '" title="' + nextnode.name + '"  />';
                         }
-                        else if (data.CurrentNode.comfirm_node == 2) {
+                        else if (nextnode.comfirm_node == 2) {
                             html_nodename = '<input type="radio" id="node_' + nextnode.id + '" name="nextnode" lay-filter="nextnode" value="' + nextnode.id + '" title="' + nextnode.name + '"  />';
                         }
-                        html += '<div class="layui-card"><div class="layui-card-header">' + html_nodename + '</div>';
+                        // 多人且多选是，增加全选按钮
+                        var htmcheckall = '';
+                        if (nextnode.comfirm_user == 1 && nextnode.user_num != 1 && nextnode.authusers.length > 1) {
+                            htmcheckall = ' <input type="checkbox" class="checkalluser" nodeid="' + nextnode.id + '" lay-filter="checkalluser" title="全选" lay-skin="primary" />';
+                        }
+
+                        html += '<div class="layui-card" nodeid="' + nextnode.id + '" ><div class="layui-card-header">' + html_nodename + htmcheckall + '' + '</div>';
                         html += '<div class="layui-card-body">';
-                        for (var j = 0; j < nextnode.authusers.length; j++) {
-                            var authuser = nextnode.authusers[j];
-                            var html_username = authuser.objectnames;
-                            if (nextnode.comfirm_user == 1) {
-                                html_username = '<input type="' + (nextnode.user_num == 1 ? "radio" : "checkbox") + '" id="user_' + authuser.objectids + '" name="nodeuser_' + nextnode.id + '" nodeid="' + nextnode.id + '" lay-filter="nodeuser" value="' + authuser.objectids + '" title="' + authuser.objectnames + '" lay-skin="primary" disabled  />';
+                        if (nextnode.authusers.length > 0) {
+                            for (var j = 0; j < nextnode.authusers.length; j++) {
+                                var authuser = nextnode.authusers[j];
+                                var html_username = authuser.objectnames;
+                                if (nextnode.comfirm_user == 1) {
+                                    html_username = '<input type="' + (nextnode.user_num == 1 ? "radio" : "checkbox") + '" id="user_' + authuser.objectids + '" name="nodeuser_' + nextnode.id + '" nodeid="' + nextnode.id + '" lay-filter="nodeuser" value="' + authuser.objectids + '" title="' + authuser.objectnames + '" lay-skin="primary"  />';
+                                }
+                                html += '<div class="layui-col-xs4">' + html_username + '</div>';
                             }
-                            html += '<div class="layui-col-xs4">' + html_username + '</div>';
+                        }
+                        else { // 多选 且没有设置人员 则为 任意选人
+                            html += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btnSelectUser" usernumber="' + nextnode.user_num + '"  nextnodeid="' + nextnode.id + '"  ><i class="fa fa-user"></i> 选择用户</button><div class="divUsers"></div>';
                         }
                         html += '</div></div>';
                     }
                     $("#divNext").html(html);
                     layui.form.render();
 
-                    layui.form.on('radio(nextnode)', function (data) {
-                        $('input[lay-filter=nodeuser]').prop('checked', false).attr("disabled", "disabled");
-                        $('input[name=' + "nodeuser_" + data.value + ']').removeAttr("disabled");
+                    var btns = $("button.btnSelectUser");
+                    if (!!btns && btns.length > 0) {
+                        btns.each(function () {
+                            $(this).click(function () {
+                                var $btn = $(this);
+                                var radio = $btn.parent().prev().find("input[name=nextnode]");
+                                if (radio.length > 0) {
+                                    if (!radio.is(":checked")) {
+                                        radio.click();
+                                    }
+                                    if (radio.attr("type") == "radio") {
+                                        var siblings = radio.parents("div.layui-card").siblings();
+                                        siblings.find('input[lay-filter="nodeuser"]').prop("checked", false);
+                                    }
+                                }
+                                var usernumber = $btn.attr("usernumber");
+                                var nextnodeid = $btn.attr("nextnodeid");
+                                luckyu.layer.userSelectForm({
+                                    multiple: usernumber == 1 ? false : true,
+                                    initValue: [],
+                                    callback: function (userlist) {
+                                        var htm = '';
+                                        for (var i = 0; i < userlist.length; i++) {
+                                            var user = userlist[i];
+                                            htm += '<div class="layui-col-xs4"><input type="checkbox" id="user_' + user.userId + '" name="nodeuser_' + nextnodeid + '" nodeid="' + nextnodeid + '" lay-filter="nodeuser" value="' + user.userId + '" title="' + (user.realname) + '" lay-skin="primary" checked /></div>';
+                                        }
+                                        $btn.next().html(htm);
+                                        layui.form.render();
+
+                                    }
+                                });
+                            });
+                        });
+                    }
+
+                    // 全选
+                    layui.form.on('checkbox(checkalluser)', function (data) {
+                        var nodeid = $(data.elem).attr("nodeid");
+                        $('div.layui-card[nodeid="' + nodeid + '"] input[type=checkbox]').prop("checked", data.elem.checked);
+                        $(data.elem).parent().find("input[name=nextnode]").prop("checked", data.elem.checked);
                         layui.form.render();
                     });
+                    // 取消其他节点选
+                    layui.form.on('checkbox(nextnode)', function (data) {
+                        if (!data.elem.checked) {
+                            $('div.layui-card[nodeid="' + data.value + '"] input').prop('checked', false);
+                        }
+
+                        layui.form.render();
+                    });
+                    layui.form.on('radio(nextnode)', function (data) {
+                        if (data.elem.checked) {
+                            $('div.layui-card[nodeid!="' + data.value + '"] input').prop('checked', false);
+                        }
+                        layui.form.render();
+                    });
+
+                    // 勾选下面人员自动勾选节点
+                    layui.form.on('checkbox(nodeuser)', function (data) {
+                        if (data.elem.checked) {
+                            var radioorcheckbox = $(this).parents("div.layui-card-body").prev().find("input[name=nextnode]");
+                            if (radioorcheckbox.length > 0) {
+                                radioorcheckbox.prop("checked", true);
+                            }
+                            if (radioorcheckbox.attr("type") == "radio") {
+                                var siblings = radioorcheckbox.parents("div.layui-card").siblings();
+                                siblings.find('input[lay-filter="nodeuser"]').prop("checked", false);
+                            }
+                        }
+                        layui.form.render();
+                    });
+                    // 勾选下面人员自动勾选节点
+                    layui.form.on('radio(nodeuser)', function (data) {
+                        if (data.elem.checked) {
+                            var radioorcheckbox = $(this).parents("div.layui-card-body").prev().find("input[name=nextnode]");
+                            if (radioorcheckbox.length > 0) {
+                                radioorcheckbox.prop("checked", true);
+                            }
+                            if (radioorcheckbox.attr("type") == "radio") {
+                                var siblings = radioorcheckbox.parents("div.layui-card").siblings();
+                                siblings.find('input[lay-filter="nodeuser"]').prop("checked", false);
+                            }
+                        }
+                        layui.form.render();
+                    });
+
+
                 }
             });
         },
@@ -255,9 +348,12 @@ var bootstrap = function (layui) {
                             return false;
                         }
 
+                        var authors = page.getAuthors();
+                        if (authors == false) {
+                            return false;
+                        }
                         var result = $("input[name=result]:checked").val();
                         var opinion = $("#opinion").val();
-                        var authors = page.getAuthors();
                         luckyu.ajax.postv2('/WorkflowModule/Task/Approve', {
                             taskId: taskId,
                             result: result,
@@ -303,8 +399,11 @@ var bootstrap = function (layui) {
                     if (!$("#divApprove").verifyForm()) {
                         return false;
                     }
-                    var opinion = $("#opinion").val();
                     var authors = page.getAuthors();
+                    if (authors == false) {
+                        return false;
+                    }
+                    var opinion = $("#opinion").val();
                     luckyu.ajax.postv2('/WorkflowModule/Task/Approve', {
                         taskId: taskId,
                         opinion: opinion,

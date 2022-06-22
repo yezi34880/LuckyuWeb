@@ -2,6 +2,18 @@
     Layout = "~/Views/Shared/_LayoutMobile.cshtml";
 }
 
+<style>
+    .bui-stepbar-cell .bui-stepbar-text h3 {
+        padding-bottom: 0.1rem;
+        margin-bottom: 0.2rem !important;
+    }
+
+    .section-title {
+        font-weight: bold;
+        background-color: rgb(243, 245, 248);
+    }
+</style>
+
 <div class="bui-page bui-box-vertical">
     <header>
         <div class="bui-bar">
@@ -11,6 +23,8 @@
             <div class="bui-bar-main" id="divHeader">
             </div>
             <div class="bui-bar-right">
+                <div class="bui-btn" id="approve" style="font-weight:bold;display:none;"><i class="icon-check"></i></div>
+                <div class="bui-btn" id="read" style="font-weight:bold;display:none;"><i class="icon-check"></i></div>
             </div>
         </div>
     </header>
@@ -32,83 +46,6 @@
 
                     </li>
                     <li style="display: none;">
-                        <div class="bui-fluid" id="appform">
-                            <div class="span12" id="divAppResult" style="display:none;">
-                                <div class="section-title">审批结果</div>
-                                <ul class="bui-list">
-                                    <li class="bui-btn bui-box">
-                                        <div class="span1">
-                                            <label for="result1">通过</label>
-                                        </div>
-                                        <input id="result1" type="radio" class="bui-choose" name="result" value="1" checked="checked" />
-                                    </li>
-                                    <li class="bui-btn bui-box bui-btn-line">
-                                        <div class="span1">
-                                            <label for="result2">退回</label>
-                                        </div>
-                                        <input id="result2" type="radio" class="bui-choose" name="result" value="2" />
-                                    </li>
-                                    <li class="bui-btn bui-box bui-btn-line">
-                                        <div class="span1">
-                                            <label for="result3">退回上一步</label>
-                                        </div>
-                                        <input id="result3" type="radio" class="bui-choose" name="result" value="3" />
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="span12">
-                                <div class="bui-input">
-                                    <textarea placeholder="意见" id="opinion" rows="4"></textarea>
-                                </div>
-                            </div>
-                            <div class="span12">
-                                <div id="buiPhoto" class="bui-upload bui-fluid-space-4">
-                                    <div class="span1">
-                                        <div id="btnUpload" class="bui-btn">
-                                            <i class="icon-plus large"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!--下一步流程-->
-                            <div id="divNext" style="display:none;">
-                                <div class="section-title">下步流程</div>
-                                <ul class="bui-list" id="ulNext">
-                                </ul>
-                            </div>
-
-                            <div class="span12">
-                                <div class="bui-box-space">
-                                    <div class="span1">
-                                        <div class="bui-btn round primary" id="btnApprove" style="display:none;">确认</div>
-                                        <div class="bui-btn round primary" id="btnRead" style="display:none;">确认</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="divHelp">
-                                <div class="span12" style="margin-top:5px;">
-                                    <div class="bui-box-space">
-                                        <div class="span1" id="btnHelpme">
-                                            <div class="bui-btn round">转发查看</div>
-                                        </div>
-                                        <div class="span1" id="btnAddUser">
-                                            <div class="bui-btn round">会签办理</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="span12" style="margin-top:5px;">
-                                    <div class="bui-btn-text" id="help">
-                                        <i class="fa fa-question-circle"></i>
-                                        说明
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
                         <div class="section-title">流程日志</div>
                         <div id="step" class="bui-stepbar">
 
@@ -130,6 +67,77 @@
             </li>
         </ul>
     </footer>
+</div>
+
+
+<!-- 底部弹出框	 -->
+<div id="dialogDown" class="bui-dialog" style="display: none;">
+    <div class="bui-dialog-head">流程提交</div>
+    <div class="bui-dialog-main">
+        <div class="bui-fluid" id="appform">
+            <div id="divHelp" class="span12">
+                <div class="span12" style="margin-top:5px;">
+                    <div class="bui-box-space">
+                        <div class="span1" id="btnHelpme">
+                            <div class="bui-btn primary reverse round">转发查看</div>
+                        </div>
+                        <div class="span1" id="btnAddUser">
+                            <div class="bui-btn primary reverse round">会签办理</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--下一步流程-->
+            <div id="divNext" class="span12" style="display:none;">
+                <div class="section-title">下步流程</div>
+                <ul class="bui-list" id="ulNext">
+                </ul>
+            </div>
+
+            <div class="span12" id="divAppResult" style="display:none;">
+                <div class="section-title">审批结果</div>
+                <div class="bui-fluid-space-3">
+                    <div class="span1">
+                        <input type="radio" class="bui-check" name="result" value="1" uncheck="通过" check="通过" checked />
+                    </div>
+                    <div class="span1">
+                        <input type="radio" class="bui-check" name="result" value="2" uncheck="退回" check="退回" />
+                    </div>
+                    <div class="span1">
+                        <input type="radio" class="bui-check" name="result" value="3" uncheck="退回上一步" check="退回上一步" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="span12">
+                <div class="bui-input" style="border-bottom: 1px solid #eee;">
+                    <textarea placeholder="意见" id="opinion" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="span12">
+                <div id="buiPhoto" class="bui-upload bui-fluid-space-4">
+                    <div class="span1">
+                        <div id="btnUpload" class="bui-btn">
+                            <i class="icon-plus large"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="bui-dialog-foot">
+        <div class="bui-box">
+            <div class="span1">
+                <div class="bui-btn" id="btnCancel">取消</div>
+            </div>
+            <div class="span1">
+                <div class="bui-btn blue" id="btnOK">确定</div>
+            </div>
+        </div>
+    </div>
+    <div class="bui-dialog-close"><i class="icon-close"></i></div>
 </div>
 
 @section Footer{

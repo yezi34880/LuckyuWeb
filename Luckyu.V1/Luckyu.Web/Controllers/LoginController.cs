@@ -33,7 +33,7 @@ namespace Luckyu.Web.Controllers
         {
             var vcode = VerifyCodeHelper.GetCode();
             var bytes = VerifyCodeHelper.GetVerifyCode(vcode);
-            HttpContext.Session.SetString("session_verifycode", EncrypHelper.MD5_Encryp(vcode.ToLower()));
+            HttpContext.Session.SetString("session_verifycode", vcode);
             return File(bytes, @"image/Gif");
         }
 
@@ -49,7 +49,7 @@ namespace Luckyu.Web.Controllers
                     return Fail("请输入验证码", new { wrongnum });
                 }
                 var vcode = HttpContext.Session.GetString("session_verifycode");
-                if (vcode.IsEmpty() || vcode != EncrypHelper.MD5_Encryp(verifycode.ToLower()))
+                if (vcode.IsEmpty() || vcode.ToLower() != verifycode.ToLower())
                 {
                     return Fail("验证码错误或过期，请刷新");
                 }
@@ -57,6 +57,7 @@ namespace Luckyu.Web.Controllers
             var res = userBLL.CheckLogin(username, password, "Login", HttpContext);
             if (res.code == 200)
             {
+                HttpContext.Session.Remove("session_wrongnum");
                 return Success("/Home/Index");
             }
             else

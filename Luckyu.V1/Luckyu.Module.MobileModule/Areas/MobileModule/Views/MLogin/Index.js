@@ -10,7 +10,7 @@
 
             $("#verifycode_img").click(function () {
                 $("#verifycode").val('');
-                $("#verifycode_img").attr("src", "/MobileModule/MLogin/VerifyCode?v=" + Math.random());
+                $("#verifycode_img").attr("src", "/Login/VerifyCode?v=" + Math.random());
             });
 
 
@@ -21,8 +21,17 @@
                 var formData = $(".login-form").getFormValue();
                 formData.password = $.md5(formData.password);
                 //console.log("formData", formData);
-                luckyumobile.ajax.postv2("/MobileModule/MLogin/CheckLogin", formData, function (data) {
-                    bui.load({ url: data, param: {} });
+                luckyumobile.ajax.post("/MobileModule/MLogin/CheckLogin", formData, function (res) {
+                    if (res.code === 200) {
+                        bui.load({ url: res.data, param: {} });
+                    }
+                    else {
+                        bui.alert(res.info);
+                        if (res.data.wrongnum > 2) {
+                            $("#divVCode").show();
+                            $("#verifycode_img").click();
+                        }
+                    }
                     //window.location.href = data;
                 });
             });

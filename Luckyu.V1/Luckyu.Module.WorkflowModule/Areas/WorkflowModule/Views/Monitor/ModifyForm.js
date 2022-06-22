@@ -31,10 +31,10 @@ var bootstrap = function (layui) {
                             layui.notice.error("不能调整到执行节点");
                             return;
                     }
-                    if (node.state === '0') {
-                        layui.notice.error("当前节点正在审批，无需调整");
-                        return;
-                    }
+                    //if (node.state === '0') {
+                    //    layui.notice.error("当前节点正在审批，无需调整");
+                    //    return;
+                    //}
 
                     layui.layer.open({
                         type: 0,
@@ -42,7 +42,7 @@ var bootstrap = function (layui) {
                         content: '确定调整该流程到节点 ' + node.name + ' ？',
                         icon: 3,
                         area: ['400px', '160px'],
-                        btn: ["调整并使用默认用户", "调整并选择用户", "取消"],
+                        btn: ["调整到默认用户", "调整并选择用户", "取消"],
                         yes: function (index, layero) {
                             luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify', { instanceId: instanceId, schemeId: '', nodeId: node.id, userIds: [] }, function (data) {
                                 layui.notice.success("操作成功");
@@ -99,10 +99,6 @@ var bootstrap = function (layui) {
                             layui.notice.error("不能调整到执行节点");
                             return;
                     }
-                    if (node.state === '0') {
-                        layui.notice.error("当前节点正在审批，无需调整");
-                        return;
-                    }
 
                     var scheme_id = $('#flowLast').attr("luckyu-schemeid");
 
@@ -112,7 +108,7 @@ var bootstrap = function (layui) {
                         content: '确定调整该流程到最新版本，并调整节点到 ' + node.name + ' ？',
                         icon: 3,
                         area: ['400px', '180px'],
-                        btn: ["调整并使用默认用户", "调整并选择用户", "取消"],
+                        btn: ["调整到默认用户", "调整并选择用户", "取消"],
                         yes: function (index, layero) {
                             luckyu.ajax.postv2(luckyu.rootUrl + '/WorkflowModule/Monitor/Modify', { instanceId: instanceId, schemeId: scheme_id, nodeId: node.id, userIds: [] }, function (data) {
                                 layui.notice.success("操作成功");

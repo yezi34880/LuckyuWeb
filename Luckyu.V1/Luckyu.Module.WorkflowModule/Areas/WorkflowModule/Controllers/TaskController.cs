@@ -36,13 +36,25 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         {
             return View();
         }
-        [HttpGet]
         public IActionResult Page(JqgridPageRequest jqPage, int tasktype)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             var page = taskBLL.Page(jqPage, tasktype, loginInfo);
             return Json(page);
         }
+        public IActionResult GetActiveCount()
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var count = taskBLL.GetActiveCount(loginInfo);
+            return Success(count);
+        }
+        public IActionResult GetDelegateCount()
+        {
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            var count = taskBLL.GetDelegateCount(loginInfo);
+            return Success(count);
+        }
+
         #endregion
 
         #region Form
@@ -51,7 +63,6 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             return View();
         }
 
-        [HttpGet]
         public IActionResult GetFormData(string instanceId, string taskId, string historyId)
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
@@ -59,7 +70,6 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             return Json(res);
         }
 
-        [HttpGet]
         public IActionResult GetTaskLog(string processId, string instanceId)
         {
             var historys = taskBLL.GetHistoryTaskList(processId, instanceId);
@@ -105,7 +115,7 @@ namespace Luckyu.Module.WorkflowModule.Controllers
         {
             var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
             Dictionary<string, List<KeyValue>> dicAuthor = authors.ToObject<Dictionary<string, List<KeyValue>>>();
-            var res = await taskBLL.Approve(taskId, result, opinion,  dicAuthor, loginInfo, _hubContext);
+            var res = await taskBLL.Approve(taskId, result, opinion, dicAuthor, loginInfo, _hubContext);
             return Json(res);
         }
 

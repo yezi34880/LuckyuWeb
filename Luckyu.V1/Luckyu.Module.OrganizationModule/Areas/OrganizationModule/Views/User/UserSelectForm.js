@@ -132,16 +132,23 @@ var bootstrap = function (layui) {
                 var id = d.data.id;
                 var tag = d.data.ext.tag;
                 var requestParam = {
-                    organizationId: id,
-                    organizationTag: tag,
+                    companyId: '',
+                    departmentId: '',
                     postId: postId,
                     roleId: roleId,
                 };
+                if (tag.indexOf("company") > -1) {
+                    requestParam.companyId = id;
+                }
+                else {
+                    requestParam.departmentId = id;
+                }
+
                 if (!!userlist[id]) {
                     renderUserlist(userlist[id]);
                 }
                 else {
-                    luckyu.ajax.get(luckyu.rootUrl + "/OrganizationModule/User/GetUserByCompanyDept", requestParam, function (res) {
+                    luckyu.ajax.get(luckyu.rootUrl + "/OrganizationModule/User/GetUserByCondition", requestParam, function (res) {
                         if (res.code === 200) {
                             userlist[id] = res.data || [];
                             renderUserlist(userlist[id]);
@@ -225,13 +232,13 @@ var bootstrap = function (layui) {
                     callback: function (_data, op) {
                         var userinfo = {
                             userId: op.key,
-                            account: _data.account,
+                            account: _data.code,
                             realname: _data.name,
-                            companyId: _data.companyId,
-                            departmentId: _data.departmentId,
+                            companyId: _data.ext.company_id,
+                            departmentId: _data.ext.department_id,
                         };
-                        userinfo.departmentName = luckyu.clientdata.getDepartmentName(_data.departmentId)
-                        userinfo.companyName = luckyu.clientdata.getCompanyName(_data.companyId)
+                        userinfo.departmentName = luckyu.clientdata.getDepartmentName(userinfo.departmentId)
+                        userinfo.companyName = luckyu.clientdata.getCompanyName(userinfo.companyId)
 
                         userInfolist.push(userinfo);
                     }

@@ -61,6 +61,22 @@ namespace Luckyu.App.Workflow
             }
             return page;
         }
+        /// <summary>
+        /// 获取我的待办数量
+        /// </summary>
+        public int GetActiveCount(UserModel loginInfo)
+        {
+            var count = taskService.GetActiveCount(loginInfo);
+            return count;
+        }
+        /// <summary>
+        /// 获取委托待办数量
+        /// </summary>
+        public int GetDelegateCount(UserModel loginInfo)
+        {
+            var count = taskService.GetDelegateCount(loginInfo);
+            return count;
+        }
 
         public wf_taskEntity GetTaskEntitty(Expression<Func<wf_taskEntity, bool>> condition, string orderby = "")
         {
@@ -216,7 +232,7 @@ namespace Luckyu.App.Workflow
                         nextnode.authusers = users.Select(r => new WFAuthorizeModel
                         {
                             objectids = r.user_id,
-                            objectnames = $"{r.realname}-{r.loginname}"
+                            objectnames = $"{r.realname}"
                         }).ToList();
                     }
                 }
@@ -1090,16 +1106,7 @@ namespace Luckyu.App.Workflow
             {
                 return ResponseResult.Fail("该流程实例不存在");
             }
-            //if (instance.is_finished == 1)
-            //{
-            //    return ResponseResult.Fail("该流程已结束, 不能调整");
-            //}
-
             var oldTasks = taskService.GetList(r => r.instance_id == instanceId && r.is_done == 0);
-            if (oldTasks.IsEmpty())
-            {
-                return ResponseResult.Fail("当前任务不存在");
-            }
             if (!schemeId.IsEmpty())
             {
                 var scheme = schemeService.GetEntity(r => r.scheme_id == schemeId);
@@ -1119,8 +1126,9 @@ namespace Luckyu.App.Workflow
             newTask.node_id = nodeNext.id;
             newTask.nodename = nodeNext.name;
             newTask.nodetype = nodeNext.type;
-            newTask.previous_id = oldTasks[0].node_id;
-            newTask.previousname = oldTasks[0].nodename;
+            newTask.previous_id = oldTasks.IsEmpty() ? "" : oldTasks[0].node_id;
+            newTask.previousname = oldTasks.IsEmpty() ? "" : oldTasks[0].nodename;
+            newTask.authrizes = new List<wf_task_authorizeEntity>();
             newTask.Create(loginInfo);
 
             if (userIds.IsEmpty())
@@ -1142,11 +1150,14 @@ namespace Luckyu.App.Workflow
             }
 
             var history = new wf_taskhistoryEntity();
-            history = oldTasks[0].Adapt<wf_taskhistoryEntity>();
+            if (!oldTasks.IsEmpty())
+            {
+                history = oldTasks[0].Adapt<wf_taskhistoryEntity>();
+            }
             history.apptime = DateTime.Now;
             history.tasktime = DateTime.Now;
             history.result = 5;
-            history.appremark = !schemeId.IsEmpty() ? $"{loginInfo.realname} 调整该流程至最新版本 调整后为【{nodeNext.name}】" : $"{loginInfo.realname} 调整 当前待办任务为【{ oldTasks[0].nodename}】 调整后为【{nodeNext.name}】";
+            history.appremark = !schemeId.IsEmpty() ? $"{loginInfo.realname} 调整该流程至最新版本【{nodeNext.name}】" : $"{loginInfo.realname} 调整流程 从【{ newTask.previousname }】 调整后为【{nodeNext.name}】";
             history.Create(loginInfo);
 
             taskService.Modify(instance.instance_id, (schemeId.IsEmpty() ? "" : instance.schemejson), oldTasks, newTask, history);

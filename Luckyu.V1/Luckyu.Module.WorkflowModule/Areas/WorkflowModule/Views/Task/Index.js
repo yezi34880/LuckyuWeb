@@ -139,13 +139,6 @@ var bootstrap = function (layui) {
                     height: 850,
                     url: luckyu.rootUrl + "/WorkflowModule/Task/Form?taskId=" + row.task_id + "&instanceId=" + row.instance_id + "&processId=" + row.process_id + "&historyId=" + row.history_id,
                     btn: btns,
-                    success: function (layero, index) {
-                        //var html = '<i class="fa fa-question-circle questionInfo" id="questionBtn"></i>';
-                        //$("div.layui-layer-btn", layero).append(html);
-                        //$("#questionBtn", layero).click(function () {
-                        //    top.layui.layer.alert(luckyu_staticdata.wf_description);
-                        //});
-                    }
                 });
             });
 

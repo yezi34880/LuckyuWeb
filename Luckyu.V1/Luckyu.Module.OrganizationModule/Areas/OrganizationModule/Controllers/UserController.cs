@@ -16,6 +16,7 @@ namespace Luckyu.Module.OrganizationModule.Controllers
     {
         #region Var
         private UserBLL userBLL = new UserBLL();
+        private DepartmentBLL deptBLL = new DepartmentBLL();
         private UserRelationBLL userrelationBLL = new UserRelationBLL();
         #endregion
 
@@ -121,24 +122,13 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             return View();
         }
         [HttpGet, AjaxOnly]
-        public IActionResult GetUserByCompanyDept(string organizationTag, string organizationId, string postId, string roleId)
+        public IActionResult GetUserByCondition(string companyId, string departmentId, string postId, string roleId)
         {
             var list = new List<sys_userEntity>();
-            if (!organizationId.IsEmpty() && organizationId != "-1")
+            list = userBLL.GetAllByCache(companyId);
+            if (!departmentId.IsEmpty())
             {
-                if (organizationTag.StartsWith("company"))
-                {
-                    list = userBLL.GetAllByCache(organizationId);
-                }
-                else
-                {
-                    var all = userBLL.GetAllByCache();
-                    list = all.Where(r => r.department_id == organizationId).ToList();
-                }
-            }
-            else
-            {
-                list = userBLL.GetAllByCache();
+                list = list.Where(r => r.department_id == departmentId).ToList();
             }
             if (!postId.IsEmpty())
             {
@@ -154,6 +144,27 @@ namespace Luckyu.Module.OrganizationModule.Controllers
             }
 
             return Success(list);
+        }
+
+        public IActionResult GetDepartmentUsers(string companyId)
+        {
+            var listUers = userBLL.GetAllByCache(companyId);
+            var deptids = listUers.Select(r => r.department_id).Distinct().ToList();
+            var listDept = deptBLL.GetAllByCache(companyId);
+            listDept = listDept.Where(r => deptids.Contains(r.department_id)).ToList();
+
+            var tree = new List<KeyValueList<sys_departmentEntity, sys_userEntity>>();
+            foreach (var dept in listDept)
+            {
+                var d = new KeyValueList<sys_departmentEntity, sys_userEntity>();
+                d.Key = dept;
+
+                var users = listUers.Where(r => r.department_id == dept.department_id).ToList();
+                d.ValueList = users;
+
+                tree.Add(d);
+            }
+            return Success(tree);
         }
         #endregion
 

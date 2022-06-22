@@ -4,14 +4,27 @@
         var html = '';
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
-            var name = item.realname + "-" + item.loginname;
             html += '\
-<li class="bui-btn bui-box">\
-    <div class="span1">\
-        <label for="user_'+ item.user_id + '">' + name + '</label>\
-    </div>\
-    <input id="user_'+ item.user_id + '" type="' + (multiple ? "checkbox" : "radio") + '" class="bui-choose" name="users" value="' + item.user_id + '"  luckyu-name="' + item.realname + '" luckyu-loginname="' + item.loginname + '" />\
-</li> ';
+<dt class="bui-btn bui-box" style="background-color:rgb(243, 245, 248);">\
+	<div class="span1">'+ item.Key.fullname + '</div>\
+	<i class="icon-accordion"></i>\
+</dt>';
+            html += '<dd class="bui-list">'
+
+            for (var j = 0; j < item.ValueList.length; j++) {
+                var user = item.ValueList[j];
+                var name = user.realname + "-" + user.loginname;
+                html += '\
+                <div class="bui-btn bui-box">\
+                    <div class="span1">\
+                        <label for="usersel_'+ user.user_id + '">' + name + '</label>\
+                    </div>\
+                    <input id="usersel_'+ user.user_id + '" type="' + (multiple ? "checkbox" : "radio") + '" class="bui-choose" name="users" value="' + user.user_id + '"  luckyu-name="' + user.realname + '" luckyu-loginname="' + user.loginname + '" luckyu-departmentid="' + item.Key.department_id+'" luckyu-departmentname="' + item.Key.fullname+'" />\
+                </div> ';
+
+            }
+            html += '</dd>'
+
         }
         return html;
     };
@@ -40,33 +53,62 @@
     </div>\
     <div class="btn-search" id="du_search">搜索</div>\
 </div>\
-<ul class="bui-list" id="du_userlist">\
-</ul>',
+<dl class="bui-accordion"  id="du_userlist">\
+</dl>',
                 onInited: function (option) {
-                    luckyumobile.ajax.getv2("/OrganizationModule/User/GetUserByCompanyDept", {}, function (data) {
+                    luckyumobile.ajax.getv2("/OrganizationModule/User/GetDepartmentUsers", {}, function (data) {
                         if (!!data && data.length > 0) {
                             var html = buildHtml(data, defaultOption.multiple);
                             $("#du_userlist").html(html);
                             $("#du_userlist")[0].backdata = data;
+
+                            var uiAccordion = bui.accordion({
+                                id: "#du_userlist"
+                            });
+
+                        }
+                    });
+
+                    $("#du_keyword").keypress(function (e) {
+                        if (e.charCode == 13) {
+                            $("#du_search").click();
                         }
                     });
 
                     $("#du_search").click(function () {
                         var keyword = $("#du_keyword").val();
-                        var userlist = $("#du_userlist")[0].backdata;
-                        var newlist = userlist;
+                        var datalist = $("#du_userlist")[0].backdata;
+                        var newlist = [];
                         if (!!keyword && keyword.length > 0) {
-                            newlist = userlist.filter(function (t) {
-                                return t.realname.indexOf(keyword) > -1 || t.loginname.indexOf(keyword) > 0;
-                            });
+                            for (var z = 0; z < datalist.length; z++) {
+                                if (datalist[z].users.length > 0) {
+                                    var users = datalist[z].users.filter(function (t) {
+                                        return t.F_RealName.indexOf(keyword) > -1 || t.F_Account.indexOf(keyword) > 0;
+                                    });
+                                    if (users.length > 0) {
+                                        newlist.push({
+                                            dept: datalist[z].dept,
+                                            users: users
+                                        });
+                                    }
+                                }
+                            }
                         }
-
+                        else {
+                            newlist = datalist;
+                        }
                         var html = '';
                         var html = buildHtml(newlist, defaultOption.multiple);
                         $("#du_userlist").html(html);
+
+                        var uiAccordion = bui.accordion({
+                            id: "#du_userlist"
+                        });
+                        uiAccordion.showAll();
+
                     });
                 },
-                buttons: [{ name: "确定", className: "primary-reverse" }, "取消"],
+                buttons: ["取消", { name: "确定", className: "primary-reverse" }],
                 callback: function (elem, option) {
                     //this 指点击的按钮
                     if (elem.target.innerText === "确定") {
@@ -79,7 +121,9 @@
                                     resultdata.push({
                                         user_id: that.val(),
                                         realname: that.attr("luckyu-name"),
-                                        loginname: that.attr("luckyu-loginname")
+                                        loginname: that.attr("luckyu-loginname"),
+                                        departmentid: that.attr("luckyu-departmentid"),
+                                        departmentname: that.attr("luckyu-departmentname"),
                                     });
                                 }
                             }

@@ -299,23 +299,26 @@
                 var flag = true;
                 $that.find("input").each(function () {
                     var $ele = $(this);
-                    var verify = $ele.attr("luckyu-verify");
-                    if (!!verify) {
-                        if (verify.indexOf("required") > -1) {
-                            var val = $ele.val();
-                            if (!val) {
-                                var $elename = $ele.attr("placeholder");
-                                if (!$elename) {
+                    if (!!($ele.width() || $ele.height()) && $ele.css("display") !== "none") {  // is:visible
+                        var verify = $ele.attr("luckyu-verify");
+                        if (!!verify) {
+                            if (verify.indexOf("required") > -1) {
+                                var val = $ele.val();
+                                if (!val) {
+                                    var $elename = $ele.attr("placeholder");
+                                    if (!$elename) {
 
+                                    }
+                                    var msg = (!!$elename ? ($elename + " ") : "") + "必填项不能为空";
+                                    bui.hint({ content: msg, position: "top", skin: 'danger', showClose: true, autoClose: true, timeout: 3000 });
+                                    flag = false;
+                                    luckyumobile.form.inputWarm($ele);
+                                    $ele.focus();
+                                    return false;
                                 }
-                                var msg = (!!$elename ? ($elename + " ") : "") + "必填项不能为空";
-                                bui.hint({ content: msg, position: "top", skin: 'danger', showClose: true, autoClose: true, timeout: 3000 });
-                                flag = false;
-                                luckyumobile.form.inputWarm($ele);
-                                $ele.focus();
-                                return false;
                             }
                         }
+
                     }
                 });
                 return flag;

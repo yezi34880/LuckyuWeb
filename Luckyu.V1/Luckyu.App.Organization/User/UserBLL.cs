@@ -69,7 +69,7 @@ namespace Luckyu.App.Organization
             var list = cache.Read<List<sys_userEntity>>(cacheKey + companyId);
             if (list.IsEmpty())
             {
-                if (companyId == "" || companyId == "-1" || companyId.ToLower() == "all")
+                if (companyId.IsEmpty() || companyId == "-1" || companyId.ToLower() == "all")
                 {
                     list = GetList(r => r.is_delete == 0, r => r.sort);
                 }

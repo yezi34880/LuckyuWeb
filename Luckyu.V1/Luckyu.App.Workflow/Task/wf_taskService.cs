@@ -19,6 +19,31 @@ namespace Luckyu.App.Workflow
         /// </summary>
         public JqgridPageResponse<WFTaskModel> Page(JqgridPageRequest jqPage, UserModel loginInfo)
         {
+            var query = GetActiveQueryable(loginInfo);
+            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
+            if (!filters.IsEmpty())
+            {
+                query = query.Where(filters);
+            }
+            if (jqPage.sidx.IsEmpty())
+            {
+                jqPage.sidx = "fi.createtime";
+                jqPage.sord = "DESC";
+            }
+            int total = 0;
+            var list = query.Select<WFTaskModel>().ToPageList(jqPage.page, jqPage.rows, ref total);
+            var page = new JqgridPageResponse<WFTaskModel>
+            {
+                count = jqPage.rows,
+                page = jqPage.page,
+                records = total,
+                rows = list,
+            };
+            return page;
+        }
+
+        private ISugarQueryable<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity> GetActiveQueryable(UserModel loginInfo)
+        {
             var db = BaseRepository().db;
 
             var roledepts = loginInfo.managedepartments.Where(r => r.relationtype == 1).Select(r => new ValueTuple<string, string>(r.object_id, r.department_id)).ToList();
@@ -49,6 +74,22 @@ namespace Luckyu.App.Workflow
                 )
             );
 
+            return query;
+        }
+
+        public int GetActiveCount(UserModel loginInfo)
+        {
+            var query = GetActiveQueryable(loginInfo);
+            var count = query.Count();
+            return count;
+        }
+
+        /// <summary>
+        /// 委托待办 列表
+        /// </summary>
+        public JqgridPageResponse<WFTaskModel> DelegatePage(JqgridPageRequest jqPage, UserModel loginInfo)
+        {
+            var query = GetDelegateQueryable(loginInfo);
             var filters = SearchConditionHelper.ContructJQCondition(jqPage);
             if (!filters.IsEmpty())
             {
@@ -60,6 +101,7 @@ namespace Luckyu.App.Workflow
                 jqPage.sidx = "fi.createtime";
                 jqPage.sord = "DESC";
             }
+
             int total = 0;
             var list = query.Select<WFTaskModel>().ToPageList(jqPage.page, jqPage.rows, ref total);
             var page = new JqgridPageResponse<WFTaskModel>
@@ -72,10 +114,7 @@ namespace Luckyu.App.Workflow
             return page;
         }
 
-        /// <summary>
-        /// 委托待办 列表
-        /// </summary>
-        public JqgridPageResponse<WFTaskModel> DelegatePage(JqgridPageRequest jqPage, UserModel loginInfo)
+        private ISugarQueryable<wf_instanceEntity, wf_taskEntity, wf_task_authorizeEntity> GetDelegateQueryable(UserModel loginInfo)
         {
             var db = BaseRepository().db;
             var now = DateTime.Now;
@@ -156,30 +195,16 @@ namespace Luckyu.App.Workflow
                 || (delegate_flow_role.Contains(fi.flowcode, ta.role_id) && !string.IsNullOrEmpty(ta.manage_dept_id) && roledepts.Contains(ta.role_id, ta.manage_dept_id))
                 )
             );
-
-            var filters = SearchConditionHelper.ContructJQCondition(jqPage);
-            if (!filters.IsEmpty())
-            {
-                query = query.Where(filters);
-            }
-
-            if (jqPage.sidx.IsEmpty())
-            {
-                jqPage.sidx = "fi.createtime";
-                jqPage.sord = "DESC";
-            }
-
-            int total = 0;
-            var list = query.Select<WFTaskModel>().ToPageList(jqPage.page, jqPage.rows, ref total);
-            var page = new JqgridPageResponse<WFTaskModel>
-            {
-                count = jqPage.rows,
-                page = jqPage.page,
-                records = total,
-                rows = list,
-            };
-            return page;
+            return query;
         }
+
+        public int GetDelegateCount(UserModel loginInfo)
+        {
+            var query = GetDelegateQueryable(loginInfo);
+            var count = query.Count();
+            return count;
+        }
+
 
         /// <summary>
         /// 流程监控 列表
