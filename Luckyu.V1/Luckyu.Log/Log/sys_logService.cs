@@ -9,8 +9,6 @@ namespace Luckyu.Log
 {
     public class sys_logService
     {
-        private string tableSuffix = $"_{DateTime.Today.ToString("yyyyMM")}";
-
         public void Insert(sys_logEntity entity)
         {
             entity.Create();

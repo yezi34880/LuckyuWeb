@@ -12,6 +12,18 @@
         font-weight: bold;
         background-color: rgb(243, 245, 248);
     }
+
+    .layui-card-header {
+        font-weight: bold;
+    }
+
+    .layui-card {
+        border-bottom: 2px double lightgray;
+    }
+
+    #opinion {
+        font-size: large;
+    }
 </style>
 
 <div class="bui-page bui-box-vertical">
@@ -90,7 +102,6 @@
 
             <!--下一步流程-->
             <div id="divNext" class="span12" style="display:none;">
-                <div class="section-title">下步流程</div>
                 <ul class="bui-list" id="ulNext">
                 </ul>
             </div>
@@ -111,8 +122,9 @@
             </div>
 
             <div class="span12">
+                <div class="section-title">意见</div>
                 <div class="bui-input" style="border-bottom: 1px solid #eee;">
-                    <textarea placeholder="意见" id="opinion" rows="4"></textarea>
+                    <textarea placeholder="请输入...." id="opinion" rows="4"></textarea>
                 </div>
             </div>
             <div class="span12">

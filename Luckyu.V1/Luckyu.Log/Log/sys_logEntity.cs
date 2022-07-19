@@ -7,9 +7,8 @@ namespace Luckyu.Log
     /// <summary>
     ///  sys_log   
     /// </summary>
-    [SplitTable(SplitType.Month)]//按年分表 （自带分表支持 年、季、月、周、日）
-    //[SugarTable("sys_log_{year}{month}{day}")]//生成表名格式 3个变量必须要有
-    [SugarTable("sys_log_{year}{month}")]//生成表名格式 3个变量必须要有
+    [SplitTable(SplitType.Year)]//按年分表 （自带分表支持 年、季、月、周、日）
+    [SugarTable("sys_log_{year}{month}{day}")]//生成表名格式 3个变量必须要有
     public class sys_logEntity
     {
         #region 属性

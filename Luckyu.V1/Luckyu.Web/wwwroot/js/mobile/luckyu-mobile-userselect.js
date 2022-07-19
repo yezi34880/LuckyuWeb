@@ -1,6 +1,6 @@
 ﻿(function () {
 
-    var buildHtml = function (data, multiple) {
+    var buildHtml = function (data, multiple, issearch) {
         var html = '';
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
@@ -9,21 +9,26 @@
 	<div class="span1">'+ item.Key.fullname + '</div>\
 	<i class="icon-accordion"></i>\
 </dt>';
-            html += '<dd class="bui-list">'
-
+            html += '<dd>'
+            if (multiple && issearch != 1) {
+                html += '\
+<div class="bui-btn bui-box">\
+    <input type="checkbox" class="bui-checkbox checkalluser" id="'+ item.Key.fullname + '" /> \
+    <div class="span1">\
+        <label for="'+ item.Key.fullname + '">全选</label>\
+    </div>\
+</div>';
+            }
+            html += '<div class="bui-fluid-space-2">'
             for (var j = 0; j < item.ValueList.length; j++) {
                 var user = item.ValueList[j];
-                var name = user.realname + "-" + user.loginname;
+                //var name = user.realname + "-" + user.loginname;
                 html += '\
-                <div class="bui-btn bui-box">\
-                    <div class="span1">\
-                        <label for="usersel_'+ user.user_id + '">' + name + '</label>\
-                    </div>\
-                    <input id="usersel_'+ user.user_id + '" type="' + (multiple ? "checkbox" : "radio") + '" class="bui-choose" name="users" value="' + user.user_id + '"  luckyu-name="' + user.realname + '" luckyu-loginname="' + user.loginname + '" luckyu-departmentid="' + item.Key.department_id+'" luckyu-departmentname="' + item.Key.fullname+'" />\
+                <div class="span1" style="padding:5px;">\
+                    <input id="usersel_'+ user.user_id + '" type="' + (multiple ? "checkbox" : "radio") + '" class="bui-check" name="users" value="' + user.user_id + '"  luckyu-name="' + user.realname + '" luckyu-loginname="' + user.loginname + '" luckyu-departmentid="' + item.Key.department_id + '" luckyu-departmentname="' + item.Key.fullname + '"  uncheck="' + user.realname + '" check="' + user.realname + '" />\
                 </div> ';
-
             }
-            html += '</dd>'
+            html += '</div></dd>'
 
         }
         return html;
@@ -58,8 +63,14 @@
                 onInited: function (option) {
                     luckyumobile.ajax.getv2("/OrganizationModule/User/GetDepartmentUsers", {}, function (data) {
                         if (!!data && data.length > 0) {
-                            var html = buildHtml(data, defaultOption.multiple);
+                            var html = buildHtml(data, defaultOption.multiple, 0);
                             $("#du_userlist").html(html);
+
+                            $("input.checkalluser").click(function () {
+                                var self = $(this);
+                                var ischecked = self.is(":checked");
+                                self.parent().next().find("input[name=users]").prop("checked", ischecked);
+                            });
                             $("#du_userlist")[0].backdata = data;
 
                             var uiAccordion = bui.accordion({
@@ -98,7 +109,7 @@
                             newlist = datalist;
                         }
                         var html = '';
-                        var html = buildHtml(newlist, defaultOption.multiple);
+                        var html = buildHtml(newlist, defaultOption.multiple, 1);
                         $("#du_userlist").html(html);
 
                         var uiAccordion = bui.accordion({

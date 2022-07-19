@@ -496,7 +496,7 @@
 </li>';
                         }
 
-                        htmlNext += '<div class="layui-card"><div class="layui-card-header">' + html_nodename + htmcheckall + '</div>';
+                        htmlNext += '<div class="layui-card" nodeid="' + nextnode.id + '"><div class="layui-card-header">' + html_nodename + htmcheckall + '</div>';
                         htmlNext += '<div class="layui-card-body">';
 
                         // 用户
@@ -504,15 +504,15 @@
                             htmlNext += '<div class="bui-fluid-space-2">';
                             for (var j = 0; j < nextnode.authusers.length; j++) {
                                 var authuser = nextnode.authusers[j];
-                                var html_username = '<div class="span1" style="text-align: center;">' + authuser.objectnames + '</div>';
+                                var html_username = '<div class="span1" style="text-align: center;padding:5px;">' + authuser.objectnames + '</div>';
                                 if (nextnode.comfirm_user == 1) {
                                     var inputtype = (nextnode.user_num == 1 ? "radio" : "checkbox");
                                     html_username = '\
-<div class="span1">\
+<div class="span1" style="padding:5px;">\
     <input type="'+ inputtype + '" class="bui-check"  id="user_' + authuser.objectids + '" name="nodeuser_' + nextnode.id + '" nodeid="' + nextnode.id + '"  value="' + authuser.objectids + '"  lay-filter="nodeuser"   uncheck="' + authuser.objectnames + '" check="' + authuser.objectnames + '" />\
 </div>';
                                 }
-                                htmlNext += '<div class="layui-col-xs4">' + html_username + '</div>';
+                                htmlNext += html_username;
                             }
                             htmlNext += '</div>';
                         }

@@ -151,7 +151,7 @@ namespace Luckyu.App.Organization
             log.log_type = (int)LogType.Login;
             log.log_time = DateTime.Now;
             log.module = module;
-            log.log_content = $"用户名 {loginname} 登录";
+            log.log_content = $"【 {loginname} 】进行登录操作";
 
             var res = new ResponseResult();
             var entity = userService.GetEntity(r => r.loginname == loginname);
@@ -186,7 +186,7 @@ namespace Luckyu.App.Organization
 
             httpContext.Session.SetInt32("session_wrongnum", 0);
             LoginUserInfo.Instance.SetLogin(entity.loginname, httpContext, LuckyuHelper.AppID);
-            log.log_content += $"  登录成功 登录用户为 { entity.realname}-{ entity.loginname}?";
+            log.log_content += $"  登录成功 登录用户为 【{ entity.realname}-{ entity.loginname}】";
             log.op_type = "成功";
             log.user_id = entity.user_id;
             log.user_name = $"{entity.loginname}-{ entity.realname}";
