@@ -82,11 +82,11 @@ var bootstrap = function () {
                                 var select = $(ele).find("div.xm-select");
                                 var data = [
                                     { value: "1", name: "用户" },
-                                    { value: "2", name: "部门" },
-                                    { value: "3", name: "公司" },
+                                    //{ value: "2", name: "部门" },
+                                    //{ value: "3", name: "公司" },
                                     { value: "4", name: "岗位" },
                                     { value: "5", name: "角色" },
-                                    { value: "6", name: "小组" },
+                                    //{ value: "6", name: "小组" },
                                     { value: "9", name: "提交人自己" },
                                 ];
                                 select.initLocal({
@@ -249,6 +249,33 @@ var bootstrap = function () {
                                     { value: "1", name: "同一公司" },
                                     { value: "2", name: "同一部门" },
                                     { value: "3", name: "分管此部门" },
+                                ];
+                                select.initLocal({
+                                    data: data,
+                                    initValue: select.attr("_value"),
+                                    select: function (res) {
+                                    }
+                                });
+                            },
+                            custom_element: function (value, options) {
+                                var html = '<div class="xm-select" _value="' + value + '"></div>';
+                                return html;
+                            },
+                            custom_value: function (ele, operation, value) {
+                                var xmselect = xmSelect.get("#" + ele.attr("id"), true);
+                                return xmselect.getValue("valueStr");
+                            }
+                        },
+                    },
+                    {
+                        name: 'is_assist', label: "辅助审批", width: 80, editable: true,
+                        edittype: 'custom',
+                        editoptions: {
+                            dataInit: function (ele, options) {
+                                var select = $(ele).find("div.xm-select");
+                                var data = [
+                                    { value: "0", name: "否" },
+                                    { value: "1", name: "是" },
                                 ];
                                 select.initLocal({
                                     data: data,

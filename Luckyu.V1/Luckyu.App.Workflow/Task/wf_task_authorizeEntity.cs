@@ -65,6 +65,11 @@ namespace Luckyu.App.Workflow
         public int is_add { get; set; }
 
         /// <summary>
+        /// 辅助审批
+        /// </summary>
+        public int is_assist { get; set; }
+
+        /// <summary>
         ///  create_userid   
         /// </summary>
         public string create_userid { get; set; }

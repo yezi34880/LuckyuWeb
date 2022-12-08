@@ -677,7 +677,7 @@ namespace Luckyu.App.Workflow
             task.opinion = opinion;
             if (task.nodetype == "helpme") // 转发查看 不往下进行
             {
-                taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
+                taskService.Approve(instance, task, listTask, listHistory, listSql, opinion, loginInfo);
                 var data1 = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
                 return ResponseResult.Success((object)data1);
             }
@@ -734,7 +734,7 @@ namespace Luckyu.App.Workflow
 
                     instance.is_finished = 1;
 
-                    taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
+                    taskService.Approve(instance, task, listTask, listHistory, listSql, opinion, loginInfo);
                     var data1 = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
                     return ResponseResult.Success((object)data1);
                 }
@@ -777,7 +777,7 @@ namespace Luckyu.App.Workflow
                             listTask.Add(preTask);
                         }
                     }
-                    taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
+                    taskService.Approve(instance, task, listTask, listHistory, listSql, opinion, loginInfo);
                     var data1 = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
                     return ResponseResult.Success((object)data1);
                 }
@@ -835,7 +835,7 @@ namespace Luckyu.App.Workflow
             //{
             //    return ResponseResult.Fail("该流程节点没有下一步连线，请联系管理员");
             //}
-            taskService.Approve(instance, task, listTask, listHistory, listSql, loginInfo);
+            taskService.Approve(instance, task, listTask, listHistory, listSql, opinion, loginInfo);
             var data = new Tuple<wf_instanceEntity, List<wf_taskEntity>, List<wf_taskhistoryEntity>>(instance, listTask, listHistory);
             return ResponseResult.Success((object)data);
         }
@@ -1578,6 +1578,10 @@ namespace Luckyu.App.Workflow
                                 isContainSelf = true;
                             }
                             break;
+                    }
+                    if (nodeAuth.is_assist == 1)
+                    {
+                        auth.is_assist = 1;
                     }
                     auth.task_id = task_id;
                     auth.Create(loginInfo);

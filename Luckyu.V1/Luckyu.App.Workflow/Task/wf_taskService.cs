@@ -249,7 +249,7 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            var tuple = BuildSql(sql, instance.process_id, loginInfo);
+                            var tuple = BuildSql(sql, instance.process_id, "", loginInfo);
                             trans.db.Ado.ExecuteCommand(tuple.Item1, tuple.Item2);
                         }
                     }
@@ -263,7 +263,7 @@ namespace Luckyu.App.Workflow
             }
         }
 
-        public void Approve(wf_instanceEntity instance, wf_taskEntity currentTask, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql, UserModel loginInfo)
+        public void Approve(wf_instanceEntity instance, wf_taskEntity currentTask, List<wf_taskEntity> listTask, List<wf_taskhistoryEntity> listHistory, List<string> listSql, string opinion, UserModel loginInfo)
         {
             var trans = BaseRepository().BeginTrans();
             try
@@ -302,7 +302,7 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            var tuple = BuildSql(sql, instance.process_id, loginInfo);
+                            var tuple = BuildSql(sql, instance.process_id, opinion, loginInfo);
                             trans.db.Ado.ExecuteCommand(tuple.Item1, tuple.Item2);
                         }
                     }
@@ -440,7 +440,7 @@ namespace Luckyu.App.Workflow
                     {
                         if (!sql.IsEmpty())
                         {
-                            var tuple = BuildSql(sql, instance.process_id, loginInfo);
+                            var tuple = BuildSql(sql, instance.process_id, "", loginInfo);
                             trans.db.Ado.ExecuteCommand(tuple.Item1, tuple.Item2);
                         }
                     }
@@ -495,7 +495,7 @@ namespace Luckyu.App.Workflow
         /// <summary>
         /// 统一组装sql
         /// </summary>
-        private Tuple<string, Dictionary<string, object>> BuildSql(string sql, string processId, UserModel loginInfo)
+        private Tuple<string, Dictionary<string, object>> BuildSql(string sql, string processId, string opinion, UserModel loginInfo)
         {
             var sqlparams = new Dictionary<string, object>();
             var sql1 = sql;
@@ -518,6 +518,16 @@ namespace Luckyu.App.Workflow
             {
                 sql1 = sql1.Replace("@userName", $"{BaseConnection.ParaPre}userName");
                 sqlparams.Add("userName", loginInfo.realname);
+            }
+            if (sql1.Contains("@opinion"))
+            {
+                sql1 = sql1.Replace("@opinion", $"{BaseConnection.ParaPre}opinion");
+                sqlparams.Add("opinion", opinion);
+            }
+            if (sql1.Contains("@appTime"))
+            {
+                sql1 = sql1.Replace("@appTime", $"{BaseConnection.ParaPre}appTime");
+                sqlparams.Add("appTime", DateTime.Now);
             }
             return new Tuple<string, Dictionary<string, object>>(sql1, sqlparams);
         }

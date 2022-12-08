@@ -21,5 +21,10 @@ namespace Luckyu.App.Workflow
         /// 1-同一公司 2-同一部门 3-分管此部门
         /// </summary>
         public int objectrange { get; set; }
+
+        /// <summary>
+        /// 是否辅助审批
+        /// </summary>
+        public int is_assist { get; set; }
     }
 }
