@@ -17,7 +17,8 @@ namespace Luckyu.App.System
         }
         public void Delete(sys_annexfileEntity entity)
         {
-            BaseRepository().db.Updateable<sys_annexfileEntity>(entity).SetColumns(r => r.is_delete == 1).ExecuteCommand();
+            entity.is_delete = 1;
+            BaseRepository().db.Updateable<sys_annexfileEntity>(entity).UpdateColumns(r => r.is_delete).ExecuteCommand();
         }
 
         public void Update(sys_annexfileEntity entity)
@@ -42,7 +43,24 @@ namespace Luckyu.App.System
 
         public void DownLoad(sys_annexfileEntity entity)
         {
-            BaseRepository().db.Updateable<sys_annexfileEntity>(entity).SetColumns(r => r.downloadcount == r.downloadcount + 1).ExecuteCommand();
+            BaseRepository().db.Updateable<sys_annexfileEntity>().Where(r => r.annex_id == entity.annex_id).SetColumns(r => r.downloadcount == r.downloadcount + 1).ExecuteCommand();
+        }
+        public void DownLoad(List<sys_annexfileEntity> list)
+        {
+            var trans = BaseRepository().BeginTrans();
+            try
+            {
+                foreach (var item in list)
+                {
+                    trans.db.Updateable<sys_annexfileEntity>().Where(r => r.annex_id == item.annex_id).SetColumns(r => r.downloadcount == r.downloadcount + 1).ExecuteCommand();
+                }
+                trans.Commit();
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                throw ex;
+            }
         }
 
     }

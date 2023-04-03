@@ -84,6 +84,6 @@ namespace Luckyu.App.Organization
     public enum UserLevel
     {
         // 超级管理员
-        SuperAdmin = -99
+        SuperAdmin = 99
     }
 }

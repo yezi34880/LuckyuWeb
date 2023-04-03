@@ -23,7 +23,7 @@ namespace Luckyu.App.Organization
         /// <summary>
         ///  moduletype   0-系统模块 2-自定义表单
         /// </summary>
-        public string moduletype { get; set; }
+        public int moduletype { get; set; }
 
         /// <summary>
         ///  form_id   

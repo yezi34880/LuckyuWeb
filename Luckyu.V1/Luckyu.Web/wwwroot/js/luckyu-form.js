@@ -555,9 +555,21 @@
                             //    initialPreview: data.initialPreview,
                             //    initialPreviewConfig: data.initialPreviewConfig
                             //});
-                            $self.fileinput('refresh', {
+                            $self.fileinput('destroy').initFileInput({
                                 initialPreview: data.initialPreview,
                                 initialPreviewConfig: data.initialPreviewConfig
+                            });
+                            var id = "bf_da_" + $self.attr('id');
+                            var btnDownloadAll = '<button type="button" id="' + id + '" title="打包下载全部文件" class="btn btn-default"><i class="fa fa-download"></i> 下载全部</button>';
+                            $self.parents('.file-caption-main').find('.input-group-btn.input-group-append').prepend(btnDownloadAll);
+                            $("#" + id).click(function () {
+                                luckyu.utility.download({
+                                    url: '/SystemModule/Annex/DownloadAll?r=20230402',
+                                    param: {
+                                        exId: defaultOption.exId,
+                                        exCode: defaultOption.exCode
+                                    }
+                                });
                             });
                         });
                 },

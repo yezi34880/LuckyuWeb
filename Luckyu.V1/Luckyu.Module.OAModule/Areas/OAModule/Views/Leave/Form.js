@@ -18,7 +18,6 @@ var bootstrap = function (layui) {
             $("#AnnexName").initFileInput({
                 folderPre: "Leave"
             });
-
             layui.layer.close(loading);
         },
         initData: function () {

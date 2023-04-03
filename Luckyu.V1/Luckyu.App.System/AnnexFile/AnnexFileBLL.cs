@@ -106,15 +106,15 @@ namespace Luckyu.App.System
                 thumb.external_id = annex.annex_id;
                 thumb.externalcode = "[thumb]";
 
-                annex.downloadcount = 0;
-                annex.basepath = basepath.Item1;
-                annex.fileextenssion = FileEextension;
-                annex.filename = fileName;
-                annex.filepath = virtualPaththumb;
-                annex.filesize = buffer.Length;
-                annex.contexttype = contentType;
+                thumb.downloadcount = 0;
+                thumb.basepath = basepath.Item1;
+                thumb.fileextenssion = FileEextension;
+                thumb.filename = fileName;
+                thumb.filepath = virtualPaththumb;
+                thumb.filesize = buffer.Length;
+                thumb.contexttype = contentType;
 
-                annexService.Insert(annex);
+                annexService.Insert(thumb);
             }
             return annex;
         }
@@ -166,6 +166,10 @@ namespace Luckyu.App.System
         public void DownLoad(sys_annexfileEntity entity)
         {
             annexService.DownLoad(entity);
+        }
+        public void DownLoad(List<sys_annexfileEntity> list)
+        {
+            annexService.DownLoad(list);
         }
         #endregion
 

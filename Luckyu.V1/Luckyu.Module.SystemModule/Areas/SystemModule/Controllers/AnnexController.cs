@@ -121,6 +121,44 @@ namespace Luckyu.Module.SystemModule.Controllers
             return File(bytes, annex.contexttype, annex.filename);
         }
 
+        // [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
+        public IActionResult DownloadAll(string exId, string exCode)
+        {
+            Expression<Func<sys_annexfileEntity, bool>> exp = r => r.external_id == exId;
+            if (!exCode.IsEmpty())
+            {
+                exp = exp.LinqAnd(r => r.externalcode == exCode);
+            }
+            var annexes = annexBLL.GetList(exp);
+
+            var nameNoExt = Log.SnowflakeHelper.NewCode();
+            var tempPath = FileHelper.Combine(Environment.CurrentDirectory, "Files/Temp/" + nameNoExt);
+            if (!System.IO.Directory.Exists(tempPath))
+            {
+                System.IO.Directory.CreateDirectory(tempPath);
+            }
+            foreach (var annex in annexes)
+            {
+                var basepath = configBLL.GetValueByCache(annex.basepath);
+                var filePath = FileHelper.Combine(basepath, annex.filepath);
+
+                var newFilePath = FileHelper.Combine(tempPath, annex.filename);
+                System.IO.File.Copy(filePath, newFilePath);
+            }
+            var zipfilename = nameNoExt + ".zip";
+            var zipFile = FileHelper.Combine(Environment.CurrentDirectory, "Files/Temp/" + zipfilename);
+            System.IO.Compression.ZipFile.CreateFromDirectory(tempPath, zipFile);
+
+            var ziptype = "application/zip";
+            annexBLL.DownLoad(annexes);
+            Response.Headers.Append("Content-Disposition", "attachment; filename=" + System.Web.HttpUtility.UrlEncode(zipfilename, Encoding.UTF8));
+            Response.ContentType = ziptype;
+            var bytes = System.IO.File.ReadAllBytes(zipFile);
+            System.IO.Directory.Delete(tempPath, true);
+            System.IO.File.Delete(zipFile);
+            return File(bytes, ziptype, zipfilename);
+        }
+
         /// <summary>
         /// 上传附件
         /// </summary>

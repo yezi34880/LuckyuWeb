@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.Compression;
 using Luckyu.Cache;
+using Luckyu.Log;
 
 namespace Luckyu.Utility
 {
@@ -188,5 +191,8 @@ namespace Luckyu.Utility
         }
         #endregion
 
+        #region 压缩 ZIP
+
+        #endregion
     }
 }

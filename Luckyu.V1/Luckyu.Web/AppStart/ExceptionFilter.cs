@@ -2,8 +2,11 @@
 using Luckyu.App.Organization;
 using Luckyu.Log;
 using Luckyu.Utility;
+using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using MimeKit;
+using MimeKit.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,13 +57,52 @@ namespace Luckyu.Web
             }
             else
             {
-                context.Result = new ContentResult() { Content  = context.Exception.Message };
+                context.Result = new ContentResult() { Content = context.Exception.Message };
             }
 
         }
 
-        private void SendEmail(string msg)
+        private async void SendEmail(string message)
         {
+            try
+            {
+                var AppID = AppSettingsHelper.GetAppSetting("AppID");
+                var host = AppSettingsHelper.GetAppSetting("EmailSenderHost");
+                var port = AppSettingsHelper.GetAppSetting("EmailSenderPort").ToInt();
+                var senderid = AppSettingsHelper.GetAppSetting("EmailSenderAddress");
+                var senderpwd = AppSettingsHelper.GetAppSetting("EmailSenderPassword");
+                var sendername = AppSettingsHelper.GetAppSetting("EmailSenderName");
+                var toname = AppSettingsHelper.GetAppSetting("EmailToName");
+                var toaddress = AppSettingsHelper.GetAppSetting("EmailToAddress");
+
+                if (senderid.IsEmpty() || toaddress.IsEmpty())
+                {
+                    return;
+                }
+
+                using (var smtp = new MailKit.Net.Smtp.SmtpClient())
+                {
+                    smtp.MessageSent += (sender, args) => { };
+                    smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                    await smtp.ConnectAsync(host, port, SecureSocketOptions.Auto);
+                    await smtp.AuthenticateAsync(senderid, senderpwd);
+
+                    var messageToSend = new MimeMessage
+                    {
+                        Sender = new MailboxAddress(sendername, senderid),
+                        Subject = AppID + " Error",
+                    };
+                    messageToSend.From.Add(new MailboxAddress(sendername, senderid));
+                    messageToSend.Body = new TextPart(TextFormat.Plain) { Text = message };
+                    messageToSend.To.Add(new MailboxAddress(toname, toaddress));
+                    await smtp.SendAsync(messageToSend);
+                    await smtp.DisconnectAsync(true);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
 
         }
 
