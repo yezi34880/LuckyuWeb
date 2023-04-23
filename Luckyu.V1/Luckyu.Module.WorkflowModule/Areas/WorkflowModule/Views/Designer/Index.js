@@ -112,6 +112,20 @@ var bootstrap = function (layui) {
                     });
                 });
             });
+
+            $("#copy").click(function () {
+                var rowid = grid.getGridParam("selrow");
+                if (!rowid) {
+                    layui.notice.error("没有选中任何行数据");
+                    return;
+                }
+                luckyu.layer.layerConfirm('确定要复制该数据吗？', function (con) {
+                    luckyu.ajax.postv2(luckyu.rootUrl + "/WorkflowModule/Designer/CopyForm", { keyValue: rowid }, function (data, info) {
+                        layui.notice.success(info);
+                        page.search();
+                    });
+                });
+            });
         },
         search: function () {
             grid.jqGrid('resetSelection');

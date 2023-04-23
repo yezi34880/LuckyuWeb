@@ -49,6 +49,17 @@ namespace Luckyu.Module.WorkflowModule.Controllers
             flowBLL.DeleteForm(entity, loginInfo);
             return Success();
         }
+        public IActionResult CopyForm(string keyValue)
+        {
+            var entity = flowBLL.GetEntity(r => r.flow_id == keyValue);
+            if (entity == null)
+            {
+                return Fail(MessageString.NoData);
+            }
+            var loginInfo = LoginUserInfo.Instance.GetLoginUser(HttpContext);
+            flowBLL.CopyForm(entity, loginInfo);
+            return Success();
+        }
 
         #endregion
 

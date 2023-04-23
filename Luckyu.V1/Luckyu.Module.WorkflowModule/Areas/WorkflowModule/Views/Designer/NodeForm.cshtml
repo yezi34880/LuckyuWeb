@@ -36,21 +36,6 @@
                     <input id="name" type="text" class="layui-input" />
                 </div>
             </div>
-            <div class="layui-col-xs12 form-item">
-                <label class="layui-form-label">超时选项</label>
-                <div class="layui-input-block">
-                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="默认" value="0" checked />
-                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时通过" value="1" />
-                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时退回起草" value="2" />
-                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时通过上一步" value="3" />
-                </div>
-            </div>
-            <div class="layui-col-xs12 form-item">
-                <label class="layui-form-label">超时时间(小时)</label>
-                <div class="layui-input-block">
-                    <input id="timeout" type="text" class="layui-input" lay-verify="number" />
-                </div>
-            </div>
 
             <div id="divStep" style="display:none;">
                 <div class="layui-col-xs12 form-item">
@@ -93,6 +78,23 @@
                     </div>
                 </div>
             </div>
+
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">超时选项</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="默认" value="0" checked />
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时通过" value="1" />
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时退回起草" value="2" />
+                    <input type="radio" name="timeout_type" lay-filter="timeout_type" title="超时通过上一步" value="3" />
+                </div>
+            </div>
+            <div class="layui-col-xs12 form-item">
+                <label class="layui-form-label">超时时间(小时)</label>
+                <div class="layui-input-block">
+                    <input id="timeout" type="text" class="layui-input" lay-verify="number" />
+                </div>
+            </div>
+
         </div>
         <!--审批人-->
         <div class="layui-tab-item">

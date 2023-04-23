@@ -20,20 +20,53 @@ var bootstrap = function (layui) {
             $('#Designer').dfworkflow({
                 openNode: function (node) {
                     if (node.type != 'endround') {
+                        var btns = [{
+                            name: "保存",
+                            callback: function (index, layero) {
+                                layero.find("iframe")[0].contentWindow.saveClick(index, function () {
+                                    $('#Designer').dfworkflowSet('updateNodeName', { nodeId: node.id });
+                                });
+                            }
+                        }];
+                        if (node.type != 'startround') {
+                            btns.push({
+                                name: "复制节点",
+                                callback: function (index, layero) {
+
+                                    var newNode = {};
+                                    for (var key in node) {
+                                        newNode[key] = node[key];
+                                    }
+                                    if (!!newNode.authusers && newNode.authusers.length > 0) {
+                                        for (var i = 0; i < newNode.authusers.length; i++) {
+                                            newNode.authusers[i].id = luckyu.utility.newGuid();
+                                        }
+                                    }
+                                    if (!!newNode.forms && newNode.forms.length > 0) {
+                                        for (var i = 0; i < newNode.forms.length; i++) {
+                                            newNode.forms[i].id = luckyu.utility.newGuid();
+                                        }
+                                    }
+                                    newNode.id = luckyu.utility.newGuid();
+                                    newNode.top = newNode.top + 20;
+                                    newNode.left = newNode.left + 20;
+
+                                    var $workflow = $('#Designer');
+                                    var $workArea = $workflow.find(".workflow-workinner");
+                                    $.dfworkflow.addNode($workArea, $workflow[0].DefaultOption, newNode, true);
+
+                                    top.layer.close(index);
+                                }
+                            });
+                        }
+
                         top.currentModifyNode = node;
                         luckyu.layer.layerFormTop({
                             title: '节点信息【' + node.name + '】',
                             url: luckyu.rootUrl + '/WorkFlowModule/Designer/NodeForm',
                             width: 700,
                             height: 550,
-                            btn: [{
-                                name: "保存",
-                                callback: function (index, layero) {
-                                    layero.find("iframe")[0].contentWindow.saveClick(index, function () {
-                                        $('#Designer').dfworkflowSet('updateNodeName', { nodeId: node.id });
-                                    });
-                                }
-                            }]
+                            btn: btns
                         });
                     }
                 },

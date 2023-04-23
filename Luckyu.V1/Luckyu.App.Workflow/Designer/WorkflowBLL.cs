@@ -55,6 +55,10 @@ namespace Luckyu.App.Workflow
         {
             flowService.DeleteForm(entity, loginInfo);
         }
+        public void CopyForm(wf_flowEntity entity, UserModel loginInfo)
+        {
+            flowService.CopyForm(entity, loginInfo);
+        }
         public void SaveForm(string keyValue, wf_flowEntity entity, string strEntity, List<WFAuthorizeModel> listAuthModel, string schemejson, UserModel loginInfo)
         {
             var listAuthorize = new List<wf_flow_authorizeEntity>();

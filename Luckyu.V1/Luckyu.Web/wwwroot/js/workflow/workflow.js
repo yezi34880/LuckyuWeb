@@ -411,44 +411,21 @@
             if (!isold) {
                 switch (node.type) {
                     case 'startround':
-                        node.wfForms = [];
-                        node.authorizeFields = [];
-                        node.iocName = '';
-                        node.dbSuccessId = '';
-                        node.dbSuccessSql = '';
                         break;
                     case 'stepnode':
-                        node.dbFailId = '';
-                        node.dbFailSql = '';
+                        node.authusers = [];
+                        node.forms = [];
                     case 'auditornode':
-                        node.auditors = [];
-                        node.wfForms = [];
-                        node.authorizeFields = [];
-                        node.iocName = '';
-                        node.dbSuccessId = '';
-                        node.dbSuccessSql = '';
-
-                        node.timeoutAction = 48;// 超时流转时间
-                        node.timeoutNotice = 24;// 超时通知时间
+                        node.authusers = [];
+                        node.forms = [];
                         break;
                     case 'processnode':
-                        node.dbFailId = '';
-                        node.dbFailSql = '';
-                        node.iocName = '';
                         break;
                     case 'confluencenode':// 会签
                         node.confluenceType = '1';
                         node.confluenceRate = '100';
-                        node.iocName = '';
-                        node.dbSuccessId = '';
-                        node.dbSuccessSql = '';
-                        node.dbFailId = '';
-                        node.dbFailSql = '';
                         break;
                     case 'conditionnode':// 条件
-                        node.conditions = [];
-                        node.dbConditionId = "";
-                        node.conditionSql = "";
                         break;
                 }
             }
